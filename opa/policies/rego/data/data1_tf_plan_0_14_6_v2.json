@@ -1,34 +1,45 @@
 {
-    "source_ref": "terraform_plan:0.14.6",
-    "schema_version": "0.0.1",
-    "policies": [
-        {
+    "source_ref": "terraform_plan_json:0.14.6",
+    "schema_version": "terraform_plan_json:0.0.1",
+    "policies": {
+        "terraform_plan": {
             "resource_type": "aws_s3_bucket",
-            "evaluators": {
-                "all_of": [
-                    {
-                        "evaluator_ref": "str_in_list",
-                        "evaluator_data": [
-                            "create"
-                        ]
-                    }
-                ],
-                "any_of": [],
-                "none_of": [
-                    {
-                        "evaluator_ref": "str_in_list",
-                        "evaluator_data": [
-                            "destroy"
-                        ]
-                    }
-                ]
-            },
             "attributes": [
                 {
+                    "name": "action",
+                    "type": "tf_core_reserved",
+                    "evaluators": {
+                        "all_of": [
+                            {
+                                "evaluator_ref": "str_in_list",
+                                "evaluator_data": [
+                                    "create"
+                                ]
+                            }
+                        ],
+                        "any_of": [],
+                        "none_of": [
+                            {
+                                "evaluator_ref": "str_in_list",
+                                "evaluator_data": [
+                                    "destroy"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "count",
+                    "type": "tf_core_reserved",
+                    "evaluators": {
+                        "all_of": [],
+                        "any_of": [],
+                        "none_of": []
+                    }
+                },
+                {
                     "name": "acl",
-                    "datatype": [
-                        "str"
-                    ],
+                    "type": "tf_provider_reserved",
                     "evaluators": {
                         "all_of": [
                             {
@@ -45,5 +56,5 @@
                 }
             ]
         }
-    ]
+    }
 }
