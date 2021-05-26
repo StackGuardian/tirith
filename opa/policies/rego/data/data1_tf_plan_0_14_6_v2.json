@@ -1,12 +1,12 @@
 {
-    "source_ref": "terraform_plan_json:0.14.6",
-    "schema_version": "terraform_plan_json:0.0.1",
-    "policies": {
+    "source_ref": "terraform_plan_json:0.14.6", // source reference eg: terraform_plan, json state and 0.14.6
+    "schema_version": "terraform_plan_json:0.0.1", // this schema version, will vary across input source types eg. tf, cf, arm
+    "policies": { // policies for attrs and other configs
         "terraform_plan": {
             "resource_type": "aws_s3_bucket",
             "attributes": [
                 {
-                    "name": "action",
+                    "name": "action", // all 'tf_core_reserved' keywords will be pre-defined in a map in module 1
                     "type": "tf_core_reserved",
                     "evaluators": {
                         "all_of": [
@@ -25,6 +25,9 @@
                                     "destroy"
                                 ]
                             }
+                        ],
+                        "relations": [
+                            // if LB is present, it should have a SG attached to it.
                         ]
                     }
                 },
