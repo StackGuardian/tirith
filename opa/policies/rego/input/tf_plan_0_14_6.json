@@ -1,0 +1,1016 @@
+{
+    "format_version": "0.1",
+    "terraform_version": "0.14.6",
+    "variables": {
+        "bucket_region": {
+            "value": "eu-central-1"
+        },
+        "s3_bucket_acl": {
+            "value": "public-read"
+        },
+        "s3_bucket_block_public_acls": {
+            "value": false
+        },
+        "s3_bucket_block_public_policy": {
+            "value": false
+        },
+        "s3_bucket_force_destroy": {
+            "value": true
+        },
+        "s3_bucket_ignore_public_acls": {
+            "value": false
+        },
+        "s3_bucket_restrict_public_buckets": {
+            "value": false
+        },
+        "s3_bucket_tags": {
+            "value": {
+                "Owner": "TandLabs"
+            }
+        },
+        "s3_bucket_versioning": {
+            "value": {
+                "enabled": "true",
+                "mfa_delete": "false"
+            }
+        }
+    },
+    "planned_values": {
+        "outputs": {
+            "this_s3_bucket_arn": {
+                "sensitive": false
+            },
+            "this_s3_bucket_bucket_domain_name": {
+                "sensitive": false
+            },
+            "this_s3_bucket_bucket_regional_domain_name": {
+                "sensitive": false
+            },
+            "this_s3_bucket_hosted_zone_id": {
+                "sensitive": false
+            },
+            "this_s3_bucket_id": {
+                "sensitive": false
+            },
+            "this_s3_bucket_region": {
+                "sensitive": false
+            },
+            "this_s3_bucket_website_domain": {
+                "sensitive": false
+            },
+            "this_s3_bucket_website_endpoint": {
+                "sensitive": false
+            }
+        },
+        "root_module": {
+            "resources": [
+                {
+                    "address": "null_resource.remove_and_upload_to_s3",
+                    "mode": "managed",
+                    "type": "null_resource",
+                    "name": "remove_and_upload_to_s3",
+                    "provider_name": "registry.terraform.io/hashicorp/null",
+                    "schema_version": 0,
+                    "values": {
+                        "triggers": null
+                    }
+                },
+                {
+                    "address": "random_pet.this",
+                    "mode": "managed",
+                    "type": "random_pet",
+                    "name": "this",
+                    "provider_name": "registry.terraform.io/hashicorp/random",
+                    "schema_version": 0,
+                    "values": {
+                        "keepers": null,
+                        "length": 2,
+                        "prefix": null,
+                        "separator": "-"
+                    }
+                }
+            ],
+            "child_modules": [
+                {
+                    "resources": [
+                        {
+                            "address": "module.s3_bucket.aws_s3_bucket.this[0]",
+                            "mode": "managed",
+                            "type": "aws_s3_bucket",
+                            "name": "this",
+                            "index": 0,
+                            "provider_name": "registry.terraform.io/hashicorp/aws",
+                            "schema_version": 0,
+                            "values": {
+                                "acl": "public-read",
+                                "bucket_prefix": null,
+                                "cors_rule": [],
+                                "force_destroy": true,
+                                "grant": [],
+                                "lifecycle_rule": [],
+                                "logging": [],
+                                "object_lock_configuration": [],
+                                "policy": null,
+                                "replication_configuration": [],
+                                "server_side_encryption_configuration": [],
+                                "tags": {
+                                    "Owner": "TandLabs"
+                                },
+                                "versioning": [
+                                    {
+                                        "enabled": true,
+                                        "mfa_delete": false
+                                    }
+                                ],
+                                "website": [
+                                    {
+                                        "error_document": "error.html",
+                                        "index_document": "index.html",
+                                        "redirect_all_requests_to": null,
+                                        "routing_rules": null
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "address": "module.s3_bucket.aws_s3_bucket_public_access_block.this[0]",
+                            "mode": "managed",
+                            "type": "aws_s3_bucket_public_access_block",
+                            "name": "this",
+                            "index": 0,
+                            "provider_name": "registry.terraform.io/hashicorp/aws",
+                            "schema_version": 0,
+                            "values": {
+                                "block_public_acls": false,
+                                "block_public_policy": false,
+                                "ignore_public_acls": false,
+                                "restrict_public_buckets": false
+                            }
+                        }
+                    ],
+                    "address": "module.s3_bucket"
+                }
+            ]
+        }
+    },
+    "resource_changes": [
+        {
+            "address": "module.s3_bucket.aws_s3_bucket.this[0]",
+            "module_address": "module.s3_bucket",
+            "mode": "managed",
+            "type": "aws_s3_bucket",
+            "name": "this",
+            "index": 0,
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "acl": "public-read",
+                    "bucket_prefix": null,
+                    "cors_rule": [],
+                    "force_destroy": true,
+                    "grant": [],
+                    "lifecycle_rule": [],
+                    "logging": [],
+                    "object_lock_configuration": [],
+                    "policy": null,
+                    "replication_configuration": [],
+                    "server_side_encryption_configuration": [],
+                    "tags": {
+                        "Owner": "TandLabs"
+                    },
+                    "versioning": [
+                        {
+                            "enabled": true,
+                            "mfa_delete": false
+                        }
+                    ],
+                    "website": [
+                        {
+                            "error_document": "error.html",
+                            "index_document": "index.html",
+                            "redirect_all_requests_to": null,
+                            "routing_rules": null
+                        }
+                    ]
+                },
+                "after_unknown": {
+                    "acceleration_status": true,
+                    "arn": true,
+                    "bucket": true,
+                    "bucket_domain_name": true,
+                    "bucket_regional_domain_name": true,
+                    "cors_rule": [],
+                    "grant": [],
+                    "hosted_zone_id": true,
+                    "id": true,
+                    "lifecycle_rule": [],
+                    "logging": [],
+                    "object_lock_configuration": [],
+                    "region": true,
+                    "replication_configuration": [],
+                    "request_payer": true,
+                    "server_side_encryption_configuration": [],
+                    "tags": {},
+                    "versioning": [
+                        {}
+                    ],
+                    "website": [
+                        {}
+                    ],
+                    "website_domain": true,
+                    "website_endpoint": true
+                }
+            }
+        },
+        {
+            "address": "module.s3_bucket.aws_s3_bucket_public_access_block.this[0]",
+            "module_address": "module.s3_bucket",
+            "mode": "managed",
+            "type": "aws_s3_bucket_public_access_block",
+            "name": "this",
+            "index": 0,
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "block_public_acls": false,
+                    "block_public_policy": false,
+                    "ignore_public_acls": false,
+                    "restrict_public_buckets": false
+                },
+                "after_unknown": {
+                    "bucket": true,
+                    "id": true
+                }
+            }
+        },
+        {
+            "address": "null_resource.remove_and_upload_to_s3",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "remove_and_upload_to_s3",
+            "provider_name": "registry.terraform.io/hashicorp/null",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "triggers": null
+                },
+                "after_unknown": {
+                    "id": true
+                }
+            }
+        },
+        {
+            "address": "random_pet.this",
+            "mode": "managed",
+            "type": "random_pet",
+            "name": "this",
+            "provider_name": "registry.terraform.io/hashicorp/random",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "keepers": null,
+                    "length": 2,
+                    "prefix": null,
+                    "separator": "-"
+                },
+                "after_unknown": {
+                    "id": true
+                }
+            }
+        }
+    ],
+    "output_changes": {
+        "this_s3_bucket_arn": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true
+        },
+        "this_s3_bucket_bucket_domain_name": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true
+        },
+        "this_s3_bucket_bucket_regional_domain_name": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true
+        },
+        "this_s3_bucket_hosted_zone_id": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true
+        },
+        "this_s3_bucket_id": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true
+        },
+        "this_s3_bucket_region": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true
+        },
+        "this_s3_bucket_website_domain": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true
+        },
+        "this_s3_bucket_website_endpoint": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true
+        }
+    },
+    "configuration": {
+        "provider_config": {
+            "aws": {
+                "name": "aws",
+                "expressions": {
+                    "region": {
+                        "references": [
+                            "var.bucket_region"
+                        ]
+                    },
+                    "skip_metadata_api_check": {
+                        "constant_value": true
+                    }
+                }
+            }
+        },
+        "root_module": {
+            "outputs": {
+                "this_s3_bucket_arn": {
+                    "expression": {
+                        "references": [
+                            "module.s3_bucket.s3_bucket_arn"
+                        ]
+                    },
+                    "description": "The ARN of the bucket. Will be of format arn:aws:s3:::bucketname."
+                },
+                "this_s3_bucket_bucket_domain_name": {
+                    "expression": {
+                        "references": [
+                            "module.s3_bucket.s3_bucket_bucket_domain_name"
+                        ]
+                    },
+                    "description": "The bucket domain name. Will be of format bucketname.s3.amazonaws.com."
+                },
+                "this_s3_bucket_bucket_regional_domain_name": {
+                    "expression": {
+                        "references": [
+                            "module.s3_bucket.s3_bucket_bucket_regional_domain_name"
+                        ]
+                    },
+                    "description": "The bucket region-specific domain name. The bucket domain name including the region name, please refer here for format. Note: The AWS CloudFront allows specifying S3 region-specific endpoint when creating S3 origin, it will prevent redirect issues from CloudFront to S3 Origin URL."
+                },
+                "this_s3_bucket_hosted_zone_id": {
+                    "expression": {
+                        "references": [
+                            "module.s3_bucket.s3_bucket_hosted_zone_id"
+                        ]
+                    },
+                    "description": "The Route 53 Hosted Zone ID for this bucket's region."
+                },
+                "this_s3_bucket_id": {
+                    "expression": {
+                        "references": [
+                            "module.s3_bucket.s3_bucket_id"
+                        ]
+                    },
+                    "description": "The name of the bucket."
+                },
+                "this_s3_bucket_region": {
+                    "expression": {
+                        "references": [
+                            "module.s3_bucket.s3_bucket_region"
+                        ]
+                    },
+                    "description": "The AWS region this bucket resides in."
+                },
+                "this_s3_bucket_website_domain": {
+                    "expression": {
+                        "references": [
+                            "module.s3_bucket.s3_bucket_website_domain"
+                        ]
+                    },
+                    "description": "The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. "
+                },
+                "this_s3_bucket_website_endpoint": {
+                    "expression": {
+                        "references": [
+                            "module.s3_bucket.s3_bucket_website_endpoint"
+                        ]
+                    },
+                    "description": "The website endpoint, if the bucket is configured with a website. If not, this will be an empty string."
+                }
+            },
+            "resources": [
+                {
+                    "address": "null_resource.remove_and_upload_to_s3",
+                    "mode": "managed",
+                    "type": "null_resource",
+                    "name": "remove_and_upload_to_s3",
+                    "provider_config_key": "null",
+                    "provisioners": [
+                        {
+                            "type": "local-exec",
+                            "expressions": {
+                                "command": {
+                                    "references": [
+                                        "path.module",
+                                        "module.s3_bucket.s3_bucket_id"
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "schema_version": 0
+                },
+                {
+                    "address": "random_pet.this",
+                    "mode": "managed",
+                    "type": "random_pet",
+                    "name": "this",
+                    "provider_config_key": "random",
+                    "expressions": {
+                        "length": {
+                            "constant_value": 2
+                        }
+                    },
+                    "schema_version": 0
+                }
+            ],
+            "module_calls": {
+                "s3_bucket": {
+                    "source": "github.com/TandLabs/module-tf-aws-s3-bucket?ref=v2.0.0",
+                    "expressions": {
+                        "acl": {
+                            "references": [
+                                "var.s3_bucket_acl"
+                            ]
+                        },
+                        "block_public_acls": {
+                            "references": [
+                                "var.s3_bucket_block_public_acls"
+                            ]
+                        },
+                        "block_public_policy": {
+                            "references": [
+                                "var.s3_bucket_block_public_policy"
+                            ]
+                        },
+                        "bucket": {
+                            "references": [
+                                "local.bucket_name"
+                            ]
+                        },
+                        "force_destroy": {
+                            "references": [
+                                "var.s3_bucket_force_destroy"
+                            ]
+                        },
+                        "ignore_public_acls": {
+                            "references": [
+                                "var.s3_bucket_ignore_public_acls"
+                            ]
+                        },
+                        "restrict_public_buckets": {
+                            "references": [
+                                "var.s3_bucket_restrict_public_buckets"
+                            ]
+                        },
+                        "tags": {
+                            "references": [
+                                "var.s3_bucket_tags"
+                            ]
+                        },
+                        "versioning": {
+                            "references": [
+                                "var.s3_bucket_versioning"
+                            ]
+                        },
+                        "website": {
+                            "constant_value": {
+                                "error_document": "error.html",
+                                "index_document": "index.html"
+                            }
+                        }
+                    },
+                    "module": {
+                        "outputs": {
+                            "s3_bucket_arn": {
+                                "expression": {
+                                    "references": [
+                                        "aws_s3_bucket.this"
+                                    ]
+                                },
+                                "description": "The ARN of the bucket. Will be of format arn:aws:s3:::bucketname."
+                            },
+                            "s3_bucket_bucket_domain_name": {
+                                "expression": {
+                                    "references": [
+                                        "aws_s3_bucket.this"
+                                    ]
+                                },
+                                "description": "The bucket domain name. Will be of format bucketname.s3.amazonaws.com."
+                            },
+                            "s3_bucket_bucket_regional_domain_name": {
+                                "expression": {
+                                    "references": [
+                                        "aws_s3_bucket.this"
+                                    ]
+                                },
+                                "description": "The bucket region-specific domain name. The bucket domain name including the region name, please refer here for format. Note: The AWS CloudFront allows specifying S3 region-specific endpoint when creating S3 origin, it will prevent redirect issues from CloudFront to S3 Origin URL."
+                            },
+                            "s3_bucket_hosted_zone_id": {
+                                "expression": {
+                                    "references": [
+                                        "aws_s3_bucket.this"
+                                    ]
+                                },
+                                "description": "The Route 53 Hosted Zone ID for this bucket's region."
+                            },
+                            "s3_bucket_id": {
+                                "expression": {
+                                    "references": [
+                                        "aws_s3_bucket_policy.this",
+                                        "aws_s3_bucket.this"
+                                    ]
+                                },
+                                "description": "The name of the bucket."
+                            },
+                            "s3_bucket_region": {
+                                "expression": {
+                                    "references": [
+                                        "aws_s3_bucket.this"
+                                    ]
+                                },
+                                "description": "The AWS region this bucket resides in."
+                            },
+                            "s3_bucket_website_domain": {
+                                "expression": {
+                                    "references": [
+                                        "aws_s3_bucket.this"
+                                    ]
+                                },
+                                "description": "The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. "
+                            },
+                            "s3_bucket_website_endpoint": {
+                                "expression": {
+                                    "references": [
+                                        "aws_s3_bucket.this"
+                                    ]
+                                },
+                                "description": "The website endpoint, if the bucket is configured with a website. If not, this will be an empty string."
+                            }
+                        },
+                        "resources": [
+                            {
+                                "address": "aws_s3_bucket.this",
+                                "mode": "managed",
+                                "type": "aws_s3_bucket",
+                                "name": "this",
+                                "provider_config_key": "s3_bucket:aws",
+                                "expressions": {
+                                    "acceleration_status": {
+                                        "references": [
+                                            "var.acceleration_status"
+                                        ]
+                                    },
+                                    "acl": {
+                                        "references": [
+                                            "var.acl",
+                                            "var.acl"
+                                        ]
+                                    },
+                                    "bucket": {
+                                        "references": [
+                                            "var.bucket"
+                                        ]
+                                    },
+                                    "bucket_prefix": {
+                                        "references": [
+                                            "var.bucket_prefix"
+                                        ]
+                                    },
+                                    "force_destroy": {
+                                        "references": [
+                                            "var.force_destroy"
+                                        ]
+                                    },
+                                    "request_payer": {
+                                        "references": [
+                                            "var.request_payer"
+                                        ]
+                                    },
+                                    "tags": {
+                                        "references": [
+                                            "var.tags"
+                                        ]
+                                    }
+                                },
+                                "schema_version": 0,
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_bucket"
+                                    ]
+                                }
+                            },
+                            {
+                                "address": "aws_s3_bucket_policy.this",
+                                "mode": "managed",
+                                "type": "aws_s3_bucket_policy",
+                                "name": "this",
+                                "provider_config_key": "s3_bucket:aws",
+                                "expressions": {
+                                    "bucket": {
+                                        "references": [
+                                            "aws_s3_bucket.this[0]"
+                                        ]
+                                    },
+                                    "policy": {
+                                        "references": [
+                                            "data.aws_iam_policy_document.combined[0]"
+                                        ]
+                                    }
+                                },
+                                "schema_version": 0,
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_bucket",
+                                        "local.attach_policy"
+                                    ]
+                                }
+                            },
+                            {
+                                "address": "aws_s3_bucket_public_access_block.this",
+                                "mode": "managed",
+                                "type": "aws_s3_bucket_public_access_block",
+                                "name": "this",
+                                "provider_config_key": "s3_bucket:aws",
+                                "expressions": {
+                                    "block_public_acls": {
+                                        "references": [
+                                            "var.block_public_acls"
+                                        ]
+                                    },
+                                    "block_public_policy": {
+                                        "references": [
+                                            "var.block_public_policy"
+                                        ]
+                                    },
+                                    "bucket": {
+                                        "references": [
+                                            "local.attach_policy",
+                                            "aws_s3_bucket_policy.this[0]",
+                                            "aws_s3_bucket.this[0]"
+                                        ]
+                                    },
+                                    "ignore_public_acls": {
+                                        "references": [
+                                            "var.ignore_public_acls"
+                                        ]
+                                    },
+                                    "restrict_public_buckets": {
+                                        "references": [
+                                            "var.restrict_public_buckets"
+                                        ]
+                                    }
+                                },
+                                "schema_version": 0,
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_bucket",
+                                        "var.attach_public_policy"
+                                    ]
+                                }
+                            },
+                            {
+                                "address": "data.aws_elb_service_account.this",
+                                "mode": "data",
+                                "type": "aws_elb_service_account",
+                                "name": "this",
+                                "provider_config_key": "s3_bucket:aws",
+                                "schema_version": 0,
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_bucket",
+                                        "var.attach_elb_log_delivery_policy"
+                                    ]
+                                }
+                            },
+                            {
+                                "address": "data.aws_iam_policy_document.combined",
+                                "mode": "data",
+                                "type": "aws_iam_policy_document",
+                                "name": "combined",
+                                "provider_config_key": "s3_bucket:aws",
+                                "expressions": {
+                                    "source_policy_documents": {
+                                        "references": [
+                                            "var.attach_elb_log_delivery_policy",
+                                            "data.aws_iam_policy_document.elb_log_delivery[0]",
+                                            "var.attach_deny_insecure_transport_policy",
+                                            "data.aws_iam_policy_document.deny_insecure_transport[0]",
+                                            "var.attach_policy",
+                                            "var.policy"
+                                        ]
+                                    }
+                                },
+                                "schema_version": 0,
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_bucket",
+                                        "local.attach_policy"
+                                    ]
+                                }
+                            },
+                            {
+                                "address": "data.aws_iam_policy_document.deny_insecure_transport",
+                                "mode": "data",
+                                "type": "aws_iam_policy_document",
+                                "name": "deny_insecure_transport",
+                                "provider_config_key": "s3_bucket:aws",
+                                "expressions": {
+                                    "statement": [
+                                        {
+                                            "actions": {
+                                                "constant_value": [
+                                                    "s3:*"
+                                                ]
+                                            },
+                                            "condition": [
+                                                {
+                                                    "test": {
+                                                        "constant_value": "Bool"
+                                                    },
+                                                    "values": {
+                                                        "constant_value": [
+                                                            "false"
+                                                        ]
+                                                    },
+                                                    "variable": {
+                                                        "constant_value": "aws:SecureTransport"
+                                                    }
+                                                }
+                                            ],
+                                            "effect": {
+                                                "constant_value": "Deny"
+                                            },
+                                            "principals": [
+                                                {
+                                                    "identifiers": {
+                                                        "constant_value": [
+                                                            "*"
+                                                        ]
+                                                    },
+                                                    "type": {
+                                                        "constant_value": "*"
+                                                    }
+                                                }
+                                            ],
+                                            "resources": {
+                                                "references": [
+                                                    "aws_s3_bucket.this[0]",
+                                                    "aws_s3_bucket.this[0]"
+                                                ]
+                                            },
+                                            "sid": {
+                                                "constant_value": "denyInsecureTransport"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "schema_version": 0,
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_bucket",
+                                        "var.attach_deny_insecure_transport_policy"
+                                    ]
+                                }
+                            },
+                            {
+                                "address": "data.aws_iam_policy_document.elb_log_delivery",
+                                "mode": "data",
+                                "type": "aws_iam_policy_document",
+                                "name": "elb_log_delivery",
+                                "provider_config_key": "s3_bucket:aws",
+                                "expressions": {
+                                    "statement": [
+                                        {
+                                            "actions": {
+                                                "constant_value": [
+                                                    "s3:PutObject"
+                                                ]
+                                            },
+                                            "effect": {
+                                                "constant_value": "Allow"
+                                            },
+                                            "principals": [
+                                                {
+                                                    "identifiers": {
+                                                        "references": [
+                                                            "data.aws_elb_service_account.this"
+                                                        ]
+                                                    },
+                                                    "type": {
+                                                        "constant_value": "AWS"
+                                                    }
+                                                }
+                                            ],
+                                            "resources": {
+                                                "references": [
+                                                    "aws_s3_bucket.this[0]"
+                                                ]
+                                            },
+                                            "sid": {
+                                                "constant_value": ""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "schema_version": 0,
+                                "count_expression": {
+                                    "references": [
+                                        "var.create_bucket",
+                                        "var.attach_elb_log_delivery_policy"
+                                    ]
+                                }
+                            }
+                        ],
+                        "variables": {
+                            "acceleration_status": {
+                                "default": null,
+                                "description": "(Optional) Sets the accelerate configuration of an existing bucket. Can be Enabled or Suspended."
+                            },
+                            "acl": {
+                                "default": "private",
+                                "description": "(Optional) The canned ACL to apply. Defaults to 'private'. Conflicts with `grant`"
+                            },
+                            "attach_deny_insecure_transport_policy": {
+                                "default": false,
+                                "description": "Controls if S3 bucket should have deny non-SSL transport policy attached"
+                            },
+                            "attach_elb_log_delivery_policy": {
+                                "default": false,
+                                "description": "Controls if S3 bucket should have ELB log delivery policy attached"
+                            },
+                            "attach_policy": {
+                                "default": false,
+                                "description": "Controls if S3 bucket should have bucket policy attached (set to `true` to use value of `policy` as bucket policy)"
+                            },
+                            "attach_public_policy": {
+                                "default": true,
+                                "description": "Controls if a user defined public bucket policy will be attached (set to `false` to allow upstream to apply defaults to the bucket)"
+                            },
+                            "block_public_acls": {
+                                "default": false,
+                                "description": "Whether Amazon S3 should block public ACLs for this bucket."
+                            },
+                            "block_public_policy": {
+                                "default": false,
+                                "description": "Whether Amazon S3 should block public bucket policies for this bucket."
+                            },
+                            "bucket": {
+                                "default": null,
+                                "description": "(Optional, Forces new resource) The name of the bucket. If omitted, Terraform will assign a random, unique name."
+                            },
+                            "bucket_prefix": {
+                                "default": null,
+                                "description": "(Optional, Forces new resource) Creates a unique bucket name beginning with the specified prefix. Conflicts with bucket."
+                            },
+                            "cors_rule": {
+                                "default": [],
+                                "description": "List of maps containing rules for Cross-Origin Resource Sharing."
+                            },
+                            "create_bucket": {
+                                "default": true,
+                                "description": "Controls if S3 bucket should be created"
+                            },
+                            "force_destroy": {
+                                "default": false,
+                                "description": "(Optional, Default:false ) A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable."
+                            },
+                            "grant": {
+                                "default": [],
+                                "description": "An ACL policy grant. Conflicts with `acl`"
+                            },
+                            "ignore_public_acls": {
+                                "default": false,
+                                "description": "Whether Amazon S3 should ignore public ACLs for this bucket."
+                            },
+                            "lifecycle_rule": {
+                                "default": [],
+                                "description": "List of maps containing configuration of object lifecycle management."
+                            },
+                            "logging": {
+                                "default": {},
+                                "description": "Map containing access bucket logging configuration."
+                            },
+                            "object_lock_configuration": {
+                                "default": {},
+                                "description": "Map containing S3 object locking configuration."
+                            },
+                            "policy": {
+                                "default": null,
+                                "description": "(Optional) A valid bucket policy JSON document. Note that if the policy document is not specific enough (but still valid), Terraform may view the policy as constantly changing in a terraform plan. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with Terraform, see the AWS IAM Policy Document Guide."
+                            },
+                            "replication_configuration": {
+                                "default": {},
+                                "description": "Map containing cross-region replication configuration."
+                            },
+                            "request_payer": {
+                                "default": null,
+                                "description": "(Optional) Specifies who should bear the cost of Amazon S3 data transfer. Can be either BucketOwner or Requester. By default, the owner of the S3 bucket would incur the costs of any data transfer. See Requester Pays Buckets developer guide for more information."
+                            },
+                            "restrict_public_buckets": {
+                                "default": false,
+                                "description": "Whether Amazon S3 should restrict public bucket policies for this bucket."
+                            },
+                            "server_side_encryption_configuration": {
+                                "default": {},
+                                "description": "Map containing server-side encryption configuration."
+                            },
+                            "tags": {
+                                "default": {},
+                                "description": "(Optional) A mapping of tags to assign to the bucket."
+                            },
+                            "versioning": {
+                                "default": {},
+                                "description": "Map containing versioning configuration."
+                            },
+                            "website": {
+                                "default": {},
+                                "description": "Map containing static web-site hosting or redirect configuration."
+                            }
+                        }
+                    }
+                }
+            },
+            "variables": {
+                "bucket_region": {
+                    "default": "eu-central-1"
+                },
+                "s3_bucket_acl": {
+                    "default": "public-read"
+                },
+                "s3_bucket_block_public_acls": {
+                    "default": false
+                },
+                "s3_bucket_block_public_policy": {
+                    "default": false
+                },
+                "s3_bucket_force_destroy": {
+                    "default": true
+                },
+                "s3_bucket_ignore_public_acls": {
+                    "default": false
+                },
+                "s3_bucket_restrict_public_buckets": {
+                    "default": false
+                },
+                "s3_bucket_tags": {
+                    "default": {
+                        "Owner": "TandLabs"
+                    }
+                },
+                "s3_bucket_versioning": {
+                    "default": {
+                        "enabled": "true",
+                        "mfa_delete": "false"
+                    }
+                }
+            }
+        }
+    }
+}
