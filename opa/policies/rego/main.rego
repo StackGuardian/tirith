@@ -121,8 +121,11 @@ _data := {
 }
 
 overlapping_resource_attrs[msg] {
+	# get list containg policies (maps) for terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
     policy_terraform_plan := _data.policies.terraform_plan[i]
+	# During each assign the value of resource_type (str) from policy_terraform_plan map
 	policy_resource := policy_terraform_plan.resource_type
+	# During each assign the value of attributes (list) from policy_terraform_plan map
 	policy_attributes := policy_terraform_plan.attributes
 
     policy_attribute := policy_attributes[j]
@@ -132,7 +135,9 @@ overlapping_resource_attrs[msg] {
 	input_resource_changes.type == policy_resource
 	input_resource_changes_attrs := input_resource_changes.change.after
     
+	# get 'key' names from input_resource_changes_attrs map and begin iteration, triggered by [key] in the syntax where key is an arbitrary var
     input_resource_changes_attrs[key]
+	# str comparision
 	policy_attribute_name == key
 	
 	policy_attribute_evaluators_all_of := policy_attribute.evaluators.all_of
@@ -142,5 +147,6 @@ overlapping_resource_attrs[msg] {
 # 	policy_attribute_evaluators_any_of := policy_attribute.evaluators.any_of
 # 	policy_attribute_evaluators_none_of := policy_attribute.evaluators.none_of
 
+	# As this is a partial polocy, we can return any data made accessible by above in any format, map in this case.
 	msg := {policy_resource: policy_attribute_name}
 }
