@@ -9,6 +9,7 @@
                     {
                         "name": "action",
                         "type": "tf_core_reserved",
+                        "data_type": "str",
                         "evaluators_docs": "stackgaurdian.io/docs/evaluators/tf_actions",
                         "evaluators": {
                             "all_of": [
@@ -34,6 +35,7 @@
                     {
                         "name": "count",
                         "type": "tf_core_reserved",
+                        "data_type": "int",
                         "evaluators_docs": "stackgaurdian.io/docs/evaluators/tf_count",
                         "evaluators": {
                             "all_of": [],
@@ -44,6 +46,7 @@
                     {
                         "name": "acl",
                         "type": "tf_provider_reserved",
+                        "data_type": "str",
                         "evaluators_docs": "stackgaurdian.io/docs/evaluators/str",
                         "evaluators": {
                             "all_of": [
@@ -67,6 +70,7 @@
                     {
                         "name": "action",
                         "type": "tf_core_reserved",
+                        "data_type": "str",
                         "evaluators_docs": "stackgaurdian.io/docs/evaluators/tf_actions",
                         "evaluators": {
                             "all_of": [
@@ -92,6 +96,7 @@
                     {
                         "name": "count",
                         "type": "tf_core_reserved",
+                        "data_type": "str",
                         "evaluators_docs": "stackgaurdian.io/docs/evaluators/tf_count",
                         "evaluators": {
                             "all_of": [],
@@ -102,13 +107,14 @@
                     {
                         "name": "triggers",
                         "type": "tf_provider_reserved",
+                        "data_type": "str",
                         "evaluators_docs": "stackgaurdian.io/docs/evaluators/str",
                         "evaluators": {
                             "all_of": [
                                 {
                                     "evaluator_ref": "str_in_list",
                                     "evaluator_data": [
-                                        "something"
+                                        "null"
                                     ]
                                 }
                             ],

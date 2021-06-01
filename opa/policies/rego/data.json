@@ -46,10 +46,8 @@
                             "all_of": [
                                 {
                                     "evaluator_ref": "str_in_list",
-                                    "evaluator_data": [
-                                        "public-read",
+                                    "evaluator_data": 
                                         "public"
-                                    ]
                                 }
                             ],
                             "any_of": [],
