@@ -123,7 +123,7 @@ _data := {
 	]},
 }
 
-results[msg] {
+policy_result[msg] {
 	# get list containg policies (maps) for terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
 	policy_terraform_plan := _data.policies.terraform_plan[i]
 
@@ -289,7 +289,7 @@ str_contains_str(input_data, evaluator_data) = {"pass": true, "message": msg} {
 }
 
 str_equals_str_v0(input_data, evaluator_data) = "For 'str_equals_str' evaluator_ref, both input_data and evaluator_data should be a 'string'." {
-	# TODO: Refactor redundancy
+	# TODO: Refactor redundancy!
 	type_check(input_data, "string", evaluator_data, "string")
 } else = "passed" {
 	input_data == evaluator_data
@@ -342,25 +342,3 @@ equals_null(input_data) = {"pass": true, "message": msg} {
 } else = {"pass": false, "message": msg} {
 	msg := sprintf("input data is of type '%s' which is not 'null'", [type_name(input_data)])
 }
-
-# contains_str(input_data, evaluator_data) = result {
-# type_name(evaluator_data) == "string"
-# 	evaluator_data == input_data
-# 	result := "passed"
-# } else { result := "failed" }
-# contained_in_cidr() {
-# net.cidr_contains(cidr, cidr_or_ip)
-# }
-
-desired_result_schema := {"aws_s3_bucket": {
-	"acl": {
-		"all_of": {},
-		"any_of": {},
-		"none_of": {},
-	},
-	"force_destroy": {
-		"all_of": {},
-		"any_of": {},
-		"none_of": {},
-	},
-}}
