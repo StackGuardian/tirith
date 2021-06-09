@@ -1,6 +1,4 @@
-package stackguardian.terraform_plan
-
-# based on data/data1_tf_plan_0_14_6_v2.json and tf_plan_0_14_6.json
+package stackguardian.terraform_plan.main
 
 _data := {
 	"source_ref": "terraform_plan_json:0.14.6",
@@ -21,8 +19,7 @@ _data := {
 						"none_of": [{
 							"evaluator_ref": "str_in_list",
 							"evaluator_data": ["destroy"],
-						}],
-						"relations": [],
+						}]
 					},
 				},
 				{
@@ -179,24 +176,24 @@ policy_result[msg] {
 			"evaluator_ref": evaluator_ref_all_of,
 			"evaluator_data": evaluator_data_all_of,
 			"input_resource_changes_attr_value": input_resource_changes_attr_value,
-			"input_datatype": input_datatype,
-			"evaluator_datatype": evaluator_datatype_all_of,
+			# "input_datatype": input_datatype,
+			# "evaluator_datatype": evaluator_datatype_all_of,
 			"evaluation_result": evaluation_result_all_of,
 		},
 		"any_of": {
 			"evaluator_ref": evaluator_ref_any_of,
 			"evaluator_data": evaluator_data_any_of,
 			"input_resource_changes_attr_value": input_resource_changes_attr_value,
-			"input_datatype": input_datatype,
-			"evaluator_datatype": evaluator_datatype_any_of,
+			# "input_datatype": input_datatype,
+			# "evaluator_datatype": evaluator_datatype_any_of,
 			"evaluation_result": evaluation_result_any_of,
 		},
 		"none_of": {
 			"evaluator_ref": evaluator_ref_none_of,
 			"evaluator_data": evaluator_data_none_of,
 			"input_resource_changes_attr_value": input_resource_changes_attr_value,
-			"input_datatype": input_datatype,
-			"evaluator_datatype": evaluator_datatype_none_of,
+			# "input_datatype": input_datatype,
+			# "evaluator_datatype": evaluator_datatype_none_of,
 			"evaluation_result": evaluation_result_none_of,
 		},
 	}}}
@@ -288,23 +285,6 @@ str_contains_str(input_data, evaluator_data) = {"pass": true, "message": msg} {
 	msg := sprintf("input string '%s' is not contained in '%s'", [input_data, evaluator_data])
 }
 
-str_equals_str_v0(input_data, evaluator_data) = "For 'str_equals_str' evaluator_ref, both input_data and evaluator_data should be a 'string'." {
-	# TODO: Refactor redundancy!
-	type_check(input_data, "string", evaluator_data, "string")
-} else = "passed" {
-	input_data == evaluator_data
-} else = "failed" {
-	true
-}
-
-type_check(input_data, input_data_type, evaluator_data, evaluator_data_type) {
-	not type_name(input_data) == input_data_type
-}
-
-type_check(input_data, input_data_type, evaluator_data, evaluator_data_type) {
-	not type_name(evaluator_data) == evaluator_data_type
-}
-
 # functions str_equals + type_check put together
 str_equals_str(input_data, evaluator_data) = {"pass": true, "message": msg} {
 	type_name(input_data) == "string"
@@ -342,3 +322,5 @@ equals_null(input_data) = {"pass": true, "message": msg} {
 } else = {"pass": false, "message": msg} {
 	msg := sprintf("input data is of type '%s' which is not 'null'", [type_name(input_data)])
 }
+
+# TODO: Resource relationship exists
