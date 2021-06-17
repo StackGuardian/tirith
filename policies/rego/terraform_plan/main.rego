@@ -1,128 +1,166 @@
 package stackguardian.terraform_plan.main
 
 _data := {
-	"source_ref": "terraform_plan_json:0.14.6",
-	"schema_version": "terraform_plan_json:0.0.1",
-	"policies": {"terraform_plan": [
-		{
-			"resource_type": "aws_s3_bucket",
-			"attributes": [
-				{
-					"name": "action",
-					"type": "tf_core_reserved",
-					"evaluators": {
-						"all_of": [{
-							"evaluator_ref": "str_in_list",
-							"evaluator_data": ["create"],
-						}],
-						"any_of": [],
-						"none_of": [{
-							"evaluator_ref": "str_in_list",
-							"evaluator_data": ["destroy"],
-						}]
-					},
-				},
-				{
-					"name": "count",
-					"type": "tf_core_reserved",
-					"evaluators": {
-						"all_of": [],
-						"any_of": [],
-						"none_of": [],
-					},
-				},
-				{
-					"name": "acl",
-					"type": "tf_provider_reserved",
-					"evaluators": {
-						"all_of": [{
-							"evaluator_ref": "str_matches_regex",
-							"evaluator_data": "public-r323j**D",
-						}],
-						"any_of": [{
-							"evaluator_ref": "cidr_contains_cidr_or_ip",
-							"evaluator_data": "public-r323j**D",
-						}],
-						"none_of": [{
-							"evaluator_ref": "str_matches_regex",
-							"evaluator_data": "public-r323j**D",
-						}],
-					},
-				},
-				{
-					"name": "force_destroy",
-					"type": "tf_provider_reserved",
-					"evaluators": {
-						"all_of": [{
-							"evaluator_ref": "bool_equals_bool",
-							"evaluator_data": true,
-						}],
-						"any_of": [{
-							"evaluator_ref": "bool_equals_bool",
-							"evaluator_data": "true",
-						}],
-						"none_of": [{
-							"evaluator_ref": "bool_equals_bool",
-							"evaluator_data": false,
-						}],
-					},
-				},
-			],
-		},
-		{
-			"resource_type": "null_resource",
-			"attributes": [
-				{
-					"name": "action",
-					"type": "tf_core_reserved",
-					"evaluators": {
-						"all_of": [{
-							"evaluator_ref": "str_in_list",
-							"evaluator_data": ["create"],
-						}],
-						"any_of": [],
-						"none_of": [{
-							"evaluator_ref": "str_in_list",
-							"evaluator_data": ["destroy"],
-						}],
-						"relations": [],
-					},
-				},
-				{
-					"name": "count",
-					"type": "tf_core_reserved",
-					"evaluators": {
-						"all_of": [],
-						"any_of": [],
-						"none_of": [],
-					},
-				},
-				{
-					"name": "triggers",
-					"type": "tf_provider_reserved",
-					"evaluators": {
-						"all_of": [{
-							"evaluator_ref": "equals_null",
-							"evaluator_data": "something",
-						}],
-						"any_of": [{
-							"evaluator_ref": "equals_null",
-							"evaluator_data": "something",
-						}],
-						"none_of": [{
-							"evaluator_ref": "equals_null",
-							"evaluator_data": "something",
-						}],
-					},
-				},
-			],
-		},
-	]},
+    "terraform_plan": {
+        "source_terraform_version": "0.14.6",
+		"generated_from": "terraform_plan",
+        "applicable_on": "terraform_plan",
+        "schema_version": "0.0.1",
+        "policies": [
+            {
+                "resource_type": "aws_s3_bucket",
+                "attributes": [
+                    {
+                        "name": "action",
+                        "type": "tf_core_reserved",
+                        "evaluators": {
+                            "all_of": [
+                                {
+                                    "evaluator_ref": "str_in_list",
+                                    "evaluator_data": [
+                                        "create"
+                                    ]
+                                }
+                            ],
+                            "any_of": [],
+                            "none_of": [
+                                {
+                                    "evaluator_ref": "str_in_list",
+                                    "evaluator_data": [
+                                        "destroy"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "count",
+                        "type": "tf_core_reserved",
+                        "evaluators": {
+                            "all_of": [],
+                            "any_of": [],
+                            "none_of": []
+                        }
+                    },
+                    {
+                        "name": "acl",
+                        "type": "tf_provider_reserved",
+                        "evaluators": {
+                            "all_of": [
+                                {
+                                    "evaluator_ref": "str_matches_regex",
+                                    "evaluator_data": "public-r323j**D"
+                                }
+                            ],
+                            "any_of": [
+                                {
+                                    "evaluator_ref": "cidr_contains_cidr_or_ip",
+                                    "evaluator_data": "public-r323j**D"
+                                }
+                            ],
+                            "none_of": [
+                                {
+                                    "evaluator_ref": "str_matches_regex",
+                                    "evaluator_data": "public-r323j**D"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "force_destroy",
+                        "type": "tf_provider_reserved",
+                        "evaluators": {
+                            "all_of": [
+                                {
+                                    "evaluator_ref": "bool_equals_bool",
+                                    "evaluator_data": true
+                                }
+                            ],
+                            "any_of": [
+                                {
+                                    "evaluator_ref": "bool_equals_bool",
+                                    "evaluator_data": "true"
+                                }
+                            ],
+                            "none_of": [
+                                {
+                                    "evaluator_ref": "bool_equals_bool",
+                                    "evaluator_data": false
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "resource_type": "null_resource",
+                "attributes": [
+                    {
+                        "name": "action",
+                        "type": "tf_core_reserved",
+                        "evaluators": {
+                            "all_of": [
+                                {
+                                    "evaluator_ref": "str_in_list",
+                                    "evaluator_data": [
+                                        "create"
+                                    ]
+                                }
+                            ],
+                            "any_of": [],
+                            "none_of": [
+                                {
+                                    "evaluator_ref": "str_in_list",
+                                    "evaluator_data": [
+                                        "destroy"
+                                    ]
+                                }
+                            ],
+                            "relations": []
+                        }
+                    },
+                    {
+                        "name": "count",
+                        "type": "tf_core_reserved",
+                        "evaluators": {
+                            "all_of": [],
+                            "any_of": [],
+                            "none_of": []
+                        }
+                    },
+                    {
+                        "name": "triggers",
+                        "type": "tf_provider_reserved",
+                        "evaluators": {
+                            "all_of": [
+                                {
+                                    "evaluator_ref": "equals_null",
+                                    "evaluator_data": "something"
+                                }
+                            ],
+                            "any_of": [
+                                {
+                                    "evaluator_ref": "equals_null",
+                                    "evaluator_data": "something"
+                                }
+                            ],
+                            "none_of": [
+                                {
+                                    "evaluator_ref": "equals_null",
+                                    "evaluator_data": "something"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
 }
 
 policy_result[msg] {
-	# get list containg policies (maps) for terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
-	policy_terraform_plan := _data.policies.terraform_plan[i]
+	# get list containg policies (list) from terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
+	policy_terraform_plan := _data.terraform_plan.policies[i]
 
 	# During each assign the value of resource_type (str) from policy_terraform_plan map
 	policy_resource := policy_terraform_plan.resource_type
