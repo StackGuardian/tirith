@@ -124,7 +124,7 @@ _data := {"terraform_plan": {
 
 policy_result[msg] {
 	# get list containg policies (list) from terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
-	policy_terraform_plan := _data.terraform_plan.policies[i]
+	policy_terraform_plan := data.terraform_plan.policies[i]
 
 	# During each assign the value of resource_type (str) from policy_terraform_plan map
 	policy_resource := policy_terraform_plan.resource_type
