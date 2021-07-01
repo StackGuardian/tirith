@@ -123,8 +123,10 @@ _data := {"terraform_plan": {
 }}
 
 policy_result[msg] {
+	# evaluations := {}
+
 	# get list containg policies (list) from terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
-	policy_terraform_plan := data.terraform_plan.policies[i]
+	policy_terraform_plan := _data.terraform_plan.policies[i]
 
 	# During each assign the value of resource_type (str) from policy_terraform_plan map
 	policy_resource := policy_terraform_plan.resource_type
@@ -173,32 +175,38 @@ policy_result[msg] {
 	evaluation_result_none_of := evaluator_handler(input_resource_changes_attr_value, evaluator_data_none_of, evaluator_ref_none_of)
 
 	# As this is a partial polocy, we can return any data made accessible by above in any format, map in this case.
-	msg := {policy_resource: {policy_attribute_name: {
-		"all_of": {
-			"evaluator_ref": evaluator_ref_all_of,
-			"evaluator_data": evaluator_data_all_of,
-			"input_resource_changes_attr_value": input_resource_changes_attr_value,
-			# "input_datatype": input_datatype,
-			# "evaluator_datatype": evaluator_datatype_all_of,
-			"evaluation_result": evaluation_result_all_of,
-		},
-		"any_of": {
-			"evaluator_ref": evaluator_ref_any_of,
-			"evaluator_data": evaluator_data_any_of,
-			"input_resource_changes_attr_value": input_resource_changes_attr_value,
-			# "input_datatype": input_datatype,
-			# "evaluator_datatype": evaluator_datatype_any_of,
-			"evaluation_result": evaluation_result_any_of,
-		},
-		"none_of": {
-			"evaluator_ref": evaluator_ref_none_of,
-			"evaluator_data": evaluator_data_none_of,
-			"input_resource_changes_attr_value": input_resource_changes_attr_value,
-			# "input_datatype": input_datatype,
-			# "evaluator_datatype": evaluator_datatype_none_of,
-			"evaluation_result": evaluation_result_none_of,
-		},
-	}}}
+	msg := {
+		"resource_type": policy_resource,
+		"attributes": [{
+			"name": policy_attribute_name,
+			"evalutors": {
+				"all_of": {
+					"evaluator_ref": evaluator_ref_all_of,
+					"evaluator_data": evaluator_data_all_of,
+					"input_data": input_resource_changes_attr_value,
+					# "input_datatype": input_datatype,
+					# "evaluator_datatype": evaluator_datatype_all_of,
+					"result": evaluation_result_all_of,
+				},
+				"any_of": {
+					"evaluator_ref": evaluator_ref_any_of,
+					"evaluator_data": evaluator_data_any_of,
+					"input_data": input_resource_changes_attr_value,
+					# "input_datatype": input_datatype,
+					# "evaluator_datatype": evaluator_datatype_any_of,
+					"result": evaluation_result_any_of,
+				},
+				"none_of": {
+					"evaluator_ref": evaluator_ref_none_of,
+					"evaluator_data": evaluator_data_none_of,
+					"input_data": input_resource_changes_attr_value,
+					# "input_datatype": input_datatype,
+					# "evaluator_datatype": evaluator_datatype_none_of,
+					"result": evaluation_result_none_of,
+				},
+			},
+		}],
+	}
 }
 
 evaluator_handler(input_data, evaluator_data, evaluator_ref) = result {
