@@ -37,10 +37,16 @@ _data := {"terraform_plan": {
 					"name": "acl",
 					"type": "tf_provider_reserved",
 					"evaluators": {
-						"all_of": [{
-							"evaluator_ref": "str_matches_regex",
-							"evaluator_data": "public-r323j**D",
-						}],
+						"all_of": [
+							{
+								"evaluator_ref": "str_matches_regex",
+								"evaluator_data": "public-r323j**D",
+							},
+							{
+								"evaluator_ref": "str_contains_str",
+								"evaluator_data": "public",
+							},
+						],
 						"any_of": [{
 							"evaluator_ref": "cidr_contains_cidr_or_ip",
 							"evaluator_data": "public-r323j**D",
@@ -152,25 +158,25 @@ policy_result[msg] {
 
 	# iterate over all_of map
 	policy_attribute_evaluators_all_of := policy_attribute.evaluators.all_of
-	evaluators_all_of := policy_attribute_evaluators_all_of[m]
-	evaluator_ref_all_of := evaluators_all_of.evaluator_ref
-	evaluator_data_all_of := evaluators_all_of.evaluator_data
+	evaluator_all_of := policy_attribute_evaluators_all_of[m]
+	evaluator_ref_all_of := evaluator_all_of.evaluator_ref
+	evaluator_data_all_of := evaluator_all_of.evaluator_data
 	evaluator_datatype_all_of := type_name(evaluator_data_all_of)
 	evaluation_result_all_of := evaluator_handler(input_resource_changes_attr_value, evaluator_data_all_of, evaluator_ref_all_of)
 
 	# iterate over any_of map
 	policy_attribute_evaluators_any_of := policy_attribute.evaluators.any_of
-	evaluators_any_of := policy_attribute_evaluators_any_of[m]
-	evaluator_ref_any_of := evaluators_any_of.evaluator_ref
-	evaluator_data_any_of := evaluators_any_of.evaluator_data
+	evaluator_any_of := policy_attribute_evaluators_any_of[n]
+	evaluator_ref_any_of := evaluator_any_of.evaluator_ref
+	evaluator_data_any_of := evaluator_any_of.evaluator_data
 	evaluator_datatype_any_of := type_name(evaluator_data_any_of)
 	evaluation_result_any_of := evaluator_handler(input_resource_changes_attr_value, evaluator_data_any_of, evaluator_ref_any_of)
 
 	# iterate over none_of map
 	policy_attribute_evaluators_none_of := policy_attribute.evaluators.none_of
-	evaluators_none_of := policy_attribute_evaluators_none_of[m]
-	evaluator_ref_none_of := evaluators_none_of.evaluator_ref
-	evaluator_data_none_of := evaluators_none_of.evaluator_data
+	evaluator_none_of := policy_attribute_evaluators_none_of[o]
+	evaluator_ref_none_of := evaluator_none_of.evaluator_ref
+	evaluator_data_none_of := evaluator_none_of.evaluator_data
 	evaluator_datatype_none_of := type_name(evaluator_data_none_of)
 	evaluation_result_none_of := evaluator_handler(input_resource_changes_attr_value, evaluator_data_none_of, evaluator_ref_none_of)
 
@@ -180,30 +186,33 @@ policy_result[msg] {
 		"attributes": [{
 			"name": policy_attribute_name,
 			"evalutors": {
-				"all_of": {
+				"all_of": [{
+					"m": m,
+					"policy_attribute_evaluators_all_of": policy_attribute_evaluators_all_of,
+					"evaluator_all_of": evaluator_all_of,
 					"evaluator_ref": evaluator_ref_all_of,
 					"evaluator_data": evaluator_data_all_of,
 					"input_data": input_resource_changes_attr_value,
 					# "input_datatype": input_datatype,
 					# "evaluator_datatype": evaluator_datatype_all_of,
 					"result": evaluation_result_all_of,
-				},
-				"any_of": {
+				}],
+				"any_of": [{
 					"evaluator_ref": evaluator_ref_any_of,
 					"evaluator_data": evaluator_data_any_of,
 					"input_data": input_resource_changes_attr_value,
 					# "input_datatype": input_datatype,
 					# "evaluator_datatype": evaluator_datatype_any_of,
 					"result": evaluation_result_any_of,
-				},
-				"none_of": {
+				}],
+				"none_of": [{
 					"evaluator_ref": evaluator_ref_none_of,
 					"evaluator_data": evaluator_data_none_of,
 					"input_data": input_resource_changes_attr_value,
 					# "input_datatype": input_datatype,
 					# "evaluator_datatype": evaluator_datatype_none_of,
 					"result": evaluation_result_none_of,
-				},
+				}],
 			},
 		}],
 	}
