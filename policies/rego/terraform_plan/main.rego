@@ -187,9 +187,6 @@ policy_result[msg] {
 			"name": policy_attribute_name,
 			"evalutors": {
 				"all_of": [{
-					"m": m,
-					"policy_attribute_evaluators_all_of": policy_attribute_evaluators_all_of,
-					"evaluator_all_of": evaluator_all_of,
 					"evaluator_ref": evaluator_ref_all_of,
 					"evaluator_data": evaluator_data_all_of,
 					"input_data": input_resource_changes_attr_value,
