@@ -109,6 +109,10 @@ _data := {"terraform_plan": {
 					"name": "triggers",
 					"type": "tf_provider_reserved",
 					"evaluators": {
+						"all_of": [{
+							"evaluator_ref": "equals_null",
+							"evaluator_data": "something",
+						}],
 						"any_of": [{
 							"evaluator_ref": "equals_null",
 							"evaluator_data": "something",
@@ -124,9 +128,9 @@ _data := {"terraform_plan": {
 	],
 }}
 
-initialize[msg] {
+policy_result_all_of[msg] {
 	# get list containg policies (list) from terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
-	policy_terraform_plan := data.terraform_plan.policies[i]
+	policy_terraform_plan := _data.terraform_plan.policies[i]
 
 	# During each assign the value of resource_type (str) from policy_terraform_plan map
 	policy_resource := policy_terraform_plan.resource_type
@@ -150,107 +154,137 @@ initialize[msg] {
 	input_resource_changes_attr_value := input_resource_changes_attrs[key]
 	input_datatype := type_name(input_resource_changes_attr_value)
 
-	msg := {
-		"policy_resource": policy_resource,
-		"policy_attribute": policy_attribute,
-		"policy_attribute_name": policy_attribute_name,
-		"input_resource_changes_attr_value": input_resource_changes_attr_value,
-		"input_datatype": input_datatype,
-	}
-}
-
-all_of[msg] {
 	# iterate over all_of map
-	policy_attribute_evaluators_all_of := initialize[i].policy_attribute.evaluators.all_of
+	policy_attribute_evaluators_all_of := policy_attribute.evaluators.all_of
 	evaluator_all_of := policy_attribute_evaluators_all_of[m]
 	evaluator_ref_all_of := evaluator_all_of.evaluator_ref
 	evaluator_data_all_of := evaluator_all_of.evaluator_data
 	evaluator_datatype_all_of := type_name(evaluator_data_all_of)
-	evaluation_result_all_of := evaluator_handler(initialize[i].input_resource_changes_attr_value, evaluator_data_all_of, evaluator_ref_all_of)
+	evaluation_result_all_of := evaluator_handler(input_resource_changes_attr_value, evaluator_data_all_of, evaluator_ref_all_of)
 
 	# As this is a partial policy, we can return any data made accessible by above in any format, map in this case.
 	msg := {
-		"resource_type": initialize[i].policy_resource,
-		"attribute": initialize[i].policy_attribute_name,
-		"evaluator_ref": evaluator_ref_all_of,
-		"evaluator_data": evaluator_data_all_of,
-		"input_data": initialize[i].input_resource_changes_attr_value,
-		# "input_datatype": initialize.input_datatype,
-		# "evaluator_datatype": evaluator_datatype_all_of,
-		"evaluation_result": evaluation_result_all_of,
+		"resource_type": policy_resource,
+		"attributes": [{
+			"name": policy_attribute_name,
+			"evalutors": {
+				"all_of": [{
+					"evaluator_ref": evaluator_ref_all_of,
+					"evaluator_data": evaluator_data_all_of,
+					"input_data": input_resource_changes_attr_value,
+					# "input_datatype": input_datatype,
+					# "evaluator_datatype": evaluator_datatype_all_of,
+					"result": evaluation_result_all_of,
+				}],
+			},
+		}],
 	}
 }
 
-any_of[msg] {
+policy_result_any_of[msg] {
+	# get list containg policies (list) from terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
+	policy_terraform_plan := _data.terraform_plan.policies[i]
+
+	# During each assign the value of resource_type (str) from policy_terraform_plan map
+	policy_resource := policy_terraform_plan.resource_type
+
+	# During each assign the value of attributes (list) from policy_terraform_plan map
+	policy_attributes := policy_terraform_plan.attributes
+
+	policy_attribute := policy_attributes[j]
+	policy_attribute_name := policy_attribute.name
+
+	input_resource_changes := input.resource_changes[k]
+	input_resource_changes.type == policy_resource
+	input_resource_changes_attrs := input_resource_changes.change.after
+
+	# get 'key' names from input_resource_changes_attrs map and begin iteration, triggered by [key] in the syntax where key is an arbitrary var
+	input_resource_changes_attrs[key]
+
+	# str comparision
+	policy_attribute_name == key
+
+	input_resource_changes_attr_value := input_resource_changes_attrs[key]
+	input_datatype := type_name(input_resource_changes_attr_value)
+
 	# iterate over any_of map
-	policy_attribute_evaluators_any_of := initialize[i].policy_attribute.evaluators.any_of
-	evaluator_any_of := policy_attribute_evaluators_any_of[m]
+	policy_attribute_evaluators_any_of := policy_attribute.evaluators.any_of
+	evaluator_any_of := policy_attribute_evaluators_any_of[n]
 	evaluator_ref_any_of := evaluator_any_of.evaluator_ref
 	evaluator_data_any_of := evaluator_any_of.evaluator_data
 	evaluator_datatype_any_of := type_name(evaluator_data_any_of)
-	evaluation_result_any_of := evaluator_handler(initialize[i].input_resource_changes_attr_value, evaluator_data_any_of, evaluator_ref_any_of)
+	evaluation_result_any_of := evaluator_handler(input_resource_changes_attr_value, evaluator_data_any_of, evaluator_ref_any_of)
 
 	# As this is a partial policy, we can return any data made accessible by above in any format, map in this case.
 	msg := {
-		"resource_type": initialize[i].policy_resource,
-		"attribute": initialize[i].policy_attribute_name,
-		"evaluator_ref": evaluator_ref_any_of,
-		"evaluator_data": evaluator_data_any_of,
-		"input_data": initialize[i].input_resource_changes_attr_value,
-		# "input_datatype": initialize.input_datatype,
-		# "evaluator_datatype": evaluator_datatype_any_of,
-		"evaluation_result": evaluation_result_any_of,
+		"resource_type": policy_resource,
+		"attributes": [{
+			"name": policy_attribute_name,
+			"evalutors": {
+				"any_of": [{
+					"evaluator_ref": evaluator_ref_any_of,
+					"evaluator_data": evaluator_data_any_of,
+					"input_data": input_resource_changes_attr_value,
+					# "input_datatype": input_datatype,
+					# "evaluator_datatype": evaluator_datatype_any_of,
+					"result": evaluation_result_any_of,
+				}],
+			},
+		}],
 	}
 }
 
-none_of[msg] {
+policy_result_none_of[msg] {
+	# get list containg policies (list) from terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
+	policy_terraform_plan := _data.terraform_plan.policies[i]
+
+	# During each assign the value of resource_type (str) from policy_terraform_plan map
+	policy_resource := policy_terraform_plan.resource_type
+
+	# During each assign the value of attributes (list) from policy_terraform_plan map
+	policy_attributes := policy_terraform_plan.attributes
+
+	policy_attribute := policy_attributes[j]
+	policy_attribute_name := policy_attribute.name
+
+	input_resource_changes := input.resource_changes[k]
+	input_resource_changes.type == policy_resource
+	input_resource_changes_attrs := input_resource_changes.change.after
+
+	# get 'key' names from input_resource_changes_attrs map and begin iteration, triggered by [key] in the syntax where key is an arbitrary var
+	input_resource_changes_attrs[key]
+
+	# str comparision
+	policy_attribute_name == key
+
+	input_resource_changes_attr_value := input_resource_changes_attrs[key]
+	input_datatype := type_name(input_resource_changes_attr_value)
+
 	# iterate over none_of map
-	policy_attribute_evaluators_none_of := initialize[i].policy_attribute.evaluators.none_of
-	evaluator_none_of := policy_attribute_evaluators_none_of[m]
+	policy_attribute_evaluators_none_of := policy_attribute.evaluators.none_of
+	evaluator_none_of := policy_attribute_evaluators_none_of[o]
 	evaluator_ref_none_of := evaluator_none_of.evaluator_ref
 	evaluator_data_none_of := evaluator_none_of.evaluator_data
 	evaluator_datatype_none_of := type_name(evaluator_data_none_of)
-	evaluation_result_none_of := evaluator_handler(initialize[i].input_resource_changes_attr_value, evaluator_data_none_of, evaluator_ref_none_of)
+	evaluation_result_none_of := evaluator_handler(input_resource_changes_attr_value, evaluator_data_none_of, evaluator_ref_none_of)
 
 	# As this is a partial policy, we can return any data made accessible by above in any format, map in this case.
 	msg := {
-		"resource_type": initialize[i].policy_resource,
-		"attribute": initialize[i].policy_attribute_name,
-		"evaluator_ref": evaluator_ref_none_of,
-		"evaluator_data": evaluator_data_none_of,
-		"input_data": initialize[i].input_resource_changes_attr_value,
-		# "input_datatype": initialize.input_datatype,
-		# "evaluator_datatype": evaluator_datatype_none_of,
-		"evaluation_result": evaluation_result_none_of,
+		"resource_type": policy_resource,
+		"attributes": [{
+			"name": policy_attribute_name,
+			"evalutors": {
+				"none_of": [{
+					"evaluator_ref": evaluator_ref_none_of,
+					"evaluator_data": evaluator_data_none_of,
+					"input_data": input_resource_changes_attr_value,
+					# "input_datatype": input_datatype,
+					# "evaluator_datatype": evaluator_datatype_none_of,
+					"result": evaluation_result_none_of,
+				}],
+			},
+		}],
 	}
-}
-
-# general[msg] {
-# 	# iterate over evaluator map
-# 	policy_attribute_evaluators := initialize[i].policy_attribute.evaluators[EVALUATOR_TYPE]
-# 	evaluator := policy_attribute_evaluators[m]
-# 	evaluator_ref := evaluator.evaluator_ref
-# 	evaluator_data := evaluator.evaluator_data
-# 	evaluator_datatype := type_name(evaluator_data)
-# 	evaluation_result := evaluator_handler(initialize[i].input_resource_changes_attr_value, evaluator_data, evaluator_ref)
-
-# 	# As this is a partial policy, we can return any data made accessible by above in any format, map in this case.
-# 	msg := {
-# 		"resource_type": initialize[i].policy_resource,
-# 		"attribute": initialize[i].policy_attribute_name,
-# 		"evaluator_ref": evaluator_ref,
-# 		"evaluator_data": evaluator_data,
-# 		"input_data": initialize[i].input_resource_changes_attr_value,
-# 		# "input_datatype": initialize.input_datatype,
-# 		# "evaluator_datatype": evaluator_datatype,
-# 		"evaluation_result": evaluation_result,
-# 	}
-# }
-
-evaluators := {
-	"all_of": all_of,
-	"any_of": any_of,
-	"none_of": none_of,
 }
 
 evaluator_handler(input_data, evaluator_data, evaluator_ref) = result {
