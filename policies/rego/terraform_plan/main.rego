@@ -184,7 +184,7 @@ bool_equals_bool(input_data, evaluator_data) = {"pass": true, "message": msg} {
 	not type_name(evaluator_data) == "boolean"
 	msg := "For 'bool_equals_bool' evaluator_ref, both input_data and evaluator_data should be 'boolean'."
 } else = {"pass": false, "message": msg} {
-	msg := sprintf("input string '%s' is not equal to '%s'", [input_data, evaluator_data])
+	msg := sprintf("input should be '%s'", [evaluator_data])
 }
 
 str_matches_regex(input_data, evaluator_data) = {"pass": true, "message": msg} {
