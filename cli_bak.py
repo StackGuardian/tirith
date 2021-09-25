@@ -8,7 +8,6 @@ with open('out.json') as out:
 all_evaluations = {}
 
 def evaluate_type(value, eval_type, evaluation_condition):
-    global passes, failiers
     fail_set = False
 
     for res in value[eval_type]:
@@ -41,14 +40,11 @@ errors = {}
 outputs = {}
 not_true = {}
 
-if not evalResults.get('errors'):
-    if evalResults.get('result'):
-        for res in evalResults['result']:
-            for exp in res['expressions']:
-                    allOfBlockPassed = True
-                    anyOfBlockPassed = True
-                    noneOfBlockPassed = True
-
+def evaluate():
+    if not evalResults.get('errors'):
+        if evalResults.get('result'):
+            for res in evalResults['result']:
+                for exp in res['expressions']:
                     value = exp['value']
 
                     for eval_type in value:
@@ -59,8 +55,6 @@ if not evalResults.get('errors'):
                                 'evaluations': {},
                                 'all_pass': False if eval_type == "any_of" else True
                             }
-
-                        results = exp['value'][eval_type]
 
                         #evaluation_condition = True if evalResults == "any_of" else False
                         evaluation_condition = True if evalResults == "all_of" else False
@@ -96,3 +90,6 @@ if not evalResults.get('errors'):
                         if fails:
                             for fail in fails:
                                 print(f'FAIL: {fail}')
+
+if __name__ == "__main__":
+    evaluate()
