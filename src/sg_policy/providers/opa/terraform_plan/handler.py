@@ -121,7 +121,7 @@ def evaluate(data_file, input_file):
                             for eval_type, report in all_evaluations.items():
                                 if report["evaluations"]:
                                     status = (
-                                        "been successfull"
+                                        "been successful"
                                         if report["all_pass"]
                                         else "failed"
                                     )
