@@ -1,6 +1,6 @@
 package stackguardian.terraform_plan.main
 
-import input._test_data as _data
+# import input._test_data as _data
 
 initialize[msg] {
 	# get list containg policies (list) from terraform_plan key and begin iteration, triggered by [i] in the syntax where i is an arbitrary var
