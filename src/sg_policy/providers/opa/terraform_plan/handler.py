@@ -3,11 +3,7 @@
 import os
 import sys
 import json
-from subprocess import Popen, PIPE, check_output
-
-# with open('out.json') as out:
-#    evalResults = json.load(out)
-
+from subprocess import Popen, PIPE
 
 def evaluate_type(value, eval_type, evaluation_condition):
     fail_set = False
@@ -51,8 +47,14 @@ def run_cmds(cmds, cwd=None, env=None, stdout=sys.stdout, stderr=PIPE):
 
 
 def evaluate(data_file, input_file):
-    if os.path.isfile("main.rego"):
+    full_path = os.path.realpath(__file__)
+    common_path = '/'.join(full_path.split('/')[:-1])
+    rego_path = os.path.join(common_path, 'rego')
+
+    #print(f'{rego_path}/main.rego')
+    if os.path.isfile(f"{rego_path}/main.rego"):
         # opa eval --fail --format json --data main.rego 'data.stackguardian.terraform_plan.main.evaluators' --data
+
         opa_command = [
             "opa",
             "eval",
@@ -60,7 +62,7 @@ def evaluate(data_file, input_file):
             "--format",
             "json",
             "--data",
-            "rego/main.rego",
+            f"{rego_path}/main.rego",
             "data",
             "--data",
             data_file,
