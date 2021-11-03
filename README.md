@@ -1,6 +1,6 @@
 # StackGuardian Policy Framework
 
-StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using an easy to use JSON based Domain-specific language.
+StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using JSON.
 
 ## Features
 - A simple interface to define compliance policies as declarative config, which can be enforced proactively on Infrastructure as Code to detect breaches.
@@ -8,6 +8,6 @@ StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) co
 
 ## Feature Road-map
 This is only a list of approved features that will be included in the StackGuardian Policy Framework over the next few months.
-- Support for CloudFormation Config Scanning
-- Support for ARM Config Scanning
+- Support for CloudFormation config scanning
+- Support for ARM config scanning
 - Extended library of evaluator functions
