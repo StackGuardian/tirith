@@ -13,8 +13,6 @@ def evaluate_type(value, eval_type, evaluation_condition):
         message = res["evaluation_result"]["message"]
         evaluation = True if eval_pass else False
 
-        # all_evaluations[eval_type]['evaluations'][evaluation] = \
-        #        message if evaluation in all_evaluations[eval_type]['evaluations'] else [message]
         if evaluation not in all_evaluations[eval_type]["evaluations"]:
             all_evaluations[eval_type]["evaluations"][evaluation] = []
 
@@ -27,14 +25,10 @@ def evaluate_type(value, eval_type, evaluation_condition):
             if eval_pass == False:
                 errors[eval_type].append(res)
 
-        # if res['evaluation_result']['pass'] == evaluation_condition:
-        #    all_evaluations[eval_type]['all_pass'] = False
-        # print(eval_type, res['evaluation_result']['pass'] is not evaluation_condition)
         if (
             res["evaluation_result"]["pass"] is not evaluation_condition
             and not fail_set
         ):
-            # all_evaluations[eval_type]['all_pass'] = not evaluation_condition
             all_evaluations[eval_type]["all_pass"] = not all_evaluations[eval_type][
                 "all_pass"
             ]
@@ -51,10 +45,7 @@ def evaluate(data_file, input_file):
     common_path = '/'.join(full_path.split('/')[:-1])
     rego_path = os.path.join(common_path, 'rego')
 
-    #print(f'{rego_path}/main.rego')
     if os.path.isfile(f"{rego_path}/main.rego"):
-        # opa eval --fail --format json --data main.rego 'data.stackguardian.terraform_plan.main.evaluators' --data
-
         opa_command = [
             "opa",
             "eval",
@@ -81,7 +72,6 @@ def evaluate(data_file, input_file):
                 if output_json.get("result"):
                     for res in output_json["result"]:
                         for exp in res["expressions"]:
-                            # value = exp['value']
                             value = eval(f"exp['value']{opa_args_list}")
 
                             for eval_type in value:
@@ -96,7 +86,6 @@ def evaluate(data_file, input_file):
                                         else True,
                                     }
 
-                                    # evaluation_condition = True if output_json == "any_of" else False
                                     evaluation_condition = (
                                         True if output_json == "all_of" else False
                                     )
@@ -111,14 +100,12 @@ def evaluate(data_file, input_file):
                             }
 
                             print(json.dumps(log, indent=1))
-                            # print('\nUser readable part:\n')
 
                             all_pass = [
                                 all_evaluations[p]["all_pass"] for p in all_evaluations
                             ]
-                            print(
-                                f'\n\nAll evaluations have {"not" if False in all_pass else ""} passed.'
-                            )
+
+                            print(f'\n\nAll evaluations have {"not" if False in all_pass else ""} passed.')
 
                             for eval_type, report in all_evaluations.items():
                                 if report["evaluations"]:
@@ -127,12 +114,9 @@ def evaluate(data_file, input_file):
                                         if report["all_pass"]
                                         else "failed"
                                     )
-                                    print(
-                                        f'\nEvaluation of {" ".join(eval_type.split("_")).upper()} conditions has {status}:'
-                                    )
-                                    print(
-                                        "======================================================"
-                                    )
+
+                                    print(f'\nEvaluation of {" ".join(eval_type.split("_")).upper()} conditions has {status}:')
+                                    print("======================================================")
 
                                     successes = report["evaluations"].get(True)
                                     fails = report["evaluations"].get(False)
@@ -141,17 +125,13 @@ def evaluate(data_file, input_file):
                                         if isinstance(successes, list):
                                             for success in successes:
                                                 if success:
-                                                    print(f"PASS: {success}")
+                                                    print(f"\033[92mPASS\033[0m: {success}")
                                         else:
-                                            print(f"PASS: {successes}")
+                                            print(f"\033[92mPASS\033[0m: {successes}")
 
                                     if fails:
                                         for fail in fails:
-                                            print(f"FAIL: {fail}")
-    else:
-        print(
-            "You are in the wrong directory!\nYou need to run the script from directory that contains main.rego."
-        )
+                                            print(f"\033[91mFAIL\033[0m: {fail}")
 
 
 errors = {}
@@ -159,8 +139,21 @@ outputs = {}
 not_true = {}
 all_evaluations = {}
 
+
+def is_installed(requirement):
+    which_execution = Popen(['which', requirement], stdout=PIPE, stderr=PIPE)
+    output, error = [ out.decode() for out in which_execution.communicate() ]
+    return output and not error
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 3:
         data_json, input_json = sys.argv[1:]
         if os.path.isfile(data_json) and os.path.isfile(input_json):
-            evaluate(data_json, input_json)
+            opa_installed = is_installed('opa')
+            terraform_installed = is_installed('terraform')
+
+            if opa_installed and terraform_installed:
+                evaluate(data_json, input_json)
+            else:
+                print("You need to have opa and terraform installed in order to be able to run this script.")
