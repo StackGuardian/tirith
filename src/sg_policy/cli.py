@@ -21,7 +21,7 @@ def main(args=None) -> ExitStatus:
     try:
         parser = argparse.ArgumentParser(description="StackGuardian Policy Framework.")
         parser.add_argument(
-            "--policy-policyPath",
+            "--policy-path",
             metavar="PATH",
             type=str,
             dest="policyPath",
