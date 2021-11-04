@@ -6,7 +6,8 @@ import argparse
 import sys
 
 from sg_policy.status import ExitStatus
-import sg_policy.providers as providers
+#import sg_policy.providers as providers
+import sg_policy.providers.opa.terraform_plan.handler as handler
 
 
 def main(args=None) -> ExitStatus:
@@ -70,9 +71,10 @@ def main(args=None) -> ExitStatus:
                     "'--tf-version' argument is required when --input-type=terraform_plan"
                 )
                 return ExitStatus.ERROR
-            providers.opa.terraform_plan.handler(
-                args.policyPath, args.inputPath, args.tfVersion
-            )
+            #providers.opa.terraform_plan.handler(
+            #    args.policyPath, args.inputPath, args.tfVersion
+            #)
+            handler.evaluate(args.policyPath, args.inputPath)
             # print(
             #     f"Policy template successfully generated and stored in {args.policyPath.rsplit('/',1)[0]}/policy_template.json")
         elif inputType in ["terraform_hcl", "cloudformation_json"]:
