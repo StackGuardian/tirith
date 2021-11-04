@@ -7,6 +7,8 @@ StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) co
 - Pluggable architecture allows to integrate into policy engines like OPA for policy evaluation.
 - Summarizes evaluation output and provides brief output formatting.
 - Cli support with data and input as arguments
+- Color and validation for input
+- Package on pypi and pip installable
 
 ## Feature Road-map
 This is only a list of approved features that will be included in the StackGuardian Policy Framework over the next few months.
