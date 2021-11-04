@@ -5,6 +5,13 @@ import sys
 import json
 from subprocess import Popen, PIPE
 
+
+def is_installed(requirement):
+    which_execution = Popen(['which', requirement], stdout=PIPE, stderr=PIPE)
+    output, error = [ out.decode() for out in which_execution.communicate() ]
+    return output and not error
+
+
 def evaluate_type(value, eval_type, evaluation_condition):
     fail_set = False
 
@@ -41,97 +48,105 @@ def run_cmds(cmds, cwd=None, env=None, stdout=sys.stdout, stderr=PIPE):
 
 
 def evaluate(data_file, input_file):
-    full_path = os.path.realpath(__file__)
-    common_path = '/'.join(full_path.split('/')[:-1])
-    rego_path = os.path.join(common_path, 'rego')
+    if os.path.isfile(data_file) and os.path.isfile(input_file):
+        opa_installed = is_installed('opa')
+        terraform_installed = is_installed('terraform')
+        terraform_installed = True
 
-    if os.path.isfile(f"{rego_path}/main.rego"):
-        opa_command = [
-            "opa",
-            "eval",
-            "--fail",
-            "--format",
-            "json",
-            "--data",
-            f"{rego_path}/main.rego",
-            "data",
-            "--data",
-            data_file,
-            "--input",
-            input_file,
-        ]
-        output, _ = run_cmds(opa_command, stdout=PIPE, stderr=sys.stdout)
+        if opa_installed and terraform_installed:
+            full_path = os.path.realpath(__file__)
+            common_path = '/'.join(full_path.split('/')[:-1])
+            rego_path = os.path.join(common_path, 'rego')
 
-        opa_args = "data.stackguardian.terraform_plan.main.evaluators"
-        opa_args_list = "".join([f"['{arg}']" for arg in opa_args.split(".")[1:-1]])
+            if os.path.isfile(f"{rego_path}/main.rego"):
+                opa_command = [
+                    "opa",
+                    "eval",
+                    "--fail",
+                    "--format",
+                    "json",
+                    "--data",
+                    f"{rego_path}/main.rego",
+                    "data",
+                    "--data",
+                    data_file,
+                    "--input",
+                    input_file,
+                ]
+                output, _ = run_cmds(opa_command, stdout=PIPE, stderr=sys.stdout)
 
-        if output:
-            output_json = json.loads(str(output, "utf-8"))
+                opa_args = "data.stackguardian.terraform_plan.main.evaluators"
+                opa_args_list = "".join([f"['{arg}']" for arg in opa_args.split(".")[1:-1]])
 
-            if not output_json.get("errors"):
-                if output_json.get("result"):
-                    for res in output_json["result"]:
-                        for exp in res["expressions"]:
-                            value = eval(f"exp['value']{opa_args_list}")
+                if output:
+                    output_json = json.loads(str(output, "utf-8"))
 
-                            for eval_type in value:
-                                if eval_type.endswith("_of"):
-                                    errors[eval_type] = []
-                                    outputs[eval_type] = []
-                                    not_true[eval_type] = []
-                                    all_evaluations[eval_type] = {
-                                        "evaluations": {},
-                                        "all_pass": False
-                                        if eval_type == "any_of"
-                                        else True,
+                    if not output_json.get("errors"):
+                        if output_json.get("result"):
+                            for res in output_json["result"]:
+                                for exp in res["expressions"]:
+                                    value = eval(f"exp['value']{opa_args_list}")
+
+                                    for eval_type in value:
+                                        if eval_type.endswith("_of"):
+                                            errors[eval_type] = []
+                                            outputs[eval_type] = []
+                                            not_true[eval_type] = []
+                                            all_evaluations[eval_type] = {
+                                                "evaluations": {},
+                                                "all_pass": False
+                                                if eval_type == "any_of"
+                                                else True,
+                                            }
+
+                                            evaluation_condition = (
+                                                True if output_json == "all_of" else False
+                                            )
+                                            evaluate_type(
+                                                value, eval_type, evaluation_condition
+                                            )
+
+                                    log = {
+                                        "errors": errors,
+                                        "outputs": outputs,
+                                        "all_not_true_evaluations": not_true,
                                     }
 
-                                    evaluation_condition = (
-                                        True if output_json == "all_of" else False
-                                    )
-                                    evaluate_type(
-                                        value, eval_type, evaluation_condition
-                                    )
+                                    print(json.dumps(log, indent=1))
 
-                            log = {
-                                "errors": errors,
-                                "outputs": outputs,
-                                "all_not_true_evaluations": not_true,
-                            }
+                                    all_pass = [
+                                        all_evaluations[p]["all_pass"] for p in all_evaluations
+                                    ]
 
-                            print(json.dumps(log, indent=1))
+                                    print(f'\n\nAll evaluations have {"not" if False in all_pass else ""} passed.')
 
-                            all_pass = [
-                                all_evaluations[p]["all_pass"] for p in all_evaluations
-                            ]
+                                    for eval_type, report in all_evaluations.items():
+                                        if report["evaluations"]:
+                                            status = (
+                                                "been successful"
+                                                if report["all_pass"]
+                                                else "failed"
+                                            )
 
-                            print(f'\n\nAll evaluations have {"not" if False in all_pass else ""} passed.')
+                                            print(f'\nEvaluation of {" ".join(eval_type.split("_")).upper()} conditions has {status}:')
+                                            print("======================================================")
 
-                            for eval_type, report in all_evaluations.items():
-                                if report["evaluations"]:
-                                    status = (
-                                        "been successful"
-                                        if report["all_pass"]
-                                        else "failed"
-                                    )
+                                            successes = report["evaluations"].get(True)
+                                            fails = report["evaluations"].get(False)
 
-                                    print(f'\nEvaluation of {" ".join(eval_type.split("_")).upper()} conditions has {status}:')
-                                    print("======================================================")
+                                            if successes:
+                                                if isinstance(successes, list):
+                                                    for success in successes:
+                                                        if success:
+                                                            print(f"\033[92mPASS\033[0m: {success}")
+                                                else:
+                                                    print(f"\033[92mPASS\033[0m: {successes}")
 
-                                    successes = report["evaluations"].get(True)
-                                    fails = report["evaluations"].get(False)
-
-                                    if successes:
-                                        if isinstance(successes, list):
-                                            for success in successes:
-                                                if success:
-                                                    print(f"\033[92mPASS\033[0m: {success}")
-                                        else:
-                                            print(f"\033[92mPASS\033[0m: {successes}")
-
-                                    if fails:
-                                        for fail in fails:
-                                            print(f"\033[91mFAIL\033[0m: {fail}")
+                                            if fails:
+                                                for fail in fails:
+                                                    print(f"\033[91mFAIL\033[0m: {fail}")
+        else:
+            print("You need to have opa and terraform installed in order to be able to run this script.")
 
 
 errors = {}
@@ -140,20 +155,8 @@ not_true = {}
 all_evaluations = {}
 
 
-def is_installed(requirement):
-    which_execution = Popen(['which', requirement], stdout=PIPE, stderr=PIPE)
-    output, error = [ out.decode() for out in which_execution.communicate() ]
-    return output and not error
-
-
 if __name__ == "__main__":
     if len(sys.argv) == 3:
         data_json, input_json = sys.argv[1:]
         if os.path.isfile(data_json) and os.path.isfile(input_json):
-            opa_installed = is_installed('opa')
-            terraform_installed = is_installed('terraform')
-
-            if opa_installed and terraform_installed:
-                evaluate(data_json, input_json)
-            else:
-                print("You need to have opa and terraform installed in order to be able to run this script.")
+            evaluate(data_json, input_json)
