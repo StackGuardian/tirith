@@ -13,6 +13,7 @@ from os.path import splitext
 
 from setuptools import find_packages
 from setuptools import setup
+from setuptools.command.install import install
 
 
 def read(*names, **kwargs):
@@ -21,6 +22,11 @@ def read(*names, **kwargs):
     ) as fh:
         return fh.read()
 
+class CustomInstall(install):
+    def run(self):
+        install.run(self)
+        # custom stuff here
+        print("This is some custom stuff.")
 
 setup(
     name="sg_policy",
@@ -71,7 +77,7 @@ setup(
         "Issue Tracker": "https://github.com/stackguardian/policy-framework/issues",
     },
     keywords=["iac", "policy", "terraform", "policy as code"],
-    python_requires="==3.8.*",
+    python_requires=">=3.8.*",
     install_requires=["simplejson==3.17.2"],
     extras_require={
         # eg:
@@ -86,4 +92,5 @@ setup(
             "sg_policy=sg_policy.__main__:main",
         ]
     },
+    cmdclass={'install': CustomInstall}
 )
