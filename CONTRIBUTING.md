@@ -1,6 +1,8 @@
 # Contributing to StackGuardian Policy Framework
 
 Thank you for taking the time to contribute! 🎉
+Contributions are welcome, and they are greatly appreciated! Every
+little bit helps, and credit will always be given.
 
 The following is a set of guidelines for contributing to StackGuardian Policy Framework on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
@@ -13,6 +15,12 @@ We use GitHub issues to track bugs at [https://github.com/stackguardian/policy-f
 ### Fix Bugs and implement features
 
 All contributions to solve GitHub issues tagged with "bug", "enhancement" and "help wanted" are most welcome and greatly appreciated.
+
+### Documentation
+
+StackGuardian Policy Framework could always use more documentation, whether as part of the
+official StackGuardian Policy Framework docs, in docstrings, or even on the web in blog posts,
+articles, and such.
 
 ### Submit Feedback
 
