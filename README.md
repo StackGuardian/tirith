@@ -15,3 +15,24 @@ This is only a list of approved features that will be included in the StackGuard
 - Support for CloudFormation config scanning
 - Support for ARM config scanning
 - Extended library of evaluator functions
+
+## Publish Package on test.pypi.org
+* Use the following command to install the latest version of the setuptools package.
+  ```
+    python -m pip install --user --upgrade setuptools
+  ```
+  
+* Make sure you are at the same directory where setup.py is located and run this command.
+  ```
+    python setup.py sdist
+  ```
+* Visit <a href="https://test.pypi.org/">test.pypi.org</a> and create a new account if not already.
+* Install Twine package using following command.
+  ```
+    pip install twine
+  ```
+* Upload you package to test.pypi using following command.
+  ```
+    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+  ```
+
