@@ -33,6 +33,7 @@ setup(
     version="0.0.1",
     license="Apache",
     description="StackGuardian Policy Framework simplifies defining Policy as Code and leverages OPA as policy engine.",
+    long_description_content_type='text/markdown',
     long_description="%s\n%s"
     % (
         re.compile("^.. start-badges.*^.. end-badges", re.M | re.S).sub(
@@ -52,7 +53,7 @@ setup(
         # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
-        "LICENSE :: OSI APPROVED :: APACHE SOFTWARE LICENSE",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: Unix",
         "Operating System :: POSIX",
         # 'Operating System :: Microsoft :: Windows',
