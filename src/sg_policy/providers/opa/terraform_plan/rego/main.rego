@@ -165,9 +165,6 @@ cidr_contains_cidr_or_ip(input_data, evaluator_data) = {"pass": true, "message":
 } else = {"pass": "undef", "message": msg} {
 	not type_name(evaluator_data) == "string"
 	msg := "For 'cidr_contains_cidr_or_ip' evaluator_ref, both input_data and evaluator_data should be cidr or ip as 'string'."
-} else = {"pass": "undef", "message": msg} {
-	not net.cidr_contains(evaluator_data, input_data)
-	msg := sprintf("input data '%s' should be a valid cidr/ip and allowed data '%s' should be a valid cidr.", [input_data, evaluator_data])
 } else = {"pass": false, "message": msg} {
 	msg := sprintf("input cidr or ip '%s' is not contained in allowed cidr '%s'", [input_data, evaluator_data])
 }
