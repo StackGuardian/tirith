@@ -53,8 +53,8 @@ all_of[msg] {
 		"evaluator_ref": evaluator_ref_all_of,
 		"evaluator_data": evaluator_data_all_of,
 		"input_data": initialize[i].input_resource_changes_attr_value,
-		# "input_datatype": initialize.input_datatype,
-		# "evaluator_datatype": evaluator_datatype_all_of,
+		"input_datatype": initialize.input_datatype,
+		"evaluator_datatype": evaluator_datatype_all_of,
 		"evaluation_result": evaluation_result_all_of,
 	}
 }
@@ -75,8 +75,8 @@ any_of[msg] {
 		"evaluator_ref": evaluator_ref_any_of,
 		"evaluator_data": evaluator_data_any_of,
 		"input_data": initialize[i].input_resource_changes_attr_value,
-		# "input_datatype": initialize.input_datatype,
-		# "evaluator_datatype": evaluator_datatype_any_of,
+		"input_datatype": initialize.input_datatype,
+		"evaluator_datatype": evaluator_datatype_any_of,
 		"evaluation_result": evaluation_result_any_of,
 	}
 }
@@ -97,8 +97,8 @@ none_of[msg] {
 		"evaluator_ref": evaluator_ref_none_of,
 		"evaluator_data": evaluator_data_none_of,
 		"input_data": initialize[i].input_resource_changes_attr_value,
-		# "input_datatype": initialize.input_datatype,
-		# "evaluator_datatype": evaluator_datatype_none_of,
+		"input_datatype": initialize.input_datatype,
+		"evaluator_datatype": evaluator_datatype_none_of,
 		"evaluation_result": evaluation_result_none_of,
 	}
 }

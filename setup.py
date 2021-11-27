@@ -10,6 +10,7 @@ from os.path import basename
 from os.path import dirname
 from os.path import join
 from os.path import splitext
+import os
 
 from setuptools import find_packages
 from setuptools import setup
@@ -22,18 +23,20 @@ def read(*names, **kwargs):
     ) as fh:
         return fh.read()
 
+
 class CustomInstall(install):
     def run(self):
         install.run(self)
         # custom stuff here
         print("This is some custom stuff.")
 
+
 setup(
     name="sg_policy",
     version="0.0.1",
     license="Apache",
     description="StackGuardian Policy Framework simplifies defining Policy as Code and leverages OPA as policy engine.",
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     long_description="%s\n%s"
     % (
         re.compile("^.. start-badges.*^.. end-badges", re.M | re.S).sub(
@@ -93,5 +96,8 @@ setup(
             "sg_policy=sg_policy.__main__:main",
         ]
     },
-    cmdclass={'install': CustomInstall}
+    cmdclass={
+        "install": CustomInstall,
+        # "develop": CustomInstall,
+    },
 )
