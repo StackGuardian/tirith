@@ -50,10 +50,10 @@ def run_cmds(cmds, cwd=None, env=None, stdout=sys.stdout, stderr=PIPE):
 def evaluate(data_file, input_file):
     if os.path.isfile(data_file) and os.path.isfile(input_file):
         opa_installed = is_installed('opa')
-        terraform_installed = is_installed('terraform')
-        terraform_installed = True
+        # terraform_installed = is_installed('terraform')
+        # terraform_installed = True
 
-        if opa_installed and terraform_installed:
+        if opa_installed:
             full_path = os.path.realpath(__file__)
             common_path = '/'.join(full_path.split('/')[:-1])
             rego_path = os.path.join(common_path, 'rego')
@@ -146,7 +146,7 @@ def evaluate(data_file, input_file):
                                                 for fail in fails:
                                                     print(f"\033[91mFAIL\033[0m: {fail}")
         else:
-            print("You need to have opa and terraform installed in order to be able to run this script.")
+            print("You need to have Open Policy Agent installed to use OPA provider.")
 
 
 errors = {}
