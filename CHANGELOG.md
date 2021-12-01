@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - Unreleased
+## [v1.0-beta.2] - 2021-01-12
 ### Added
 
 - CHANGELOG, CODE_OF_CONDUCT, CONTRIBUTING
@@ -47,5 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Security**: in case of vulnerabilities.
 
 
-[Unreleased]: https://github.com/StackGuardian/policy-framework/compare/v1.0-beta.1...HEAD
+[Unreleased]: https://github.com/StackGuardian/policy-framework/compare/v1.0-beta.2...HEAD
 [v1.0-beta.1]: https://github.com/StackGuardian/policy-framework/compare/v1.0-beta.1
+[v1.0-beta.2]: https://github.com/StackGuardian/policy-framework/compare/v1.0-beta.2
