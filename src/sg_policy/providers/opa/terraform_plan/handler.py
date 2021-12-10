@@ -50,8 +50,6 @@ def run_cmds(cmds, cwd=None, env=None, stdout=sys.stdout, stderr=PIPE):
 def evaluate(data_file, input_file):
     if os.path.isfile(data_file) and os.path.isfile(input_file):
         opa_installed = is_installed('opa')
-        # terraform_installed = is_installed('terraform')
-        # terraform_installed = True
 
         if opa_installed:
             full_path = os.path.realpath(__file__)
