@@ -63,8 +63,6 @@ def main(args=None) -> ExitStatus:
                             version='0.0.1')
         args = parser.parse_args()
 
-        print(args.policyPath)
-
         if not args.policyPath:
             print("'--policyPath' argument is required")
             return ExitStatus.ERROR
