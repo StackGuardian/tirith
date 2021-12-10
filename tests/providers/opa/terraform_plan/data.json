@@ -31,6 +31,23 @@
                     }
                 ],
                 "resource_type": "aws_s3_bucket"
+            },
+            {
+                "resource_type": "aws_vpc",
+                "attributes": [
+                    {
+                        "name": "cidr_block",
+                        "type": "tf_provider_reserved",
+                        "evaluators": {
+                            "all_of": [
+                                {
+                                    "evaluator_ref": "cidr_contains_cidr_or_ip",
+                                    "evaluator_data": "10.0.0.0/30"
+                                }
+                            ]
+                        }
+                    }
+                ]
             }
         ],
         "schema_version": "V1.BETA",
