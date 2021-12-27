@@ -22,3 +22,4 @@ isPassed = true{
     sse_algorithm == "aws:kms"
 }
 
+# https://play.openpolicyagent.org/p/oDRb1DST2h
