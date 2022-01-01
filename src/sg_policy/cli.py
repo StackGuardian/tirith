@@ -4,6 +4,7 @@ CLI
 
 import argparse
 import sys
+import textwrap
 
 from sg_policy.status import ExitStatus
 #import sg_policy.providers as providers
@@ -20,7 +21,16 @@ def main(args=None) -> ExitStatus:
     Return exit status code.
     """
     try:
-        parser = argparse.ArgumentParser(description="StackGuardian Policy Framework.")
+        parser = argparse.ArgumentParser(description="StackGuardian Policy Framework." , formatter_class=argparse.RawTextHelpFormatter , epilog=textwrap.dedent('''\
+         About StackGuardian Policy Framework:
+         
+                                * Abstract away the implementation complexity of policy engine underneath.
+                                * Simplify creation of declarative policies that are easy to read and interpret.
+                                * Provide a standard framework for scanning various configurations with granularity.
+                                * Provide modularity to enable easy extensibility
+                                * Github - https://github.com/StackGuardian/policy-framework
+                                * Docs - https://docs.stackguardian.io/docs/policy-framework/overview
+         '''))
         parser.add_argument(
             "--policy-path",
             metavar="PATH",
@@ -33,7 +43,7 @@ def main(args=None) -> ExitStatus:
             metavar="SOURCE-TYPE",
             type=str,
             dest="inputType",
-            help="Input config type to be evaluted. Example: terraform_plan, terraform_hcl, cloudformation_json",
+            help="Input config type to be evaluated. Example: terraform_plan, terraform_hcl, cloudformation_json",
         )
         parser.add_argument(
             "--input-path",
@@ -49,6 +59,8 @@ def main(args=None) -> ExitStatus:
             dest="tfVersion",
             help="Terraform version for the provided source. Example: 0.14.6, 1.0.0",
         )
+        parser.add_argument('--version', action='version',
+                            version='0.0.1')
         args = parser.parse_args()
 
         if not args.policyPath:
