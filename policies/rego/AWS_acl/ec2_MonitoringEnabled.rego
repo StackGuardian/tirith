@@ -1,4 +1,4 @@
-package stackguardian.aws_s3_bucket.MontitoringEnabled
+package stackguardian.ec2.MontitoringEnabled
 
 # Ensure that detailed monitoring is enabled for EC2 instances
 

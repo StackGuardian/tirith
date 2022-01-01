@@ -1,4 +1,4 @@
-package stackguardian.aws_s3_bucket.EC2PublicIP
+package stackguardian.ec2.PublicIP
 
 # EC2 instance should not have public IP.
 

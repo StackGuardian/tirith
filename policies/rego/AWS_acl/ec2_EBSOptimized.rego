@@ -1,4 +1,4 @@
-package stackguardian.aws_s3_bucket.ec2EBSOptimized
+package stackguardian.ec2.EBSOptimized
 
 default isPassed = false
 

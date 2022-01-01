@@ -1,4 +1,4 @@
-package stackguardian.aws_s3_bucket.LaunchConfigEBSEncryption
+package stackguardian.ec2.LaunchConfigEBSEncryption
 
 default isPassed = false
 
