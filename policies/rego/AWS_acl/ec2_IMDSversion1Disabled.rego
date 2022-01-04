@@ -7,7 +7,7 @@ default isPassed = false
 isPassed  {
 	input_resource_changes := input.resource_changes[k]
 	input_resource_changes.type == "aws_instance"
-	input_resource_changes_attrs := input_resource_changes.change.after_unknown
+	input_resource_changes_attrs := input_resource_changes.change.after
     metadata_options := input_resource_changes_attrs.metadata_options[0]
     http_token = metadata_options.http_token
     http_token = ["required"]
@@ -15,4 +15,4 @@ isPassed  {
     http_endpoint = ["disabled"]
 }
 
-# https://play.openpolicyagent.org/p/zdTLi0VbvI
+# https://play.openpolicyagent.org/p/HzROUyoQ93
