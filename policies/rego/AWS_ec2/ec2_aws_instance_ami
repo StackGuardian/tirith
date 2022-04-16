@@ -1,0 +1,12 @@
+package stackguardian.EC2.aws_instance_ami
+
+import input as tfplan
+
+ami=true{
+   resource_changes := tfplan.resource_changes[_]
+   resource_changes.type == "aws_instance"
+   resource_changes.change.after.ami == data.ami[_]
+  
+   
+      
+}
