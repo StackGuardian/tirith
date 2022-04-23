@@ -259,19 +259,19 @@ def bool_equals_bool(input_data, evaluator_data):
 		return {"pass": false, "message": msg}
 def is_valid(evaluation_data):
 	try:
-        re.compile(evaluator_data)
-        regex_valid=True
-    except :
-    	regex_valid=False
+		re.compile(evaluator_data)
+		regex_valid=True
+	except :
+		regex_valid=False
 def str_matches_regex(input_data, evaluator_data):
 	
 	if type(input_data) == str and is_valid(evaluator_data) and re.fullmatch(evaluator_data, input_data):
 		msg = ""
 		return {"pass": true, "message": msg} 
-	elif not is_valid(evaluator_data):
+	elif  is_valid(evaluator_data):
 		msg = f"Provided regex '{evaluator_data}' is not valid"
 		return {"pass": "undef", "message": msg} 
-	elif not type_name(input_data) == str:
+	elif type(input_data) != str:
 		msg = "For 'str_matches_regex' evaluator_ref, input_data should be a 'string'."
 		return {"pass": "undef", "message": msg} 
 	else: 
@@ -285,10 +285,10 @@ def str_contains_str(input_data, evaluator_data):
 		#contains(evaluator_data, input_data)
 		msg = ""
 		return {"pass": true, "message": msg} 
-	elif not type(input_data) == str:
+	elif  type(input_data) != str:
 		msg = "For 'str_contains_str' evaluator_ref, both input_data and evaluator_data should be 'string'."
 		return {"pass": "undef", "message": msg} 
-	elif not type(evaluator_data) == str:
+	elif type(evaluator_data) != str:
 		msg = "For 'str_contains_str' evaluator_ref, both input_data and evaluator_data should be 'string'."
 		return {"pass": "undef", "message": msg} 
 	else:
@@ -328,7 +328,7 @@ def str_in_list(input_data, evaluator_data) :
 		#print("yes") 
 		msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
 		return {"pass": false, "message": msg}
-	    #print(msg)
+		#print(msg)
 	
 
 def equals_null(input_data):
