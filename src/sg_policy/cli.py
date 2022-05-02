@@ -8,7 +8,7 @@ import textwrap
 
 from sg_policy.status import ExitStatus
 #import sg_policy.providers as providers
-import sg_policy.providers.opa.terraform_plan.handler as handler
+import sg_policy.providers.opa.terraform_plan.handler as opa_tf_plan_handler
 
 
 def main(args=None) -> ExitStatus:
@@ -86,7 +86,7 @@ def main(args=None) -> ExitStatus:
             #providers.opa.terraform_plan.handler(
             #    args.policyPath, args.inputPath, args.tfVersion
             #)
-            handler.evaluate(args.policyPath, args.inputPath)
+            opa_tf_plan_handler.evaluate(args.policyPath, args.inputPath)
             # print(
             #     f"Policy template successfully generated and stored in {args.policyPath.rsplit('/',1)[0]}/policy_template.json")
         elif inputType in ["terraform_hcl", "cloudformation_json"]:
