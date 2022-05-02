@@ -1,8 +1,8 @@
 import re
 
 
-def initialize(data, input_data):
-    policies = data["terraform_plan"]["policies"]
+def initialize(policy, input_data):
+    policies = policy["terraform_plan"]["policies"]
     policy_resource = []
     policy_attribute_name = []
     policy_attribute = []
@@ -246,7 +246,7 @@ def cidr_contains_cidr_or_ip(input_data, evaluator_data):
 
     if type(input_data) == str and type(evaluator_data) == str:
         msg = ""
-        return {"pass": true, "message": msg}
+        return {"pass": True, "message": msg}
 
     elif type(input_data) != str:
         msg = "For 'cidr_contains_cidr_or_ip' evaluator_ref, both input_data and evaluator_data should be cidr or ip as 'string'."
@@ -267,7 +267,7 @@ def bool_equals_bool(input_data, evaluator_data):
     ):
 
         msg = ""
-        return {"pass": true, "message": msg}
+        return {"pass": True, "message": msg}
     elif type(input_data) != bool:
         msg = "For 'bool_equals_bool' evaluator_ref, both input_data and evaluator_data should be 'boolean'."
         return {"pass": "undef", "message": msg}
@@ -276,7 +276,7 @@ def bool_equals_bool(input_data, evaluator_data):
         return {"pass": "undef", "message": msg}
     else:
         msg = f"input should be '{evaluator_data}'"
-        return {"pass": false, "message": msg}
+        return {"pass": False, "message": msg}
 
 
 def is_valid(evaluation_data):
@@ -295,7 +295,7 @@ def str_matches_regex(input_data, evaluator_data):
         and re.fullmatch(evaluator_data, input_data)
     ):
         msg = ""
-        return {"pass": true, "message": msg}
+        return {"pass": True, "message": msg}
     elif is_valid(evaluator_data):
         msg = f"Provided regex '{evaluator_data}' is not valid"
         return {"pass": "undef", "message": msg}
@@ -304,7 +304,7 @@ def str_matches_regex(input_data, evaluator_data):
         return {"pass": "undef", "message": msg}
     else:
         msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
-        return {"pass": false, "message": msg}
+        return {"pass": False, "message": msg}
 
 
 def str_contains_str(input_data, evaluator_data):
@@ -312,7 +312,7 @@ def str_contains_str(input_data, evaluator_data):
     if type(input_data) == str and type(evaluator_data) == str:
         # contains(evaluator_data, input_data)
         msg = ""
-        return {"pass": true, "message": msg}
+        return {"pass": True, "message": msg}
     elif type(input_data) != str:
         msg = "For 'str_contains_str' evaluator_ref, both input_data and evaluator_data should be 'string'."
         return {"pass": "undef", "message": msg}
@@ -321,7 +321,7 @@ def str_contains_str(input_data, evaluator_data):
         return {"pass": "undef", "message": msg}
     else:
         msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
-        return {"pass": false, "message": msg}
+        return {"pass": False, "message": msg}
 
 
 # functions str_equals + type_check put together
@@ -332,7 +332,7 @@ def str_equals_str(input_data, evaluator_data):
         and input_data == evaluator_data
     ):
         msg = ""
-        return {"pass": true, "message": msg}
+        return {"pass": True, "message": msg}
     elif type(input_data) != str:
         msg = "For 'str_equals_str' evaluator_ref, both input_data and evaluator_data should be 'string'."
         return {"pass": "undef", "message": msg}
@@ -341,7 +341,7 @@ def str_equals_str(input_data, evaluator_data):
         return {"pass": "undef", "message": msg}
     else:
         msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
-        return {"pass": false, "message": msg}
+        return {"pass": False, "message": msg}
 
 
 def str_in_list(input_data, evaluator_data):
@@ -349,7 +349,7 @@ def str_in_list(input_data, evaluator_data):
         for i in range(len(evaluator_data)):
             if input_data == evaluator_data[i]:
                 msg = ""
-                return {"pass": true, "message": msg}
+                return {"pass": True, "message": msg}
     if type(input_data) != str:
         msg = "For 'str_in_list' evaluator_ref, input_data should be a 'string' and evaluator_data should be a 'list'."
         return {"pass": "undef", "message": msg}
@@ -359,27 +359,29 @@ def str_in_list(input_data, evaluator_data):
     else:
         # print("yes")
         msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
-        return {"pass": false, "message": msg}
+        return {"pass": False, "message": msg}
         # print(msg)
 
 
 def equals_null(input_data):
     if type(input_data) == None:
         msg = ""
-        return {"pass": true, "message": msg}
+        return {"pass": True, "message": msg}
 
     else:
-        msg = f"input data is of type '{type_name(input_data)}' which is not 'null'"
-        return {"pass": false, "message": msg}
+        msg = f"input data is of type '{type(input_data)}' which is not 'null'"
+        return {"pass": False, "message": msg}
 
 
 if __name__ == "__main__":
 
     # load from file
-    data = ""
+    input_data = ""
+    policy = ""
 
     # print(data)
-    msg = initialize(data, input_data)
+    # print(policy)
+    msg = initialize(policy, input_data)
     final_output = {
         "result": {
             "all_of": all_of(msg),
