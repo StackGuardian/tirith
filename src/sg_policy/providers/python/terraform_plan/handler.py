@@ -1,6 +1,5 @@
 import re
 
-
 def initialize(policy, input_data):
     policies = policy["terraform_plan"]["policies"]
     policy_resource = []
@@ -281,10 +280,10 @@ def bool_equals_bool(input_data, evaluator_data):
 
 def is_valid(evaluation_data):
     try:
-        re.compile(evaluator_data)
-        regex_valid = True
+		re.compile(evaluator_data)
+		regex_valid = True
     except:
-        regex_valid = False
+		regex_valid = False
 
 
 def str_matches_regex(input_data, evaluator_data):
@@ -369,27 +368,112 @@ def equals_null(input_data):
         return {"pass": True, "message": msg}
 
     else:
-        msg = f"input data is of type '{type(input_data)}' which is not 'null'"
+        msg = f"input data is of type '{type(input_data)}' which is not 'None'"
         return {"pass": False, "message": msg}
 
 
 if __name__ == "__main__":
 
-    # load from file
-    input_data = ""
-    policy = ""
+	# load from file
+	input_data = ""
+	policy = ""
 
-    # print(data)
-    # print(policy)
-    msg = initialize(policy, input_data)
-    final_output = {
-        "result": {
-            "all_of": all_of(msg),
-            "any_of": any_of(msg),
-            "none_of": none_of(msg),
-        }
-    }
-    print(final_output)
+	# print(data)
+	# print(policy)
+	msg = initialize(policy, input_data)
+	final_output = {
+		"result": {
+		"all_of": all_of(msg),
+		"any_of": any_of(msg),
+		"none_of": none_of(msg)
+	}
+	}
+
+	# final_output = {
+	#     "errors": {},
+	#     "result": {
+	#     "all_of": [
+	#       {
+	#         "attribute": "ami",
+	#         "evaluation_result": {
+	#           "message": "input string 'ami-09b4b74c' is not present in allowed list '[\"provide list of string items to match\"]'",
+	#           "pass": False
+	#         },
+	#         "evaluator_data": [
+	#           "provide list of string items to match"
+	#         ],
+	#         "evaluator_datatype": "array",
+	#         "evaluator_ref": "str_in_list",
+	#         "input_data": "ami-09b4b74c",
+	#         "input_datatype": "string",
+	#         "resource_type": "aws_instance"
+	#       },
+	#       {
+	#         "attribute": "instance_type",
+	#         "evaluation_result": {
+	#           "message": "input string 't2.micro' is not present in allowed list '[\"provide list of string items to match\"]'",
+	#           "pass": False
+	#         },
+	#         "evaluator_data": [
+	#           "provide list of string items to match"
+	#         ],
+	#         "evaluator_datatype": "array",
+	#         "evaluator_ref": "str_in_list",
+	#         "input_data": "t2.micro",
+	#         "input_datatype": "string",
+	#         "resource_type": "aws_instance"
+	#       },
+	#       {
+	#         "attribute": "ebs_optimized",
+	#         "evaluation_result": {
+	#           "message": "For 'bool_equals_bool' evaluator_ref, both input_data and evaluator_data should be 'boolean'.",
+	#           "pass": "undef"
+	#         },
+	#         "evaluator_data": [
+	#           "provide a boolean value of true or False"
+	#         ],
+	#         "evaluator_datatype": "array",
+	#         "evaluator_ref": "bool_equals_bool",
+	#         "input_data": None,
+	#         "input_datatype": "None",
+	#         "resource_type": "aws_instance"
+	#       },
+	#       {
+	#         "attribute": "disable_api_termination",
+	#         "evaluation_result": {
+	#           "message": "For 'bool_equals_bool' evaluator_ref, both input_data and evaluator_data should be 'boolean'.",
+	#           "pass": "undef"
+	#         },
+	#         "evaluator_data": [
+	#           "provide a boolean value of true or False"
+	#         ],
+	#         "evaluator_datatype": "array",
+	#         "evaluator_ref": "bool_equals_bool",
+	#         "input_data": None,
+	#         "input_datatype": "None",
+	#         "resource_type": "aws_instance"
+	#       },
+	#       {
+	#         "attribute": "instance_initiated_shutdown_behavior",
+	#         "evaluation_result": {
+	#           "message": "For 'str_in_list' evaluator_ref, input_data should be a 'string' and evaluator_data should be a 'list'.",
+	#           "pass": "undef"
+	#         },
+	#         "evaluator_data": [
+	#           "provide list of string items to match"
+	#         ],
+	#         "evaluator_datatype": "array",
+	#         "evaluator_ref": "str_in_list",
+	#         "input_data": None,
+	#         "input_datatype": "None",
+	#         "resource_type": "aws_instance"
+	#       }
+	#     ],
+	#     "any_of": [],
+	#     "none_of": []
+	#   }
+	# }
+	print(final_output)
     # print(msg)
     # any_of_value=False
     # all_of_value=False
