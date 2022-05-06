@@ -148,7 +148,7 @@ policy_results[msg] {
 	# get 'key' names from input_resource_changes_attrs map and begin iteration, triggered by [key] in the syntax where key is an arbitrary var
 	input_resource_changes_attrs[key]
 
-	# str comparision
+	# str comparison
 	policy_attribute_name == key
 
 	input_resource_changes_attr_value := input_resource_changes_attrs[key]
@@ -174,7 +174,7 @@ policy_results[msg] {
 		"resource_type": policy_resource,
 		"attributes": [{
 			"name": policy_attribute_name,
-			"evalutors": {
+			"evaluators": {
 				"all_of": evaluator_res_all_of,
 				"any_of": evaluator_res_any_of,
 				"none_of": evaluator_res_none_of,
