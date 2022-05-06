@@ -4,7 +4,7 @@ import re
 def _finditem(obj, key):
     if key in obj:
         return obj[key]
-    for k, v in obj.items():
+    for _, v in obj.items():
         if isinstance(v, dict):
             item = _finditem(v, key)
             if item is not None:
@@ -78,7 +78,7 @@ def initialize(policy, input_data):
                 input_datatype.append("array")
             elif type(input_changes) == dict:
                 input_datatype.append("map")
-            elif type(input_chnages) == int:
+            elif type(input_changes) == int:
                 input_datatype.append("integer")
             else:
                 input_datatype.append(type(input_changes))
