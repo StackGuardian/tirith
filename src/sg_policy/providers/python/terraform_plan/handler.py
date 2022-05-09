@@ -7,19 +7,23 @@ def _finditem(obj, key):
 			if item is not None:
 				return item
 def _find_input_resource_changes_value(chunks,input_resource_change_attrs):
+	
 	if len(chunks)>1 and len(input_resource_change_attrs[chunks[0]])>1 and (type(input_resource_change_attrs[chunks[0]])==dict):
 				res=_finditem(input_resource_change_attrs[chunks[0]],chunks[-1])
 				
 				
-
+   
 			
-	elif len(chunks)>1 and len(input_resource_change_attrs[chunks[0]])==1 and type(input_resource_change_attrs[chunks[0]][0])==list:
+	elif len(chunks)>1 and len(input_resource_change_attrs[chunks[0]])==1 and type(input_resource_change_attrs[chunks[0]])==list:
+				
 				res=_finditem(input_resource_change_attrs[chunks[0]][0],chunks[-1])
+				
 				
 				
 	else:
 		
 				res=input_resource_change_attrs[chunks[0]]
+	#print(res)
 	return res
 
 
@@ -69,7 +73,7 @@ def initialize(policy, input_data):
 				input_datatype.append("array")
 			elif type(input_changes)==dict:
 				input_datatype.append("map")
-			elif type(input_chnages)==int:
+			elif type(input_changes)==int:
 				input_datatype.append("integer")
 			else:
 				input_datatype.append(
@@ -462,7 +466,7 @@ def map_in_list(input_data,evaluator_data):#atleast one map i input_data should 
 		if msg=="":
 			for i in range(len(evaluator_data)):
 				if type(evaluator_data[i])!= dict:
-						msg = "For 'list_contains_map' evaluator_ref, evaluator_data should also be  'lists of map/maps'."
+						msg = "For 'map_in_list' evaluator_ref, evaluator_data should also be  'lists of map/maps'."
 						return {"pass": "undef", "message": msg}
 						break
 
@@ -470,7 +474,7 @@ def map_in_list(input_data,evaluator_data):#atleast one map i input_data should 
 		if msg=="":
 			for i in range(len(input_data)):
 				if type(input_data[i])!=dict:
-						msg = "For 'list_contains_map' evaluator_ref, input_data should be a 'list of map/maps'."
+						msg = "For 'map_in_list' evaluator_ref, input_data should be a 'list of map/maps'."
 						return {"pass": "undef", "message": msg}
 						break
 		if msg=="":
@@ -483,10 +487,10 @@ def map_in_list(input_data,evaluator_data):#atleast one map i input_data should 
 
 
 	if type(input_data) != dict:
-		msg = "For 'str_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
+		msg = "For 'map_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
 		return {"pass": "undef", "message": msg}
 	if type(evaluator_data) != dict:
-		msg = "For 'str_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
+		msg = "For 'map_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
 		return {"pass": "undef", "message": msg}
 	else:
 		# print("yes")
@@ -500,7 +504,7 @@ def map_in_list_full_match(input_data,evaluator_data):#the evaluator_data should
 			if msg=="":
 				for i in range(len(evaluator_data)):
 					if type(evaluator_data[i])!= dict:
-							msg = "For 'list_contains_map' evaluator_ref, evaluator_data should also be  'lists of map/maps'."
+							msg = "For 'map_in_list_full_match' evaluator_ref, evaluator_data should also be  'lists of map/maps'."
 							return {"pass": "undef", "message": msg}
 							break
 
@@ -508,7 +512,7 @@ def map_in_list_full_match(input_data,evaluator_data):#the evaluator_data should
 			if msg=="":
 				for i in range(len(input_data)):
 					if type(input_data[i])!=dict:
-							msg = "For 'list_contains_map' evaluator_ref, input_data should be a 'list of map/maps'."
+							msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'list of map/maps'."
 							return {"pass": "undef", "message": msg}
 							break
 			if msg=="":
@@ -518,7 +522,7 @@ def map_in_list_full_match(input_data,evaluator_data):#the evaluator_data should
 				if flag:
 					return {"pass": True, "message": msg}
 				else:
-					msg = "For 'list_contains_map' evaluator_ref,  evaluator_data should be contains items provided by input_data only."
+					msg = "For 'map_in_list_full_match' evaluator_ref,  evaluator_data should be contains items provided by input_data only."
 					return {"pass": "undef", "message": msg}
 
 
@@ -527,10 +531,10 @@ def map_in_list_full_match(input_data,evaluator_data):#the evaluator_data should
 
 
 	if type(input_data) != dict:
-		msg = "For 'str_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
+		msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
 		return {"pass": "undef", "message": msg}
 	if type(evaluator_data) != dict:
-		msg = "For 'str_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
+		msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
 		return {"pass": "undef", "message": msg}
 	else:
 		# print("yes")
@@ -557,7 +561,7 @@ def evaluationresult_handler(event):
 	policy=event["data"]
 	input_data=event["input_data"]
 	msg=initialize(policy,input_data)
-	print(msg)
+	#print(msg)
 	final_output={
 	"result":{
 	"all_of":all_of(msg),
@@ -565,7 +569,7 @@ def evaluationresult_handler(event):
 	"none_of":none_of(msg)
 	}
 	}
-	print(final_output)
+	#print(final_output)
 	return final_output
 	
 
