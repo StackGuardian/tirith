@@ -34,8 +34,8 @@ def apigw_event():
                         "evaluators": {
                             "all_of": [
                                 {
-                                    "evaluator_ref": "str_equals_str",
-                                    "evaluator_data": "99"
+                                    "evaluator_ref": "int_equals_int",
+                                    "evaluator_data": 99
                                 }
                             ]
                         }
@@ -123,16 +123,16 @@ def apigw_event():
 							"all_of": [
 								{
 									"evaluator_ref": "map_in_list",
-									"evaluator_data":  [
-									{
-									  "rule_no"    : "100",
-									  "action"     : "allow",
-									  "from_port"  : "0",
-									  "to_port"    : 0,
-									  "protocol"   : "-1",
-									  "cidr_block" : "0.0.0.0/0",
-									}
-									]
+									"evaluator_data":  
+									[{
+               "rule_no":11,
+               "action":"allow",
+               "from_port":"0",
+               "to_port":0,
+               "protocol":"-1",
+               "cidr_block":"0.0.0.0/0"
+            }]
+									
 								}
 							]
 						}
@@ -1358,15 +1358,22 @@ def apigw_event():
 						"instance_type": "default",
 						"ami":"ders-7778",
 						"hibernation":"hgbdg",
-						"egress": 
+						"egress":[ 
 									{
-									  "rule_no"    : {"tags":"100"},
+									  "rule_no"    : 11,
 									  "action"     : "allow",
 									  "from_port"  : "0",
 									  "to_port"    : 0,
 									  "protocol"   : "-1",
 									  "cidr_block" : "0.0.0.0/0"
-									}
+									},{
+									  "rule_no"    : 11,
+									  "action"     : "allow",
+									  "from_port"  : "0",
+									  "to_port"    : 0,
+									  "protoco"   : "-1",
+									  "cidr_block" : "0.0.0.0/0"
+									}]
 									,
 						"tags": {
 							"Name": ""
@@ -7982,7 +7989,7 @@ def test_evaluationresult_handler(apigw_event):
 	#print("teststst:", os.environ)
 	#print(apigw_event)
 	ret=handler.evaluationresult_handler(apigw_event)
-	#print(ret)
+	
 	assert "result" in ret
 
 	#print(msg)
