@@ -3,32 +3,13 @@ import re
 
 def _finditem(obj, key):
 
-	if key in obj: return obj[key]
-	for _, v in obj.items():
-		if isinstance(v,dict):
-			item = _finditem(v, key)
-			if item is not None:
-				return item
-
-	
-			
-	# # def result(msg):
-	# 	evaluator_ref_all_of=[]
-	# 	evaluator_data_all_of=[]
-	# 	evaluator_datatype_all_of=[]
-	# 	for key,value in msg.items():
-	# 		if key=="policy_attribute":
-	# 			#print(value)
-	# 			for attribute in value:
-	# 				#print(attribute)
-	# 				evaluator_all_of=attribute["evaluators"]["all_of"][0]
-	# 				#print(evaluator_all_of)
-	# 				evaluator_ref_all_of.append(evaluator_all_of["evaluator_ref"])
-	# 				evaluator_data_all_of.append(evaluator_all_of["evaluator_data"])
-	# 				evaluator_datatype_all_of.append(type(evaluator_all_of["evaluator_data"]))
-	# 	evaluation_result_all_of = evaluator_handler(msg["input_resource_changes_attr_value"], evaluator_data_all_of, evaluator_ref_all_of)
-	# 	evaluation_result_all_of=0		    #
-
+    if key in obj:
+        return obj[key]
+    for _, v in obj.items():
+        if isinstance(v, dict):
+            item = _finditem(v, key)
+            if item is not None:
+                return item
 
 
 def _find_input_resource_changes_value(chunks, input_resource_change_attrs):
@@ -130,7 +111,6 @@ def initialize(policy, input_data):
     # 				evaluator_datatype_all_of.append(type(evaluator_all_of["evaluator_data"]))
     # 	evaluation_result_all_of = evaluator_handler(msg["input_resource_changes_attr_value"], evaluator_data_all_of, evaluator_ref_all_of)
     # 	evaluation_result_all_of=0		    #
-
 
 
 def all_of(msg):
@@ -461,249 +441,234 @@ def str_in_list(input_data, evaluator_data):
 
 def equals_null(input_data):
 
-	if type(input_data) == None:
-		msg = ""
-		return {"pass": True, "message": msg}
+    if type(input_data) == None:
+        msg = ""
+        return {"pass": True, "message": msg}
 
-	else:
-		msg = f"input data is of type '{type(input_data)}' which is not 'None'"
-		return {"pass": False, "message": msg}
-
-
-
-def int_equals_int(input_data,evaluator_data):
-	if type(input_data) == int and type(evaluator_data) == int and input_data == evaluator_data:
-		msg = ""
-		return {"pass": True, "message": msg}
-	elif type(input_data) != int:
-		msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'integer'."
-		return {"pass": "undef", "message": msg} 
-	elif type(evaluator_data) != int:
-		msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'integer'."
-		return {"pass": "undef", "message": msg}
-	else:
-		msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
-		return {"pass": False, "message": msg}
-#def list_contains_map(input_data,evaluator_data):
-def map_in_list(input_data,evaluator_data):#atleast one map i input_data should be present in  evulator_data
-	if type(input_data) == list and type(evaluator_data)==list:
-		msg=""
-		if msg=="":
-			for i in range(len(evaluator_data)):
-				if type(evaluator_data[i])!= dict:
-						msg = "For 'map_in_list' evaluator_ref, evaluator_data should also be  'lists of map/maps'."
-						return {"pass": "undef", "message": msg}
-						break
-
-		
-		if msg=="":
-			for i in range(len(input_data)):
-				if type(input_data[i])!=dict:
-						msg = "For 'map_in_list' evaluator_ref, input_data should be a 'list of map/maps'."
-						return {"pass": "undef", "message": msg}
-						break
-		if msg=="":
-			for data in input_data:
-				if data in evaluator_data:
-					return {"pass": True, "message": msg}
-					break
+    else:
+        msg = f"input data is of type '{type(input_data)}' which is not 'None'"
+        return {"pass": False, "message": msg}
 
 
+def int_equals_int(input_data, evaluator_data):
+    if (
+        type(input_data) == int
+        and type(evaluator_data) == int
+        and input_data == evaluator_data
+    ):
+        msg = ""
+        return {"pass": True, "message": msg}
+    elif type(input_data) != int:
+        msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'integer'."
+        return {"pass": "undef", "message": msg}
+    elif type(evaluator_data) != int:
+        msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'integer'."
+        return {"pass": "undef", "message": msg}
+    else:
+        msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
+        return {"pass": False, "message": msg}
 
 
-	if type(input_data) != dict:
-		msg = "For 'map_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
-		return {"pass": "undef", "message": msg}
-	if type(evaluator_data) != dict:
-		msg = "For 'map_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
-		return {"pass": "undef", "message": msg}
-	else:
-		# print("yes")
-		msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
-		return {"pass": False, "message": msg}
-def map_in_list_full_match(input_data,evaluator_data):#the evaluator_data should contain only the dict items present in input_data
+# def list_contains_map(input_data,evaluator_data):
+def map_in_list(
+    input_data, evaluator_data
+):  # atleast one map i input_data should be present in  evulator_data
+    if type(input_data) == list and type(evaluator_data) == list:
+        msg = ""
+        if msg == "":
+            for i in range(len(evaluator_data)):
+                if type(evaluator_data[i]) != dict:
+                    msg = "For 'map_in_list' evaluator_ref, evaluator_data should also be  'lists of map/maps'."
+                    return {"pass": "undef", "message": msg}
+                    break
+
+        if msg == "":
+            for i in range(len(input_data)):
+                if type(input_data[i]) != dict:
+                    msg = "For 'map_in_list' evaluator_ref, input_data should be a 'list of map/maps'."
+                    return {"pass": "undef", "message": msg}
+                    break
+        if msg == "":
+            for data in input_data:
+                if data in evaluator_data:
+                    return {"pass": True, "message": msg}
+                    break
+
+    if type(input_data) != dict:
+        msg = "For 'map_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
+        return {"pass": "undef", "message": msg}
+    if type(evaluator_data) != dict:
+        msg = "For 'map_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
+        return {"pass": "undef", "message": msg}
+    else:
+        # print("yes")
+        msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
+        return {"pass": False, "message": msg}
 
 
-	if type(input_data) == list and type(evaluator_data)==list:
-			msg=""
-			if msg=="":
-				for i in range(len(evaluator_data)):
-					if type(evaluator_data[i])!= dict:
-							msg = "For 'map_in_list_full_match' evaluator_ref, evaluator_data should also be  'lists of map/maps'."
-							return {"pass": "undef", "message": msg}
-							break
+def map_in_list_full_match(
+    input_data, evaluator_data
+):  # the evaluator_data should contain only the dict items present in input_data
 
-			
-			if msg=="":
-				for i in range(len(input_data)):
-					if type(input_data[i])!=dict:
-							msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'list of map/maps'."
-							return {"pass": "undef", "message": msg}
-							break
-			if msg=="":
-				flag = 0
-				if(all(x in input_data for x in evaluator_data)):
-					flag = 1
-				if flag:
-					return {"pass": True, "message": msg}
-				else:
-					msg = "For 'map_in_list_full_match' evaluator_ref,  evaluator_data should be contains items provided by input_data only."
-					return {"pass": "undef", "message": msg}
+    if type(input_data) == list and type(evaluator_data) == list:
+        msg = ""
+        if msg == "":
+            for i in range(len(evaluator_data)):
+                if type(evaluator_data[i]) != dict:
+                    msg = "For 'map_in_list_full_match' evaluator_ref, evaluator_data should also be  'lists of map/maps'."
+                    return {"pass": "undef", "message": msg}
+                    break
 
+        if msg == "":
+            for i in range(len(input_data)):
+                if type(input_data[i]) != dict:
+                    msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'list of map/maps'."
+                    return {"pass": "undef", "message": msg}
+                    break
+        if msg == "":
+            flag = 0
+            if all(x in input_data for x in evaluator_data):
+                flag = 1
+            if flag:
+                return {"pass": True, "message": msg}
+            else:
+                msg = "For 'map_in_list_full_match' evaluator_ref,  evaluator_data should be contains items provided by input_data only."
+                return {"pass": "undef", "message": msg}
 
-
-
-
-
-	if type(input_data) != dict:
-		msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
-		return {"pass": "undef", "message": msg}
-	if type(evaluator_data) != dict:
-		msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
-		return {"pass": "undef", "message": msg}
-	else:
-		# print("yes")
-		msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
-		return {"pass": False, "message": msg}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if type(input_data) != dict:
+        msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
+        return {"pass": "undef", "message": msg}
+    if type(evaluator_data) != dict:
+        msg = "For 'map_in_list_full_match' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
+        return {"pass": "undef", "message": msg}
+    else:
+        # print("yes")
+        msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
+        return {"pass": False, "message": msg}
 
 
 def evaluationresult_handler(event):
-	#print(data)
-	policy=event["data"]
-	input_data=event["input_data"]
-	msg=initialize(policy,input_data)
-	#print(msg)
-	final_output={
-	"result":{
-	"all_of":all_of(msg),
-	"any_of":any_of(msg),
-	"none_of":none_of(msg)
-	}
-	}
-	#print(final_output)
-	return final_output
-	
+    # print(data)
+    policy = event["data"]
+    input_data = event["input_data"]
+    msg = initialize(policy, input_data)
+    # print(msg)
+    final_output = {
+        "result": {
+            "all_of": all_of(msg),
+            "any_of": any_of(msg),
+            "none_of": none_of(msg),
+        }
+    }
+    # print(final_output)
+    return final_output
 
-	# final_output = {
-	#     "errors": {},
-	#     "result": {
-	#     "all_of": [
-	#       {
-	#         "attribute": "ami",
-	#         "evaluation_result": {
-	#           "message": "input string 'ami-09b4b74c' is not present in allowed list '[\"provide list of string items to match\"]'",
-	#           "pass": False
-	#         },
-	#         "evaluator_data": [
-	#           "provide list of string items to match"
-	#         ],
-	#         "evaluator_datatype": "array",
-	#         "evaluator_ref": "str_in_list",
-	#         "input_data": "ami-09b4b74c",
-	#         "input_datatype": "string",
-	#         "resource_type": "aws_instance"
-	#       },
-	#       {
-	#         "attribute": "instance_type",
-	#         "evaluation_result": {
-	#           "message": "input string 't2.micro' is not present in allowed list '[\"provide list of string items to match\"]'",
-	#           "pass": False
-	#         },
-	#         "evaluator_data": [
-	#           "provide list of string items to match"
-	#         ],
-	#         "evaluator_datatype": "array",
-	#         "evaluator_ref": "str_in_list",
-	#         "input_data": "t2.micro",
-	#         "input_datatype": "string",
-	#         "resource_type": "aws_instance"
-	#       },
-	#       {
-	#         "attribute": "ebs_optimized",
-	#         "evaluation_result": {
-	#           "message": "For 'bool_equals_bool' evaluator_ref, both input_data and evaluator_data should be 'boolean'.",
-	#           "pass": "undef"
-	#         },
-	#         "evaluator_data": [
-	#           "provide a boolean value of true or False"
-	#         ],
-	#         "evaluator_datatype": "array",
-	#         "evaluator_ref": "bool_equals_bool",
-	#         "input_data": None,
-	#         "input_datatype": "None",
-	#         "resource_type": "aws_instance"
-	#       },
-	#       {
-	#         "attribute": "disable_api_termination",
-	#         "evaluation_result": {
-	#           "message": "For 'bool_equals_bool' evaluator_ref, both input_data and evaluator_data should be 'boolean'.",
-	#           "pass": "undef"
-	#         },
-	#         "evaluator_data": [
-	#           "provide a boolean value of true or False"
-	#         ],
-	#         "evaluator_datatype": "array",
-	#         "evaluator_ref": "bool_equals_bool",
-	#         "input_data": None,
-	#         "input_datatype": "None",
-	#         "resource_type": "aws_instance"
-	#       },
-	#       {
-	#         "attribute": "instance_initiated_shutdown_behavior",
-	#         "evaluation_result": {
-	#           "message": "For 'str_in_list' evaluator_ref, input_data should be a 'string' and evaluator_data should be a 'list'.",
-	#           "pass": "undef"
-	#         },
-	#         "evaluator_data": [
-	#           "provide list of string items to match"
-	#         ],
-	#         "evaluator_datatype": "array",
-	#         "evaluator_ref": "str_in_list",
-	#         "input_data": None,
-	#         "input_datatype": "None",
-	#         "resource_type": "aws_instance"
-	#       }
-	#     ],
-	#     "any_of": [],
-	#     "none_of": []
-	#   }
-	# }
-	
-	# print(msg)
-	# any_of_value=False
-	# all_of_value=False
-	# none_of_value=False
-	# for key,value in msg.items():
-	# 	if key=="policy_attribute":
-	# 		#print(value)
-	# 		for attribute in value:
-	# 			#print(attribute)
-	# 			if "all_of" in attribute["evaluators"]:
-	# 				all_of_value=True
-	# 			if "any_of" in attribute["evaluators"]:
-	# 				any_of_value=True
-	# 			if "none_of" in attribute["evaluators"]:
-	# 				none_of_value=False
-	# result={}
-	# if all_of_value:
-	# 	result.append("all_of":all_of(msg))
-	# else:
-	# 	result.append("all_of":[])
-	# if any_of_value:
-	# 	result.append("any_of":any_of(msg))
-	# else:
-	# 	result.append("all_of":[])
+    # final_output = {
+    #     "errors": {},
+    #     "result": {
+    #     "all_of": [
+    #       {
+    #         "attribute": "ami",
+    #         "evaluation_result": {
+    #           "message": "input string 'ami-09b4b74c' is not present in allowed list '[\"provide list of string items to match\"]'",
+    #           "pass": False
+    #         },
+    #         "evaluator_data": [
+    #           "provide list of string items to match"
+    #         ],
+    #         "evaluator_datatype": "array",
+    #         "evaluator_ref": "str_in_list",
+    #         "input_data": "ami-09b4b74c",
+    #         "input_datatype": "string",
+    #         "resource_type": "aws_instance"
+    #       },
+    #       {
+    #         "attribute": "instance_type",
+    #         "evaluation_result": {
+    #           "message": "input string 't2.micro' is not present in allowed list '[\"provide list of string items to match\"]'",
+    #           "pass": False
+    #         },
+    #         "evaluator_data": [
+    #           "provide list of string items to match"
+    #         ],
+    #         "evaluator_datatype": "array",
+    #         "evaluator_ref": "str_in_list",
+    #         "input_data": "t2.micro",
+    #         "input_datatype": "string",
+    #         "resource_type": "aws_instance"
+    #       },
+    #       {
+    #         "attribute": "ebs_optimized",
+    #         "evaluation_result": {
+    #           "message": "For 'bool_equals_bool' evaluator_ref, both input_data and evaluator_data should be 'boolean'.",
+    #           "pass": "undef"
+    #         },
+    #         "evaluator_data": [
+    #           "provide a boolean value of true or False"
+    #         ],
+    #         "evaluator_datatype": "array",
+    #         "evaluator_ref": "bool_equals_bool",
+    #         "input_data": None,
+    #         "input_datatype": "None",
+    #         "resource_type": "aws_instance"
+    #       },
+    #       {
+    #         "attribute": "disable_api_termination",
+    #         "evaluation_result": {
+    #           "message": "For 'bool_equals_bool' evaluator_ref, both input_data and evaluator_data should be 'boolean'.",
+    #           "pass": "undef"
+    #         },
+    #         "evaluator_data": [
+    #           "provide a boolean value of true or False"
+    #         ],
+    #         "evaluator_datatype": "array",
+    #         "evaluator_ref": "bool_equals_bool",
+    #         "input_data": None,
+    #         "input_datatype": "None",
+    #         "resource_type": "aws_instance"
+    #       },
+    #       {
+    #         "attribute": "instance_initiated_shutdown_behavior",
+    #         "evaluation_result": {
+    #           "message": "For 'str_in_list' evaluator_ref, input_data should be a 'string' and evaluator_data should be a 'list'.",
+    #           "pass": "undef"
+    #         },
+    #         "evaluator_data": [
+    #           "provide list of string items to match"
+    #         ],
+    #         "evaluator_datatype": "array",
+    #         "evaluator_ref": "str_in_list",
+    #         "input_data": None,
+    #         "input_datatype": "None",
+    #         "resource_type": "aws_instance"
+    #       }
+    #     ],
+    #     "any_of": [],
+    #     "none_of": []
+    #   }
+    # }
+
+    # print(msg)
+    # any_of_value=False
+    # all_of_value=False
+    # none_of_value=False
+    # for key,value in msg.items():
+    # 	if key=="policy_attribute":
+    # 		#print(value)
+    # 		for attribute in value:
+    # 			#print(attribute)
+    # 			if "all_of" in attribute["evaluators"]:
+    # 				all_of_value=True
+    # 			if "any_of" in attribute["evaluators"]:
+    # 				any_of_value=True
+    # 			if "none_of" in attribute["evaluators"]:
+    # 				none_of_value=False
+    # result={}
+    # if all_of_value:
+    # 	result.append("all_of":all_of(msg))
+    # else:
+    # 	result.append("all_of":[])
+    # if any_of_value:
+    # 	result.append("any_of":any_of(msg))
+    # else:
+    # 	result.append("all_of":[])
