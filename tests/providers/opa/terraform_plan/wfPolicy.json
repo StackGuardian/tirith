@@ -1,0 +1,33 @@
+ {
+    "WfType__allowed": [
+        "TERRAFORM"
+    ],
+    "TerraformConfig": {
+        "terraformVersion__allowed": [
+            "1.0.*",
+            "1.1.*"
+        ],
+        "managedTerraformState__allowed": [
+            true
+        ],
+        "approvalPreApply__allowed": [
+            true,
+            false
+        ],
+        "driftCheck__allowed": [
+            true
+        ]
+    },
+    "ResourceName__allowed": [],
+    "VCSConfig": {
+        "iacVCSConfig": {
+            "iacTemplateId__allowed": [
+                "/terraform-aws-modules/.*",
+                "/stackguardian/.*"
+            ],
+            "useMarketplaceTemplate__allowed": [
+                true
+            ]
+        }
+    }
+}

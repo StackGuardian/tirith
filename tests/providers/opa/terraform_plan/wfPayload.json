@@ -1,0 +1,46 @@
+ {
+    "IsArchive": "0",
+    "IsActive": "1",
+    "Description": "",
+    "ResourceId": "/wfs/test",
+    "WfType": "TERRAFORM",
+    "ModifiedAt": 1651669677437.0,
+    "ParentId": "/orgs/stackguardian/wfgrps/Demo-Azure",
+    "ResourceType": "WORKFLOW",
+    "LatestWfrunStatus": "ERRORED",
+    "Tags": [],
+    "DeploymentPlatformConfig": [
+        {
+            "config": {
+                "integrationId": "/integrations/azure-test"
+            },
+            "kind": "AZURE_STATIC"
+        }
+    ],
+    "DocVersion": "V3.BETA",
+    "EnvironmentVariables": [],
+    "EnforcedPolicies": [],
+    "Authors": [
+        "akshat.tandon@stackguardian.io"
+    ],
+    "WfStepsConfig": [],
+    "ActivitySubscribers": [
+        "akshat.tandon@stackguardian.io"
+    ],
+    "ResourceName": "test",
+    "VCSConfig": {
+        "iacVCSConfig": {
+            "iacTemplateId": "/stackguardian/azure-vnet:1",
+            "useMarketplaceTemplate": true
+        }
+    },
+    "SubResourceId": "/wfgrps/Demo-Azure/wfs/test",
+    "TerraformConfig": {
+        "approvalPreApply": true,
+        "terraformVersion": "1.1.3",
+        "managedTerraformState": true,
+        "driftCheck": false
+    },
+    "OrgId": "/orgs/stackguardian",
+    "CreatedAt": 1650883021303.0
+}

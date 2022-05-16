@@ -9,6 +9,7 @@ import textwrap
 from sg_policy.status import ExitStatus
 #import sg_policy.providers as providers
 import sg_policy.providers.opa.terraform_plan.handler as handler
+import sg_policy.providers.python.sgWorkflow.handler as Wfhandler
 
 
 def main(args=None) -> ExitStatus:
@@ -71,8 +72,18 @@ def main(args=None) -> ExitStatus:
             return ExitStatus.ERROR
 
         inputType = args.inputType
+        print(inputType)
+        if inputType == "wf_payload":
+            if not args.inputPath:
+                print(
+                    "Path to workflow data file should be provided to '--input-path' argument"
+                )
+                return ExitStatus.ERROR
 
-        if inputType == "terraform_plan":
+            res = Wfhandler.evaluate(args.policyPath, args.inputPath)
+            print(res)
+
+        elif inputType == "terraform_plan":
             if not args.inputPath:
                 print(
                     "Path to terraform plan file should be provided to '--input-path' argument"
