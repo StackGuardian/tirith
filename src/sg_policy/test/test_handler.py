@@ -3,6 +3,12 @@ import json
 import pytest
 
 import os
+from time import time
+import atexit
+from time import time, strftime, localtime
+from datetime import timedelta
+import pandas as pd
+from decimal import Decimal
 
 
 @pytest.fixture()
@@ -6266,12 +6272,21 @@ def apigw_event():
     }
 
 
+def secondsToStr(elapsed=None):
+    if elapsed is None:
+        return strftime("%Y-%m-%d %H:%M:%S", localtime())
+    else:
+        return str(timedelta(seconds=elapsed))
+
+
 def test_evaluationresult_handler(apigw_event):
 
     from sg_policy.providers.python.terraform_plan import handler
 
-    ret = handler.evaluationresult_handler(apigw_event)
-
+    start = time()
+    ret = handler.test_evaluate_handler(apigw_event)
+    end = time()
+    print(ret)
     assert "result" in ret
 
     # print(msg)
