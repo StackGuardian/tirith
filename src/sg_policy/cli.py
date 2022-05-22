@@ -72,7 +72,6 @@ def main(args=None) -> ExitStatus:
             return ExitStatus.ERROR
 
         inputType = args.inputType
-        print(inputType)
         if inputType == "wf_payload":
             if not args.inputPath:
                 print(
