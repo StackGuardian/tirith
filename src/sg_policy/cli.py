@@ -10,6 +10,7 @@ from sg_policy.status import ExitStatus
 #import sg_policy.providers as providers
 import sg_policy.providers.opa.terraform_plan.handler as handler
 import sg_policy.providers.python.sgWorkflow.handler as Wfhandler
+import sg_policy.providers.python.Infracost.handler as IChandler
 
 
 def main(args=None) -> ExitStatus:
@@ -80,6 +81,16 @@ def main(args=None) -> ExitStatus:
                 return ExitStatus.ERROR
 
             res = Wfhandler.evaluate(args.policyPath, args.inputPath)
+            print(res)
+
+        elif inputType == "IC_payload":
+            if not args.inputPath:
+                print(
+                    "Path to Infracost data file should be provided to '--input-path' argument"
+                )
+                return ExitStatus.ERROR
+
+            res = IChandler.evaluate(args.policyPath, args.inputPath)
             print(res)
 
         elif inputType == "terraform_plan":
