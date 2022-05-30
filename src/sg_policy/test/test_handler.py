@@ -35,12 +35,14 @@ def apigw_event():
                                 },
                             },
                             {
-                                "name": "egress.rule_no",
+                                "name": "egress.action",
                                 "evaluators": {
                                     "all_of": [
                                         {
-                                            "evaluator_ref": "int_equals_int",
-                                            "evaluator_data": 99,
+                                            "evaluator_ref": "map_in_list",
+                                            "evaluator_data": [
+                                            {"name":"fail"}
+                                            ],
                                         }
                                     ]
                                 },
@@ -819,20 +821,21 @@ def apigw_event():
                             "egress": [
                                 {
                                     "rule_no": 11,
-                                    "action": "allow",
+                                    "action": {"name":"allow"},
                                     "from_port": "0",
                                     "to_port": 0,
                                     "protocol": "-1",
                                     "cidr_block": "0.0.0.0/0",
                                 },
                                 {
-                                    "rule_no": 11,
-                                    "action": "allow",
+                                    "rule_no": 22,
+                                    "action": {"name":"allow"},
                                     "from_port": "0",
                                     "to_port": 0,
                                     "protoco": "-1",
                                     "cidr_block": "0.0.0.0/0",
-                                },
+                                }
+
                             ],
                             "tags": {"Name": ""},
                             "tags_all": {},
@@ -6281,11 +6284,8 @@ def secondsToStr(elapsed=None):
 
 def test_evaluationresult_handler(apigw_event):
 
-    from sg_policy.providers.python.terraform_plan import handler
-
-    start = time()
-    ret = handler.test_evaluate_handler(apigw_event)
-    end = time()
+    from sg_policy.providers.python.terraform_plan import handler   
+    ret = handler.test_evaluate_handler(apigw_event) 
     print(ret)
     assert "result" in ret
 
