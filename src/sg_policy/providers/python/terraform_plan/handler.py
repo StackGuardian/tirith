@@ -3,16 +3,18 @@ from time import time
 import os
 import json
 
-def finditem(obj, key, iter_count):
+
+def finditem(obj, key):
 
     if key in obj:
-        return obj[key], iter_count
-    for _, v in obj.items():
+        return obj[key]
+    for v in obj.values():
         if isinstance(v, dict):
-            iter_count += 1
-            item = _finditem(v, key, iter_count)
+            item = finditem(v, key)
             if item is not None:
-                return item, iter_count
+                return item
+    return None
+
 
 def find_input_resource_changes_value(chunks, input_resource_change_attrs):
 
@@ -23,9 +25,7 @@ def find_input_resource_changes_value(chunks, input_resource_change_attrs):
         and (type(input_resource_change_attrs[chunks[0]]) == dict)
     ):
 
-        res, Iter_Count = finditem(
-            input_resource_change_attrs[chunks[0]], chunks[-1], 1
-        )
+        res = finditem(input_resource_change_attrs[chunks[0]], chunks[-1])
 
     elif (
         len(chunks) > 1
@@ -33,14 +33,31 @@ def find_input_resource_changes_value(chunks, input_resource_change_attrs):
         and type(input_resource_change_attrs[chunks[0]]) == list
     ):
 
-        res, Iter_Count = finditem(
-            input_resource_change_attrs[chunks[0]][0], chunks[-1], 1
-        )
+        res = finditem(input_resource_change_attrs[chunks[0]][0], chunks[-1])
+
+    elif (
+        len(chunks) > 1
+        and len(input_resource_change_attrs[chunks[0]]) > 1
+        and type(input_resource_change_attrs[chunks[0]]) == list
+    ):
+
+        res = []
+
+        for i in range(len(input_resource_change_attrs[chunks[0]])):
+            each_re = finditem(input_resource_change_attrs[chunks[0]][i], chunks[-1])
+             res.append(each_res)
 
     else:
-       res = input_resource_change_attrs[chunks[0]]
+        res = input_resource_change_attrs[chunks[0]]
 
-    return res, Iter_Count
+    return res
+
+
+# def find_item(chunks,input_resource_change_attrs):
+# 	print(chunks[-1])
+# 	print(input_resource_change_attrs[chunks[0]][0])
+# 	s=finditem(input_resource_change_attrs[chunks[0]][0],chunks[-1])
+# 	print(s)
 
 
 def initialize(policy, input_data):
@@ -63,11 +80,10 @@ def initialize(policy, input_data):
             policy_resource.append(policy["resource_type"])
             attributes = policy["attributes"]
         resource_changes = input_data["resource_changes"]
-        # print(resource_changes)
-        # print(policy_resource)
         for resource_change in resource_changes:
             if resource_change["type"] in policy_resource:
                 input_resource_change_attrs = resource_change["change"]["after"]
+        # print(input_resource_change_attrs)
         for attribute in attributes:
             count = 1
             chunks = attribute["name"].split(".")
@@ -76,11 +92,18 @@ def initialize(policy, input_data):
                 count += 1
                 policy_attribute.append(attribute)
                 policy_attribute_name.append(s)
-                res, iter_count = find_input_resource_changes_value(
-                    chunks, input_resource_change_attrs
-                )
+                if "*" in chunks:
+                    res = find_input_resource_changes_value(
+                        chunks, input_resource_change_attrs
+                    )
+
+                else:
+                    res = find_input_resource_changes_value(
+                        chunks, input_resource_change_attrs
+                    )
+
                 try:
-                    input_changes = int(s)
+                    input_changes = int(res)
 
                 except:
                     input_changes = res
@@ -100,6 +123,7 @@ def initialize(policy, input_data):
                 else:
                     input_datatype.append(type(input_changes))
     # print(iter_count)
+
     msg = {
         "policy_resource": policy_resource,
         "policy_attribute": policy_attribute,
@@ -108,7 +132,9 @@ def initialize(policy, input_data):
         "input_datatype": input_datatype,
         "iter_count": Iter_count,
     }
-    return msg		    
+    # print(input_resource_changes_attr_value)
+    return msg
+
 
 def all_of(msg):
     total_evaluation = []
@@ -148,7 +174,25 @@ def all_of(msg):
                         )
         # print(msg["input_resource_changes_attr_value"][0])
         each_evaluation = {}
+        evaluator_result_all_of = ""
+        iter_count = 0
+        # print(msg["input_resource_changes_attr_value"])
         for i in range(len(evaluator_ref_all_of)):
+            if (
+                type(msg["input_resource_changes_attr_value"][i]) == list
+                and type(msg["input_resource_changes_attr_value"][i][0]) != dict
+            ):
+                for j in range(len(msg["input_resource_changes_attr_value"][i])):
+                    evaluator_result_all_of = evaluator_handler(
+                        msg["input_resource_changes_attr_value"][i][j],
+                        evaluator_data_all_of[i],
+                        evaluator_ref_all_of[i],
+                    )[0]
+                    iter_count = evaluator_handler(
+                        msg["input_resource_changes_attr_value"][i][j],
+                        evaluator_data_all_of[i],
+                        evaluator_ref_all_of[i],
+                    )[1]
             each_evaluation = {}
             each_evaluation = {
                 "attribute": msg["policy_attribute_name"][i],
@@ -213,7 +257,7 @@ def any_of(msg):
                     else:
                         evaluator_datatype_any_of.append(
                             type(evaluator_any_of["evaluator_data"])
-                        )        
+                        )
         each_evaluation = {}
         for i in range(len(evaluator_ref_any_of)):
             each_evaluation = {}
@@ -309,7 +353,7 @@ def none_of(msg):
 
 
 def evaluator_handler(input_data, evaluator_data, evaluator_ref):
-
+    # print(evaluator_ref)
     if evaluator_ref == "str_equals_str":
         evaluation_result, iter_count = str_equals_str(input_data, evaluator_data)
     elif evaluator_ref == "str_contains_str":
@@ -322,7 +366,7 @@ def evaluator_handler(input_data, evaluator_data, evaluator_ref):
         evaluation_result, iter_count = equals_null(input_data[i])
     elif evaluator_ref == "str_matches_regex":
         evaluation_result, iter_count = str_matches_regex(input_data, evaluator_data)
-    elif evaluator_ref == "bool_equals_bool":        
+    elif evaluator_ref == "bool_equals_bool":
         evaluation_result, iter_count = bool_equals_bool(True, True)
     elif evaluator_ref == "cidr_contains_cidr_or_ip":
         evaluation_result, iter_count = cidr_contains_cidr_or_ip(
@@ -341,6 +385,7 @@ def evaluator_handler(input_data, evaluator_data, evaluator_ref):
 
 
 def cidr_contains_cidr_or_ip(input_data, evaluator_data):
+	# TODO: improvement
     iter_count = 0
     if type(input_data) == str and type(evaluator_data) == str:
         msg = ""
@@ -581,19 +626,22 @@ def map_in_list_full_match(
         return {"pass": False, "message": msg}, iter_count
 
 
-def evaluate(data_file,input_file):
+def evaluate(data_file, input_file):
     # print(data)
-    if os.path.isfile(data_file) and os.path.isfile(input_file): 
+    if os.path.isfile(data_file) and os.path.isfile(input_file):
+
         # Opening JSON file
+        # TODO:check the schema of the input files
+        # TODO:Check the files are json
+        # TODO:
         with open(f"{data_file}") as f:
-            
+
             json_to_python = json.load(f)
             policy = json_to_python
         with open(f"{input_file}") as f:
-            
+
             json_to_python = json.load(f)
             input_data = json_to_python
-        
         msg = initialize(policy, input_data)
         final_output = {
             "result": {
@@ -602,7 +650,9 @@ def evaluate(data_file,input_file):
                 "none_of": none_of(msg),
             }
         }
+        print(final_output)
         return final_output
+
 
 def test_evaluate_handler(event):
     policy = event["data"]
@@ -616,7 +666,6 @@ def test_evaluate_handler(event):
         }
     }
     return final_output
-
 
     # final_output = {
     #     "errors": {},
