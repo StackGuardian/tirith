@@ -54,6 +54,19 @@
                   }
                },
                {
+                                "name": "egress",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "map_in_list",
+                                            "evaluator_data": [
+                                            {"name":"fail"}
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+               {
                   "name":"availability_zone",
                   "evaluators":{
                      "all_of":[
@@ -104,25 +117,19 @@
                   }
                },
                {
-                  "name":"egress",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"map_in_list_full_match",
-                           "evaluator_data":[
-                              {
-                                 "rule_no":11,
-                                 "action":"allow",
-                                 "from_port":"0",
-                                 "to_port":0,
-                                 "protocol":"-1",
-                                 "cidr_block":"0.0.0.0/0"
-                              }
-                           ]
-                        }
-                     ]
-                  }
-               },
+   "name":"egress.*.hello",
+   "evaluators":{
+      "all_of":[
+         {
+            "evaluator_ref":"int_equals_int",
+            "evaluator_data":12
+            }
+         ]
+         }
+
+      
+   }
+,
                {
                   "name":"hibernation",
                   "evaluators":{
