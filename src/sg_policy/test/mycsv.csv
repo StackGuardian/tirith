@@ -104,3 +104,5 @@ no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,al
 8316,213,0.003996610641479492,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
 no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
 8316,213,0.022003650665283203,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.0040204524993896484,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
