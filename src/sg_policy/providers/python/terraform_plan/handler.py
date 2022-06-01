@@ -545,6 +545,8 @@ def map_in_list(
 	input_data, evaluator_data
 ):  # atleast one map i input_data should be present in  evulator_data
 	iter_count = 0
+	print(input_data)
+	print(evaluator_data)
 	if type(input_data) == list and type(evaluator_data) == list:
 		msg = ""
 		if msg == "":
@@ -568,15 +570,11 @@ def map_in_list(
 				if data in evaluator_data:
 					return {"pass": True, "message": msg}, iter_count
 					break
-
-	if type(input_data) != dict:
-		msg = "For 'map_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
-		return {"pass": "undef", "message": msg}, iter_count
-	if type(evaluator_data) != dict:
-		msg = "For 'map_in_list' evaluator_ref, input_data should be a 'map' and evaluator_data should be a 'map'."
-		return {"pass": "undef", "message": msg}, iter_count
+		if msg=="":
+			return {"pass": False, "message": msg}, iter_count
+					
 	else:
-		# print("yes")
+		#print("yes")
 		msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
 		return {"pass": False, "message": msg}, iter_count
 
