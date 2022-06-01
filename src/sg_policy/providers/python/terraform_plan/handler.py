@@ -44,7 +44,7 @@ def find_input_resource_changes_value(chunks, input_resource_change_attrs):
 		res = []
 
 		for i in range(len(input_resource_change_attrs[chunks[0]])):
-			each_re = finditem(input_resource_change_attrs[chunks[0]][i], chunks[-1])
+			each_res= finditem(input_resource_change_attrs[chunks[0]][i], chunks[-1])
 			res.append(each_res)
 
 	else:
