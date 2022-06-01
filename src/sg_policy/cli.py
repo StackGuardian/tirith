@@ -75,6 +75,7 @@ def main(args=None) -> ExitStatus:
 
         if inputType == "terraform_plan":
             if not args.inputPath:
+                #TODO:check if the input and policy path exists.
                 print(
                     "Path to terraform plan file should be provided to '--input-path' argument"
                 )
@@ -87,9 +88,11 @@ def main(args=None) -> ExitStatus:
             #providers.opa.terraform_plan.handler(
             #    args.policyPath, args.inputPath, args.tfVersion
             #)
+
             try:
                 
-                python_tf_plan_handler.evaluate(args.policyPath, args.inputPath)
+                result=python_tf_plan_handler.evaluate(args.policyPath,args.inputPath)
+                print(result)
             except:
                 #TODO:write an exception class for all provider exceptions.
                 print("ERROR")
