@@ -77,6 +77,6 @@ List_of_tuples = test_evaluationresult_handler()
 def test_eval(input_data, evaluator_data, expectedresult):
     from sg_policy.providers.python.terraform_plan import handler
 
-    result, iter_count = handler.map_in_list(input_data, evaluator_data)
+    result, iter_count = handler.map_in_list_full_match(input_data, evaluator_data)
     print(result)
     assert result["pass"] == expectedresult
