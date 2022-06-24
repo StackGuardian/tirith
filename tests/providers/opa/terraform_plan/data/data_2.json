@@ -17,12 +17,12 @@
                   }
                },
                {
-                  "name":"egress.rule_no",
+                  "name":"egress.rule_no.key.value",
                   "evaluators":{
                      "all_of":[
                         {
                            "evaluator_ref":"int_equals_int",
-                           "evaluator_data":99
+                           "evaluator_data":11
                         }
                      ]
                   }
@@ -117,7 +117,7 @@
                   }
                },
                {
-   "name":"egress.*.hello",
+   "name":"egress.*.rule_no.key.value.hello",
    "evaluators":{
       "all_of":[
          {

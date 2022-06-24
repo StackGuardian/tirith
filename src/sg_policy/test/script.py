@@ -17,6 +17,7 @@ start = time()
 data_file = r"C:\Users\ARCHANA SINGH\Desktop\framework\policy-framework\tests\providers\opa\terraform_plan\data\data_2.json"
 input_file = r"C:\Users\ARCHANA SINGH\Desktop\framework\policy-framework\tests\providers\opa\terraform_plan\input\input_2.json"
 json_data = handler.evaluate(data_file, input_file)
+#print(json_data)
 end = time()
 elapsed_time = end - start
 with open(
@@ -37,7 +38,7 @@ data = json.dumps(json_data)
 json_to_python = json.loads(data)
 results = json_to_python
 
-
+#print(results["result"])
 all_of_datas = []
 for result in results["result"]:
     if "all_of" in result:
