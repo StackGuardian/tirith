@@ -1368,7 +1368,21 @@
                "rule_no":{
                   "key":{
                      "value":{
-                        "hello":11
+                        "hello":[2,3]
+                     }
+                  }
+               },
+               "action":"allow",
+               "from_port":"0",
+               "to_port":0,
+               "protocol":"-1",
+               "cidr_block":"0.0.0.0/0"
+            },
+            	{
+               "rule_no":{
+                  "key":{
+                     "value":{
+                        "hello":"hello"
                      }
                   }
                },

@@ -2,8 +2,36 @@ import re
 from time import time
 import os
 import json
+from .evaluators_for_star_queries import star_int_equals_int
+def func(splitted_attr_name_expr, input_data):
 
-#TODO: use CAMELCASE for all function name
+	if len(splitted_attr_name_expr) == 0: # exit condition
+
+		return input_data
+
+	lookup_key = splitted_attr_name_expr[0]
+
+	if lookup_key != "*":
+
+		input_data_new = input_data[lookup_key]
+
+		return func(splitted_attr_name_expr[1:], input_data_new)
+
+	elif lookup_key == "*" and  isinstance(input_data, list):
+
+		values = []
+		
+		for i in input_data[splitted_attr_name_expr[0]]:#input_data["*"]
+
+			values.append(func(splitted_attr_name_expr[1:], i))
+
+		return values
+		
+
+	else:
+
+		return "undef"
+	#TODO: use CAMELCASE for all function name
 def finditem(obj, key):
 
 	if key in obj:
@@ -17,7 +45,7 @@ def finditem(obj, key):
 
 
 def find_input_resource_changes_value(chunks, input_resource_change_attrs):
-
+	
 	Iter_Count = 0
 	if (
 		len(chunks) > 1
@@ -59,7 +87,45 @@ def find_input_resource_changes_value(chunks, input_resource_change_attrs):
 # 	s=finditem(input_resource_change_attrs[chunks[0]][0],chunks[-1])
 # 	print(s)
 
+def get_attribute_name(input_resource_change_attrs,chunks):
+	
+	if ("*" in chunks):
+		
+		if type(input_resource_change_attrs[chunks[0]])==list:
+			
+			res = find_input_resource_changes_value(
+				chunks, input_resource_change_attrs
+			)
+			print(res)
+		else:
+			
+			res="undef"
+	elif len(chunks)>1:
+		if type(input_resource_change_attrs[chunks[0]])==list:
+			
+			res = find_input_resource_changes_value(
+				chunks, input_resource_change_attrs
+			)
+			res=res[0]
+		else:
+			
+			res="undef"
+	
+	else:
+		res = find_input_resource_changes_value(
+			chunks, input_resource_change_attrs
+		)
+		if len(chunks)>1:
+			res=res[0]
 
+
+	try:
+		input_changes = int(res)
+
+	except:
+		input_changes = res
+	return input_changes
+	
 def initialize(policy, input_data):
 
 	policies = policy["terraform_plan"]["policies"]
@@ -91,22 +157,13 @@ def initialize(policy, input_data):
 			if chunks[0] in input_resource_change_attrs:
 				count += 1
 				policy_attribute.append(attribute)
-				policy_attribute_name.append(s)
-				if "*" in chunks:
-					res = find_input_resource_changes_value(
-						chunks, input_resource_change_attrs
-					)
-
-				else:
-					res = find_input_resource_changes_value(
-						chunks, input_resource_change_attrs
-					)
-
-				try:
-					input_changes = int(res)
-
-				except:
-					input_changes = res
+				policy_attribute_name.append(attribute["name"])
+				input_changes=get_attribute_name(input_resource_change_attrs,chunks)
+				msg_new=func(["egress","*","rule_no","key"],input_resource_change_attrs)
+				print(msg_new)
+				
+				#print(attribute	["name"])
+				#print("result",res)
 				input_resource_changes_attr_value.append(input_changes)
 				each_iter_count = count + iter_count
 				Iter_count.append(each_iter_count)
@@ -136,6 +193,7 @@ def initialize(policy, input_data):
 	return msg
 
 
+
 def all_of(msg):
 	total_evaluation = []
 	if msg["policy_attribute"] != []:
@@ -148,6 +206,7 @@ def all_of(msg):
 			if key == "policy_attribute":
 				# print(value)
 				for attribute in value:
+					
 					count += 1
 					# print(attribute)
 					evaluator_all_of = attribute["evaluators"]["all_of"][0]
@@ -157,6 +216,8 @@ def all_of(msg):
 						res = int(evaluator_all_of["evaluator_data"])
 					except:
 						res = evaluator_all_of["evaluator_data"]
+					#print(attribute["name"])
+					#print("result",res)
 					evaluator_data_all_of.append(res)
 					if type(res) == str:
 						evaluator_datatype_all_of.append("string")
@@ -176,6 +237,7 @@ def all_of(msg):
 		each_evaluation = {}
 		evaluator_result_all_of = ""
 		iter_count = 0
+		
 		# print(msg["input_resource_changes_attr_value"])
 		for i in range(len(evaluator_ref_all_of)):
 			if (
@@ -184,36 +246,57 @@ def all_of(msg):
 			):
 				for j in range(len(msg["input_resource_changes_attr_value"][i])):
 					evaluator_result_all_of = evaluator_handler(
+						msg["policy_attribute_name"][i],
 						msg["input_resource_changes_attr_value"][i][j],
 						evaluator_data_all_of[i],
 						evaluator_ref_all_of[i],
 					)[0]
 					iter_count = evaluator_handler(
+						msg["policy_attribute_name"][i],
 						msg["input_resource_changes_attr_value"][i][j],
 						evaluator_data_all_of[i],
 						evaluator_ref_all_of[i],
 					)[1]
 			each_evaluation = {}
-			each_evaluation = {
+			if  msg["input_resource_changes_attr_value"][i]=="undef":
+				each_evaluation={
 				"attribute": msg["policy_attribute_name"][i],
 				"evaluator_ref": evaluator_ref_all_of[i],
 				"evaluator_data": evaluator_data_all_of[i],
 				"input_data": msg["input_resource_changes_attr_value"][i],
 				"input_datatype": msg["input_datatype"][i],
 				"evaluator_datatype": evaluator_datatype_all_of[i],
-				"evaluator_result_all_of": evaluator_handler(
-					msg["input_resource_changes_attr_value"][i],
-					evaluator_data_all_of[i],
-					evaluator_ref_all_of[i],
-				)[0],
-				"iter_count": evaluator_handler(
-					msg["input_resource_changes_attr_value"][i],
-					evaluator_data_all_of[i],
-					evaluator_ref_all_of[i],
-				)[1]
+				"evaluator_result_all_of":{
+			   "pass":"undef",
+			   "message":"input data should be list of data"
+				},
+				"iter_count": (0
 				+ count
-				+ msg["iter_count"][i],
-			}
+				+ msg["iter_count"][i]),
+				
+				}
+			else:
+
+				each_evaluation = {
+					"attribute": msg["policy_attribute_name"][i],
+					"evaluator_ref": evaluator_ref_all_of[i],
+					"evaluator_data": evaluator_data_all_of[i],
+					"input_data": msg["input_resource_changes_attr_value"][i],
+					"input_datatype": msg["input_datatype"][i],
+					"evaluator_datatype": evaluator_datatype_all_of[i],
+					"evaluator_result_all_of": evaluator_handler(msg["policy_attribute_name"][i],
+						msg["input_resource_changes_attr_value"][i],
+						evaluator_data_all_of[i],
+						evaluator_ref_all_of[i],
+					)[0],
+					"iter_count": evaluator_handler(msg["policy_attribute_name"][i],
+						msg["input_resource_changes_attr_value"][i],
+						evaluator_data_all_of[i],
+						evaluator_ref_all_of[i],
+					)[1]
+					+ count
+					+ msg["iter_count"][i],
+				}
 			total_evaluation.append(each_evaluation)
 	return total_evaluation
 
@@ -268,7 +351,7 @@ def any_of(msg):
 				"input_data": msg["input_resource_changes_attr_value"][i],
 				"input_datatype": msg["input_datatype"][i],
 				"evaluator_datatype": evaluator_datatype_any_of[i],
-				"evaluator_result_any_of": evaluator_handler(
+				"evaluator_result_any_of": evaluator_handler(msg["policy_attribute_name"][i],
 					msg["input_resource_changes_attr_value"][i],
 					evaluator_data_any_of[i],
 					evaluator_ref_any_of[i],
@@ -309,6 +392,7 @@ def none_of(msg):
 						res = int(evaluator_none_of["evaluator_data"])
 					except:
 						res = evaluator_none_of["evaluator_data"]
+					
 					evaluator_data_none_of.append(res)
 					if type(evaluator_none_of["evaluator_data"]) == str:
 						evaluator_datatype_none_of.append("string")
@@ -335,7 +419,7 @@ def none_of(msg):
 				"input_data": msg["input_resource_changes_attr_value"][i],
 				"input_datatype": msg["input_datatype"][i],
 				"evaluator_datatype": evaluator_datatype_none_of[i],
-				"evaluator_result_any_of": evaluator_handler(
+				"evaluator_result_any_of": evaluator_handler(msg["policy_attribute_name"][i],
 					msg["input_resource_changes_attr_value"][i],
 					evaluator_data_none_of[i],
 					evaluator_ref_none_of[i],
@@ -352,39 +436,39 @@ def none_of(msg):
 	return total_evaluation
 
 
-def evaluator_handler(input_data, evaluator_data, evaluator_ref):
+def evaluator_handler(attribute_name,input_data, evaluator_data, evaluator_ref):
 	# print(evaluator_ref)
 	if evaluator_ref == "str_equals_str":
-		evaluation_result, iter_count = str_equals_str(input_data, evaluator_data)
+		evaluation_result, iter_count = str_equals_str(input_data, evaluator_data,attribute_name)
 	elif evaluator_ref == "str_contains_str":
 		evaluation_result, iter_count = str_contains_str(
-			input_data[i], evaluator_data[i]
+			input_data[i], evaluator_data[i],attribute_name
 		)
 	elif evaluator_ref == "str_in_list":
-		evaluation_result, iter_count = str_in_list(input_data, evaluator_data)
+		evaluation_result, iter_count = str_in_list(input_data, evaluator_data,attribute_name)
 	elif evaluator_ref == "equals_null":
 		evaluation_result, iter_count = equals_null(input_data[i])
 	elif evaluator_ref == "str_matches_regex":
-		evaluation_result, iter_count = str_matches_regex(input_data, evaluator_data)
+		evaluation_result, iter_count = str_matches_regex(input_data, evaluator_data,attribute_name)
 	elif evaluator_ref == "bool_equals_bool":
-		evaluation_result, iter_count = bool_equals_bool(True, True)
+		evaluation_result, iter_count = bool_equals_bool(input_data, evaluator_data,attribute_name)
 	elif evaluator_ref == "cidr_contains_cidr_or_ip":
 		evaluation_result, iter_count = cidr_contains_cidr_or_ip(
-			input_data, evaluator_data
+			input_data, evaluator_data,attribute_name
 		)
 	elif evaluator_ref == "int_equals_int":
-		evaluation_result, iter_count = int_equals_int(input_data, evaluator_data)
+		evaluation_result, iter_count = int_equals_int(input_data, evaluator_data,attribute_name)
 	elif evaluator_ref == "map_in_list":
-		evaluation_result, iter_count = map_in_list(input_data, evaluator_data)
+		evaluation_result, iter_count = map_in_list(input_data, evaluator_data,attribute_name)
 	elif evaluator_ref == "map_in_list_full_match":
 		evaluation_result, iter_count = map_in_list_full_match(
-			input_data, evaluator_data
+			input_data, evaluator_data,attribute_name
 		)
 	# print(result)
 	return evaluation_result, iter_count
 
 
-def cidr_contains_cidr_or_ip(input_data, evaluator_data):
+def cidr_contains_cidr_or_ip(input_data, evaluator_data,attribute_name):
 	# TODO: improvement
 	iter_count = 0
 	if type(input_data) == str and type(evaluator_data) == str:
@@ -401,7 +485,7 @@ def cidr_contains_cidr_or_ip(input_data, evaluator_data):
 		return {"pass": False, "message": msg}, iter_count
 
 
-def bool_equals_bool(input_data, evaluator_data):
+def bool_equals_bool(input_data, evaluator_data,attribute_name):
 	iter_count = 0
 	if (
 		type(input_data) == bool
@@ -430,7 +514,7 @@ def is_valid(evaluation_data):
 		regex_valid = False
 
 
-def str_matches_regex(input_data, evaluator_data):
+def str_matches_regex(input_data, evaluator_data,attribute_name):
 	iter_count = 0
 	if (
 		type(input_data) == str
@@ -450,7 +534,7 @@ def str_matches_regex(input_data, evaluator_data):
 		return {"pass": False, "message": msg}, iter_count
 
 
-def str_contains_str(input_data, evaluator_data):
+def str_contains_str(input_data, evaluator_data,attribute_name):
 	iter_count = 0
 	if type(input_data) == str and type(evaluator_data) == str:
 		# contains(evaluator_data, input_data)
@@ -468,9 +552,48 @@ def str_contains_str(input_data, evaluator_data):
 
 
 # functions str_equals + type_check put together
-def str_equals_str(input_data, evaluator_data):
+def str_equals_str(input_data, evaluator_data,attribute_name):
 	iter_count = 0
-	if (
+	
+	if type(evaluator_data) != str:
+		msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'string'."
+		return {"pass": "undef", "message": msg}, iter_count
+	elif (
+		type(input_data) == list
+		and type(evaluator_data) == str
+	):  
+		msg=""
+		allowed_list_of_index=[]
+		for i in range(len(input_data)):
+			if type(input_data[i])==str:
+					if input_data[i]==evaluator_data:
+					   iter_count=iter_count+1
+					   allowed_list_of_index.append(i)
+			if type(input_data[i])!=str:
+				msg="input data should be integer"
+				return {"pass":"undef","message":msg},iter_count
+		print(allowed_list_of_index)
+		print(msg)
+		if allowed_list_of_index!=[] and msg=="":
+			msg=f"input_data at the index '{allowed_list_of_index}'' are present"
+			return {"pass":True,"message":msg},iter_count
+		else:
+			msg= f"input data'{input_data}' is not present in allowed list '{evaluator_data}'"
+			return {"pass":False,"message":msg},iter_count
+  
+	elif (
+		type(input_data) == str
+		and type(evaluator_data) == str
+		and input_data == evaluator_data
+	):
+		msg = ""
+		return {"pass": True, "message": msg}, iter_count
+	elif type(input_data) != str:
+		msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'integer'."
+		return {"pass": "undef", "message": msg}, iter_count
+	
+	
+	elif (
 		type(input_data) == str
 		and type(evaluator_data) == str
 		and input_data == evaluator_data
@@ -488,7 +611,7 @@ def str_equals_str(input_data, evaluator_data):
 		return {"pass": False, "message": msg}, iter_count
 
 
-def str_in_list(input_data, evaluator_data):
+def str_in_list(input_data, evaluator_data,attribute_name):
 	iter_count = 0
 	if type(input_data) == str and type(evaluator_data) == list:
 		for i in range(len(evaluator_data)):
@@ -520,9 +643,38 @@ def equals_null(input_data):
 		return {"pass": False, "message": msg}, iter_count
 
 
-def int_equals_int(input_data, evaluator_data):
+def int_equals_int(input_data, evaluator_data,attribute_name):
+	#print(attribute_name)
+	#print(input_data)
+	#print(evaluator_data)
 	iter_count = 0
-	if (
+	if type(evaluator_data) != int:
+		msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'integer'."
+		return {"pass": "undef", "message": msg}, iter_count
+	elif (
+		type(input_data) == list
+		and type(evaluator_data) == int
+	):  
+		msg=""
+		allowed_list_of_index=[]
+		for i in range(len(input_data)):
+			if type(input_data[i])==int:
+					if input_data[i]==evaluator_data:
+					   iter_count=iter_count+1
+					   allowed_list_of_index.append(i)
+			if type(input_data[i])!=int:
+				msg="input data should be integer"
+				return {"pass":"undef","message":msg},iter_count
+		print(allowed_list_of_index)
+		print(msg)
+		if allowed_list_of_index!=[] and msg=="":
+			msg=f"input_data at the index '{allowed_list_of_index}'' are present"
+			return {"pass":True,"message":msg},iter_count
+		else:
+			msg= f"input data'{input_data}' is not present in allowed list '{evaluator_data}'"
+			return {"pass":False,"message":msg},iter_count
+  
+	elif (
 		type(input_data) == int
 		and type(evaluator_data) == int
 		and input_data == evaluator_data
@@ -532,9 +684,7 @@ def int_equals_int(input_data, evaluator_data):
 	elif type(input_data) != int:
 		msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'integer'."
 		return {"pass": "undef", "message": msg}, iter_count
-	elif type(evaluator_data) != int:
-		msg = "For 'int_equals_int' evaluator_ref, both input_data and evaluator_data should be 'integer'."
-		return {"pass": "undef", "message": msg}, iter_count
+	
 	else:
 		msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
 		return {"pass": False, "message": msg}, iter_count
@@ -542,11 +692,11 @@ def int_equals_int(input_data, evaluator_data):
 
 # def list_contains_map(input_data,evaluator_data):
 def map_in_list(
-	input_data, evaluator_data
+	input_data, evaluator_data,attribute_name
 ):  # atleast one map i input_data should be present in  evulator_data
 	iter_count = 0
-	print(input_data)
-	print(evaluator_data)
+	#print(input_data)
+	#print(evaluator_data)
 	if type(input_data) == list and type(evaluator_data) == list:
 		msg = ""
 		if msg == "":
@@ -580,7 +730,7 @@ def map_in_list(
 
 
 def map_in_list_full_match(
-	input_data, evaluator_data
+	input_data, evaluator_data,attribute_name
 ):  # the evaluator_data should contain only the dict items present in input_data
 	iter_count = 0
 	if type(input_data) == list and type(evaluator_data) == list:
@@ -641,6 +791,7 @@ def evaluate(data_file, input_file):
 			json_to_python = json.load(f)
 			input_data = json_to_python
 		msg = initialize(policy, input_data)
+		
 		final_output = {
 			"result": {
 				"all_of": all_of(msg),
@@ -648,7 +799,7 @@ def evaluate(data_file, input_file):
 				"none_of": none_of(msg),
 			}
 		}
-		print(final_output)
+		#print(final_output)
 		return final_output
 
 
