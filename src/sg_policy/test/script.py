@@ -1,3 +1,4 @@
+from icecream import ic
 import json
 
 import pytest
@@ -17,7 +18,7 @@ start = time()
 data_file = r"C:\Users\ARCHANA SINGH\Desktop\framework\policy-framework\tests\providers\opa\terraform_plan\data\data_2.json"
 input_file = r"C:\Users\ARCHANA SINGH\Desktop\framework\policy-framework\tests\providers\opa\terraform_plan\input\input_2.json"
 json_data = handler.evaluate(data_file, input_file)
-#print(json_data)
+print(json_data)
 end = time()
 elapsed_time = end - start
 with open(
