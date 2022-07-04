@@ -3,34 +3,7 @@ from time import time
 import os
 import json
 from .evaluators_for_star_queries import star_int_equals_int
-def func(splitted_attr_name_expr, input_data):
 
-	if len(splitted_attr_name_expr) == 0: # exit condition
-
-		return input_data
-
-	lookup_key = splitted_attr_name_expr[0]
-
-	if lookup_key != "*":
-
-		input_data_new = input_data[lookup_key]
-
-		return func(splitted_attr_name_expr[1:], input_data_new)
-
-	elif lookup_key == "*" and  isinstance(input_data, list):
-
-		values = []
-		
-		for i in input_data[splitted_attr_name_expr[0]]:#input_data["*"]
-
-			values.append(func(splitted_attr_name_expr[1:], i))
-
-		return values
-		
-
-	else:
-
-		return "undef"
 	#TODO: use CAMELCASE for all function name
 def finditem(obj, key):
 
@@ -96,7 +69,7 @@ def get_attribute_name(input_resource_change_attrs,chunks):
 			res = find_input_resource_changes_value(
 				chunks, input_resource_change_attrs
 			)
-			print(res)
+			#print(res)
 		else:
 			
 			res="undef"
@@ -159,8 +132,8 @@ def initialize(policy, input_data):
 				policy_attribute.append(attribute)
 				policy_attribute_name.append(attribute["name"])
 				input_changes=get_attribute_name(input_resource_change_attrs,chunks)
-				msg_new=func(["egress","*","rule_no","key"],input_resource_change_attrs)
-				print(msg_new)
+				#msg_new=func(["egress","*","rule_no","key"],input_resource_change_attrs)
+				#print(msg_new)
 				
 				#print(attribute	["name"])
 				#print("result",res)
@@ -572,8 +545,7 @@ def str_equals_str(input_data, evaluator_data,attribute_name):
 			if type(input_data[i])!=str:
 				msg="input data should be integer"
 				return {"pass":"undef","message":msg},iter_count
-		print(allowed_list_of_index)
-		print(msg)
+		
 		if allowed_list_of_index!=[] and msg=="":
 			msg=f"input_data at the index '{allowed_list_of_index}'' are present"
 			return {"pass":True,"message":msg},iter_count
@@ -665,8 +637,7 @@ def int_equals_int(input_data, evaluator_data,attribute_name):
 			if type(input_data[i])!=int:
 				msg="input data should be integer"
 				return {"pass":"undef","message":msg},iter_count
-		print(allowed_list_of_index)
-		print(msg)
+		
 		if allowed_list_of_index!=[] and msg=="":
 			msg=f"input_data at the index '{allowed_list_of_index}'' are present"
 			return {"pass":True,"message":msg},iter_count
