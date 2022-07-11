@@ -5,6 +5,37 @@ import json
 from .evaluators_for_star_queries import star_int_equals_int
 
 	#TODO: use CAMELCASE for all function name
+def func(splitted_attr_name_expr,input_data):
+  
+  if len(splitted_attr_name_expr) == 0: 
+  
+    return input_data
+  
+  lookup_key = splitted_attr_name_expr[0]
+  
+  if lookup_key != "*":
+    
+    if (type(input_data) == dict):  
+      input_data_new = input_data[lookup_key]
+    elif type(input_data) == list:
+      input_data_new = input_data[0][lookup_key]
+    else:
+      input_data_new = input_data[lookup_key]
+    func(splitted_attr_name_expr[1:], input_data_new)
+  
+  elif lookup_key == "*" and isinstance(input_data, list):
+  
+    values = []
+    
+    for i in input_data:
+    
+        values.append(func(splitted_attr_name_expr[1:], i))
+    
+    return values
+
+  else:
+
+    return "undef"
 def finditem(obj, key):
 
 	if key in obj:
@@ -18,7 +49,7 @@ def finditem(obj, key):
 
 
 def find_input_resource_changes_value(chunks, input_resource_change_attrs):
-	
+	'''Gives the filtered result after processing "*" and "." in query ''' 
 	Iter_Count = 0
 	if (
 		len(chunks) > 1
@@ -61,6 +92,7 @@ def find_input_resource_changes_value(chunks, input_resource_change_attrs):
 # 	print(s)
 
 def get_attribute_name(input_resource_change_attrs,chunks):
+	
 	
 	if ("*" in chunks):
 		
@@ -132,8 +164,9 @@ def initialize(policy, input_data):
 				policy_attribute.append(attribute)
 				policy_attribute_name.append(attribute["name"])
 				input_changes=get_attribute_name(input_resource_change_attrs,chunks)
-				#msg_new=func(["egress","*","rule_no","key"],input_resource_change_attrs)
-				#print(msg_new)
+
+				msg_new=func(chunks,input_resource_change_attrs)
+				print(msg_new)
 				
 				#print(attribute	["name"])
 				#print("result",res)
