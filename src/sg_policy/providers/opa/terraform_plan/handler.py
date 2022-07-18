@@ -65,14 +65,13 @@ def evaluate(data_file, input_file):
                     "json",
                     "--data",
                     f"{rego_path}/main.rego",
-                    "data",
                     "--data",
                     data_file,
                     "--input",
                     input_file,
                 ]
                 output, _ = run_cmds(opa_command, stdout=PIPE, stderr=sys.stdout)
-
+                
                 opa_args = "data.stackguardian.terraform_plan.main.evaluators"
                 opa_args_list = "".join([f"['{arg}']" for arg in opa_args.split(".")[1:-1]])
 
