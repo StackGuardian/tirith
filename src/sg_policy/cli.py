@@ -8,7 +8,8 @@ import textwrap
 
 from sg_policy.status import ExitStatus
 #import sg_policy.providers as providers
-import sg_policy.providers.opa.terraform_plan.handler as handler
+import sg_policy.providers.opa.terraform_plan.handler as opa_tf_plan_handler
+import sg_policy.providers.python.terraform_plan.handler as python_tf_plan_handler
 
 
 def main(args=None) -> ExitStatus:
@@ -74,6 +75,7 @@ def main(args=None) -> ExitStatus:
 
         if inputType == "terraform_plan":
             if not args.inputPath:
+                #TODO:check if the input and policy path exists.
                 print(
                     "Path to terraform plan file should be provided to '--input-path' argument"
                 )
@@ -86,7 +88,15 @@ def main(args=None) -> ExitStatus:
             #providers.opa.terraform_plan.handler(
             #    args.policyPath, args.inputPath, args.tfVersion
             #)
-            handler.evaluate(args.policyPath, args.inputPath)
+
+            try:
+                
+                result=python_tf_plan_handler.evaluate(args.policyPath,args.inputPath)
+                print(result)
+            except:
+                #TODO:write an exception class for all provider exceptions.
+                print("ERROR")
+                return ExitStatus.ERROR
             # print(
             #     f"Policy template successfully generated and stored in {args.policyPath.rsplit('/',1)[0]}/policy_template.json")
         elif inputType in ["terraform_hcl", "cloudformation_json"]:

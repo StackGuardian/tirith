@@ -9,4 +9,4 @@ simplejson = "==3.17.2"
 [dev-packages]
 
 [requires]
-python_version = "3.8.2"
+python_version = "3.8"

@@ -1,0 +1,284 @@
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,"[['ami', 3], ['egress', 4], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,"[['ami', 3], ['egress', 4], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,"[['ami', 3], ['egress', 4], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,"[['ami', 3], ['egress', 4], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,[],[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,[],[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,[],[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,[],[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.0,[],[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+7742,38,0.11077880859375,"[['ami', 3], ['egress', 4], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.0029973983764648438,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.00395655632019043,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.06304574012756348,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+
+
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.0040471553802490234,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.010000944137573242,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.02970266342163086,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.05343818664550781,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.007998228073120117,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.010000467300415039,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.014998912811279297,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,206,0.01698446273803711,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.017001628875732422,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.01399993896484375,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.01899886131286621,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.0029990673065185547,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.002998828887939453,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.008961200714111328,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.009006023406982422,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.016160964965820312,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.016999244689941406,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.0039560794830322266,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.0029993057250976562,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.009999513626098633,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8318,219,0.012999296188354492,"[['ami', 3], ['egress', 5], ['instance_type', 4], ['egress', 7], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,223,0.015935897827148438,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,239,0.010970354080200195,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,239,0.025943994522094727,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,239,0.0039997100830078125,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,239,0.003000974655151367,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,239,0.0040013790130615234,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.002998828887939453,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.0060024261474609375,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.005999326705932617,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.004998922348022461,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.009011030197143555,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.011018753051757812,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.007998228073120117,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.014016151428222656,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.007955551147460938,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.003937244415283203,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.003996610641479492,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.022003650665283203,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.0040204524993896484,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.0660548210144043,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8316,213,0.0,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 6], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.010012149810791016,"[['ami', 3], ['egress', 3], ['instance_type', 4], ['egress', 8], ['egress', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.005002498626708984,"[['ami', 3], ['egress.rule_no', 3], ['instance_type', 4], ['egress', 8], ['egress.*.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.005002260208129883,"[['ami', 3], ['egress.rule_no', 3], ['instance_type', 4], ['egress', 8], ['egress.*.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.005997180938720703,"[['ami', 3], ['egress.rule_no', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.009340047836303711,"[['ami', 3], ['egress.rule_no', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.010040998458862305,"[['ami', 3], ['egress.rule_no.key.value.hello', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.009956121444702148,"[['ami', 3], ['egress.rule_no.key.value.hello', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.0,"[['ami', 3], ['egress.rule_no.key.value.hello', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.010041236877441406,"[['ami', 3], ['egress.rule_no.key.value.hello', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.08000516891479492,"[['ami', 3], ['egress.rule_no.key.value.hello', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.039946556091308594,"[['ami', 3], ['egress.rule_no.key.value.hello', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.0,"[['ami', 3], ['egress.rule_no.key.value.hello', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.0,"[['ami', 3], ['egress.rule_no.key.value.hello', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.010004281997680664,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.01996135711669922,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.019950151443481445,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.01995372772216797,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.012479543685913086,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.00899958610534668,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.011000394821166992,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.009001493453979492,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.010380268096923828,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.00899958610534668,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.011954307556152344,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.01096200942993164,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.012000560760498047,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.015738487243652344,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.013972759246826172,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.012999773025512695,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.01000070571899414,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.010946989059448242,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.012002229690551758,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.019020557403564453,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.008000373840332031,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.01799917221069336,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.0069980621337890625,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.029952287673950195,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.015999555587768555,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.018000364303588867,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.045957088470458984,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.027962207794189453,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.04600119590759277,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.007999897003173828,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.006999015808105469,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.008059263229370117,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.0069980621337890625,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.011996984481811523,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.011954307556152344,"[['ami', 3], ['egress.rule_no.key.valuee', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.007999897003173828,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.007997512817382812,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.007948637008666992,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.008002758026123047,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.00800180435180664,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.008000850677490234,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.007961511611938477,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.010001420974731445,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.011948823928833008,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.009999990463256836,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.005006313323974609,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 4], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.006001472473144531,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 4], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.004953622817993164,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 4], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.0050008296966552734,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 4], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.004958152770996094,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 4], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.011002540588378906,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 5], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.017998218536376953,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.007948637008666992,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.015949010848999023,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.11027312278747559,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.009998559951782227,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.020061492919921875,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.12028312683105469,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.019948244094848633,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.019949913024902344,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.010000944137573242,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.019931316375732422,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.030015230178833008,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.017045021057128906,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.660778284072876,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,1.2606451511383057,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,1.2617897987365723,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,1.4999456405639648,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.9699444770812988,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.7599859237670898,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.41995763778686523,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.0,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
+no.of lines in tf.json,no.of lines in policy,time taken to execute all policy,all_of_data,none_of_data,any_of_data
+8330,213,0.25312376022338867,"[['ami', 3], ['egress.rule_no.key.value', 3], ['instance_type', 4], ['egress', 8], ['egress.*.rule_no.key.value.hello', 3], ['hibernation', 3], ['ami', 3]]",[],[]
