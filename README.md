@@ -40,9 +40,11 @@ This is only a list of approved features that will be included in the StackGuard
 
 Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuardian Policy Framework Repository</a> and in the <a href="https://github.com/stackguardian/policy-framework/issues">issues</a> tab describe any bug or feature you want to add. If found relevant, the maintainers will assign the issue to you and you may start working on it as mentioned in the next section.
 <p>The kinds of issues a contributor can open:</p>
- 1. Report Bugs<br>
- 2. Feature Enhancement<br>
- 3. If any "help" is needed with the policy framework<br>
+ <ul>
+	<li>Report Bugs</li>
+	<li>Feature Enhancement</li>
+	<li>If any "help" is needed with the policy framework</li>
+ </ul>
 
 ## How to open a Pull Request and get it merged?
 
