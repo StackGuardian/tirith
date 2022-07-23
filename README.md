@@ -36,3 +36,24 @@ This is only a list of approved features that will be included in the StackGuard
     twine upload --repository-url https://test.pypi.org/legacy/ dist/*
   ```
 
+## Getting an issue assigned
+
+Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuardian Policy Framework Repository</a> and in the <a href="https://github.com/stackguardian/policy-framework/issues">issues</a> tab describe any bug or feature you want to add. If found relevant, the maintainers will assign the issue to you and you may start working on it as mentioned in the next section.
+<p>The kinds of issues a contributor can open:</p>
+1. Report Bugs
+2. Feature Enhancement
+3. If any "help" is needed with the policy framework
+
+## How to open a Pull Request and get it merged?
+
+ 1. Go to the <a href ="https://github.com/StackGuardian/policy-framework">repository</a> and fork it.
+ 2. Clone the repository in your local machine.
+ 3. Open your terminal and ```cd policy-framework```
+ 4. Create your own branch to work on the changes you intend to perform. For e.g. if you want some changes or bug fix to any function in the evaluators, name your branch with something relevant like, ```git branch bug-fix-equals-evaluator```
+ 5. After necessary changes, ```git push remote main```, ```git checkout main``` and ```git merge bug-fix-equals-evaluator```
+ 6. A review request will be sent to the repository maintainers and your changes will be merged if found relevant.
+
+## Submitting a Feedback
+
+Wanna submit a feedback? Its as simple as writing and posting it in the <a href="https://github.com/StackGuardian/feedback/discussions/8">feedback section</a>.
+<p>Your feedback will help us improve</p>
