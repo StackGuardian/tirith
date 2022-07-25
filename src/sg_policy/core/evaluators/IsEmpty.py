@@ -22,10 +22,6 @@ import BaseEvaluator
 
 class IsEmpty(BaseEvaluator):
     def evaluate(self, input) -> bool:
-        if isinstance(input, str) and len(input) == 0:
-            return True
-        if isinstance(input, list) and len(input) == 0:
-            return True
-        if isinstance(input, dict) and len(input.keys()) == 0:
+        if (isinstance(input, str) or isinstance(input, list) or isinstance(input, dict)) and not input:
             return True
         return False
