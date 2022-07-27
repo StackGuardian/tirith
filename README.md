@@ -6,20 +6,19 @@ StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) co
 
 ## Content
 
-- Features
-- Feature Road-Map
-- How to use it?
-- A basic mind-map of the repository
-- Local Development Environment
-- Want to contribute?
-    * Getting an issue assigned
-    * A bug report
-    * Opening a Pull Request and Merging it
-
-- Submitting a feedback
-- Contributors 
-- Support
-- License
+- [Features](#features)
+- [Feature Road-Map](#feature-road-map)
+- [How to use it?](#how-to-use-it)
+- [A basic mind-map of the repository](#a-basic-mind-map-of-the-repository)
+- [Local Development Environment](#local-development-environment)
+- [Want to contribute?](#want-to-contribute)
+    * [Getting an issue assigned](#getting-an-issue-assigned)
+    * [A bug report](#a-bug-report)
+    * [Opening a Pull Request and getting it merged](#opening-a-pull-request-and-getting-it-merged)
+- [Submitting a feedback](#submitting-a-feedback)
+- [Contributors](#contributors)
+- [Support](#support)
+- [License](#license)
 
 
 
@@ -37,6 +36,11 @@ This is only a list of approved features that will be included in the StackGuard
 - Support for ARM config scanning
 - Extended library of evaluator functions
 
+## How to use it?
+
+## A basic mind-map of the repository
+
+## Local Development Environment
 <!-- ## Publish Package on test.pypi.org
 * Use the following command to install the latest version of the setuptools package.
   ```
@@ -57,7 +61,8 @@ This is only a list of approved features that will be included in the StackGuard
     twine upload --repository-url https://test.pypi.org/legacy/ dist/*
   ``` -->
 
-## Getting an issue assigned
+## Want to contribute?
+### Getting an issue assigned
 
 Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuardian Policy Framework Repository</a> and in the <a href="https://github.com/stackguardian/policy-framework/issues">issues</a> tab describe any bug or feature you want to add. If found relevant, the maintainers will assign the issue to you and you may start working on it as mentioned in the next section.
 <p>The kinds of issues a contributor can open:</p>
@@ -67,7 +72,8 @@ Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuard
 	<li>If any "help" is needed with the policy framework</li>
  </ul>
 
-## How to open a Pull Request and get it merged?
+### A bug report
+### Opening a Pull Request and getting it merged?
 
  1. Go to the <a href ="https://github.com/StackGuardian/policy-framework">repository</a> and fork it.
  2. Clone the repository in your local machine.
@@ -80,4 +86,10 @@ Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuard
 
 Wanna submit a feedback? It's as simple as writing and posting it in the <a href="https://github.com/StackGuardian/feedback/discussions/8">feedback section</a>.
 <p>Your feedback will help us improve</p>
+
+## Contributors
+
+## Support
+
+## License
 
