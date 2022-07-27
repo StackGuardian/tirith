@@ -21,7 +21,7 @@ import BaseEvaluator
 # .. versionadded:: 1.0.0
 
 
-class MoreThen(BaseEvaluator):
+class GreaterThan(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data) -> bool:
 
         value1 = evaluator_input
