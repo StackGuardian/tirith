@@ -12,9 +12,9 @@ StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) co
 - A basic mind-map of the repository
 - Local Development Environment
 - Want to contribute?
-  *Getting an issue assigned
-  *A bug report
-  *Opening a Pull Request and Merging it
+    * Getting an issue assigned
+    * A bug report
+    * Opening a Pull Request and Merging it
 
 - Submitting a feedback
 - Contributors 
