@@ -117,7 +117,7 @@
                   }
                },
                {
-   "name":"egress.*.rule_no.key.value.hello",
+   "name":"egress.*.rule_no",
    "evaluators":{
       "all_of":[
          {

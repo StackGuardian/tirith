@@ -5,6 +5,37 @@ import json
 from .evaluators_for_star_queries import star_int_equals_int
 
 	#TODO: use CAMELCASE for all function name
+# def func(splitted_attr_name_expr,input_data):
+  
+#   if len(splitted_attr_name_expr) == 0: 
+  
+#     return input_data
+  
+#   lookup_key = splitted_attr_name_expr[0]
+  
+#   if lookup_key != "*":
+    
+#     if (type(input_data) == dict):  
+#       input_data_new = input_data[lookup_key]
+#     elif type(input_data) == list:
+#       input_data_new = input_data[0][lookup_key]
+#     else:
+#       input_data_new = input_data[lookup_key]
+#     func(splitted_attr_name_expr[1:], input_data_new)
+  
+#   elif lookup_key == "*" and isinstance(input_data, list):
+  
+#     values = []
+    
+#     for i in input_data:
+    
+#         values.append(func(splitted_attr_name_expr[1:], i))
+    
+#     return values
+
+#   else:
+
+#     return "undef"
 def func(splitted_attr_name_expr,input_data):
   
   if len(splitted_attr_name_expr) == 0: 
@@ -14,24 +45,73 @@ def func(splitted_attr_name_expr,input_data):
   lookup_key = splitted_attr_name_expr[0]
   
   if lookup_key != "*":
-    
-    if (type(input_data) == dict):  
+    print("lookup key    -",lookup_key)
+    print("input_data    -",input_data)
+    if (
+		
+		 (type(input_data) == dict)
+	):  
       input_data_new = input_data[lookup_key]
-    elif type(input_data) == list:
-      input_data_new = input_data[0][lookup_key]
+    elif (
+  		
+  		
+  		 type(input_data) == list
+  	):
+      print(input_data)
+      if type(input_data[0])==list:
+        
+        input_data_new = input_data[0][0][lookup_key]
+      else:
+        input_data_new = input_data[0][lookup_key]
+      print(input_data_new)   
+      
     else:
       input_data_new = input_data[lookup_key]
+  
+  	
+
+    
+    
+    #print("input_new    -",input_data_new)
+  
     func(splitted_attr_name_expr[1:], input_data_new)
   
   elif lookup_key == "*" and isinstance(input_data, list):
-  
+    print("lookup key    -",lookup_key)
+    print("input_data    -",input_data)
     values = []
-    
+    lookup_key=splitted_attr_name_expr[1:2][0]
+    splitted_attr_name_expr=splitted_attr_name_expr[1:]
     for i in input_data:
+      #print(i)
+      #print(lookup_key)
+      
+      values.append( i[lookup_key])
+      #print("values",values)
     
-        values.append(func(splitted_attr_name_expr[1:], i))
+     
     
-    return values
+    input_data_new=values
+    #print("1st data",splitted_attr_name_expr[1:])
+    #print("2nd data",input_data_new)
+    func(splitted_attr_name_expr[1:], input_data_new)
+  elif lookup_key =="*" and isinstance(input_data,dict):
+    values = []
+    lookup_key=splitted_attr_name_expr[1:2][0]
+    splitted_attr_name_expr=splitted_attr_name_expr[1:]
+    for key,value in input_data.items():
+      if key==lookup_key:
+        values.append(value)
+      #print("values",values)
+    
+     
+    
+    input_data_new=values
+    #print("1st data",splitted_attr_name_expr[1:])
+    #print("2nd data",input_data_new)
+    func(splitted_attr_name_expr[1:], input_data_new)
+    
+    
 
   else:
 
@@ -132,7 +212,7 @@ def get_attribute_name(input_resource_change_attrs,chunks):
 	return input_changes
 	
 def initialize(policy, input_data):
-
+    '''this function arranges the input changes per resource included in policy'''
 	policies = policy["terraform_plan"]["policies"]
 	policy_resource = []
 	policy_attribute_name = []
@@ -776,7 +856,8 @@ def map_in_list_full_match(
 		# print("yes")
 		msg = f"input string '{input_data}' is not present in allowed list '{evaluator_data}'"
 		return {"pass": False, "message": msg}, iter_count
-
+def equals(input_data, evaluator_data,attribute_name):
+	
 
 def evaluate(data_file, input_file):
 	# print(data)
