@@ -1,29 +1,27 @@
 import BaseEvaluator
 
-# Checks if :attr:`value` is less then or equal to :attr:`other`. Automatically casts values to the same type if possible.
+# Checks if :attr:`value` is less then :attr:`other`. Automatically casts values to the same type if possible.
 
 # Args:
 #     value (mixed): Value to compare.
 #     other (mixed): Other value to compare.
 
 # Returns:
-#     bool: Whether :attr:`value` is less then equal to :attr:`other`.
+#     bool: Whether :attr:`value` is less then :attr:`other`.
 
 # Example:
 
-#     >>> eq(None, None)
-#     True
-#     >>> eq(None, '')
+#     >>> l(None, None)
 #     False
-#     >>> eq('a', 'a')
+#     >>> l(2, 3)
 #     True
-#     >>> eq(1, str(1))
+#     >>> l('a', 'a')
 #     False
 
 # .. versionadded:: 1.0.0
 
 
-class LessEquals(BaseEvaluator):
+class LessThan(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data) -> bool:
 
         value1 = evaluator_input
@@ -42,6 +40,6 @@ class LessEquals(BaseEvaluator):
             value1 = str(evaluator_input)
             value2 = str(evaluator_data)
 
-            return value1 <= value2
+            return value1 < value2
         else:
             return False
