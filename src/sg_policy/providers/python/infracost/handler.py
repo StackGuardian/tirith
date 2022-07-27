@@ -1,5 +1,4 @@
-
-def getValuesFromAll(costType,input_data):
+def getValuesFromAll(costType, input_data):
     totalSum = 0
     projects = input_data["projects"]
     for project in projects:
@@ -10,8 +9,7 @@ def getValuesFromAll(costType,input_data):
     return totalSum
 
 
-
-def getValuesFromSet(resource_type,costType,input_data):
+def getValuesFromSet(resource_type, costType, input_data):
     totalSum = 0
     projects = input_data["projects"]
     for project in projects:
@@ -25,13 +23,9 @@ def getValuesFromSet(resource_type,costType,input_data):
 def initialize(provider_inputs, input_data):
     resource_type = provider_inputs['resource_type']
     costType = provider_inputs['costType']
-    if len(resource_type)==0 or resource_type=='*' or resource_type == ["*"]:
-        value = getValuesFromAll(costType,input_data)
-        return value
+    if len(resource_type) == 0 or resource_type == '*' or resource_type == ["*"]:
+        value = getValuesFromAll(costType, input_data)
+        return [{'value': value}]
     else:
-        value = getValuesFromSet(resource_type,costType,input_data)
-        return value
-
-
-
-
+        value = getValuesFromSet(resource_type, costType, input_data)
+        return [{'value': value}]
