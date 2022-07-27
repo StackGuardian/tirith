@@ -40,29 +40,35 @@ class Equals(BaseEvaluator):
 
     def evaluate(self, evaluator_input, evaluator_data) -> bool:
 
-        value1 = evaluator_input
-        value2 = evaluator_data
-        if (
-            isinstance(evaluator_input, str)
-            or isinstance(evaluator_input, dict)
-            or isinstance(evaluator_input, list)
-        ):
+        try:
             value1 = evaluator_input
-        else:
-            value1 = str(evaluator_data)
-        if (
-            isinstance(evaluator_data, str)
-            or isinstance(evaluator_data, dict)
-            or isinstance(evaluator_data, list)
-        ):
             value2 = evaluator_data
-        else:
-            value2 = str(evaluator_data)
 
-        # sort all lists in dicts
-        if isinstance(value1, dict):
-            value1 = self.sort_lists_in_dicts(value1)
-        if isinstance(value2, dict):
-            value2 = self.sort_lists_in_dicts(value2)
+            # if (
+            #         isinstance(evaluator_input, str)
+            #         or isinstance(evaluator_input, dict)
+            #         or isinstance(evaluator_input, list)
+            # ):
+            #     value1 = evaluator_input
+            # else:
+            #     value1 = str(evaluator_data)
+            # if (
+            #         isinstance(evaluator_data, str)
+            #         or isinstance(evaluator_data, dict)
+            #         or isinstance(evaluator_data, list)
+            # ):
+            #     value2 = evaluator_data
+            # else:
+            #     value2 = str(evaluator_data)
 
-        return value1 == value2
+            # sort all lists in dicts
+            if isinstance(value1, dict):
+                value1 = self.sort_lists_in_dicts(value1)
+            if isinstance(value2, dict):
+                value2 = self.sort_lists_in_dicts(value2)
+
+            return value1 == value2
+
+        except:
+            return False
+
