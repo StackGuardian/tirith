@@ -4,11 +4,32 @@
 
 StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using JSON.
 
+## Content
+
+- Features
+- Feature Road-Map
+- How to use it?
+- A basic mind-map of the repository
+- Local Development Environment
+- Want to contribute?
+<pre>1. Getting an issue assigned</pre><br>
+<pre>2. A bug report</pre><br>
+<pre>3. Opening a Pull Request and Merging it</pre><br>
+
+- Submitting a feedback
+- Contributors 
+- Support
+- License
+
+
+
 ## Features
 - A simple interface to define compliance policies as declarative config, which can be enforced proactively on Infrastructure as Code to detect breaches.
 - Pluggable architecture allows to integrate into policy engines like OPA for policy evaluation.
 - Summarizes evaluation output and provides brief output formatting.
-- Cli support with data and input as arguments
+- Cli support with data and input as arguments.
+- Very easy to use.
+- Works on Mac, Linux and Windows.
 
 ## Feature Road-map
 This is only a list of approved features that will be included in the StackGuardian Policy Framework over the next few months.
@@ -16,7 +37,7 @@ This is only a list of approved features that will be included in the StackGuard
 - Support for ARM config scanning
 - Extended library of evaluator functions
 
-## Publish Package on test.pypi.org
+<!-- ## Publish Package on test.pypi.org
 * Use the following command to install the latest version of the setuptools package.
   ```
     python -m pip install --user --upgrade setuptools
@@ -34,7 +55,7 @@ This is only a list of approved features that will be included in the StackGuard
 * Upload you package to test.pypi using following command.
   ```
     twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-  ```
+  ``` -->
 
 ## Getting an issue assigned
 
@@ -57,5 +78,6 @@ Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuard
 
 ## Submitting a Feedback
 
-Wanna submit a feedback? Its as simple as writing and posting it in the <a href="https://github.com/StackGuardian/feedback/discussions/8">feedback section</a>.
+Wanna submit a feedback? It's as simple as writing and posting it in the <a href="https://github.com/StackGuardian/feedback/discussions/8">feedback section</a>.
 <p>Your feedback will help us improve</p>
+
