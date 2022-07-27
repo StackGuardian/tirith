@@ -1,6 +1,6 @@
 import BaseEvaluator
 
-# Checks if input is empty
+# Checks if input is empty (null, empty list [], empty dict {}, empty str '')
 
 # Args:
 #     value (mixed): Value to check.
