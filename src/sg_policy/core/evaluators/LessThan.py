@@ -23,7 +23,7 @@ import BaseEvaluator
 
 class LessThan(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"result": False, "reason": "Equals evaluator failed"}
+        evaluation_result = {"result": False, "reason": "LessThan evaluator failed"}
         try:
             value1 = evaluator_input
             value2 = evaluator_data
