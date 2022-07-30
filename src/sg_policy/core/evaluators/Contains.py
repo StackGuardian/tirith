@@ -25,35 +25,49 @@ import BaseEvaluator
 
 class Contains(BaseEvaluator):
     def sort_lists_in_dicts(self, input):
-        for key in input:
-            if isinstance(input[key], list):
-                if isinstance(input[key][0], dict):
-                    sorted_array = []
-                    for index, item in enumerate(input[key]):
-                        sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
-                    input[key] = sorted_array
-                elif isinstance(input[key][0], list):
-                    sorted_array = []
-                    for index, item in enumerate(input[key]):
-                        sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
-                    input[key] = sorted_array
-                else:
-                    input[key] = sorted(input[key])
-            if isinstance(input[key], dict):
-                self.sort_lists_in_dicts(input[key])
-        return input
+        try:
+            for key in input:
+                if isinstance(input[key], list):
+                    if isinstance(input[key][0], dict):
+                        sorted_array = []
+                        for index, item in enumerate(input[key]):
+                            sorted_array.append(
+                                self.sort_lists_in_dicts(input[key][index])
+                            )
+                        input[key] = sorted_array
+                    elif isinstance(input[key][0], list):
+                        sorted_array = []
+                        for index, item in enumerate(input[key]):
+                            sorted_array.append(
+                                self.sort_lists_in_dicts(input[key][index])
+                            )
+                        input[key] = sorted_array
+                    else:
+                        input[key] = sorted(input[key])
+                if isinstance(input[key], dict):
+                    self.sort_lists_in_dicts(input[key])
+            return input
+        except Exception as e:
+            return input
 
-    def evaluate(self, evaluator_input, evaluator_data) -> bool:
-        # if evaluator_input and evaluator_data are both strings
-        if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
-            return evaluator_input in evaluator_data
-        # if evaluator_input is a list
-        if isinstance(evaluator_data, list):
-            evaluator_data = self.sort_lists_in_dicts(evaluator_data)
-            if isinstance(evaluator_input, list):
-                evaluator_input = self.sort_lists_in_dicts(evaluator_input)
-                return evaluator_input in evaluator_data
-        if isinstance(evaluator_data, dict):
-            return evaluator_input in evaluator_data
+    def evaluate(self, evaluator_input, evaluator_data):
+        evaluation_result = {
+            "result": False,
+            "reason": "Failed to find required value inside input",
+        }
+        try:
+            # if evaluator_input and evaluator_data are both strings
+            if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
+                evaluation_result["result"] = evaluator_input in evaluator_data
+            # if evaluator_input is a list
+            if isinstance(evaluator_data, list):
+                evaluator_data = self.sort_lists_in_dicts(evaluator_data)
+                if isinstance(evaluator_input, list):
+                    evaluator_input = self.sort_lists_in_dicts(evaluator_input)
+                    evaluation_result["result"] = evaluator_input in evaluator_data
+            if isinstance(evaluator_data, dict):
+                evaluation_result["result"] = evaluator_input in evaluator_data
 
-        return False
+            return evaluation_result
+        except Exception as e:
+            return evaluation_result
