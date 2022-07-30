@@ -87,8 +87,6 @@ Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuard
 Wanna submit a feedback? It's as simple as writing and posting it in the <a href="https://github.com/StackGuardian/feedback/discussions/8">feedback section</a>.
 <p>Your feedback will help us improve</p>
 
-## Contributors
-
 ## Support
 
 ## License
