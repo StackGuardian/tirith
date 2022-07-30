@@ -25,18 +25,30 @@ import BaseEvaluator
 
 class Equals(BaseEvaluator):
     def sort_lists_in_dicts(self, input):
-        for key in input:
-            if isinstance(input[key], list):
-                if isinstance(input[key][0], dict):
-                    sorted_array = []
-                    for index, item in enumerate(input[key]):
-                        sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
-                    input[key] = sorted_array
-                else:
-                    input[key] = sorted(input[key])
-            if isinstance(input[key], dict):
-                self.sort_lists_in_dicts(input[key])
-        return input
+        try:
+            for key in input:
+                if isinstance(input[key], list):
+                    if isinstance(input[key][0], dict):
+                        sorted_array = []
+                        for index, item in enumerate(input[key]):
+                            sorted_array.append(
+                                self.sort_lists_in_dicts(input[key][index])
+                            )
+                        input[key] = sorted_array
+                    elif isinstance(input[key][0], list):
+                        sorted_array = []
+                        for index, item in enumerate(input[key]):
+                            sorted_array.append(
+                                self.sort_lists_in_dicts(input[key][index])
+                            )
+                        input[key] = sorted_array
+                    else:
+                        input[key] = sorted(input[key])
+                if isinstance(input[key], dict):
+                    self.sort_lists_in_dicts(input[key])
+            return input
+        except Exception as e:
+            return input
 
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"result": False, "reason": "Equals evaluator failed"}
@@ -61,16 +73,8 @@ class Equals(BaseEvaluator):
             # else:
             #     value2 = str(evaluator_data)
 
-            # sort all lists in dicts
-            if isinstance(value1, dict):
-                value1 = self.sort_lists_in_dicts(value1)
-            if isinstance(value2, dict):
-                value2 = self.sort_lists_in_dicts(value2)
-
             evaluation_result["result"] = value1 == value2
             return evaluation_result
-
         except Exception as e:
             evaluation_result["reason"] = str(e)
             return evaluation_result
-
