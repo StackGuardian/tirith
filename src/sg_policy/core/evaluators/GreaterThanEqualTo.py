@@ -25,7 +25,7 @@ import BaseEvaluator
 
 class GreaterThanEqualTo(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"result": False, "reason": "Equals evaluator failed"}
+        evaluation_result = {"result": False, "reason": "GreaterThanEqualTo evaluator failed"}
         try:
             value1 = evaluator_input
             value2 = evaluator_data
