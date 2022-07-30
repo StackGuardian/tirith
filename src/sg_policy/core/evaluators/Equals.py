@@ -38,8 +38,8 @@ class Equals(BaseEvaluator):
                 self.sort_lists_in_dicts(input[key])
         return input
 
-    def evaluate(self, evaluator_input, evaluator_data) -> bool:
-
+    def evaluate(self, evaluator_input, evaluator_data):
+        evaluation_result = {"result": False, "reason": "Equals evaluator failed"}
         try:
             value1 = evaluator_input
             value2 = evaluator_data
@@ -67,8 +67,10 @@ class Equals(BaseEvaluator):
             if isinstance(value2, dict):
                 value2 = self.sort_lists_in_dicts(value2)
 
-            return value1 == value2
+            evaluation_result["result"] = value1 == value2
+            return evaluation_result
 
-        except:
-            return False
+        except Exception as e:
+            evaluation_result["reason"] = str(e)
+            return evaluation_result
 
