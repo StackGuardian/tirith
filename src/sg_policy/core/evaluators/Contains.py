@@ -66,7 +66,23 @@ class Contains(BaseEvaluator):
                     evaluator_input = self.sort_lists_in_dicts(evaluator_input)
                     evaluation_result["result"] = evaluator_input in evaluator_data
             if isinstance(evaluator_data, dict):
-                evaluation_result["result"] = evaluator_input in evaluator_data
+                if isinstance(evaluator_input, dict):
+                    for key in evaluator_data:
+                        if key in evaluator_input:
+                            if evaluator_data[key] != evaluator_input[key]:
+                                evaluation_result["result"] = False
+                                evaluation_result[
+                                    "reason"
+                                ] = "Failed to find required value inside input"
+                                break
+                        else:
+                            evaluation_result["result"] = False
+                            evaluation_result[
+                                "reason"
+                            ] = "Failed to find required value inside input"
+                            break
+                else:
+                    evaluation_result["result"] = evaluator_input in evaluator_data
 
             return evaluation_result
         except Exception as e:
