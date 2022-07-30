@@ -21,7 +21,12 @@ import BaseEvaluator
 
 
 class IsNotEmpty(BaseEvaluator):
-    def evaluate(self, input) -> bool:
-        if (isinstance(input, str) or isinstance(input, list) or isinstance(input, dict)) and input:
-            return True
-        return False
+    def evaluate(self, input):
+        evaluation_result = {"result": False, "reason": "Equals evaluator failed"}
+        try:
+            if (isinstance(input, str) or isinstance(input, list) or isinstance(input, dict)) and input:
+                evaluation_result["result"] = True
+            return evaluation_result
+        except Exception as e:
+            evaluation_result["reason"] = str(e)
+            return evaluation_result
