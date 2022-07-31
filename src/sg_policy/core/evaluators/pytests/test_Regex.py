@@ -1,7 +1,7 @@
 import re
 import pytest
 import sys
-sys.path.append('/home/aksharsans/Desktop/SG_policyframework/policy-framework/src/sg_policy/core/evaluators')
+sys.path.append('/policy-framework/src/sg_policy/core/evaluators')
 import Regex
 
 evaluator_data = "^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
