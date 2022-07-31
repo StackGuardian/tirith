@@ -15,8 +15,7 @@ StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) co
     * [Getting an issue assigned](#getting-an-issue-assigned)
     * [A bug report](#a-bug-report)
     * [Opening a Pull Request and getting it merged](#opening-a-pull-request-and-getting-it-merged)
-- [Submitting a feedback](#submitting-a-feedback)
-- [Contributors](#contributors)
+- [Submitting a feedback](#submitting-a-feedback) 
 - [Support](#support)
 - [License](#license)
 
