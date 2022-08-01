@@ -31,14 +31,14 @@ def generate_evaluator_result(evaluator_obj):
         provider_inputs, evaluator_module
     )
     if evaluator_module == "core":
-        if evaluator_class == "Equals":
-            evaluator_instance = Equals()
-            result = evaluator_instance.evaluate(evaluator_inputs, evaluator_data)
-            return result
-        elif evaluator_class == "Contains":
-            evaluator_instance = Contains()
-            result = evaluator_instance.evaluate(evaluator_inputs, evaluator_data)
-            return result
+        result = None
+        try:
+            evaluator_instance = eval(f"{evaluator_class}()")
+        except NameError as e:
+            print(f"{evaluator_class} is not a supported evaluator.")
+
+        result = evaluator_instance.evaluate(evaluator_inputs, evaluator_data)
+        return result
 
 
 def finalEvaluator(evalString, evalIdValues):
