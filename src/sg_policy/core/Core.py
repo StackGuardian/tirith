@@ -24,11 +24,11 @@ def generate_evaluator_result(evaluator_obj):
     #     },
     evaluator_module = evaluator_obj.get("provider", "core")
     evaluator_class = evaluator_obj.get("evaluator_ref")
-    providor_inputs = evaluator_obj.get("provider_inputs")
+    provider_inputs = evaluator_obj.get("provider_inputs")
     evaluator_data = evaluator_obj.get("evaluator_data")
 
     evaluator_inputs = getEvaluatorInputsFromProviderInputs(
-        providor_inputs, evaluator_module
+        provider_inputs, evaluator_module
     )
     if evaluator_module == "core":
         if evaluator_class == "Equals":

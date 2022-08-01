@@ -7,9 +7,10 @@ import sys
 import textwrap
 
 from sg_policy.status import ExitStatus
-#import sg_policy.providers as providers
+
+# import sg_policy.providers as providers
 import sg_policy.providers.opa.terraform_plan.handler as opa_tf_plan_handler
-import sg_policy.providers.python.terraform_plan.handler as python_tf_plan_handler
+import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
 
 
 def main(args=None) -> ExitStatus:
@@ -22,7 +23,11 @@ def main(args=None) -> ExitStatus:
     Return exit status code.
     """
     try:
-        parser = argparse.ArgumentParser(description="StackGuardian Policy Framework." , formatter_class=argparse.RawTextHelpFormatter , epilog=textwrap.dedent('''\
+        parser = argparse.ArgumentParser(
+            description="StackGuardian Policy Framework.",
+            formatter_class=argparse.RawTextHelpFormatter,
+            epilog=textwrap.dedent(
+                """\
          About StackGuardian Policy Framework:
          
                                 * Abstract away the implementation complexity of policy engine underneath.
@@ -31,7 +36,9 @@ def main(args=None) -> ExitStatus:
                                 * Provide modularity to enable easy extensibility
                                 * Github - https://github.com/StackGuardian/policy-framework
                                 * Docs - https://docs.stackguardian.io/docs/policy-framework/overview
-         '''))
+         """
+            ),
+        )
         parser.add_argument(
             "--policy-path",
             metavar="PATH",
@@ -46,14 +53,13 @@ def main(args=None) -> ExitStatus:
             dest="inputPath",
             help="Input config path. Can be a file or dir, depending on --input-type",
         )
-        parser.add_argument('--version', action='version',
-                            version='0.0.1')
+        parser.add_argument("--version", action="version", version="0.0.1")
         args = parser.parse_args()
 
         if not args.policyPath:
             print("'--policyPath' argument is required")
             return ExitStatus.ERROR
-        # move to core
+        # TODO: move to core
         if not args.inputType:
             print("'--input-type' argument is required")
             return ExitStatus.ERROR
@@ -62,7 +68,7 @@ def main(args=None) -> ExitStatus:
 
         if inputType == "terraform_plan":
             if not args.inputPath:
-                #TODO:check if the input and policy path exists.
+                # TODO:check if the input and policy path exists.
                 print(
                     "Path to terraform plan file should be provided to '--input-path' argument"
                 )
@@ -72,16 +78,18 @@ def main(args=None) -> ExitStatus:
                     "'--tf-version' argument is required when --input-type=terraform_plan"
                 )
                 return ExitStatus.ERROR
-            #providers.opa.terraform_plan.handler(
+            # providers.opa.terraform_plan.handler(
             #    args.policyPath, args.inputPath, args.tfVersion
-            #)
+            # )
 
             try:
-                
-                result=python_tf_plan_handler.evaluate(args.policyPath,args.inputPath)
+
+                result = python_tf_plan_handler.evaluate(
+                    args.policyPath, args.inputPath
+                )
                 print(result)
             except:
-                #TODO:write an exception class for all provider exceptions.
+                # TODO:write an exception class for all provider exceptions.
                 print("ERROR")
                 return ExitStatus.ERROR
             # print(
