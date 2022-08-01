@@ -40,25 +40,11 @@ def main(args=None) -> ExitStatus:
             help="Path containing policy defined using SG Policy Framework",
         )
         parser.add_argument(
-            "--input-type",
-            metavar="SOURCE-TYPE",
-            type=str,
-            dest="inputType",
-            help="Input config type to be evaluated. Example: terraform_plan, terraform_hcl, cloudformation_json",
-        )
-        parser.add_argument(
             "--input-path",
             metavar="SOURCE-TYPE",
             type=str,
             dest="inputPath",
             help="Input config path. Can be a file or dir, depending on --input-type",
-        )
-        parser.add_argument(
-            "--tf-version",
-            metavar="TF-VERSION",
-            type=str,
-            dest="tfVersion",
-            help="Terraform version for the provided source. Example: 0.14.6, 1.0.0",
         )
         parser.add_argument('--version', action='version',
                             version='0.0.1')
@@ -67,6 +53,7 @@ def main(args=None) -> ExitStatus:
         if not args.policyPath:
             print("'--policyPath' argument is required")
             return ExitStatus.ERROR
+        # move to core
         if not args.inputType:
             print("'--input-type' argument is required")
             return ExitStatus.ERROR
