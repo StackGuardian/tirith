@@ -55,28 +55,23 @@ class Equals(BaseEvaluator):
         try:
             value1 = evaluator_input
             value2 = evaluator_data
-            if (
-                isinstance(evaluator_input, str)
-                or isinstance(evaluator_input, dict)
-                or isinstance(evaluator_input, list)
-            ):
-                value1 = evaluator_input
-            else:
-                value1 = str(evaluator_data)
-            if (
-                isinstance(evaluator_data, str)
-                or isinstance(evaluator_data, dict)
-                or isinstance(evaluator_data, list)
-            ):
-                value2 = evaluator_data
-            else:
-                value2 = str(evaluator_data)
 
-            # sort all lists in dicts
-            if isinstance(value1, dict):
-                value1 = self.sort_lists_in_dicts(value1)
-            if isinstance(value2, dict):
-                value2 = self.sort_lists_in_dicts(value2)
+            # if (
+            #         isinstance(evaluator_input, str)
+            #         or isinstance(evaluator_input, dict)
+            #         or isinstance(evaluator_input, list)
+            # ):
+            #     value1 = evaluator_input
+            # else:
+            #     value1 = str(evaluator_data)
+            # if (
+            #         isinstance(evaluator_data, str)
+            #         or isinstance(evaluator_data, dict)
+            #         or isinstance(evaluator_data, list)
+            # ):
+            #     value2 = evaluator_data
+            # else:
+            #     value2 = str(evaluator_data)
 
             evaluation_result["result"] = value1 == value2
             return evaluation_result
