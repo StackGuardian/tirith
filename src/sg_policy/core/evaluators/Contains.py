@@ -1,4 +1,4 @@
-import BaseEvaluator
+from base_evaluator import BaseEvaluator
 
 # Checks if :attr: `evaluator_input` is contained in :attr:`evaluator_data`.
 

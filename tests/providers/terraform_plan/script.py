@@ -10,7 +10,7 @@ from time import time, strftime, localtime
 from datetime import timedelta
 import pandas as pd
 from decimal import Decimal
-from sg_policy.providers.python.terraform_plan import handler
+from sg_policy.providers.terraform_plan import handler
 import json
 
 
@@ -39,7 +39,7 @@ data = json.dumps(json_data)
 json_to_python = json.loads(data)
 results = json_to_python
 
-#print(results["result"])
+# print(results["result"])
 all_of_datas = []
 for result in results["result"]:
     if "all_of" in result:
