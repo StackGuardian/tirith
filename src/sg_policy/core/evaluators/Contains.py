@@ -53,7 +53,7 @@ class Contains(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {
             "result": False,
-            "reason": "Failed to find required value inside input",
+            "message": "Failed to find required value inside input",
         }
         try:
             # if evaluator_input and evaluator_data are both strings
@@ -72,13 +72,13 @@ class Contains(BaseEvaluator):
                             if evaluator_data[key] != evaluator_input[key]:
                                 evaluation_result["result"] = False
                                 evaluation_result[
-                                    "reason"
+                                    "message"
                                 ] = "Failed to find required value inside input"
                                 break
                         else:
                             evaluation_result["result"] = False
                             evaluation_result[
-                                "reason"
+                                "message"
                             ] = "Failed to find required value inside input"
                             break
                 else:
