@@ -1,4 +1,4 @@
-import BaseEvaluator
+from base_evaluator import BaseEvaluator
 
 # Checks if :attr:`value` is more then or equal to :attr:`other`. Automatically casts values to the same type if possible.
 
@@ -25,12 +25,12 @@ import BaseEvaluator
 
 class GreaterThanEqualTo(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"result": False, "reason": "GreaterThanEqualTo evaluator failed"}
+        evaluation_result = {"result": False, "message": "GreaterThanEqualTo evaluator failed"}
         try:
             value1 = evaluator_input
             value2 = evaluator_data
             evaluation_result["result"] = value1 >= value2
             return evaluation_result
         except Exception as e:
-            evaluation_result["reason"] = str(e)
+            evaluation_result["message"] = str(e)
             return evaluation_result

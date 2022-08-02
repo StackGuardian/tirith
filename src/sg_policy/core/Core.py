@@ -41,7 +41,7 @@ def generate_evaluator_result(evaluator_obj):
 
 def finalEvaluator(evalString, evalIdValues):
     for key in evalIdValues:
-        evalString = evalString.replace(key, str(evalIdValues[key]))
+        evalString = evalString.replace(key, str(evalIdValues[key]["result"]))
         # print (evalString)
     evalString = (
         evalString.replace(" ", "")
