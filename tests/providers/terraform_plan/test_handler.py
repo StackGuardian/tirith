@@ -16,219 +16,214 @@ def apigw_event():
     """Generates API GW Event"""
 
     return {
-        "data":{
-   "terraform_plan":{
-      "schema_version":"V1.BETA",
-      "policies":[
-         {
-            "resource_type":"aws_vpc",
-            "attributes":[
-               {
-                  "name":"ami",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"str_equals_str",
-                           "evaluator_data":"resource_data"
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"egress.rule_no",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"int_equals_int",
-                           "evaluator_data":99
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"instance_type",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"str_in_list",
-                           "evaluator_data":[
-                              "provide list of string values to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"associate_public_ip_address",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"bool_equals_bool",
-                           "evaluator_data":[
-                              "provide list of boolean value to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
+        "data": {
+            "terraform_plan": {
+                "schema_version": "V1.BETA",
+                "policies": [
+                    {
+                        "resource_type": "aws_vpc",
+                        "attributes": [
+                            {
+                                "name": "ami",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "str_equals_str",
+                                            "evaluator_data": "resource_data",
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "egress.rule_no",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "int_equals_int",
+                                            "evaluator_data": 99,
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "instance_type",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "str_in_list",
+                                            "evaluator_data": [
+                                                "provide list of string values to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "associate_public_ip_address",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "bool_equals_bool",
+                                            "evaluator_data": [
+                                                "provide list of boolean value to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
                                 "name": "egress",
                                 "evaluators": {
                                     "all_of": [
                                         {
                                             "evaluator_ref": "map_in_list",
-                                            "evaluator_data": [
-                                            {"name":"fail"}
-                                            ]
+                                            "evaluator_data": [{"name": "fail"}],
                                         }
                                     ]
-                                }
+                                },
                             },
-               {
-                  "name":"availability_zone",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"str_in_list",
-                           "evaluator_data":[
-                              "provide list of string values to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"tag",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"int_equals_int",
-                           "evaluator_data":99
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"get_password_data",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"bool_equals_bool",
-                           "evaluator_data":[
-                              "provide list of boolean value to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"ebs_optimized",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"bool_equals_bool",
-                           "evaluator_data":[
-                              "provide list of boolean value to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-   "name":"egress.*.hello",
-   "evaluators":{
-      "all_of":[
-         {
-            "evaluator_ref":"int_equals_int",
-            "evaluator_data":12
+                            {
+                                "name": "availability_zone",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "str_in_list",
+                                            "evaluator_data": [
+                                                "provide list of string values to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "tag",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "int_equals_int",
+                                            "evaluator_data": 99,
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "get_password_data",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "bool_equals_bool",
+                                            "evaluator_data": [
+                                                "provide list of boolean value to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "ebs_optimized",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "bool_equals_bool",
+                                            "evaluator_data": [
+                                                "provide list of boolean value to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "egress.*.hello",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "int_equals_int",
+                                            "evaluator_data": 12,
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "hibernation",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "bool_equals_bool",
+                                            "evaluator_data": [
+                                                "provide list of boolean value to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "disable_api_termination",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "bool_equals_bool",
+                                            "evaluator_data": [
+                                                "provide list of boolean value to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "host_id",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "str_in_list",
+                                            "evaluator_data": [
+                                                "provide list of string values to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "instance_initiated_shutdown_behavior",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "str_in_list",
+                                            "evaluator_data": [
+                                                "provide list of string values to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "key_name",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "str_in_list",
+                                            "evaluator_data": [
+                                                "provide list of string values to match"
+                                            ],
+                                        }
+                                    ]
+                                },
+                            },
+                            {
+                                "name": "ami",
+                                "evaluators": {
+                                    "all_of": [
+                                        {
+                                            "evaluator_ref": "int_equals_int",
+                                            "evaluator_data": 2,
+                                        }
+                                    ]
+                                },
+                            },
+                        ],
+                    }
+                ],
             }
-         ]
-         }
-
-      
-   }
-,
-               {
-                  "name":"hibernation",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"bool_equals_bool",
-                           "evaluator_data":[
-                              "provide list of boolean value to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"disable_api_termination",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"bool_equals_bool",
-                           "evaluator_data":[
-                              "provide list of boolean value to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"host_id",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"str_in_list",
-                           "evaluator_data":[
-                              "provide list of string values to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"instance_initiated_shutdown_behavior",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"str_in_list",
-                           "evaluator_data":[
-                              "provide list of string values to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"key_name",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"str_in_list",
-                           "evaluator_data":[
-                              "provide list of string values to match"
-                           ]
-                        }
-                     ]
-                  }
-               },
-               {
-                  "name":"ami",
-                  "evaluators":{
-                     "all_of":[
-                        {
-                           "evaluator_ref":"int_equals_int",
-                           "evaluator_data":2
-                        }
-                     ]
-                  }
-               }
-            ]
-         }
-      ]
-   }
-},
+        },
         "input_data": {
             "format_version": "0.1",
             "terraform_version": "0.14.11",
@@ -826,7 +821,7 @@ def apigw_event():
                             "egress": [
                                 {
                                     "rule_no": 11,
-                                    "action": {"name":"allow"},
+                                    "action": {"name": "allow"},
                                     "from_port": "0",
                                     "to_port": 0,
                                     "protocol": "-1",
@@ -834,13 +829,12 @@ def apigw_event():
                                 },
                                 {
                                     "rule_no": 22,
-                                    "action": {"name":"allow"},
+                                    "action": {"name": "allow"},
                                     "from_port": "0",
                                     "to_port": 0,
                                     "protoco": "-1",
                                     "cidr_block": "0.0.0.0/0",
-                                }
-
+                                },
                             ],
                             "tags": {"Name": ""},
                             "tags_all": {},
@@ -6289,8 +6283,9 @@ def secondsToStr(elapsed=None):
 
 def test_evaluationresult_handler(apigw_event):
 
-    from sg_policy.providers.python.terraform_plan import handler   
-    ret = handler.test_evaluate_handler(apigw_event) 
+    from sg_policy.providers.terraform_plan import handler
+
+    ret = handler.test_evaluate_handler(apigw_event)
     print(ret)
     print(rett)
     assert "result" in ret
