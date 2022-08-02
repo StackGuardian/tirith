@@ -1,4 +1,4 @@
-import BaseEvaluator
+from base_evaluator import BaseEvaluator
 
 # Checks if input is not empty
 
@@ -22,11 +22,11 @@ import BaseEvaluator
 
 class IsNotEmpty(BaseEvaluator):
     def evaluate(self, input):
-        evaluation_result = {"result": False, "reason": "IsNotEmpty evaluator failed"}
+        evaluation_result = {"result": False, "message": "IsNotEmpty evaluator failed"}
         try:
             if (isinstance(input, str) or isinstance(input, list) or isinstance(input, dict)) and input:
                 evaluation_result["result"] = True
             return evaluation_result
         except Exception as e:
-            evaluation_result["reason"] = str(e)
+            evaluation_result["message"] = str(e)
             return evaluation_result

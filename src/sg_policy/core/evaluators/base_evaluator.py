@@ -4,7 +4,7 @@ from typing import TypedDict
 
 class EvaluatorResult(TypedDict):
     result: bool
-    reason: str
+    message: str
 
 
 class BaseEvaluator(ABC):
