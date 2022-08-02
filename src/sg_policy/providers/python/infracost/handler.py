@@ -23,7 +23,7 @@ def __get_resources_costs(resource_type, costType, input_data):
 def provide(provider_inputs, input_data):
     resource_type = provider_inputs['resource_type']
     costType = provider_inputs['costType']
-    if len(resource_type) == 0 or resource_type == '*' or resource_type == ["*"]:
+    if not resource_type or resource_type == '*' or resource_type == ["*"]:
         value = getValuesFromAll(costType, input_data)
         return [{'value': value}]
     else:
