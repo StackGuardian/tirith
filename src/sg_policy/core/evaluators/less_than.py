@@ -1,4 +1,4 @@
-import BaseEvaluator
+from base_evaluator import BaseEvaluator
 
 # Checks if :attr:`value` is less then :attr:`other`. Automatically casts values to the same type if possible.
 
