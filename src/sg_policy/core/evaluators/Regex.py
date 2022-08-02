@@ -1,7 +1,7 @@
 from base_evaluator import BaseEvaluator
 import re
 
-class regexEquals(BaseEvaluator):
+class RegexEquals(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"result": False, "message": ""}
         match = 0
