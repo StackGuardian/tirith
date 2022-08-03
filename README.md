@@ -42,7 +42,7 @@ This is only a list of approved features that will be included in the StackGuard
 ## Local Development Environment
 
 - Any operating system is supported(Windows, Mac, or Linux).
-- Python 3.6 or higher is required.
+- [Python 3.6 or higher](https://www.python.org/downloads/) is required.
 - [pip](https://pip.pypa.io/en/stable/) is required.
 
 And leave the rest to us!!!
