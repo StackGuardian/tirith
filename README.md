@@ -40,6 +40,12 @@ This is only a list of approved features that will be included in the StackGuard
 ## A basic mind-map of the repository
 
 ## Local Development Environment
+
+- Any operating system is supported(Windows, Mac, or Linux).
+- Python 3.6 or higher is required.
+- [pip](https://pip.pypa.io/en/stable/) is required.
+
+And leave the rest to us!!!
 <!-- ## Publish Package on test.pypi.org
 * Use the following command to install the latest version of the setuptools package.
   ```
@@ -72,6 +78,8 @@ Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuard
  </ul>
 
 ### A bug report
+
+Head over to the <a href="https://github.com/StackGuardian/policy-framework">StackGuardian Policy Framework Repository</a> and in the <a href="https://github.com/stackguardian/policy-framework/issues">issues</a> tab describe the bug you encountered and we will be happy to take a look into it.
 ### Opening a Pull Request and getting it merged?
 
  1. Go to the <a href ="https://github.com/StackGuardian/policy-framework">repository</a> and fork it.
@@ -90,3 +98,5 @@ Wanna submit a feedback? It's as simple as writing and posting it in the <a href
 
 ## License
 
+<i>Apache License 2.0</i>
+<p>The Apache License is a permissive free software license written by the Apache Software Foundation (ASF). It allows all users to use the software for any purpose, to distribute it, to modify it, and to distribute modified versions of the software under the terms of the license, without concern for royalties.</p>
