@@ -4,13 +4,17 @@ def __get_all_costs(costType, input_data):
         for project in input_data.get("projects"):
             if 'breakdown' in project and 'resources' in project.get('breakdown'):
                 for resource in project.get('breakdown').get('resources'):
-                    if resource[costType] != "null":
-                        totalSum += float(resource[costType])
+                    if costType in resource:
+                        if resource[costType] != "null":
+                            totalSum += float(resource[costType])
+                    else:
+                        pass
+                        # raise KeyError(f'{costType} not found in one of the resource')
                 return totalSum
             else:
-                raise KeyError('key not found in one of the project')
+                raise KeyError('breakdown/resources not found in one of the project')
     else:
-        raise KeyError('projects key not found in input_data')
+        raise KeyError('projects not found in input_data')
 
 
 def __get_resources_costs(resource_type, costType, input_data):
@@ -19,13 +23,17 @@ def __get_resources_costs(resource_type, costType, input_data):
         for project in input_data.get("projects"):
             if 'breakdown' in project and 'resources' in project.get('breakdown'):
                 for resource in project.get('breakdown').get('resources'):
-                    if resource[costType] != "null" and resource['name'] in resource_type:
-                        totalSum += float(resource[costType])
+                    if costType in resource:
+                        if resource[costType] != "null" and resource['name'] in resource_type:
+                            totalSum += float(resource[costType])
+                    else:
+                        pass
+                        # raise KeyError(f'{costType} not found in one of the resource')
                 return totalSum
             else:
-                raise KeyError('key not found in one of the project')
+                raise KeyError('breakdown/resources not found in one of the project')
     else:
-        raise KeyError('projects key not found in input_data')
+        raise KeyError('projects not found in input_data')
 
 
 def provide(provider_inputs, input_data):
@@ -40,8 +48,8 @@ def provide(provider_inputs, input_data):
                 value = __get_resources_costs(resource_type, costType, input_data)
                 return [{'value': value}]
         else:
-            raise KeyError('key not found in provider_inputs')
+            raise KeyError('resource_type/costType not found in provider_inputs')
     except KeyError as e:
         print(e)
-        return None
+        return {'err' : str(e)}
 
