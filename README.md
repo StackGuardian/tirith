@@ -9,7 +9,6 @@ StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) co
 - [Features](#features)
 - [Feature Road-Map](#feature-road-map)
 - [How to use it?](#how-to-use-it)
-- [A basic mind-map of the repository](#a-basic-mind-map-of-the-repository)
 - [Local Development Environment](#local-development-environment)
 - [Want to contribute?](#want-to-contribute)
     * [Getting an issue assigned](#getting-an-issue-assigned)
@@ -36,8 +35,6 @@ This is only a list of approved features that will be included in the StackGuard
 - Extended library of evaluator functions
 
 ## How to use it?
-
-## A basic mind-map of the repository
 
 ## Local Development Environment
 
