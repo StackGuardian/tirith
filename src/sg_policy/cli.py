@@ -8,8 +8,9 @@ import textwrap
 
 from sg_policy.status import ExitStatus
 
+from core import *
+
 # import sg_policy.providers as providers
-import sg_policy.providers.opa.terraform_plan.handler as opa_tf_plan_handler
 import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
 
 
@@ -83,10 +84,7 @@ def main(args=None) -> ExitStatus:
             # )
 
             try:
-
-                result = python_tf_plan_handler.evaluate(
-                    args.policyPath, args.inputPath
-                )
+                result = start_policy_evaluation(args.policyPath, args.inputPath)
                 print(result)
             except:
                 # TODO:write an exception class for all provider exceptions.

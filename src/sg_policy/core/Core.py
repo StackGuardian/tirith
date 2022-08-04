@@ -1,13 +1,11 @@
 from evaluators import *
-import json
+from pathlib import Path
 
 
 def getEvaluatorInputsFromProviderInputs(provider_inputs, evaluator_module):
     # TODO: Get the inputs from given providers
     if evaluator_module == "terraform_plan":
-
         return True
-
 
 def generate_evaluator_result(evaluator_obj):
     # evaluator_obj example
@@ -63,18 +61,15 @@ def finalEvaluator(evalString, evalIdValues):
 
 
 def start_policy_evaluation(policy_path, input_path):
-    # TODO:
-    with open(f"{policy_path}") as f:
-        json_to_python = json.load(f)
-        policy = json_to_python
+    policy_data = Path(policy_path).read_text()
+    # TODO: validate policy_data against schema
 
-    with open(f"{input_path}") as f:
-        json_to_python = json.load(f)
-        input_data = json_to_python
+    input_data = Path(input_path).read_text()
+    # TODO: validate input_data using the optionally available validate function in provider
 
-    policy_meta = policy.get("meta")
-    eval_objects = policy.get("evaluators")
-    final_evaluation_policy_string = policy.get("final_evaluation")
+    policy_meta = policy_data.get("meta")
+    eval_objects = policy_data.get("evaluators")
+    final_evaluation_policy_string = policy_data.get("final_evaluation")
 
     # TODO: Write functionality for dynamically importing evaluators from other modules.
     eval_results = {}
