@@ -5,6 +5,7 @@ from typing import TypedDict
 class EvaluatorResult(TypedDict):
     result: bool
     message: str
+    error: str
 
 
 class BaseEvaluator(ABC):
