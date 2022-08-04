@@ -2,12 +2,12 @@ from evaluators import *
 from pathlib import Path
 
 
-def getEvaluatorInputsFromProviderInputs(provider_inputs, evaluator_module):
+def getEvaluatorInputsFromProviderInputs(provider_inputs, evaluator_module, input_data):
     # TODO: Get the inputs from given providers
     if evaluator_module == "terraform_plan":
         return True
 
-def generate_evaluator_result(evaluator_obj):
+def generate_evaluator_result(evaluator_obj, input_data):
     # evaluator_obj example
     # {
     #         "id": "pol_check_1",
@@ -26,7 +26,7 @@ def generate_evaluator_result(evaluator_obj):
     evaluator_data = evaluator_obj.get("evaluator_data")
 
     evaluator_inputs = getEvaluatorInputsFromProviderInputs(
-        provider_inputs, evaluator_module
+        provider_inputs, evaluator_module, input_data
     )
     if evaluator_module == "core":
         result = None
@@ -75,7 +75,7 @@ def start_policy_evaluation(policy_path, input_path):
     eval_results = {}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
-        eval_results[eval_id] = generate_evaluator_result(eval_obj)
+        eval_results[eval_id] = generate_evaluator_result(eval_obj, input_data)
 
     final_evaluation_result = finalEvaluator(
         final_evaluation_policy_string, eval_results
