@@ -1,15 +1,14 @@
 from evaluators import *
-import json
+from pathlib import Path
 
 
-def getEvaluatorInputsFromProviderInputs(provider_inputs, evaluator_module):
+def getEvaluatorInputsFromProviderInputs(provider_inputs, evaluator_module, input_data):
     # TODO: Get the inputs from given providers
     if evaluator_module == "terraform_plan":
+        return [True]
 
-        return True
 
-
-def generate_evaluator_result(evaluator_obj):
+def generate_evaluator_result(evaluator_obj, input_data):
     # evaluator_obj example
     # {
     #         "id": "pol_check_1",
@@ -24,26 +23,40 @@ def generate_evaluator_result(evaluator_obj):
     #     },
     evaluator_module = evaluator_obj.get("provider", "core")
     evaluator_class = evaluator_obj.get("evaluator_ref")
-    providor_inputs = evaluator_obj.get("provider_inputs")
+    provider_inputs = evaluator_obj.get("provider_inputs")
     evaluator_data = evaluator_obj.get("evaluator_data")
+    eval_id = evaluator_obj.get("id")
 
     evaluator_inputs = getEvaluatorInputsFromProviderInputs(
-        providor_inputs, evaluator_module
-    )
+        provider_inputs, evaluator_module, input_data
+    )  # always an array of inputs for evaluators
     if evaluator_module == "core":
-        if evaluator_class == "Equals":
-            evaluator_instance = Equals()
-            result = evaluator_instance.evaluate(evaluator_inputs, evaluator_data)
-            return result
-        elif evaluator_class == "Contains":
-            evaluator_instance = Contains()
-            result = evaluator_instance.evaluate(evaluator_inputs, evaluator_data)
-            return result
+        result = {
+            "id": eval_id,
+            "results": [],
+            "passed": False,
+        }
+        try:
+            evaluator_instance = eval(f"{evaluator_class}()")
+        except NameError as e:
+            print(f"{evaluator_class} is not a supported evaluator.")
+        evaluation_results = []
+        has_evaluation_passed = True
+        for evaluator_input in evaluator_inputs:
+            evaluation_result = evaluator_instance.evaluate(
+                evaluator_input, evaluator_data
+            )
+            evaluation_results.append(evaluation_result)
+            if not evaluation_result["passed"]:
+                has_evaluation_passed = False
+        result["result"] = evaluation_results
+        result["passed"] = has_evaluation_passed
+        return result
 
 
 def finalEvaluator(evalString, evalIdValues):
     for key in evalIdValues:
-        evalString = evalString.replace(key, str(evalIdValues[key]))
+        evalString = evalString.replace(key, str(evalIdValues[key]["passed"]))
         # print (evalString)
     evalString = (
         evalString.replace(" ", "")
@@ -63,24 +76,21 @@ def finalEvaluator(evalString, evalIdValues):
 
 
 def start_policy_evaluation(policy_path, input_path):
-    # TODO:
-    with open(f"{policy_path}") as f:
-        json_to_python = json.load(f)
-        policy = json_to_python
+    policy_data = Path(policy_path).read_text()
+    # TODO: validate policy_data against schema
 
-    with open(f"{input_path}") as f:
-        json_to_python = json.load(f)
-        input_data = json_to_python
+    input_data = Path(input_path).read_text()
+    # TODO: validate input_data using the optionally available validate function in provider
 
-    policy_meta = policy.get("meta")
-    eval_objects = policy.get("evaluators")
-    final_evaluation_policy_string = policy.get("final_evaluation")
+    policy_meta = policy_data.get("meta")
+    eval_objects = policy_data.get("evaluators")
+    final_evaluation_policy_string = policy_data.get("final_evaluation")
 
     # TODO: Write functionality for dynamically importing evaluators from other modules.
     eval_results = {}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
-        eval_results[eval_id] = generate_evaluator_result(eval_obj)
+        eval_results[eval_id] = generate_evaluator_result(eval_obj, input_data)
 
     final_evaluation_result = finalEvaluator(
         final_evaluation_policy_string, eval_results

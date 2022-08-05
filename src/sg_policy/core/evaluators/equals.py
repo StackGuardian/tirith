@@ -1,4 +1,4 @@
-import BaseEvaluator
+from base_evaluator import BaseEvaluator
 
 # Checks if :attr:`value` is equal to :attr:`other`. Automatically casts values to the same type if possible.
 
@@ -51,35 +51,30 @@ class Equals(BaseEvaluator):
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"result": False, "reason": "Equals evaluator failed"}
+        evaluation_result = {"result": False, "message": "Equals evaluator failed"}
         try:
             value1 = evaluator_input
             value2 = evaluator_data
-            if (
-                isinstance(evaluator_input, str)
-                or isinstance(evaluator_input, dict)
-                or isinstance(evaluator_input, list)
-            ):
-                value1 = evaluator_input
-            else:
-                value1 = str(evaluator_data)
-            if (
-                isinstance(evaluator_data, str)
-                or isinstance(evaluator_data, dict)
-                or isinstance(evaluator_data, list)
-            ):
-                value2 = evaluator_data
-            else:
-                value2 = str(evaluator_data)
 
-            # sort all lists in dicts
-            if isinstance(value1, dict):
-                value1 = self.sort_lists_in_dicts(value1)
-            if isinstance(value2, dict):
-                value2 = self.sort_lists_in_dicts(value2)
+            # if (
+            #         isinstance(evaluator_input, str)
+            #         or isinstance(evaluator_input, dict)
+            #         or isinstance(evaluator_input, list)
+            # ):
+            #     value1 = evaluator_input
+            # else:
+            #     value1 = str(evaluator_data)
+            # if (
+            #         isinstance(evaluator_data, str)
+            #         or isinstance(evaluator_data, dict)
+            #         or isinstance(evaluator_data, list)
+            # ):
+            #     value2 = evaluator_data
+            # else:
+            #     value2 = str(evaluator_data)
 
             evaluation_result["result"] = value1 == value2
             return evaluation_result
         except Exception as e:
-            evaluation_result["reason"] = str(e)
+            evaluation_result["message"] = str(e)
             return evaluation_result
