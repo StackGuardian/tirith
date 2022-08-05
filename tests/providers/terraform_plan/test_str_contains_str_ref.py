@@ -75,7 +75,7 @@ List_of_tuples = test_evaluationresult_handler()
     ("input_data", "evaluator_data", "expectedresult"), List_of_tuples
 )
 def test_eval(input_data, evaluator_data, expectedresult):
-    from sg_policy.providers.python.terraform_plan import handler
+    from sg_policy.providers.terraform_plan import handler
 
     result, iter_count = handler.str_contains_str(input_data, evaluator_data)
     print(result)
