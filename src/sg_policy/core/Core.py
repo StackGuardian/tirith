@@ -5,7 +5,8 @@ from pathlib import Path
 def getEvaluatorInputsFromProviderInputs(provider_inputs, evaluator_module, input_data):
     # TODO: Get the inputs from given providers
     if evaluator_module == "terraform_plan":
-        return True
+        return [True]
+
 
 def generate_evaluator_result(evaluator_obj, input_data):
     # evaluator_obj example
@@ -24,24 +25,38 @@ def generate_evaluator_result(evaluator_obj, input_data):
     evaluator_class = evaluator_obj.get("evaluator_ref")
     provider_inputs = evaluator_obj.get("provider_inputs")
     evaluator_data = evaluator_obj.get("evaluator_data")
+    eval_id = evaluator_obj.get("id")
 
     evaluator_inputs = getEvaluatorInputsFromProviderInputs(
         provider_inputs, evaluator_module, input_data
-    )
+    )  # always an array of inputs for evaluators
     if evaluator_module == "core":
-        result = None
+        result = {
+            "id": eval_id,
+            "results": [],
+            "passed": False,
+        }
         try:
             evaluator_instance = eval(f"{evaluator_class}()")
         except NameError as e:
             print(f"{evaluator_class} is not a supported evaluator.")
-
-        result = evaluator_instance.evaluate(evaluator_inputs, evaluator_data)
+        evaluation_results = []
+        has_evaluation_passed = True
+        for evaluator_input in evaluator_inputs:
+            evaluation_result = evaluator_instance.evaluate(
+                evaluator_input, evaluator_data
+            )
+            evaluation_results.append(evaluation_result)
+            if not evaluation_result["passed"]:
+                has_evaluation_passed = False
+        result["result"] = evaluation_results
+        result["passed"] = has_evaluation_passed
         return result
 
 
 def finalEvaluator(evalString, evalIdValues):
     for key in evalIdValues:
-        evalString = evalString.replace(key, str(evalIdValues[key]["result"]))
+        evalString = evalString.replace(key, str(evalIdValues[key]["passed"]))
         # print (evalString)
     evalString = (
         evalString.replace(" ", "")
