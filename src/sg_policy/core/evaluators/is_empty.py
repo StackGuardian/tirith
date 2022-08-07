@@ -22,10 +22,16 @@ from base_evaluator import BaseEvaluator
 
 class IsEmpty(BaseEvaluator):
     def evaluate(self, input):
-        evaluation_result = {"result": False, "message": "IsEmpty evaluator failed"}
+        evaluation_result = {"result": False, "message": ""}
         try:
-            if (isinstance(input, str) or isinstance(input, list) or isinstance(input, dict)) and not input:
+            if (
+                isinstance(input, str)
+                or isinstance(input, list)
+                or isinstance(input, dict)
+            ) and not input:
                 evaluation_result["result"] = True
+            if not evaluation_result["result"]:
+                evaluation_result["message"] = "Value {} is not empty".format(input)
             return evaluation_result
         except Exception as e:
             evaluation_result["message"] = str(e)

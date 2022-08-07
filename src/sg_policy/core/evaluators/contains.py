@@ -25,6 +25,8 @@ from base_evaluator import BaseEvaluator
 
 class Contains(BaseEvaluator):
     def sort_lists_in_dicts(self, input):
+        if isinstance(input, str) or isinstance(input, float) or isinstance(input, int):
+            return input
         try:
             for key in input:
                 if isinstance(input[key], list):
@@ -53,7 +55,7 @@ class Contains(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {
             "result": False,
-            "message": "Failed to find required value inside input",
+            "message": "",
         }
         try:
             # if evaluator_input and evaluator_data are both strings
@@ -83,6 +85,10 @@ class Contains(BaseEvaluator):
                             break
                 else:
                     evaluation_result["result"] = evaluator_input in evaluator_data
+                    if evaluator_input in evaluator_data:
+                        evaluation_result[
+                            "message"
+                        ] = "Failed to find required value inside input"
 
             return evaluation_result
         except Exception as e:
