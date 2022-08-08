@@ -95,4 +95,10 @@ def start_policy_evaluation(policy_path, input_path):
     final_evaluation_result = finalEvaluator(
         final_evaluation_policy_string, eval_results
     )
-    print(final_evaluation_result)
+
+    final_output = {
+        "meta": {"version": "1.0.0"},
+        "final_evaluation": final_evaluation_result,
+        "evaluators": eval_results,
+    }
+    return final_output
