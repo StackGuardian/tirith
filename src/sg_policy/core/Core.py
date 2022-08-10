@@ -1,14 +1,14 @@
 from .evaluators import *
 from pathlib import Path
 import json
-from ..providers.python.infracost import provide
+from ..providers.infracost import provide
 
 
-def getEvaluatorInputsFromProviderInputs(provider_inputs, evaluator_module, input_data):
+def getEvaluatorInputsFromProviderInputs(provider_inputs, provider_module, input_data):
     # TODO: Get the inputs from given providers
-    if evaluator_module == "terraform_plan":
+    if provider_module == "terraform_plan":
         return [True]
-    if evaluator_module == "infracost":
+    if provider_module == "infracost":
         return provide(provider_inputs, input_data)
 
 
@@ -25,14 +25,14 @@ def generate_evaluator_result(evaluator_obj, input_data):
     #         "evaluator_data": 10, // Should also support transformation eventually
     #         "evaluator_inputs": 10
     #     },
-    evaluator_module = evaluator_obj.get("provider", "core")
+    provider_module = evaluator_obj.get("provider", "core")
     evaluator_class = evaluator_obj.get("evaluator_ref")
     provider_inputs = evaluator_obj.get("provider_inputs")
     evaluator_data = evaluator_obj.get("evaluator_data")
     eval_id = evaluator_obj.get("id")
 
     # print({
-    #     'evaluator_module' : evaluator_module,
+    #     'provider_module' : provider_module,
     #     'evaluator_class': evaluator_class,
     #     'provider_inputs': provider_inputs,
     #     'evaluator_data': evaluator_data,
@@ -40,12 +40,11 @@ def generate_evaluator_result(evaluator_obj, input_data):
     # })
 
     evaluator_inputs = getEvaluatorInputsFromProviderInputs(
-        provider_inputs, evaluator_module, input_data
+        provider_inputs, provider_module, input_data
     )  # always an array of inputs for evaluators
-    if evaluator_module == "core":
+    if provider_module == "core":
         result = {
             "id": eval_id,
-            "results": [],
             "passed": False,
         }
         try:
@@ -65,10 +64,9 @@ def generate_evaluator_result(evaluator_obj, input_data):
         result["passed"] = has_evaluation_passed
         return result
 
-    if evaluator_module == "infracost":
+    if provider_module == "infracost":
         result = {
             "id": eval_id,
-            "results": [],
             "passed": False,
         }
         try:
@@ -82,7 +80,7 @@ def generate_evaluator_result(evaluator_obj, input_data):
                 evaluator_input, evaluator_data
             )
             evaluation_results.append(evaluation_result)
-            if not evaluation_result["result"]:
+            if not evaluation_result["passed"]:
                 has_evaluation_passed = False
         result["result"] = evaluation_results
         result["passed"] = has_evaluation_passed
@@ -93,11 +91,12 @@ def finalEvaluator(evalString, evalIdValues):
     for key in evalIdValues:
         evalString = evalString.replace(key, str(evalIdValues[key]["passed"]))
         # print (evalString)
+    # TODO: shall we use and, or and not instead of symbols?
     evalString = (
         evalString.replace(" ", "")
-            .replace("&&", " and ")
-            .replace("||", " or ")
-            .replace("!", " not ")
+        .replace("&&", " and ")
+        .replace("||", " or ")
+        .replace("!", " not ")
     )
     return eval(evalString)
 
@@ -110,6 +109,7 @@ def finalEvaluator(evalString, evalIdValues):
 # 	}))
 
 # sg_policy --policy-path "F:\StackGuardian\policy-framework\tests\providers\policy.json" --input-path "F:\StackGuardian\policy-framework\tests\providers\input.json"
+
 
 def start_policy_evaluation(policy_path, input_path):
 
@@ -135,7 +135,7 @@ def start_policy_evaluation(policy_path, input_path):
     )
 
     final_output = {
-        "meta": {"version": "1.0.0"},
+        "meta": {"version": policy_meta.get("version")},
         "final_evaluation": final_evaluation_result,
         "evaluators": eval_results,
     }

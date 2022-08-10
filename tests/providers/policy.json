@@ -34,6 +34,20 @@
             "evaluator_data": 100,
             "criticality": "low",
             "tags": []
+        },
+        {
+            "id": "cost_check_2",
+            "provider": "infracost",
+            "provider_inputs": {
+                "resource_type": [
+                    "aws_s3_bucket"
+                ],
+                "costType": "totalMonthlyCost"
+            },
+            "evaluator_ref": "LessThanEqualTo",
+            "evaluator_data": 110,
+            "criticality": "low",
+            "tags": []
         }
     ],
     "final_evaluation": "cost_check_1"
