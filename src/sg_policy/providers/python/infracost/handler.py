@@ -38,7 +38,6 @@ def __get_resources_costs(resource_type, costType, input_data):
 
 def provide(provider_inputs, input_data):
     try:
-        print(provider_inputs)
         if 'resource_type' in provider_inputs and 'costType' in provider_inputs:
             resource_type = provider_inputs['resource_type']
             costType = provider_inputs['costType']

@@ -1,4 +1,4 @@
-from base_evaluator import BaseEvaluator
+from .base_evaluator import BaseEvaluator
 import re
 
 
@@ -7,8 +7,8 @@ class RegexEquals(BaseEvaluator):
         evaluation_result = {"result": False, "message": ""}
         try:
             match = 0
-            if type(evaluator_input) == str and type(evaluator_data) == str:
-                match = re.match(evaluator_data, evaluator_input)
+            if type(evaluator_input['value']) == str and type(evaluator_data) == str:
+                match = re.match(evaluator_data, evaluator_input['value'])
                 if match is None:
                     evaluation_result = {
                         "result": False,

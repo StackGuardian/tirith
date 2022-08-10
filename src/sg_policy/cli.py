@@ -8,7 +8,7 @@ import textwrap
 
 from sg_policy.status import ExitStatus
 
-from core import *
+from .core import *
 
 # import sg_policy.providers as providers
 import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
@@ -60,47 +60,60 @@ def main(args=None) -> ExitStatus:
         if not args.policyPath:
             print("'--policyPath' argument is required")
             return ExitStatus.ERROR
-        # TODO: move to core
-        if not args.inputType:
-            print("'--input-type' argument is required")
-            return ExitStatus.ERROR
-
-        inputType = args.inputType
-
-        if inputType == "terraform_plan":
-            if not args.inputPath:
-                # TODO:check if the input and policy path exists.
-                print(
-                    "Path to terraform plan file should be provided to '--input-path' argument"
-                )
-                return ExitStatus.ERROR
-            if not args.tfVersion:
-                print(
-                    "'--tf-version' argument is required when --input-type=terraform_plan"
-                )
-                return ExitStatus.ERROR
-            # providers.opa.terraform_plan.handler(
-            #    args.policyPath, args.inputPath, args.tfVersion
-            # )
-
-            try:
-                result = start_policy_evaluation(args.policyPath, args.inputPath)
-                print(result)
-            except:
-                # TODO:write an exception class for all provider exceptions.
-                print("ERROR")
-                return ExitStatus.ERROR
-            # print(
-            #     f"Policy template successfully generated and stored in {args.policyPath.rsplit('/',1)[0]}/policy_template.json")
-        elif inputType in ["terraform_hcl", "cloudformation_json"]:
+        if not args.inputPath:
             print(
-                "Provided input type is not supported yet. Only 'terraform_plan' is supported at the moment."
+                "Path to input file should be provided to '--input-path' argument"
             )
             return ExitStatus.ERROR
-        else:
-            print("Unsupported --input-type specified.")
+        try:
+            result = start_policy_evaluation(args.policyPath, args.inputPath)
+            print(result)
+        except:
+            # TODO:write an exception class for all provider exceptions.
+            print("ERROR")
             return ExitStatus.ERROR
-        return ExitStatus.SUCCESS
+
+        # TODO: move to core
+        # if not args.inputType:
+        #     print("'--input-type' argument is required")
+        #     return ExitStatus.ERROR
+
+        # inputType = args.inputType
+
+        # if inputType == "terraform_plan":
+        #     if not args.inputPath:
+        #         # TODO:check if the input and policy path exists.
+        #         print(
+        #             "Path to terraform plan file should be provided to '--input-path' argument"
+        #         )
+        #         return ExitStatus.ERROR
+        #     if not args.tfVersion:
+        #         print(
+        #             "'--tf-version' argument is required when --input-type=terraform_plan"
+        #         )
+        #         return ExitStatus.ERROR
+        #     # providers.opa.terraform_plan.handler(
+        #     #    args.policyPath, args.inputPath, args.tfVersion
+        #     # )
+        #
+        #     try:
+        #         result = start_policy_evaluation(args.policyPath, args.inputPath)
+        #         print(result)
+        #     except:
+        #         # TODO:write an exception class for all provider exceptions.
+        #         print("ERROR")
+        #         return ExitStatus.ERROR
+        #     # print(
+        #     #     f"Policy template successfully generated and stored in {args.policyPath.rsplit('/',1)[0]}/policy_template.json")
+        # elif inputType in ["terraform_hcl", "cloudformation_json"]:
+        #     print(
+        #         "Provided input type is not supported yet. Only 'terraform_plan' is supported at the moment."
+        #     )
+        #     return ExitStatus.ERROR
+        # else:
+        #     print("Unsupported --input-type specified.")
+        #     return ExitStatus.ERROR
+        # return ExitStatus.SUCCESS
     except KeyboardInterrupt:
         sys.stderr.write("\nFailed because of Keyboard Interrupt")
         return ExitStatus.ERROR_CTRL_C

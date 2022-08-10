@@ -1,4 +1,4 @@
-from base_evaluator import BaseEvaluator
+from .base_evaluator import BaseEvaluator
 
 # Checks if input is empty (null, empty list [], empty dict {}, empty str '')
 
