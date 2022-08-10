@@ -4,9 +4,8 @@ def __get_all_costs(costType, input_data):
         for project in input_data["projects"]:
             if 'breakdown' in project and 'resources' in project['breakdown']:
                 for resource in project['breakdown']['resources']:
-                    if costType in resource:
-                        if resource[costType] != "null":
-                            totalSum += float(resource[costType])
+                    if costType in resource and resource[costType] != "null":
+                        totalSum += float(resource[costType])
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
@@ -23,9 +22,8 @@ def __get_resources_costs(resource_type, costType, input_data):
         for project in input_data["projects"]:
             if 'breakdown' in project and 'resources' in project['breakdown']:
                 for resource in project['breakdown']['resources']:
-                    if costType in resource and 'name' in resource:
-                        if resource[costType] != "null" and resource['name'] in resource_type:
-                            totalSum += float(resource[costType])
+                    if costType in resource and 'name' in resource and resource[costType] != "null" and resource['name'] in resource_type:
+                        totalSum += float(resource[costType])
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
