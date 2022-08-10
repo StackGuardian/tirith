@@ -113,14 +113,12 @@ def finalEvaluator(evalString, evalIdValues):
 
 def start_policy_evaluation(policy_path, input_path):
 
-    file_policy_data = open(policy_path)
-    policy_data = json.load(file_policy_data)
-    file_policy_data.close()
+    with open(policy_path) as json_file:
+        policy_data = json.load(json_file)
     # TODO: validate policy_data against schema
 
-    file_input_data = open(policy_path)
-    input_data = json.load(file_input_data)
-    file_input_data.close()
+    with open(input_path) as json_file:
+        input_data = json.load(json_file)
     # TODO: validate input_data using the optionally available validate function in provider
 
     policy_meta = policy_data.get("meta")
