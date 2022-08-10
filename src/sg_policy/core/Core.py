@@ -112,12 +112,15 @@ def finalEvaluator(evalString, evalIdValues):
 # sg_policy --policy-path "F:\StackGuardian\policy-framework\tests\providers\policy.json" --input-path "F:\StackGuardian\policy-framework\tests\providers\input.json"
 
 def start_policy_evaluation(policy_path, input_path):
-    # policy_data = Path(policy_path).read_text()
-    policy_data = json.load(open(policy_path))
+
+    file_policy_data = open(policy_path)
+    policy_data = json.load(file_policy_data)
+    file_policy_data.close()
     # TODO: validate policy_data against schema
 
-    # input_data = Path(input_path).read_text()
-    input_data = json.load(open(input_path))
+    file_input_data = open(policy_path)
+    input_data = json.load(file_input_data)
+    file_input_data.close()
     # TODO: validate input_data using the optionally available validate function in provider
 
     policy_meta = policy_data.get("meta")
