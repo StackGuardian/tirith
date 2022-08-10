@@ -1,4 +1,4 @@
-from base_evaluator import BaseEvaluator
+from .base_evaluator import BaseEvaluator
 
 # Checks if input is not empty
 
