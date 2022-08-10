@@ -122,7 +122,7 @@ def find_input_resource_changes_value(chunks, input_resource_change_attrs):
         and (type(input_resource_change_attrs[chunks[0]]) == dict)
     ):
 
-        res = finditem(input_resource_change_attrs[chunks[0]], chunks[-1])
+        res = find_item(input_resource_change_attrs[chunks[0]], chunks[-1])
 
     elif (
         len(chunks) > 1
@@ -130,7 +130,7 @@ def find_input_resource_changes_value(chunks, input_resource_change_attrs):
         and type(input_resource_change_attrs[chunks[0]]) == list
     ):
 
-        res = finditem(input_resource_change_attrs[chunks[0]][0], chunks[-1])
+        res = find_item(input_resource_change_attrs[chunks[0]][0], chunks[-1])
 
     elif (
         len(chunks) > 1
@@ -141,7 +141,7 @@ def find_input_resource_changes_value(chunks, input_resource_change_attrs):
         res = []
 
         for i in range(len(input_resource_change_attrs[chunks[0]])):
-            each_res = finditem(input_resource_change_attrs[chunks[0]][i], chunks[-1])
+            each_res = find_item(input_resource_change_attrs[chunks[0]][i], chunks[-1])
             res.append(each_res)
 
     else:
@@ -226,24 +226,6 @@ def provide(policy, input_data):
 
                 msg_new = func(chunks, input_resource_change_attrs)
                 print(msg_new)
-
-                # print(attribute	["name"])
-                # print("result",res)
-                input_resource_changes_attr_value.append(input_changes)
-                each_iter_count = count + iter_count
-                Iter_count.append(each_iter_count)
-                if type(input_changes) == str:
-                    input_datatype.append("string")
-                elif type(input_changes) == bool:
-                    input_datatype.append("boolean")
-                elif type(input_changes) == list:
-                    input_datatype.append("array")
-                elif type(input_changes) == dict:
-                    input_datatype.append("map")
-                elif type(input_changes) == int:
-                    input_datatype.append("integer")
-                else:
-                    input_datatype.append(type(input_changes))
     # print(iter_count)
 
     msg = {
@@ -256,32 +238,3 @@ def provide(policy, input_data):
     }
     # print(input_resource_changes_attr_value)
     return msg
-
-
-def evaluate(data_file, input_file):
-    # print(data)
-    if os.path.isfile(data_file) and os.path.isfile(input_file):
-
-        # Opening JSON file
-        # TODO:check the schema of the input files
-        # TODO:Check the files are json
-        # TODO:
-        with open(f"{data_file}") as f:
-
-            json_to_python = json.load(f)
-            policy = json_to_python
-        with open(f"{input_file}") as f:
-
-            json_to_python = json.load(f)
-            input_data = json_to_python
-        msg = provide(policy, input_data)
-
-        final_output = {
-            "result": {
-                "all_of": all_of(msg),
-                "any_of": any_of(msg),
-                "none_of": none_of(msg),
-            }
-        }
-        # print(final_output)
-        return final_output
