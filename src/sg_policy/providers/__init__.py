@@ -1,0 +1,1 @@
+from opa.terraform_plan.handler import *
