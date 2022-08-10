@@ -5,7 +5,7 @@ CLI
 import argparse
 import sys
 import textwrap
-
+import json
 from sg_policy.status import ExitStatus
 
 from .core import *
@@ -54,6 +54,13 @@ def main(args=None) -> ExitStatus:
             dest="inputPath",
             help="Input config path. Can be a file or dir, depending on --input-type",
         )
+        parser.add_argument(
+            "--prettify",
+            metavar="PRETTIFY",
+            type=bool,
+            dest="prettify",
+            help="This argument can be used to print evaluation result in a more attractive and informative way",
+        )
         parser.add_argument("--version", action="version", version="0.0.1")
         args = parser.parse_args()
 
@@ -65,9 +72,15 @@ def main(args=None) -> ExitStatus:
                 "Path to input file should be provided to '--input-path' argument"
             )
             return ExitStatus.ERROR
+
+        # TODO: --prettify argument can be used to print more detailed and informative output
+        if args.prettify:
+            pass
+
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
-            print(result)
+            formatted_result = json.dumps(result, indent=3)
+            print(formatted_result)
         except:
             # TODO:write an exception class for all provider exceptions.
             print("ERROR")
