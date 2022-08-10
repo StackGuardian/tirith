@@ -1,4 +1,4 @@
-from base_evaluator import BaseEvaluator
+from .base_evaluator import BaseEvaluator
 
 # Checks if :attr:`value` is less then or equal to :attr:`other`. Automatically casts values to the same type if possible.
 
@@ -27,10 +27,10 @@ class LessThanEqualTo(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {
             "result": False,
-            "message": "LessThanEqualTo evaluator failed",
+            "message": "",
         }
         try:
-            value1 = evaluator_input
+            value1 = evaluator_input['value']
             value2 = evaluator_data
             evaluation_result["result"] = value1 <= value2
             if not evaluation_result["result"]:
