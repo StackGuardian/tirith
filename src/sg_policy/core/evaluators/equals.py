@@ -1,4 +1,4 @@
-from base_evaluator import BaseEvaluator
+from .base_evaluator import BaseEvaluator
 
 # Checks if :attr:`value` is equal to :attr:`other`. Automatically casts values to the same type if possible.
 
@@ -53,7 +53,7 @@ class Equals(BaseEvaluator):
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"result": False, "message": ""}
+        evaluation_result = {"passed": False, "message": ""}
         try:
             value1 = evaluator_input
             value2 = evaluator_data
@@ -78,7 +78,7 @@ class Equals(BaseEvaluator):
                 value1 = self.sort_lists_in_dicts(value1)
             if isinstance(value2, dict):
                 value2 = self.sort_lists_in_dicts(value2)
-            evaluation_result["result"] = value1 == value2
+            evaluation_result["passed"] = value1 == value2
             if value1 != value1:
                 evaluation_result[
                     "message"
