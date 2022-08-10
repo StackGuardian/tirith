@@ -7,6 +7,8 @@ import sys
 import textwrap
 import json
 from sg_policy.status import ExitStatus
+import logging
+
 
 from .core import *
 
@@ -68,9 +70,7 @@ def main(args=None) -> ExitStatus:
             print("'--policyPath' argument is required")
             return ExitStatus.ERROR
         if not args.inputPath:
-            print(
-                "Path to input file should be provided to '--input-path' argument"
-            )
+            print("Path to input file should be provided to '--input-path' argument")
             return ExitStatus.ERROR
 
         # TODO: --prettify argument can be used to print more detailed and informative output
@@ -81,8 +81,9 @@ def main(args=None) -> ExitStatus:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
             formatted_result = json.dumps(result, indent=3)
             print(formatted_result)
-        except:
+        except Exception as e:
             # TODO:write an exception class for all provider exceptions.
+            logging.exception(e)
             print("ERROR")
             return ExitStatus.ERROR
 
