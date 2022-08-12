@@ -6,5 +6,5 @@ a = empty.IsEmpty()
 
 def test_evaluate():
 	result = a.evaluate(input) 
-	assert result == {'message': '', 'result': True}
+	assert result == {'message': '', 'passed': True}
 	
