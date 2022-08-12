@@ -3,7 +3,7 @@ from typing import TypedDict
 
 
 class EvaluatorResult(TypedDict):
-    result: bool
+    passed: bool
     message: str
     error: str
 

@@ -1,24 +1,24 @@
-from base_evaluator import BaseEvaluator
+from .base_evaluator import BaseEvaluator
 import re
 
 
 class RegexEquals(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"result": False, "message": ""}
+        evaluation_result = {"passed": False, "message": ""}
         try:
             match = 0
-            if type(evaluator_input) == str and type(evaluator_data) == str:
-                match = re.match(evaluator_data, evaluator_input)
+            if type(evaluator_input['value']) == str and type(evaluator_data) == str:
+                match = re.match(evaluator_data, evaluator_input['value'])
                 if match is None:
                     evaluation_result = {
-                        "result": False,
+                        "passed": False,
                         "message": "Input failed to match the Regex Pattern",
                     }
                 else:
-                    evaluation_result = {"result": True, "message": ""}
+                    evaluation_result = {"passed": True, "message": ""}
             else:
                 evaluation_result = {
-                    "result": False,
+                    "passed": False,
                     "message": "Could not evaluate regex either evaluator input or evaluator data is not a string",
                 }
             return evaluation_result
