@@ -65,6 +65,8 @@ class Contains(BaseEvaluator):
                 if isinstance(evaluator_input, list):
                     evaluator_input = self.sort_lists_in_dicts(evaluator_input)
                     evaluation_result["passed"] = evaluator_input in evaluator_data
+                else:
+                    evaluation_result["passed"] = evaluator_input in evaluator_data
             if isinstance(evaluator_data, dict):
                 if isinstance(evaluator_input, dict):
                     for key in evaluator_data:
