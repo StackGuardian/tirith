@@ -1,10 +1,22 @@
 import equals as equals
+import pytest
 
-input = {1,2,3,4}
-condition = {1,2,3,4}
+evaluator_input1 = {1,2,3,4}
+evaluator_data1 = {1,2,3,4}
+
+evaluator_input2 = {1,2,3,4}
+evaluator_data2 = {2,3,4}
 
 a = equals.Equals()
 
-def test_evaluate():
-	result = a.evaluate(input, condition) 
+#pytest -v -m passing
+@pytest.mark.passing
+def test_evaluate_passing():
+	result = a.evaluate(evaluator_input1, evaluator_data1) 
+	assert result == {"passed": True, "message": ""}
+
+#pytest -v -m failing
+@pytest.mark.failing
+def test_evaluate_failing():
+	result = a.evaluate(evaluator_input2, evaluator_data2) 
 	assert result == {"passed": True, "message": ""}
