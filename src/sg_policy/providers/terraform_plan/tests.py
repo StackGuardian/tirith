@@ -1,9 +1,9 @@
-import handler
+from . import handler
 import json
 import pytest
 
 
-plan_string="""
+plan_string = """
 {
     "format_version": "0.1",
     "terraform_version": "0.14.11",
@@ -7747,28 +7747,129 @@ plan_string="""
     }
 }"""
 input_data = json.loads(plan_string)
-provider_inputs={
-"input_type": "resource_changes",
-"resource_type":"aws_vpc",
-"attribute":"enable_dns_hostnames"
+provider_inputs_1 = {
+    "input_type": "resource_changes",
+    "resource_type": "aws_vpc",
+    "attribute": "enable_dns_hostnames",
 }
 
-# input_resource_change_attrs1 = some test data(passing tests)
-# chunks1 = some test data(passing tests)
+provider_inputs_2 = {
+    "input_type": "resource_changes",
+    "resource_type": "aws_vpc",
+    "attribute": "enable_dns_support",
+}
 
-# input_resource_change_attrs2 = some test data(failing tests)
-# chunks2 = some test data(failing tests)
 
 @pytest.mark.passingattr
 def test_get_attribute_name_passing():
-    #get_attribute_name func gets output by calling find_input_resource_changes_value which in turn calls
-    #find_item
-    res = handler.get_attribute_name(input_resource_change_attrs1, chunks1)
-    assert res = [True]
-    
+    res = handler.provide(provider_inputs_1, input_data)
+    assert res == [
+        {
+            "value": False,
+            "meta": {
+                "address": "aws_vpc.this[0]",
+                "mode": "managed",
+                "type": "aws_vpc",
+                "name": "this",
+                "index": 0,
+                "provider_name": "registry.terraform.io/hashicorp/aws",
+                "change": {
+                    "actions": ["create"],
+                    "before": None,
+                    "after": {
+                        "assign_generated_ipv6_cidr_block": False,
+                        "cidr_block": "10.0.0.0/18",
+                        "enable_dns_hostnames": False,
+                        "enable_dns_support": True,
+                        "instance_tenancy": "default",
+                        "tags": {"Name": ""},
+                        "tags_all": {},
+                    },
+                    "after_unknown": {
+                        "arn": True,
+                        "default_network_acl_id": True,
+                        "default_route_table_id": True,
+                        "default_security_group_id": True,
+                        "dhcp_options_id": True,
+                        "enable_classiclink": True,
+                        "enable_classiclink_dns_support": True,
+                        "id": True,
+                        "ipv6_association_id": True,
+                        "ipv6_cidr_block": True,
+                        "main_route_table_id": True,
+                        "owner_id": True,
+                        "tags": {},
+                        "tags_all": {"Name": True},
+                    },
+                },
+            },
+            "err": None,
+        }
+    ]
+
+
+@pytest.mark.passingattr
+def test_get_attribute_name_passing2():
+    res = handler.provide(provider_inputs_1, input_data)
+    assert res[0]["value"] == False
+
+
+@pytest.mark.passingattr
+def test_get_attribute_name_passing3():
+    res = handler.provide(provider_inputs_2, input_data)
+    print(res)
+    assert res == [
+        {
+            "value": True,
+            "meta": {
+                "address": "aws_vpc.this[0]",
+                "mode": "managed",
+                "type": "aws_vpc",
+                "name": "this",
+                "index": 0,
+                "provider_name": "registry.terraform.io/hashicorp/aws",
+                "change": {
+                    "actions": ["create"],
+                    "before": None,
+                    "after": {
+                        "assign_generated_ipv6_cidr_block": False,
+                        "cidr_block": "10.0.0.0/18",
+                        "enable_dns_hostnames": False,
+                        "enable_dns_support": True,
+                        "instance_tenancy": "default",
+                        "tags": {"Name": ""},
+                        "tags_all": {},
+                    },
+                    "after_unknown": {
+                        "arn": True,
+                        "default_network_acl_id": True,
+                        "default_route_table_id": True,
+                        "default_security_group_id": True,
+                        "dhcp_options_id": True,
+                        "enable_classiclink": True,
+                        "enable_classiclink_dns_support": True,
+                        "id": True,
+                        "ipv6_association_id": True,
+                        "ipv6_cidr_block": True,
+                        "main_route_table_id": True,
+                        "owner_id": True,
+                        "tags": {},
+                        "tags_all": {"Name": True},
+                    },
+                },
+            },
+            "err": None,
+        }
+    ]
+
+
+@pytest.mark.passingattr
+def test_get_attribute_name_passing4():
+    res = handler.provide(provider_inputs_2, input_data)
+    assert res[0]["value"] == True
+
+
 @pytest.mark.failingattr
 def test_get_attribute_name_failing():
-    #get_attribute_name func gets output by calling find_input_resource_changes_value which in turn calls
-    #find_item
-    res = handler.get_attribute_name(input_resource_change_attrs2, chunks2)
-    assert res = desired result
+    res = handler.provide(provider_inputs_2, input_data)
+    assert res[0]["value"] == False
