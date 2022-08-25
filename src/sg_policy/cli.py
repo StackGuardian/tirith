@@ -10,7 +10,7 @@ from sg_policy.status import ExitStatus
 import logging
 
 
-from .core import *
+from .core import start_policy_evaluation
 
 # import sg_policy.providers as providers
 import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
