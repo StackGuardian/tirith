@@ -13,10 +13,10 @@ a = greater.GreaterThan()
 @pytest.mark.passing
 def test_evaluate_passing():
 	result = a.evaluate(evaluator_input1, evaluator_data1) 
-	assert result == {"passed": True, "message": ""}
+	assert result == {"passed": True, "message": "The evaluation passed successfully"}
 
 #pytest -v -m failing
 @pytest.mark.failing
 def test_evaluate_failing():
 	result = a.evaluate(evaluator_input2, evaluator_data2) 
-	assert result == {"passed": True, "message": ""}
+	assert result == {"passed": True, "message": "The evaluation passed successfully"}

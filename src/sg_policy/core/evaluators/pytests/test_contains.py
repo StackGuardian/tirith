@@ -13,10 +13,10 @@ a = contains.Contains()
 @pytest.mark.passing
 def test_evaluate_passing():
 	result = a.evaluate(evaluator_input1, evaluator_data1) 
-	assert result == {'message': '', 'passed': True}
+	assert result == {'message': 'The evaluation passed successfully', 'passed': True}
 
 #pytest -v -m failing
 @pytest.mark.failing
 def test_evaluate_failing():
 	result = a.evaluate(evaluator_input2, evaluator_data2) 
-	assert result == {'message': '', 'passed': True}
+	assert result == {'message': 'The evaluation passed successfully', 'passed': True}
