@@ -39,7 +39,7 @@ def getValue(key, data):
 
 def provide(provider_inputs, input_data):
     try:
-        if 'resource_type' in provider_inputs and len(provider_inputs['resource_type']) > 0:
+        if 'resource_type' in provider_inputs and provider_inputs['resource_type']:
             resource_type = provider_inputs['resource_type']
             result = getValue(resource_type, input_data)
             return [{'value': result, 'meta': None, 'err': None}]
