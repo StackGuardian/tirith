@@ -53,7 +53,7 @@ class Equals(BaseEvaluator):
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"passed": False, "message": ""}
+        evaluation_result = {"passed": False, "message": "The evaluation passed successfully"}
         try:
             value1 = evaluator_input
             value2 = evaluator_data

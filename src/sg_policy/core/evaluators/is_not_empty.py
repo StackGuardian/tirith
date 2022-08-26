@@ -22,7 +22,7 @@ from .base_evaluator import BaseEvaluator
 
 class IsNotEmpty(BaseEvaluator):
     def evaluate(self, input):
-        evaluation_result = {"passed": False, "message": ""}
+        evaluation_result = {"passed": False, "message": "The evaluation passed successfully"}
         try:
             if (
                 isinstance(input, str)
