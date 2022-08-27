@@ -7759,6 +7759,10 @@ provider_inputs_2 = {
     "attribute": "enable_dns_support",
 }
 
+provider_inputs_3={
+    "input_type":"resource_changes_actions",
+    "resource_type": "aws_vpc",
+}
 
 @pytest.mark.passingattr
 def test_get_attribute_name_passing():
@@ -7868,8 +7872,12 @@ def test_get_attribute_name_passing4():
     res = handler.provide(provider_inputs_2, input_data)
     assert res[0]["value"] == True
 
+@pytest.mark.passingattr
+def test_get_attribute_name_passing5():
+    res = handler.provide(provider_inputs_3, input_data)
+    assert res[0]["value"] == ["create"]
 
 @pytest.mark.failingattr
-def test_get_attribute_name_failing():
+def test_get_attribute_name_failing6():
     res = handler.provide(provider_inputs_2, input_data)
     assert res[0]["value"] == False
