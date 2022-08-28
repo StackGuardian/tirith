@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from . import handler
 import json
 import pytest
@@ -7760,6 +7761,7 @@ provider_inputs_2 = {
     "attribute": "enable_dns_support",
 }
 
+# @pytest.mark.passingattr
 def test_provide_1():
     res = handler.provide(provider_inputs_1,input_data) 
     assert res[0]["value"] == True
@@ -7786,7 +7788,29 @@ provider_inputs_3 = {
     "attribute": "index",
 }
 
+# @pytest.mark.passingattr
 def test_provide_5():
     res = handler.provide(provider_inputs_3,input_data) 
-    assert res[0]["value"] == False
+    assert res[0]["value"] == 0
 
+# @pytest.mark.failingattr
+def test_provide_6():
+    res = handler.provide(provider_inputs_3,input_data) 
+    assert res[0]["value"] >= 0 
+
+
+# provider_inputs_4 = {
+#     "input_type": "resource_changes_actions",
+#     "resource_type": "aws_vpc",
+#     "attribute": "enable_dns_support",
+# }
+
+# @pytest.mark.passingattr
+# def test_provide_7():
+#     res = handler.provide(provider_inputs_4,input_data) 
+#     print(res)
+
+# @pytest.mark.failingattr
+# def test_provide_8():
+#     res = handler.provide(provider_inputs_3,input_data) 
+#     assert res == NULL
