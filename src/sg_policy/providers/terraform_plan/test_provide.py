@@ -7761,22 +7761,22 @@ provider_inputs_2 = {
     "attribute": "enable_dns_support",
 }
 
-# @pytest.mark.passingattr
+@pytest.mark.passingattr
 def test_provide_1():
     res = handler.provide(provider_inputs_1,input_data) 
     assert res[0]["value"] == True
 
-# @pytest.mark.failingattr
+@pytest.mark.failingattr
 def test_provide_2():
     res = handler.provide(provider_inputs_1,input_data) 
     assert res[0]["value"] == False
 
-# @pytest.mark.passingattr
+@pytest.mark.passingattr
 def test_provide_3():
     res = handler.provide(provider_inputs_2,input_data) 
     assert res[0]["value"] == True
 
-# @pytest.mark.failingattr
+@pytest.mark.failingattr
 def test_provide_4():
     res = handler.provide(provider_inputs_2,input_data) 
     assert res[0]["value"] == False
@@ -7788,17 +7788,17 @@ provider_inputs_3 = {
     "attribute": "index",
 }
 
-# @pytest.mark.passingattr
+@pytest.mark.passingattr
 def test_provide_5():
     res = handler.provide(provider_inputs_3,input_data) 
     assert res[0]["value"] == 0
 
-# @pytest.mark.failingattr
+@pytest.mark.failingattr
 def test_provide_6():
     res = handler.provide(provider_inputs_3,input_data) 
     assert res[0]["value"] >= 0 
 
-
+# -------don't see these-------
 # provider_inputs_4 = {
 #     "input_type": "resource_changes_actions",
 #     "resource_type": "aws_vpc",
