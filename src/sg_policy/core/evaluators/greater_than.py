@@ -24,7 +24,7 @@ from .base_evaluator import BaseEvaluator
 
 class GreaterThan(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"passed": False, "message": ""}
+        evaluation_result = {"passed": False, "message": "Failed before evaluation."}
         try:
             value1 = evaluator_input['value']
             value2 = evaluator_data

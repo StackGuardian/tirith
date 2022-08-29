@@ -54,7 +54,7 @@ class Contains(BaseEvaluator):
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"passed": False, "message": ""}
+        evaluation_result = {"passed": False, "message": "Failed before evaluation."}
         try:
             # if evaluator_input and evaluator_data are both strings
             if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
