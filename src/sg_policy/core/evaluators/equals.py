@@ -80,7 +80,9 @@ class Equals(BaseEvaluator):
                 value2 = self.sort_lists_in_dicts(value2)
             evaluation_result["passed"] = value1 == value2
             if(value1 == value2):
-                evaluation_result["message"] = "The evaluation passed successfully"
+                evaluation_result["message"] = "Evaluation passed successfully. Value {} is equal to {}".format(
+                    value1, value2
+                )
             if value1 != value1:
                 evaluation_result[
                     "message"
