@@ -7788,5 +7788,4 @@ provider_inputs_3 = {
 
 def test_provide_5():
     res = handler.provide(provider_inputs_3,input_data) 
-    assert res[0]["value"] == False
-
+    assert res[1]["index"] == 0
