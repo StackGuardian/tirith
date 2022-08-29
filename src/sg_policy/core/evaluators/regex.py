@@ -12,14 +12,16 @@ class RegexEquals(BaseEvaluator):
                 if match is None:
                     evaluation_result = {
                         "passed": False,
-                        "message": "Input failed to match the Regex Pattern",
+                        "message": "Input {} does not match regex pattern {}".format(evaluator_input, evaluator_data),
                     }
                 else:
-                    evaluation_result = {"passed": True, "message": "The evaluation passed successfully"}
+                    evaluation_result = {"passed": True, "message": "Input {} matches regex pattern {}".format(
+                    evaluator_input, evaluator_data
+                )}
             else:
                 evaluation_result = {
                     "passed": False,
-                    "message": "Could not evaluate regex either evaluator input or evaluator data is not a string",
+                    "message": "Input {} does not match regex pattern {}".format(evaluator_input, evaluator_data),
                 }
             return evaluation_result
         except Exception as e:
