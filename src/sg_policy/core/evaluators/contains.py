@@ -89,7 +89,8 @@ class Contains(BaseEvaluator):
                         evaluation_result[
                             "message"
                         ] = "Failed to find required value inside input"
-
+            if(evaluation_result["passed"]):
+                evaluation_result["message"] = "The evaluation passed successfully"
             return evaluation_result
         except Exception as e:
             # TODO: logging

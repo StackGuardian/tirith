@@ -28,6 +28,8 @@ class LessThan(BaseEvaluator):
             value1 = evaluator_input['value']
             value2 = evaluator_data
             evaluation_result["passed"] = value1 < value2
+            if(value1 < value2):
+                evaluation_result["message"] = "The evaluation passed successfully"
             if not evaluation_result["passed"]:
                 evaluation_result["message"] = "Value {} is not less than {}".format(
                     value1, value2
