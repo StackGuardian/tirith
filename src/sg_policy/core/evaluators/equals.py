@@ -80,13 +80,13 @@ class Equals(BaseEvaluator):
                 value2 = self.sort_lists_in_dicts(value2)
             evaluation_result["passed"] = value1 == value2
             if(value1 == value2):
-                evaluation_result["message"] = "Evaluation passed successfully. Value {} is equal to {}".format(
+                evaluation_result["message"] = "Value {} is equal to {}".format(
                     value1, value2
                 )
             if value1 != value1:
                 evaluation_result[
                     "message"
-                ] = "Input value is not equal to the value provided in the policy"
+                ] = "Value {} is not equal to {}".format(value1, value2)
             return evaluation_result
         except Exception as e:
             evaluation_result["message"] = str(e)

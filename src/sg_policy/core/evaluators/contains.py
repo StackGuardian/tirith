@@ -75,22 +75,22 @@ class Contains(BaseEvaluator):
                                 evaluation_result["passed"] = False
                                 evaluation_result[
                                     "message"
-                                ] = "Failed to find required value inside input"
+                                ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
                                 break
                         else:
                             evaluation_result["passed"] = False
                             evaluation_result[
                                 "message"
-                            ] = "Failed to find required value inside input"
+                            ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
                             break
                 else:
                     evaluation_result["passed"] = evaluator_input in evaluator_data
                     if evaluator_input in evaluator_data:
                         evaluation_result[
                             "message"
-                        ] = "Failed to find required value inside input"
+                        ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
             if(evaluation_result["passed"]):
-                evaluation_result["message"] = "Evaluation passed successfully. Value {} is found in {}".format(
+                evaluation_result["message"] = "Value {} is found in {}".format(
                     evaluator_input, evaluator_data
                 )
             return evaluation_result
