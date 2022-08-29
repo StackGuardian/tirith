@@ -27,7 +27,7 @@ class LessThanEqualTo(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {
             "passed": False,
-            "message": "",
+            "message": "Failed before evaluation.",
         }
         try:
             value1 = evaluator_input['value']

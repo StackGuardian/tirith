@@ -4,7 +4,7 @@ import re
 
 class RegexEquals(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"passed": False, "message": ""}
+        evaluation_result = {"passed": False, "message": "Failed before evaluation."}
         try:
             match = 0
             if type(evaluator_input['value']) == str and type(evaluator_data) == str:
