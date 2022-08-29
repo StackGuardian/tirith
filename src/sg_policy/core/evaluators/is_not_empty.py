@@ -30,7 +30,9 @@ class IsNotEmpty(BaseEvaluator):
                 or isinstance(input, dict)
             ) and input:
                 evaluation_result["passed"] = True
-                evaluation_result["message"] = "The evaluation passed successfully"
+                evaluation_result["message"] = "Evaluation passed successfully. Value {} is not empty".format(
+                    input
+                )
             if not evaluation_result["passed"]:
                 evaluation_result["message"] = "Value {} is empty".format(input)
             return evaluation_result

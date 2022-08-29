@@ -30,7 +30,9 @@ class GreaterThan(BaseEvaluator):
             value2 = evaluator_data
             evaluation_result["passed"] = value1 > value2
             if(value1 > value2):
-                evaluation_result["message"] = "The evaluation passed successfully"
+                evaluation_result["message"] = "Evaluation passed successfully. Value {} is greater than {}".format(
+                    value1, value2
+                )
             if not evaluation_result["passed"]:
                 evaluation_result["message"] = "Value {} is not greater than {}".format(
                     value1, value2
