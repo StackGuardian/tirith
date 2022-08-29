@@ -7746,7 +7746,9 @@ plan_string = """
         }
     }
 }"""
+
 input_data = json.loads(plan_string)
+
 provider_inputs_1 = {
     "input_type": "resource_changes",
     "resource_type": "aws_vpc",
@@ -7759,13 +7761,8 @@ provider_inputs_2 = {
     "attribute": "enable_dns_support",
 }
 
-provider_inputs_3={
-    "input_type":"resource_changes_actions",
-    "resource_type": "aws_vpc",
-}
-
 @pytest.mark.passingattr
-def test_get_attribute_name_passing():
+def test_get_attribute_name_passing1():
     res = handler.provide(provider_inputs_1, input_data)
     assert res == [
         {
@@ -7866,18 +7863,41 @@ def test_get_attribute_name_passing3():
         }
     ]
 
-
+# 
 @pytest.mark.passingattr
 def test_get_attribute_name_passing4():
     res = handler.provide(provider_inputs_2, input_data)
     assert res[0]["value"] == True
 
+# actions
+provider_inputs_4 = {
+    "input_type": "resource_changes_actions",
+    "resource_type": "aws_vpc",
+    "attribute": "actions",
+}
 @pytest.mark.passingattr
 def test_get_attribute_name_passing5():
-    res = handler.provide(provider_inputs_3, input_data)
+    res = handler.provide(provider_inputs_4, input_data)
     assert res[0]["value"] == ["create"]
 
 @pytest.mark.failingattr
 def test_get_attribute_name_failing6():
-    res = handler.provide(provider_inputs_2, input_data)
-    assert res[0]["value"] == False
+    res = handler.provide(provider_inputs_4, input_data)
+    assert res[0]["value"] != ["create"]
+
+# count 
+provider_inputs_3 = {
+    "input_type": "resource_changes_count",
+    "resource_type": "aws_vpc",
+    "attribute": "index",
+}
+
+@pytest.mark.passingattr
+def test_get_attribute_name_passing7():
+    res = handler.provide(provider_inputs_3,input_data) 
+    assert res[0]["value"] >= 0
+
+@pytest.mark.failingattr
+def test_get_attribute_name_failing8():
+    res = handler.provide(provider_inputs_3,input_data) 
+    assert res[0]["value"] == 0 
