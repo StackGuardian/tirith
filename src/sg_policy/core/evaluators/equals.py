@@ -53,7 +53,7 @@ class Equals(BaseEvaluator):
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"passed": False, "message": "The evaluation passed successfully"}
+        evaluation_result = {"passed": False, "message": ""}
         try:
             value1 = evaluator_input
             value2 = evaluator_data
@@ -79,6 +79,8 @@ class Equals(BaseEvaluator):
             if isinstance(value2, dict):
                 value2 = self.sort_lists_in_dicts(value2)
             evaluation_result["passed"] = value1 == value2
+            if(value1 == value2):
+                evaluation_result["message"] = "The evaluation passed successfully"
             if value1 != value1:
                 evaluation_result[
                     "message"
