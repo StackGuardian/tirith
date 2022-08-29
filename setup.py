@@ -33,7 +33,7 @@ class CustomInstall(install):
 
 setup(
     name="sg_policy",
-    version="0.0.1",
+    version="1.0.0-alpha.1",
     license="Apache",
     description="StackGuardian Policy Framework simplifies defining Policy as Code and leverages OPA as policy engine.",
     long_description_content_type="text/markdown",
