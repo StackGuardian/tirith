@@ -3,23 +3,24 @@ import logging
 from .evaluators import *
 from pathlib import Path
 import json
+import ast
 
 from ..providers.infracost import provide as infracost_provider
 from ..providers.terraform_plan import provide as terraform_provider
-from ..providers.sg_workflow import provide as wf_provider
+from ..providers.sg_workflow import provide as sg_wf_provider
 
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
 
 
-def getEvaluatorInputsFromProviderInputs(provider_inputs, provider_module, input_data):
+def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, input_data):
     # TODO: Get the inputs from given providers
     if provider_module == "terraform_plan":
         return terraform_provider(provider_inputs, input_data)
     if provider_module == "infracost":
         return infracost_provider(provider_inputs, input_data)
-    if provider_module == "SgWorkflow":
-        return wf_provider(provider_inputs, input_data)
+    if provider_module == "sg_workflow":
+        return sg_wf_provider(provider_inputs, input_data)
 
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
@@ -30,7 +31,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     evaluator_data = condition.get("expected")
     eval_id = evaluator_obj.get("id")
 
-    evaluator_inputs = getEvaluatorInputsFromProviderInputs(
+    evaluator_inputs = get_evaluator_inputs_from_provider_inputs(
         provider_inputs, provider_module, input_data
     )  # always an array of inputs for evaluators
     result = {
@@ -38,7 +39,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         "passed": False,
     }
     try:
-        evaluator_instance = eval(f"{evaluator_class}()")
+        evaluator_instance = ast.literal_eval(f"{evaluator_class}()")
     except NameError as e:
         print(f"{evaluator_class} is not a supported evaluator")
     evaluation_results = []
@@ -54,17 +55,16 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     return result
 
 
-def finalEvaluator(evalString, evalIdValues):
-    logger.info("Running final evaluator")
+def final_evaluator(eval_string, evalIdValues):
     for key in evalIdValues:
-        evalString = evalString.replace(key, str(evalIdValues[key]["passed"]))
-        # print (evalString)
+        eval_string = eval_string.replace(key, str(evalIdValues[key]["passed"]))
+        # print (eval_string)
     # TODO: shall we use and, or and not instead of symbols?
-    evalString = evalString.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
-    return eval(evalString)
+    eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
+    return ast.literal_eval(eval_string)
 
 
-# print(finalEvaluator("(!(pol_check_1  &&  pol_check_2)  && pol_check_3 ) && pol_check_4", {
+# print(final_evaluator("(!(pol_check_1  &&  pol_check_2)  && pol_check_3 ) && pol_check_4", {
 # 	"pol_check_1":False,
 # 	"pol_check_2":True,
 # 	"pol_check_3":True,
@@ -94,7 +94,7 @@ def start_policy_evaluation(policy_path, input_path):
         eval_id = eval_obj.get("id")
         logger.info(f"Processing evaluator '{eval_id}'")
         eval_results[eval_id] = generate_evaluator_result(eval_obj, input_data, provider_module)
-    final_evaluation_result = finalEvaluator(final_evaluation_policy_string, eval_results)
+    final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
 
     final_output = {
         "meta": {"version": policy_meta.get("version"), "required_provider": provider_module},
