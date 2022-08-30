@@ -1,4 +1,9 @@
+import logging
+
 from .base_evaluator import BaseEvaluator
+
+# TODO: At least add __name__ as the name for the logger
+logger = logging.getLogger()
 
 # Checks if :attr: `evaluator_input` is contained in :attr:`evaluator_data`.
 
@@ -41,7 +46,7 @@ class Contains(BaseEvaluator):
                     self.sort_lists_in_dicts(input[key])
             return input
         except Exception as e:
-            # TODO: logging
+            logger.exception(e)
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
@@ -86,5 +91,5 @@ class Contains(BaseEvaluator):
                 evaluation_result["message"] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
             return evaluation_result
         except Exception as e:
-            # TODO: logging
+            logger.exception(e)
             return evaluation_result

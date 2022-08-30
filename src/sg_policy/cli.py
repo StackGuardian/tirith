@@ -6,6 +6,7 @@ import argparse
 import sys
 import textwrap
 import json
+from sg_policy.logging import setup_logging
 from sg_policy.status import ExitStatus
 import logging
 
@@ -14,6 +15,9 @@ from .core import start_policy_evaluation
 
 # import sg_policy.providers as providers
 import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
+
+# TODO: Use at least __name__ for the logger name
+logger = logging.getLogger()
 
 
 def main(args=None) -> ExitStatus:
@@ -57,13 +61,19 @@ def main(args=None) -> ExitStatus:
             help="Input config path. Can be a file or dir, depending on --input-type",
         )
         parser.add_argument(
-            "--prettify",
-            metavar="PRETTIFY",
-            type=bool,
-            dest="prettify",
-            help="This argument can be used to print evaluation result in a more attractive and informative way",
+            "--json",
+            dest="json",
+            action="store_true",
+            help="Just print the result in JSON form (useful for passing to other programs)",
+        )
+        parser.add_argument(
+            "--verbose",
+            dest="verbose",
+            action="store_true",
+            help="Show detailed logs of the program run",
         )
         parser.add_argument("--version", action="version", version="1.0.0-alpha.1")
+
         args = parser.parse_args()
 
         if not args.policyPath:
@@ -73,9 +83,8 @@ def main(args=None) -> ExitStatus:
             print("Path to input file should be provided to '--input-path' argument")
             return ExitStatus.ERROR
 
-        # TODO: --prettify argument can be used to print more detailed and informative output
-        if args.prettify:
-            pass
+        if not args.json:
+            setup_logging(verbose=args.verbose)
 
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
@@ -83,7 +92,7 @@ def main(args=None) -> ExitStatus:
             print(formatted_result)
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
-            logging.exception(e)
+            logger.exception(e)
             print("ERROR")
             return ExitStatus.ERROR
 
