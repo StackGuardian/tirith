@@ -54,15 +54,18 @@ class Contains(BaseEvaluator):
         try:
             # if evaluator_input and evaluator_data are both strings
             if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
-                evaluation_result["passed"] = evaluator_input in evaluator_data
+                result = evaluator_input in evaluator_data
+                evaluation_result["passed"] = result
             # if evaluator_input is a list
             if isinstance(evaluator_data, list):
                 evaluator_data = self.sort_lists_in_dicts(evaluator_data)
                 if isinstance(evaluator_input, list):
                     evaluator_input = self.sort_lists_in_dicts(evaluator_input)
-                    evaluation_result["passed"] = evaluator_input in evaluator_data
+                    result = evaluator_input in evaluator_data
+                    evaluation_result["passed"] = result
                 else:
-                    evaluation_result["passed"] = evaluator_input in evaluator_data
+                    result = evaluator_input in evaluator_data
+                    evaluation_result["passed"] = result
             if isinstance(evaluator_data, dict):
                 if isinstance(evaluator_input, dict):
                     for key in evaluator_data:
@@ -80,13 +83,12 @@ class Contains(BaseEvaluator):
                             )
                             break
                 else:
-                    evaluation_result["passed"] = evaluator_input in evaluator_data
-                    if evaluator_input in evaluator_data:
-                        evaluation_result["message"] = "Failed to find {} inside {}".format(
-                            evaluator_input, evaluator_data
-                        )
-            if evaluation_result["passed"]:
-                evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                    result = evaluator_input in evaluator_data
+                    evaluation_result["passed"] = result
+                    if result:
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+            else:
+                evaluation_result["message"] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
             return evaluation_result
         except Exception as e:
             logger.exception(e)

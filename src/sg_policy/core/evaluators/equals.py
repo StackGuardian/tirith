@@ -73,10 +73,11 @@ class Equals(BaseEvaluator):
                 value1 = self.sort_lists_in_dicts(value1)
             if isinstance(value2, dict):
                 value2 = self.sort_lists_in_dicts(value2)
-            evaluation_result["passed"] = value1 == value2
-            if value1 == value2:
+            result = value1 == value2
+            evaluation_result["passed"] = result
+            if result:
                 evaluation_result["message"] = "{} is equal to {}".format(value1, value2)
-            if value1 != value1:
+            else:
                 evaluation_result["message"] = "{} is not equal to {}".format(value1, value2)
             return evaluation_result
         except Exception as e:
