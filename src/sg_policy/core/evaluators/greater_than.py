@@ -29,9 +29,9 @@ class GreaterThan(BaseEvaluator):
             value1 = evaluator_input
             value2 = evaluator_data
             evaluation_result["passed"] = value1 > value2
-            if value1 > value2:
+            if evaluation_result["passed"]:
                 evaluation_result["message"] = "{} is greater than {}".format(value1, value2)
-            if not evaluation_result["passed"]:
+            else:
                 evaluation_result["message"] = "{} is not greater than {}".format(value1, value2)
             return evaluation_result
         except Exception as e:
