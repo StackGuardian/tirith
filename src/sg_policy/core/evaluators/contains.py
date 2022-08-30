@@ -64,26 +64,24 @@ class Contains(BaseEvaluator):
                         if key in evaluator_input:
                             if evaluator_data[key] != evaluator_input[key]:
                                 evaluation_result["passed"] = False
-                                evaluation_result[
-                                    "message"
-                                ] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
+                                evaluation_result["message"] = "Failed to find {} inside {}".format(
+                                    evaluator_input, evaluator_data
+                                )
                                 break
                         else:
                             evaluation_result["passed"] = False
-                            evaluation_result[
-                                "message"
-                            ] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
+                            evaluation_result["message"] = "Failed to find {} inside {}".format(
+                                evaluator_input, evaluator_data
+                            )
                             break
                 else:
                     evaluation_result["passed"] = evaluator_input in evaluator_data
                     if evaluator_input in evaluator_data:
-                        evaluation_result[
-                            "message"
-                        ] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
-            if(evaluation_result["passed"]):
-                evaluation_result["message"] = "Found {} inside {}".format(
-                    evaluator_input, evaluator_data
-                )
+                        evaluation_result["message"] = "Failed to find {} inside {}".format(
+                            evaluator_input, evaluator_data
+                        )
+            if evaluation_result["passed"]:
+                evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             return evaluation_result
         except Exception as e:
             # TODO: logging
