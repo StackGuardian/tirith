@@ -108,14 +108,14 @@ def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
     outputs = []
     input_resource_change_attrs = {}
-    input_type = provider_inputs["input_type"]
+    input_type = provider_inputs["operation_type"]
     resource_changes = input_data["resource_changes"]
     # CASE 1
     # - Get value of an attribute for all instances of a resource
     # - resource_changes.*.change.after.<attr_name>
     if input_type == "resource_changes":
-        attribute = provider_inputs["attribute"]
-        resource_type = provider_inputs["resource_type"]
+        attribute = provider_inputs["terraform_resource_attribute"]
+        resource_type = provider_inputs["terraform_resource_type"]
 
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
@@ -143,7 +143,7 @@ def provide(provider_inputs, input_data):
     # - Get actions performed on a resource
     # - resource_changes.*.change.actions
     elif input_type == "resource_changes_actions":
-        resource_type = provider_inputs["resource_type"]
+        resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
                 outputs.append(
@@ -160,7 +160,7 @@ def provide(provider_inputs, input_data):
     elif input_type == "resource_changes_count":
         count = 0
         resource_meta = {}
-        resource_type = provider_inputs["resource_type"]
+        resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
                 resource_meta = resource_change
