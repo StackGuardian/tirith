@@ -1,48 +1,8 @@
-import re
-from time import time
-import os
-import json
-from .utils import star_int_equals_int
-
-## TODO: use CAMELCASE for all function name
-# def func(splitted_attr_name_expr,input_data):
-
-#   if len(splitted_attr_name_expr) == 0:
-
-#     return input_data
-
-#   lookup_key = splitted_attr_name_expr[0]
-
-#   if lookup_key != "*":
-
-#     if (type(input_data) == dict):
-#       input_data_new = input_data[lookup_key]
-#     elif type(input_data) == list:
-#       input_data_new = input_data[0][lookup_key]
-#     else:
-#       input_data_new = input_data[lookup_key]
-#     func(splitted_attr_name_expr[1:], input_data_new)
-
-#   elif lookup_key == "*" and isinstance(input_data, list):
-
-#     values = []
-
-#     for i in input_data:
-
-#         values.append(func(splitted_attr_name_expr[1:], i))
-
-#     return values
-
-#   else:
-
-#     return "undef"
-
-
 # input->(list [s3,acl,*],value of resource)
 # returns->[any, any, any]
 def __get_expression_attribute(splitted_attr_name_expr, input_data):
 
-    if len(splitted_attr_name_expr) == 0:
+    if not splitted_attr_name_expr:
 
         return input_data
 
@@ -75,16 +35,11 @@ def __get_expression_attribute(splitted_attr_name_expr, input_data):
         values = []
         lookup_key = splitted_attr_name_expr[1:2][0]
         splitted_attr_name_expr = splitted_attr_name_expr[1:]
-        for i in input_data:
-            # print(i)
-            # print(lookup_key)
-
-            values.append(i[lookup_key])
-            # print("values",values)
+        # for i in input_data:
+        #     values.append(i[lookup_key])
+        values = [i[lookup_key] for i in input_data]
 
         input_data_new = values
-        # print("1st data",splitted_attr_name_expr[1:])
-        # print("2nd data",input_data_new)
         __get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
     elif lookup_key == "*" and isinstance(input_data, dict):
         values = []
