@@ -24,6 +24,7 @@ def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, 
     else:
         return []
 
+
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
     provider_inputs = evaluator_obj.get("provider_args")
@@ -40,7 +41,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         "passed": False,
     }
     try:
-        evaluator_instance = ast.literal_eval(f"{evaluator_class}()")
+        evaluator_instance = eval(f"{evaluator_class}()")
     except NameError as e:
         print(f"{evaluator_class} is not a supported evaluator")
     evaluation_results = []
@@ -63,7 +64,7 @@ def final_evaluator(eval_string, evalIdValues):
         # print (eval_string)
     # TODO: shall we use and, or and not instead of symbols?
     eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
-    return ast.literal_eval(eval_string)
+    return eval(eval_string)
 
 
 # print(final_evaluator("(!(pol_check_1  &&  pol_check_2)  && pol_check_3 ) && pol_check_4", {
