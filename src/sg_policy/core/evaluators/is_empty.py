@@ -22,7 +22,7 @@ from .base_evaluator import BaseEvaluator
 
 class IsEmpty(BaseEvaluator):
     def evaluate(self, input):
-        evaluation_result = {"passed": False, "message": ""}
+        evaluation_result = {"passed": False, "message": "Failed before evaluation."}
         try:
             if (
                 isinstance(input, str)
@@ -30,6 +30,9 @@ class IsEmpty(BaseEvaluator):
                 or isinstance(input, dict)
             ) and not input:
                 evaluation_result["passed"] = True
+                evaluation_result["message"] = "Value {} is empty".format(
+                    input
+                )
             if not evaluation_result["passed"]:
                 evaluation_result["message"] = "Value {} is not empty".format(input)
             return evaluation_result
