@@ -25,13 +25,11 @@ class LessThan(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"passed": False, "message": ""}
         try:
-            value1 = evaluator_input['value']
+            value1 = evaluator_input["value"]
             value2 = evaluator_data
             evaluation_result["passed"] = value1 < value2
             if not evaluation_result["passed"]:
-                evaluation_result["message"] = "Value {} is not less than {}".format(
-                    value1, value2
-                )
+                evaluation_result["message"] = "Value {} is not less than {}".format(value1, value2)
             return evaluation_result
         except Exception as e:
             evaluation_result["message"] = str(e)

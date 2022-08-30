@@ -33,16 +33,12 @@ class Equals(BaseEvaluator):
                     if isinstance(input[key][0], dict):
                         sorted_array = []
                         for index, item in enumerate(input[key]):
-                            sorted_array.append(
-                                self.sort_lists_in_dicts(input[key][index])
-                            )
+                            sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
                         input[key] = sorted_array
                     elif isinstance(input[key][0], list):
                         sorted_array = []
                         for index, item in enumerate(input[key]):
-                            sorted_array.append(
-                                self.sort_lists_in_dicts(input[key][index])
-                            )
+                            sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
                         input[key] = sorted_array
                     else:
                         input[key] = sorted(input[key])
@@ -80,9 +76,7 @@ class Equals(BaseEvaluator):
                 value2 = self.sort_lists_in_dicts(value2)
             evaluation_result["passed"] = value1 == value2
             if value1 != value1:
-                evaluation_result[
-                    "message"
-                ] = "Input value is not equal to the value provided in the policy"
+                evaluation_result["message"] = "Input value is not equal to the value provided in the policy"
             return evaluation_result
         except Exception as e:
             evaluation_result["message"] = str(e)

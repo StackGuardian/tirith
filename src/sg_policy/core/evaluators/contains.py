@@ -33,9 +33,7 @@ class Contains(BaseEvaluator):
                     if isinstance(input[key][0], dict) or isinstance(input[key][0], list):
                         sorted_array = []
                         for index, _ in enumerate(input[key]):
-                            sorted_array.append(
-                                self.sort_lists_in_dicts(input[key][index])
-                            )
+                            sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
                         input[key] = sorted_array
                     else:
                         input[key] = sorted(input[key])
@@ -66,22 +64,16 @@ class Contains(BaseEvaluator):
                         if key in evaluator_input:
                             if evaluator_data[key] != evaluator_input[key]:
                                 evaluation_result["passed"] = False
-                                evaluation_result[
-                                    "message"
-                                ] = "Failed to find required value inside input"
+                                evaluation_result["message"] = "Failed to find required value inside input"
                                 break
                         else:
                             evaluation_result["passed"] = False
-                            evaluation_result[
-                                "message"
-                            ] = "Failed to find required value inside input"
+                            evaluation_result["message"] = "Failed to find required value inside input"
                             break
                 else:
                     evaluation_result["passed"] = evaluator_input in evaluator_data
                     if evaluator_input in evaluator_data:
-                        evaluation_result[
-                            "message"
-                        ] = "Failed to find required value inside input"
+                        evaluation_result["message"] = "Failed to find required value inside input"
 
             return evaluation_result
         except Exception as e:
