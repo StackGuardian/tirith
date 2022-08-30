@@ -30,14 +30,7 @@ class Contains(BaseEvaluator):
         try:
             for key in input:
                 if isinstance(input[key], list):
-                    if isinstance(input[key][0], dict):
-                        sorted_array = []
-                        for index, _ in enumerate(input[key]):
-                            sorted_array.append(
-                                self.sort_lists_in_dicts(input[key][index])
-                            )
-                        input[key] = sorted_array
-                    elif isinstance(input[key][0], list):
+                    if isinstance(input[key][0], dict) or isinstance(input[key][0], list):
                         sorted_array = []
                         for index, _ in enumerate(input[key]):
                             sorted_array.append(
