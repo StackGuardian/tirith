@@ -7,8 +7,8 @@ class RegexEquals(BaseEvaluator):
         evaluation_result = {"passed": False, "message": ""}
         try:
             match = 0
-            if type(evaluator_input['value']) == str and type(evaluator_data) == str:
-                match = re.match(evaluator_data, evaluator_input['value'])
+            if type(evaluator_input["value"]) == str and type(evaluator_data) == str:
+                match = re.match(evaluator_data, evaluator_input["value"])
                 if match is None:
                     evaluation_result = {
                         "passed": False,
