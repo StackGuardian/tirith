@@ -47,7 +47,7 @@ class Contains(BaseEvaluator):
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"passed": False, "message": "Failed before evaluation."}
+        evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
             # if evaluator_input and evaluator_data are both strings
             if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
@@ -68,22 +68,22 @@ class Contains(BaseEvaluator):
                                 evaluation_result["passed"] = False
                                 evaluation_result[
                                     "message"
-                                ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
+                                ] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
                                 break
                         else:
                             evaluation_result["passed"] = False
                             evaluation_result[
                                 "message"
-                            ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
+                            ] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
                             break
                 else:
                     evaluation_result["passed"] = evaluator_input in evaluator_data
                     if evaluator_input in evaluator_data:
                         evaluation_result[
                             "message"
-                        ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
+                        ] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
             if(evaluation_result["passed"]):
-                evaluation_result["message"] = "Value {} is found in {}".format(
+                evaluation_result["message"] = "Found {} inside {}".format(
                     evaluator_input, evaluator_data
                 )
             return evaluation_result
