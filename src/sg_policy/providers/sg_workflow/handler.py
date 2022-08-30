@@ -1,3 +1,6 @@
+import logging
+
+
 def __getValue(key, data):
     result = ""
     if key == "integrationId":
@@ -78,5 +81,5 @@ def provide(provider_inputs, input_data):
                 }
             ]
     except Exception as e:
-        # TODO: Log exception as debug log
+        logging.exception("Exception happened")
         return [{"value": None, "meta": None, "err": str(e)}]
