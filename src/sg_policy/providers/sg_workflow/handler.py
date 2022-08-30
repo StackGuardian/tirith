@@ -1,3 +1,10 @@
+import logging
+
+
+# TODO: Add at least __name__ as the name of the logger
+logger = logging.getLogger()
+
+
 def __getValue(key, data):
     result = ""
     if key == "integrationId":
@@ -54,8 +61,8 @@ def __getValue(key, data):
             raise KeyError(f"{key} not found in input_data")
 
     elif key in ["iacTemplateId", "useMarketplaceTemplate"]:
-        if "VCSConfig" in data and "iacVCSConfig" in data['VCSConfig'] and key in data['VCSConfig']["iacVCSConfig"]:
-            result = data['VCSConfig']["iacVCSConfig"][key]
+        if "VCSConfig" in data and "iacVCSConfig" in data["VCSConfig"] and key in data["VCSConfig"]["iacVCSConfig"]:
+            result = data["VCSConfig"]["iacVCSConfig"][key]
         else:
             raise KeyError(f"{key} not found in input_data")
 
@@ -78,5 +85,5 @@ def provide(provider_inputs, input_data):
                 }
             ]
     except Exception as e:
-        # TODO: Log exception as debug log
+        logger.exception(e)
         return [{"value": None, "meta": None, "err": str(e)}]
