@@ -104,6 +104,7 @@ def __get_expression_attribute(splitted_attr_name_expr, input_data):
         # return blank array
         return []
 
+
 def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
     outputs = []
@@ -130,13 +131,9 @@ def provide(provider_inputs, input_data):
                         }
                     )
                 elif "." in attribute or "*" in attribute:
-                    evaluated_output = __get_expression_attribute(
-                        attribute, input_resource_change_attrs
-                    )
+                    evaluated_output = __get_expression_attribute(attribute, input_resource_change_attrs)
                     for val in evaluated_output:
-                        outputs.append(
-                            {"value": val, "meta": resource_change, "err": None}
-                        )
+                        outputs.append({"value": val, "meta": resource_change, "err": None})
 
         return outputs
     # CASE 2

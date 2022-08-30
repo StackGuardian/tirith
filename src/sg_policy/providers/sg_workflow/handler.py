@@ -5,9 +5,7 @@ def __getValue(key, data):
         if "DeploymentPlatformConfig" in data:
             for obj in data["DeploymentPlatformConfig"]:
                 if "config" in obj and "integrationId" in obj["config"]:
-                    temp.append(
-                        obj["config"]["integrationId"].replace("/integrations/", "")
-                    )
+                    temp.append(obj["config"]["integrationId"].replace("/integrations/", ""))
             result = temp
         else:
             raise KeyError("DeploymentPlatformConfig not found in input_data")
