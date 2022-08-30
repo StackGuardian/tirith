@@ -1,6 +1,7 @@
 from .evaluators import *
 from pathlib import Path
 import json
+import ast
 
 from ..providers.infracost import provide as infracost_provider
 from ..providers.terraform_plan import provide as terraform_provider
@@ -33,7 +34,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         "passed": False,
     }
     try:
-        evaluator_instance = eval(f"{evaluator_class}()")
+        evaluator_instance = ast.literal_eval(f"{evaluator_class}()")
     except NameError as e:
         print(f"{evaluator_class} is not a supported evaluator")
     evaluation_results = []
@@ -55,7 +56,7 @@ def final_evaluator(eval_string, evalIdValues):
         # print (eval_string)
     # TODO: shall we use and, or and not instead of symbols?
     eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
-    return eval(eval_string)
+    return ast.literal_eval(eval_string)
 
 
 # print(final_evaluator("(!(pol_check_1  &&  pol_check_2)  && pol_check_3 ) && pol_check_4", {
