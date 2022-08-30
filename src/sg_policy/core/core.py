@@ -14,32 +14,14 @@ def getEvaluatorInputsFromProviderInputs(provider_inputs, provider_module, input
     if provider_module == "SgWorkflow":
         return wfProvider(provider_inputs, input_data)
 
-def generate_evaluator_result(evaluator_obj, input_data):
-    # evaluator_obj example
-    # {
-    #         "id": "pol_check_1",
-    #         "provider": "terraform_plan", //which provider to import evaluator from (core by default)
-    #         "provider_inputs": { // Use provider_data or evaluator_inputs
-    #             "transformer_ref": "count",
-    #             "resource_type": "aws_s3_bucket"
-    #         },
-    #         "evaluator_ref": "lt",
-    #         "evaluator_data": 10, // Should also support transformation eventually
-    #         "evaluator_inputs": 10
-    #     },
-    provider_module = evaluator_obj.get("provider", "core")
-    evaluator_class = evaluator_obj.get("evaluator_ref")
-    provider_inputs = evaluator_obj.get("provider_inputs")
-    evaluator_data = evaluator_obj.get("evaluator_data")
+def generate_evaluator_result(evaluator_obj, input_data, provider_module ):
+  
+    provider_inputs = evaluator_obj.get("provider_args")
+    condition = evaluator_obj.get("condition")
+    evaluator_class = condition.get("type")
+    evaluator_data = condition.get("expected")
     eval_id = evaluator_obj.get("id")
 
-    # print({
-    #     'provider_module' : provider_module,
-    #     'evaluator_class': evaluator_class,
-    #     'provider_inputs': provider_inputs,
-    #     'evaluator_data': evaluator_data,
-    #     'eval_id': eval_id
-    # })
 
     evaluator_inputs = getEvaluatorInputsFromProviderInputs(
         provider_inputs, provider_module, input_data
@@ -59,6 +41,7 @@ def generate_evaluator_result(evaluator_obj, input_data):
             evaluation_result = evaluator_instance.evaluate(
                 evaluator_input['value'], evaluator_data
             )
+            evaluation_result['meta'] = evaluator_input.get('meta')
             evaluation_results.append(evaluation_result)
             if not evaluation_result["passed"]:
                 has_evaluation_passed = False
@@ -125,20 +108,20 @@ def start_policy_evaluation(policy_path, input_path):
 
     policy_meta = policy_data.get("meta")
     eval_objects = policy_data.get("evaluators")
-    final_evaluation_policy_string = policy_data.get("final_evaluation")
-
+    final_evaluation_policy_string = policy_data.get("eval_expression")
+    provider_module= policy_meta.get("required_provider", "core")
     # TODO: Write functionality for dynamically importing evaluators from other modules.
     eval_results = {}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
-        eval_results[eval_id] = generate_evaluator_result(eval_obj, input_data)
+        eval_results[eval_id] = generate_evaluator_result(eval_obj, input_data, provider_module)
     final_evaluation_result = finalEvaluator(
         final_evaluation_policy_string, eval_results
     )
 
     final_output = {
-        "meta": {"version": policy_meta.get("version")},
-        "final_evaluation": final_evaluation_result,
+        "meta": {"version": policy_meta.get("version"), "required_provider": provider_module},
+        "final_result": final_evaluation_result,
         "evaluators": eval_results,
     }
     return final_output
