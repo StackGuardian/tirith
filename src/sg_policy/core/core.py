@@ -12,11 +12,12 @@ def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, 
     # TODO: Get the inputs from given providers
     if provider_module == "terraform_plan":
         return terraform_provider(provider_inputs, input_data)
-    if provider_module == "infracost":
+    elif provider_module == "infracost":
         return infracost_provider(provider_inputs, input_data)
-    if provider_module == "sg_workflow":
+    elif provider_module == "sg_workflow":
         return sg_wf_provider(provider_inputs, input_data)
-
+    else:
+        return []
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
