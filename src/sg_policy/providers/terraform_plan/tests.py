@@ -2,12 +2,14 @@ from . import handler
 import json
 import pytest
 
+
 def open_policy(json_path):
-    with open(json_path,'r') as f:
+    with open(json_path, "r") as f:
         data = json.load(f)
     return data
 
-input_data = open_policy('terraform_input.json')
+
+input_data = open_policy("terraform_input.json")
 
 provider_inputs_1 = {
     "input_type": "resource_changes",
@@ -20,6 +22,7 @@ provider_inputs_2 = {
     "resource_type": "aws_vpc",
     "attribute": "enable_dns_support",
 }
+
 
 @pytest.mark.passingattr
 def test_get_attribute_name_passing1():
@@ -123,11 +126,12 @@ def test_get_attribute_name_passing3():
         }
     ]
 
- 
+
 @pytest.mark.passingattr
 def test_get_attribute_name_passing4():
     res = handler.provide(provider_inputs_2, input_data)
     assert res[0]["value"] == True
+
 
 # actions
 provider_inputs_4 = {
@@ -135,29 +139,35 @@ provider_inputs_4 = {
     "resource_type": "aws_vpc",
     "attribute": "actions",
 }
+
+
 @pytest.mark.passingattr
 def test_get_attribute_name_passing5():
     res = handler.provide(provider_inputs_4, input_data)
     assert res[0]["value"] == ["create"]
+
 
 @pytest.mark.failingattr
 def test_get_attribute_name_failing6():
     res = handler.provide(provider_inputs_4, input_data)
     assert res[0]["value"] != ["create"]
 
-# count 
+
+# count
 provider_inputs_3 = {
     "input_type": "resource_changes_count",
     "resource_type": "aws_vpc",
     "attribute": "index",
 }
 
+
 @pytest.mark.passingattr
 def test_get_attribute_name_passing7():
-    res = handler.provide(provider_inputs_3,input_data) 
+    res = handler.provide(provider_inputs_3, input_data)
     assert res[0]["value"] >= 0
+
 
 @pytest.mark.failingattr
 def test_get_attribute_name_failing8():
-    res = handler.provide(provider_inputs_3,input_data) 
-    assert res[0]["value"] == 0 
+    res = handler.provide(provider_inputs_3, input_data)
+    assert res[0]["value"] == 0
