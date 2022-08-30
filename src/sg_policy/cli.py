@@ -92,8 +92,12 @@ def main(args=None) -> ExitStatus:
             print(formatted_result)
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
-            logger.exception(e)
-            print("ERROR")
+            if args.json:
+                # Print empty JSON
+                print("{}")
+            else:
+                logger.exception(e)
+                print("ERROR")
             return ExitStatus.ERROR
 
         # TODO: move to core
