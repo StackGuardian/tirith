@@ -26,11 +26,15 @@ def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, 
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
+    eval_id = evaluator_obj.get("id")
     provider_inputs = evaluator_obj.get("provider_args")
     condition = evaluator_obj.get("condition")
-    evaluator_class = condition.get("type")
-    evaluator_data = condition.get("expected")
-    eval_id = evaluator_obj.get("id")
+    evaluator_class = None
+    if condition:
+        evaluator_class = condition.get("type")
+        evaluator_data = condition.get("expected")
+    else:
+        print("condition key is not supplied.")
 
     evaluator_inputs = get_evaluator_inputs_from_provider_inputs(
         provider_inputs, provider_module, input_data
@@ -39,10 +43,11 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         "id": eval_id,
         "passed": False,
     }
-    try:
-        evaluator_instance = eval(f"{evaluator_class}()")
-    except NameError:
-        print(f"{evaluator_class} is not a supported evaluator")
+    if evaluator_class:
+        try:
+            evaluator_instance = eval(f"{evaluator_class}()")
+        except NameError:
+            print(f"{evaluator_class} is not a supported evaluator")
     evaluation_results = []
     has_evaluation_passed = True
     for evaluator_input in evaluator_inputs:
