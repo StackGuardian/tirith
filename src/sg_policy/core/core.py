@@ -1,16 +1,18 @@
 from .evaluators import *
 from pathlib import Path
 import json
-from ..providers.infracost import provide
-
+from ..providers.infracost import provide as infracost_provider
+from ..providers.terraform_plan import provide as terraform_provider
+from ..providers.sg_workflow import provide as wfProvider
 
 def getEvaluatorInputsFromProviderInputs(provider_inputs, provider_module, input_data):
     # TODO: Get the inputs from given providers
     if provider_module == "terraform_plan":
-        return [True]
+        return terraform_provider(provider_inputs, input_data)
     if provider_module == "infracost":
-        return provide(provider_inputs, input_data)
-
+        return infracost_provider(provider_inputs, input_data)
+    if provider_module == "SgWorkflow":
+        return wfProvider(provider_inputs, input_data)
 
 def generate_evaluator_result(evaluator_obj, input_data):
     # evaluator_obj example
