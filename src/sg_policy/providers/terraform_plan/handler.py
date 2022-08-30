@@ -63,69 +63,72 @@ def __get_expression_attribute(splitted_attr_name_expr, input_data):
 def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
     outputs = []
-    input_resource_change_attrs = {}
-    input_type = provider_inputs["operation_type"]
-    resource_changes = input_data["resource_changes"]
-    # CASE 1
-    # - Get value of an attribute for all instances of a resource
-    # - resource_changes.*.change.after.<attr_name>
-    if input_type == "resource_changes":
-        attribute = provider_inputs["terraform_resource_attribute"]
-        resource_type = provider_inputs["terraform_resource_type"]
+    try:
+        input_resource_change_attrs = {}
+        input_type = provider_inputs["operation_type"]
+        resource_changes = input_data["resource_changes"]
+        # CASE 1
+        # - Get value of an attribute for all instances of a resource
+        # - resource_changes.*.change.after.<attr_name>
+        if input_type == "resource_changes":
+            attribute = provider_inputs["terraform_resource_attribute"]
+            resource_type = provider_inputs["terraform_resource_type"]
 
-        for resource_change in resource_changes:
-            if resource_change["type"] == resource_type:
-                input_resource_change_attrs = resource_change["change"]["after"]
-                if attribute in input_resource_change_attrs:
-                    # attribute key found in the changes
+            for resource_change in resource_changes:
+                if resource_change["type"] == resource_type:
+                    input_resource_change_attrs = resource_change["change"]["after"]
+                    if attribute in input_resource_change_attrs:
+                        # attribute key found in the changes
+                        outputs.append(
+                            {
+                                "value": input_resource_change_attrs[attribute],
+                                "meta": resource_change,
+                                "err": None,
+                            }
+                        )
+                    elif "." in attribute or "*" in attribute:
+                        evaluated_output = __get_expression_attribute(attribute, input_resource_change_attrs)
+                        for val in evaluated_output:
+                            outputs.append({"value": val, "meta": resource_change, "err": None})
+
+            return outputs
+        # CASE 2
+        # - Get actions performed on a resource
+        # - resource_changes.*.change.actions
+        elif input_type == "resource_changes_actions":
+            resource_type = provider_inputs["terraform_resource_type"]
+            for resource_change in resource_changes:
+                if resource_change["type"] == resource_type:
                     outputs.append(
                         {
-                            "value": input_resource_change_attrs[attribute],
+                            "value": resource_change["change"]["actions"],
                             "meta": resource_change,
                             "err": None,
                         }
                     )
-                elif "." in attribute or "*" in attribute:
-                    evaluated_output = __get_expression_attribute(attribute, input_resource_change_attrs)
-                    for val in evaluated_output:
-                        outputs.append({"value": val, "meta": resource_change, "err": None})
+            return outputs
+        # CASE 3
+        # - Get count of a particular resource
+        # - resource_changes.*.index
+        elif input_type == "resource_changes_count":
+            count = 0
+            resource_meta = {}
+            resource_type = provider_inputs["terraform_resource_type"]
+            for resource_change in resource_changes:
+                if resource_change["type"] == resource_type:
+                    resource_meta = resource_change
+                    count = max(count, resource_change["index"])
 
-        return outputs
-    # CASE 2
-    # - Get actions performed on a resource
-    # - resource_changes.*.change.actions
-    elif input_type == "resource_changes_actions":
-        resource_type = provider_inputs["terraform_resource_type"]
-        for resource_change in resource_changes:
-            if resource_change["type"] == resource_type:
-                outputs.append(
-                    {
-                        "value": resource_change["change"]["actions"],
-                        "meta": resource_change,
-                        "err": None,
-                    }
-                )
-        return outputs
-    # CASE 3
-    # - Get count of a particular resource
-    # - resource_changes.*.index
-    elif input_type == "resource_changes_count":
-        count = 0
-        resource_meta = {}
-        resource_type = provider_inputs["terraform_resource_type"]
-        for resource_change in resource_changes:
-            if resource_change["type"] == resource_type:
-                resource_meta = resource_change
-                count = max(count, resource_change["index"])
-
-        outputs.append(
-            {
-                "value": count,
-                "meta": resource_meta,
-                "err": None,
-            }
-        )
-        return outputs
-    # CASE 4
-    # TODO: Get relationship between resources
+            outputs.append(
+                {
+                    "value": count,
+                    "meta": resource_meta,
+                    "err": None,
+                }
+            )
+            return outputs
+        # CASE 4
+        # TODO: Get relationship between resources
+    except Exception:
+        return [{"value": None, "meta": None, "err": "Failed to get values from terraform plan"}]
     return outputs
