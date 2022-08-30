@@ -42,7 +42,7 @@ from .utils import star_int_equals_int
 # returns->[any, any, any]
 def __get_expression_attribute(splitted_attr_name_expr, input_data):
 
-    if len(splitted_attr_name_expr) == 0:
+    if not splitted_attr_name_expr:
 
         return input_data
 
@@ -75,16 +75,11 @@ def __get_expression_attribute(splitted_attr_name_expr, input_data):
         values = []
         lookup_key = splitted_attr_name_expr[1:2][0]
         splitted_attr_name_expr = splitted_attr_name_expr[1:]
-        for i in input_data:
-            # print(i)
-            # print(lookup_key)
-
-            values.append(i[lookup_key])
-            # print("values",values)
+        # for i in input_data:
+        #     values.append(i[lookup_key])
+        values = [i[lookup_key] for i in input_data]
 
         input_data_new = values
-        # print("1st data",splitted_attr_name_expr[1:])
-        # print("2nd data",input_data_new)
         __get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
     elif lookup_key == "*" and isinstance(input_data, dict):
         values = []
