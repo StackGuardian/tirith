@@ -55,9 +55,8 @@ class Equals(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"passed": False, "message": ""}
         try:
-            value1 = evaluator_input
+            value1 = evaluator_input['value']
             value2 = evaluator_data
-
             # if (
             #         isinstance(evaluator_input, str)
             #         or isinstance(evaluator_input, dict)
