@@ -1,0 +1,37 @@
+{
+    "meta": {
+        "version": "1.0.0",
+        "required_providers": {
+            "terraform_plan": {
+                "source": "stackguardian/terraform_plan",
+                "version": "~> 1.0"
+            },
+            "sg_workflow": {
+                "source": "stackguardian/terraform_plan",
+                "version": "~> 1.0"
+            },
+            "infracost": {
+                "source": "stackguardian/infracost",
+                "version": "~> 1.0"
+            },
+            "json": {
+                "source": "stackguardian/json",
+                "version": "~> 1.0"
+            }
+        }
+    },
+    "evaluators": [
+        {
+            "id": "wf_check_1",
+            "provider": "SgWorkflow",
+            "provider_inputs": {
+                "resource_type": "useMarketplaceTemplate"
+            },
+            "evaluator_ref": "Equals",
+            "evaluator_data": "True",
+            "criticality": "low",
+            "tags": []
+        }
+    ],
+    "final_evaluation": "wf_check_1"
+}
