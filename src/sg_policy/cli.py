@@ -138,5 +138,5 @@ def main(args=None) -> ExitStatus:
     except Exception as e:
         # TODO: Further distinction between expected and unexpected errors.
         sys.stderr.write(f"\n {type(e)}: {str(e)}")
-        sys.stderr.write("\nFailed because of an unhandled exception.")
+        sys.stderr.write("\nFailed because of an unhandled exception")
         return ExitStatus.ERROR

@@ -8,9 +8,11 @@ import sys
 def main():
     try:
         from .cli import main
+
         exit_status = main()
     except KeyboardInterrupt:
         from sg_policy.status import ExitStatus
+
         exit_status = ExitStatus.ERROR_CTRL_C
 
     if exit_status is not None:
