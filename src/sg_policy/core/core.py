@@ -1,3 +1,5 @@
+import logging
+
 from .evaluators import *
 from pathlib import Path
 import json
@@ -6,6 +8,9 @@ import ast
 from ..providers.infracost import provide as infracost_provider
 from ..providers.terraform_plan import provide as terraform_provider
 from ..providers.sg_workflow import provide as sg_wf_provider
+
+# TODO: Use __name__ for the logger name instead of using the root logger
+logger = logging.getLogger()
 
 
 def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, input_data):
@@ -51,6 +56,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
 
 def final_evaluator(eval_string, evalIdValues):
+    logger.info("Running final evaluator")
     for key in evalIdValues:
         eval_string = eval_string.replace(key, str(evalIdValues[key]["passed"]))
         # print (eval_string)
@@ -87,6 +93,7 @@ def start_policy_evaluation(policy_path, input_path):
     eval_results = {}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
+        logger.info(f"Processing evaluator '{eval_id}'")
         eval_results[eval_id] = generate_evaluator_result(eval_obj, input_data, provider_module)
     final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
 
