@@ -56,8 +56,8 @@ def __getValue(key, data):
             raise KeyError(f"{key} not found in input_data")
 
     elif key in ["iacTemplateId", "useMarketplaceTemplate"]:
-        if "iacVCSConfig" in data and key in data["iacVCSConfig"]:
-            result = data["iacVCSConfig"][key]
+        if "VCSConfig" in data and "iacVCSConfig" in data['VCSConfig'] and key in data['VCSConfig']["iacVCSConfig"]:
+            result = data['VCSConfig']["iacVCSConfig"][key]
         else:
             raise KeyError(f"{key} not found in input_data")
 
