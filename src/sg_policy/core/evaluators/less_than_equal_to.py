@@ -30,7 +30,7 @@ class LessThanEqualTo(BaseEvaluator):
             "message": "Not evaluated",
         }
         try:
-            value1 = evaluator_input["value"]
+            value1 = evaluator_input
             value2 = evaluator_data
             evaluation_result["passed"] = value1 <= value2
             if value1 <= value2:
