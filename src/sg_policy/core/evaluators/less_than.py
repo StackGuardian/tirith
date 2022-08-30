@@ -25,7 +25,7 @@ class LessThan(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
-            value1 = evaluator_input["value"]
+            value1 = evaluator_input
             value2 = evaluator_data
             evaluation_result["passed"] = value1 < value2
             if value1 < value2:
