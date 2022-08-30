@@ -45,7 +45,7 @@ class Contains(BaseEvaluator):
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"passed": False, "message": ""}
+        evaluation_result = {"passed": False, "message": "Failed before evaluation."}
         try:
             # if evaluator_input and evaluator_data are both strings
             if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
@@ -64,17 +64,26 @@ class Contains(BaseEvaluator):
                         if key in evaluator_input:
                             if evaluator_data[key] != evaluator_input[key]:
                                 evaluation_result["passed"] = False
-                                evaluation_result["message"] = "Failed to find required value inside input"
+                                evaluation_result[
+                                    "message"
+                                ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
                                 break
                         else:
                             evaluation_result["passed"] = False
-                            evaluation_result["message"] = "Failed to find required value inside input"
+                            evaluation_result[
+                                "message"
+                            ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
                             break
                 else:
                     evaluation_result["passed"] = evaluator_input in evaluator_data
                     if evaluator_input in evaluator_data:
-                        evaluation_result["message"] = "Failed to find required value inside input"
-
+                        evaluation_result[
+                            "message"
+                        ] = "Failed to find Value {} inside Value {}".format(evaluator_input, evaluator_data)
+            if(evaluation_result["passed"]):
+                evaluation_result["message"] = "Value {} is found in {}".format(
+                    evaluator_input, evaluator_data
+                )
             return evaluation_result
         except Exception as e:
             # TODO: logging
