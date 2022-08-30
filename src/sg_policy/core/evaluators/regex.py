@@ -4,7 +4,7 @@ import re
 
 class RegexEquals(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
-        evaluation_result = {"passed": False, "message": ""}
+        evaluation_result = {"passed": False, "message": "Failed before evaluation."}
         try:
             match = 0
             if type(evaluator_input['value']) == str and type(evaluator_data) == str:
@@ -12,14 +12,16 @@ class RegexEquals(BaseEvaluator):
                 if match is None:
                     evaluation_result = {
                         "passed": False,
-                        "message": "Input failed to match the Regex Pattern",
+                        "message": "Input {} does not match regex pattern {}".format(evaluator_input, evaluator_data),
                     }
                 else:
-                    evaluation_result = {"passed": True, "message": ""}
+                    evaluation_result = {"passed": True, "message": "Input {} matches regex pattern {}".format(
+                    evaluator_input, evaluator_data
+                )}
             else:
                 evaluation_result = {
                     "passed": False,
-                    "message": "Could not evaluate regex either evaluator input or evaluator data is not a string",
+                    "message": "Input {} does not match regex pattern {}".format(evaluator_input, evaluator_data),
                 }
             return evaluation_result
         except Exception as e:
