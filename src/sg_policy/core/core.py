@@ -55,7 +55,7 @@ def generate_evaluator_result(evaluator_obj, input_data):
         has_evaluation_passed = True
         for evaluator_input in evaluator_inputs:
             evaluation_result = evaluator_instance.evaluate(
-                evaluator_input, evaluator_data
+                evaluator_input['value'], evaluator_data
             )
             evaluation_results.append(evaluation_result)
             if not evaluation_result["passed"]:
