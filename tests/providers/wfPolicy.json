@@ -25,12 +25,10 @@
             "id": "wf_check_1",
             "provider": "SgWorkflow",
             "provider_inputs": {
-                "resource_type": [
-                    "integrationId"
-                ]
+                "resource_type": "useMarketplaceTemplate"
             },
-            "evaluator_ref": "EqualTo",
-            "evaluator_data": "aws-qa",
+            "evaluator_ref": "Equals",
+            "evaluator_data": "True",
             "criticality": "low",
             "tags": []
         }
