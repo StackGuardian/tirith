@@ -1,9 +1,10 @@
 from .evaluators import *
 from pathlib import Path
 import json
+
 from ..providers.infracost import provide as infracost_provider
 from ..providers.terraform_plan import provide as terraform_provider
-from ..providers.sg_workflow import provide as wfProvider
+from ..providers.sg_workflow import provide as wf_provider
 
 
 def getEvaluatorInputsFromProviderInputs(provider_inputs, provider_module, input_data):
@@ -13,7 +14,7 @@ def getEvaluatorInputsFromProviderInputs(provider_inputs, provider_module, input
     if provider_module == "infracost":
         return infracost_provider(provider_inputs, input_data)
     if provider_module == "SgWorkflow":
-        return wfProvider(provider_inputs, input_data)
+        return wf_provider(provider_inputs, input_data)
 
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module ):
@@ -51,7 +52,29 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module ):
         result["passed"] = has_evaluation_passed
         return result
 
-    if provider_module == "infracost":
+    elif provider_module == "infracost":
+        result = {
+            "id": eval_id,
+            "passed": False,
+        }
+        try:
+            evaluator_instance = eval(f"{evaluator_class}()")
+        except NameError as e:
+            print(f"{evaluator_class} is not a supported evaluator.")
+        evaluation_results = []
+        has_evaluation_passed = True
+        for evaluator_input in evaluator_inputs:
+            evaluation_result = evaluator_instance.evaluate(
+                evaluator_input, evaluator_data
+            )
+            evaluation_results.append(evaluation_result)
+            if not evaluation_result["passed"]:
+                has_evaluation_passed = False
+        result["result"] = evaluation_results
+        result["passed"] = has_evaluation_passed
+        return result
+
+    elif provider_module == "SgWorkflow":
         result = {
             "id": eval_id,
             "passed": False,
