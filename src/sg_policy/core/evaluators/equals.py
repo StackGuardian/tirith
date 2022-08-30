@@ -1,4 +1,9 @@
+import logging
+
 from .base_evaluator import BaseEvaluator
+
+# TODO: Use __name__ for the logger name instead of using the root logger
+logger = logging.getLogger()
 
 # Checks if :attr:`value` is equal to :attr:`other`. Automatically casts values to the same type if possible.
 
@@ -30,14 +35,9 @@ class Equals(BaseEvaluator):
         try:
             for key in input:
                 if isinstance(input[key], list):
-                    if isinstance(input[key][0], dict):
+                    if isinstance(input[key][0], dict) and isinstance(input[key][0], list):
                         sorted_array = []
-                        for index, item in enumerate(input[key]):
-                            sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
-                        input[key] = sorted_array
-                    elif isinstance(input[key][0], list):
-                        sorted_array = []
-                        for index, item in enumerate(input[key]):
+                        for index, _ in enumerate(input[key]):
                             sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
                         input[key] = sorted_array
                     else:
@@ -46,6 +46,7 @@ class Equals(BaseEvaluator):
                     self.sort_lists_in_dicts(input[key])
             return input
         except Exception as e:
+            logger.exception(str(e))
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):

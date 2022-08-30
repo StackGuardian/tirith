@@ -1,9 +1,7 @@
 import logging
 import logging.config
 import sys
-
-from typing import Dict, Any
-
+from typing import Any, Dict
 
 DEFAULT_LOGGING_CONFIG: Dict[str, Any] = {
     "version": 1,
