@@ -26,45 +26,52 @@ def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, 
 
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
-
-    provider_inputs = evaluator_obj.get("provider_args")
-    condition = evaluator_obj.get("condition")
-    evaluator_class = condition.get("type")
-    evaluator_data = condition.get("expected")
-    eval_id = evaluator_obj.get("id")
-
-    evaluator_inputs = get_evaluator_inputs_from_provider_inputs(
-        provider_inputs, provider_module, input_data
-    )  # always an array of inputs for evaluators
-    result = {
-        "id": eval_id,
-        "passed": False,
-    }
+    eval_id = evaluator_obj.get("id", "")
     try:
-        evaluator_instance = eval(f"{evaluator_class}()")
-    except NameError as e:
-        print(f"{evaluator_class} is not a supported evaluator")
-    evaluation_results = []
-    has_evaluation_passed = True
-    for evaluator_input in evaluator_inputs:
-        evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
-        evaluation_result["meta"] = evaluator_input.get("meta")
-        evaluation_results.append(evaluation_result)
-        if not evaluation_result["passed"]:
-            has_evaluation_passed = False
-    result["result"] = evaluation_results
-    result["passed"] = has_evaluation_passed
-    return result
+        provider_inputs = evaluator_obj.get("provider_args")
+        condition = evaluator_obj.get("condition")
+        evaluator_class = condition.get("type")
+        evaluator_data = condition.get("expected")
+        eval_id = evaluator_obj.get("id")
+
+        evaluator_inputs = get_evaluator_inputs_from_provider_inputs(
+            provider_inputs, provider_module, input_data
+        )  # always an array of inputs for evaluators
+        result = {
+            "id": eval_id,
+            "passed": False,
+        }
+        try:
+            evaluator_instance = eval(f"{evaluator_class}()")
+        except NameError as e:
+            print(f"{evaluator_class} is not a supported evaluator")
+        evaluation_results = []
+        has_evaluation_passed = True
+        for evaluator_input in evaluator_inputs:
+            evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
+            evaluation_result["meta"] = evaluator_input.get("meta")
+            evaluation_results.append(evaluation_result)
+            if not evaluation_result["passed"]:
+                has_evaluation_passed = False
+        result["result"] = evaluation_results
+        result["passed"] = has_evaluation_passed
+        return result
+    except KeyError as e:
+        return {"result": [], "passed": False, "error": str(e), "id": eval_id}
 
 
 def final_evaluator(eval_string, evalIdValues):
-    logger.info("Running final evaluator")
-    for key in evalIdValues:
-        eval_string = eval_string.replace(key, str(evalIdValues[key]["passed"]))
-        # print (eval_string)
-    # TODO: shall we use and, or and not instead of symbols?
-    eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
-    return eval(eval_string)
+    try:
+        logger.info("Running final evaluator")
+        for key in evalIdValues:
+            eval_string = eval_string.replace(key, str(evalIdValues[key]["passed"]))
+            # print (eval_string)
+        # TODO: shall we use and, or and not instead of symbols?
+        eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
+        return eval(eval_string)
+    except Exception:
+        #TODO: Log Final Evaluation Failed
+        return False
 
 
 # print(final_evaluator("(!(pol_check_1  &&  pol_check_2)  && pol_check_3 ) && pol_check_4", {
@@ -100,7 +107,7 @@ def start_policy_evaluation(policy_path, input_path):
     final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
 
     final_output = {
-        "meta": {"version": policy_meta.get("version"), "required_provider": provider_module},
+        "meta": {"version": policy_meta.get("version", ''), "required_provider": provider_module},
         "final_result": final_evaluation_result,
         "evaluators": eval_results,
     }
