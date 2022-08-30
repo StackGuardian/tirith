@@ -45,40 +45,44 @@ def main(args=None) -> ExitStatus:
             ),
         )
         parser.add_argument(
-            "--policy-path",
+            "-policy-path",
             metavar="PATH",
             type=str,
             dest="policyPath",
-            help="Path containing policy defined using SG Policy Framework",
+            help="Path containing policy defined using StackGuardian Policy Framework",
         )
         parser.add_argument(
-            "--input-path",
+            "-input-path",
             metavar="SOURCE-TYPE",
             type=str,
             dest="inputPath",
-            help="Input config path. Can be a file or dir, depending on --input-type",
+            help="Input file path",
         )
         parser.add_argument(
             "--json",
             dest="json",
             action="store_true",
-            help="Just print the result in JSON form (useful for passing to other programs)",
+            help="Only print the result in JSON form (useful for passing output to other programs)",
         )
         parser.add_argument(
             "--verbose",
             dest="verbose",
             action="store_true",
-            help="Show detailed logs of the program run",
+            help="Show detailed logs of from the run",
         )
         parser.add_argument("--version", action="version", version="1.0.0-alpha.1")
 
         args = parser.parse_args()
 
         if not args.policyPath:
-            print("'--policyPath' argument is required")
+            sys.stdout.write("'-policy-path' argument is required")
+            sys.stdout.write("-policy-path argument is required. Provide a path to SG policy")
             return ExitStatus.ERROR
         if not args.inputPath:
-            print("Path to input file should be provided to '--input-path' argument")
+            sys.stdout.write("Path to input file should be provided to '--input-path' argument")
+            sys.stdout.write(
+                "-input-path argument is required. Provide a path to JSON file compatible with the provider defined in the SG policy"
+            )
             return ExitStatus.ERROR
 
         if not args.json:
@@ -87,11 +91,11 @@ def main(args=None) -> ExitStatus:
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
             formatted_result = json.dumps(result, indent=3)
-            print(formatted_result)
+            sys.stdout.write(formatted_result)
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
             logger.exception(e)
-            print("ERROR")
+            sys.stderr.write("ERROR")
 
     except KeyboardInterrupt:
         sys.stderr.write("\nFailed because of Keyboard Interrupt")
