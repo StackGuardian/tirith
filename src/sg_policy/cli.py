@@ -10,7 +10,7 @@ from sg_policy.status import ExitStatus
 import logging
 
 
-from .core import *
+from .core import start_policy_evaluation
 
 # import sg_policy.providers as providers
 import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
@@ -63,7 +63,7 @@ def main(args=None) -> ExitStatus:
             dest="prettify",
             help="This argument can be used to print evaluation result in a more attractive and informative way",
         )
-        parser.add_argument("--version", action="version", version="0.0.1")
+        parser.add_argument("--version", action="version", version="1.0.0-alpha.1")
         args = parser.parse_args()
 
         if not args.policyPath:

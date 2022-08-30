@@ -2,6 +2,10 @@
 
 # StackGuardian Policy Framework
 
+## A call for contributors
+We are calling for contributors to help build out new features, review pull requests, fix bugs, and maintain overall code quality. If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
+
+
 StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using JSON.
 
 ## Content
@@ -9,14 +13,12 @@ StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) co
 - [Features](#features)
 - [Feature Road-Map](#feature-road-map)
 - [How to use it?](#how-to-use-it)
-- [A basic mind-map of the repository](#a-basic-mind-map-of-the-repository)
 - [Local Development Environment](#local-development-environment)
 - [Want to contribute?](#want-to-contribute)
     * [Getting an issue assigned](#getting-an-issue-assigned)
     * [A bug report](#a-bug-report)
     * [Opening a Pull Request and getting it merged](#opening-a-pull-request-and-getting-it-merged)
-- [Submitting a feedback](#submitting-a-feedback)
-- [Contributors](#contributors)
+- [Submitting a feedback](#submitting-a-feedback) 
 - [Support](#support)
 - [License](#license)
 
@@ -38,9 +40,13 @@ This is only a list of approved features that will be included in the StackGuard
 
 ## How to use it?
 
-## A basic mind-map of the repository
-
 ## Local Development Environment
+
+- Any operating system is supported(Windows, Mac, or Linux).
+- [Python 3.6 or higher](https://www.python.org/downloads/) is required.
+- [pip](https://pip.pypa.io/en/stable/) is required.
+
+And leave the rest to us!!!
 <!-- ## Publish Package on test.pypi.org
 * Use the following command to install the latest version of the setuptools package.
   ```
@@ -73,6 +79,8 @@ Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuard
  </ul>
 
 ### A bug report
+
+Head over to the <a href="https://github.com/StackGuardian/policy-framework">StackGuardian Policy Framework Repository</a> and in the <a href="https://github.com/stackguardian/policy-framework/issues">issues</a> tab describe the bug you encountered and we will be happy to take a look into it.
 ### Opening a Pull Request and getting it merged?
 
  1. Go to the <a href ="https://github.com/StackGuardian/policy-framework">repository</a> and fork it.
@@ -91,3 +99,5 @@ Wanna submit a feedback? It's as simple as writing and posting it in the <a href
 
 ## License
 
+<i>Apache License 2.0</i>
+<p>The Apache License is a permissive free software license written by the Apache Software Foundation (ASF). It allows all users to use the software for any purpose, to distribute it, to modify it, and to distribute modified versions of the software under the terms of the license, without concern for royalties.</p>
