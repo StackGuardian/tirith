@@ -56,6 +56,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
 
 def final_evaluator(eval_string, evalIdValues):
+    logger.info("Running final evaluator")
     for key in evalIdValues:
         eval_string = eval_string.replace(key, str(evalIdValues[key]["passed"]))
         # print (eval_string)
