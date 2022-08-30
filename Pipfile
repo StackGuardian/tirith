@@ -8,6 +8,7 @@ simplejson = "==3.17.2"
 
 [dev-packages]
 black = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.8"

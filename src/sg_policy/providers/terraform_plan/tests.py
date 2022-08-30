@@ -1,6 +1,8 @@
-from . import handler
 import json
+
 import pytest
+
+from . import handler
 
 
 def open_policy(json_path):
