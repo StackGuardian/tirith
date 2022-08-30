@@ -29,70 +29,27 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module ):
     evaluator_inputs = getEvaluatorInputsFromProviderInputs(
         provider_inputs, provider_module, input_data
     )  # always an array of inputs for evaluators
-    if provider_module == "core":
-        result = {
-            "id": eval_id,
-            "passed": False,
-        }
-        try:
-            evaluator_instance = eval(f"{evaluator_class}()")
-        except NameError as e:
-            print(f"{evaluator_class} is not a supported evaluator")
-        evaluation_results = []
-        has_evaluation_passed = True
-        for evaluator_input in evaluator_inputs:
-            evaluation_result = evaluator_instance.evaluate(
-                evaluator_input['value'], evaluator_data
-            )
-            evaluation_result['meta'] = evaluator_input.get('meta')
-            evaluation_results.append(evaluation_result)
-            if not evaluation_result["passed"]:
-                has_evaluation_passed = False
-        result["result"] = evaluation_results
-        result["passed"] = has_evaluation_passed
-        return result
-
-    elif provider_module == "infracost":
-        result = {
-            "id": eval_id,
-            "passed": False,
-        }
-        try:
-            evaluator_instance = eval(f"{evaluator_class}()")
-        except NameError as e:
-            print(f"{evaluator_class} is not a supported evaluator.")
-        evaluation_results = []
-        has_evaluation_passed = True
-        for evaluator_input in evaluator_inputs:
-            evaluation_result = evaluator_instance.evaluate(
-                evaluator_input, evaluator_data
-            )
-            evaluation_results.append(evaluation_result)
-            if not evaluation_result["passed"]:
-                has_evaluation_passed = False
-        result["result"] = evaluation_results
-        result["passed"] = has_evaluation_passed
-        return result
-
-    elif provider_module == "SgWorkflow":
-        result = {
-            "id": eval_id,
-            "passed": False,
-        }
-        try:
-            evaluator_instance = eval(f"{evaluator_class}()")
-        except NameError as e:
-            print(f"{evaluator_class} is not a supported evaluator")
-        evaluation_results = []
-        has_evaluation_passed = True
-        for evaluator_input in evaluator_inputs:
-            evaluation_result = evaluator_instance.evaluate(evaluator_input, evaluator_data)
-            evaluation_results.append(evaluation_result)
-            if not evaluation_result["passed"]:
-                has_evaluation_passed = False
-        result["result"] = evaluation_results
-        result["passed"] = has_evaluation_passed
-        return result
+    result = {
+        "id": eval_id,
+        "passed": False,
+    }
+    try:
+        evaluator_instance = eval(f"{evaluator_class}()")
+    except NameError as e:
+        print(f"{evaluator_class} is not a supported evaluator")
+    evaluation_results = []
+    has_evaluation_passed = True
+    for evaluator_input in evaluator_inputs:
+        evaluation_result = evaluator_instance.evaluate(
+            evaluator_input['value'], evaluator_data
+        )
+        evaluation_result['meta'] = evaluator_input.get('meta')
+        evaluation_results.append(evaluation_result)
+        if not evaluation_result["passed"]:
+            has_evaluation_passed = False
+    result["result"] = evaluation_results
+    result["passed"] = has_evaluation_passed
+    return result
 
 
 def finalEvaluator(evalString, evalIdValues):
