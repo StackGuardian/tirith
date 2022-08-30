@@ -17,7 +17,7 @@ from .base_evaluator import BaseEvaluator
 #     >>> l([])
 #     False
 
-# .. versionadded:: 1.0.0
+# .. versionadded:: 1.0.0-alpha.1
 
 
 class IsNotEmpty(BaseEvaluator):
