@@ -78,7 +78,7 @@ def final_evaluator(eval_string, eval_id_values):
 # 	"pol_check_4":False
 # 	}))
 
-# sg_policy --policy-path "F:\StackGuardian\policy-framework\tests\providers\policy.json" --input-path "F:\StackGuardian\policy-framework\tests\providers\input.json"
+# sg_policy -policy-path "F:\StackGuardian\policy-framework\tests\providers\infracost\policy.json" -input-path "F:\StackGuardian\policy-framework\tests\providers\infracost\input.json" --verbose
 
 
 def start_policy_evaluation(policy_path, input_path):

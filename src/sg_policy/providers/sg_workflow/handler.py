@@ -69,23 +69,23 @@ def __getValue(key, data):
     return result
 
 
-def provide(provider_inputs, input_data):
+def provide(provider_args, input_data):
     logger.debug("sg_workflow provider")
-    logger.debug(f"sg_workflow provider inputs : {provider_inputs}")
+    logger.debug(f"sg_workflow provider inputs : {provider_args}")
     try:
-        if "resource_type" in provider_inputs:
-            resource_type = provider_inputs["resource_type"]
-            if resource_type:
-                result = __getValue(resource_type, input_data)
+        if "workflow_attribute" in provider_args:
+            workflow_attribute = provider_args["workflow_attribute"]
+            if workflow_attribute:
+                result = __getValue(workflow_attribute, input_data)
                 output = [{"value": result, "meta": None, "err": None}]
                 return output
         else:
-            logger.debug("resource_type not found in provider_inputs")
+            logger.debug("workflow_attribute not found in provider_args")
             return [
                 {
                     "value": None,
                     "meta": None,
-                    "err": f"resource_type not found in provider_inputs",
+                    "err": f"workflow_attribute not found in provider_args",
                 }
             ]
     except Exception as e:
