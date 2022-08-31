@@ -56,13 +56,13 @@ def __get_resources_costs(resource_type, operation_type, input_data):
         raise KeyError("projects not found in input_data")
 
 
-def provide(provider_inputs, input_data):
+def provide(provider_args, input_data):
     logger.debug("infracost provider")
-    logger.debug(f"infracost provider inputs : {provider_inputs}")
+    logger.debug(f"infracost provider inputs : {provider_args}")
     try:
-        if "resource_type" in provider_inputs and "operation_type" in provider_inputs:
-            resource_type = provider_inputs["resource_type"]
-            operation_type = provider_inputs["operation_type"]
+        if "resource_type" in provider_args and "operation_type" in provider_args:
+            resource_type = provider_args["resource_type"]
+            operation_type = provider_args["operation_type"]
             if not resource_type or resource_type == "*" or resource_type == ["*"]:
                 value = __get_all_costs(operation_type, input_data)
                 output = [{"value": value, "meta": None, "err": None}]
@@ -71,6 +71,6 @@ def provide(provider_inputs, input_data):
                 value = __get_resources_costs(resource_type, operation_type, input_data)
                 return [{"value": value, "meta": None, "err": None}]
         else:
-            raise KeyError("resource_type/operation_type not found in provider_inputs")
+            raise KeyError("resource_type/operation_type not found in provider_args")
     except KeyError as e:
         return [{"value": None, "meta": None, "err": str(e)}]
