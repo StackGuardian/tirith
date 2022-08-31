@@ -6,3 +6,4 @@ from .is_empty import IsEmpty
 from .is_not_empty import IsNotEmpty
 from .less_than_equal_to import LessThanEqualTo
 from .less_than import LessThan
+from .regex_match import RegexMatch
