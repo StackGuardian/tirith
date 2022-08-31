@@ -76,7 +76,9 @@
               }
             ],
             "metadata": {},
-            "monthlyCost": null
+            "monthlyCost": null,
+            "totalMonthlyCost": "0",
+            "totalHourlyCost": "0"
           }
         ],
         "totalMonthlyCost": "0",
