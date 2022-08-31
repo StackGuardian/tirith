@@ -53,7 +53,7 @@ def test_evaluate_failing(evaluator_input, evaluator_data):
 
 # pytest -v -m failing
 @mark.failing
-@mark.parametrize("evaluator_input,evaluator_data", checks_failing)
+@mark.parametrize("evaluator_input,evaluator_data", checks_unsupported)
 def test_evaluate_unsupported(evaluator_input, evaluator_data):
     result = evaluator.evaluate(evaluator_input, evaluator_data)
     assert result["passed"] == True #{"passed": True, "message": f"Failed to find {evaluator_input} inside {evaluator_data}"}
