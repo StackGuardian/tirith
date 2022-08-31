@@ -6,12 +6,15 @@ from sg_policy.providers.terraform_plan import handler
 
 
 def load_terraform_plan_json(json_path):
-    with open(json_path, "r") as f:
-        data = json.load(f)
-    return data
+    try:
+        with open(json_path, "r") as f:
+            data = json.load(f)
+        return data
+    except Exception:
+        return False
 
 
-input_data = load_terraform_plan_json("input.json")
+input_data = load_terraform_plan_json("./input.json")
 
 provider_inputs_1 = {
     "input_type": "resource_changes",
