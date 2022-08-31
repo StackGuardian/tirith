@@ -1,13 +1,10 @@
 import logging
-
 from .evaluators import *
-from pathlib import Path
 import json
-import ast
-
-from ..providers.infracost import provide as infracost_provider
-from ..providers.terraform_plan import provide as terraform_provider
-from ..providers.sg_workflow import provide as sg_wf_provider
+from sg_policy.providers.infracost import provide as infracost_provider
+from sg_policy.providers.terraform_plan import provide as terraform_provider
+from sg_policy.providers.sg_workflow import provide as sg_wf_provider
+from sg_policy.core.utils import Validators
 
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
@@ -85,10 +82,12 @@ def final_evaluator(eval_string, evalIdValues):
 
 
 def start_policy_evaluation(policy_path, input_path):
-
+    validator_instance = Validators()
     with open(policy_path) as json_file:
         policy_data = json.load(json_file)
-    # TODO: validate policy_data against schema
+    policy_evalution=validator_instance.policy_validator(policy_data)
+    # TODO: Take action on policy validation
+
 
     with open(input_path) as json_file:
         input_data = json.load(json_file)
