@@ -29,7 +29,7 @@ logger = logging.getLogger()
 
 
 class Contains(BaseEvaluator):
-    def sort_lists_in_dicts(self, input):
+    def sort_collections(self, input):
         if isinstance(input, str) or isinstance(input, float) or isinstance(input, int):
             return input
         try:
@@ -38,12 +38,12 @@ class Contains(BaseEvaluator):
                     if isinstance(input[key][0], dict) or isinstance(input[key][0], list):
                         sorted_array = []
                         for index, _ in enumerate(input[key]):
-                            sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
+                            sorted_array.append(self.sort_collections(input[key][index]))
                         input[key] = sorted_array
                     else:
                         input[key] = sorted(input[key])
                 if isinstance(input[key], dict):
-                    self.sort_lists_in_dicts(input[key])
+                    self.sort_collections(input[key])
             return input
         except Exception as e:
             logger.exception(e)
@@ -58,9 +58,9 @@ class Contains(BaseEvaluator):
                 evaluation_result["passed"] = result
             # if evaluator_input is a list
             if isinstance(evaluator_data, list):
-                evaluator_data = self.sort_lists_in_dicts(evaluator_data)
+                evaluator_data = self.sort_collections(evaluator_data)
                 if isinstance(evaluator_input, list):
-                    evaluator_input = self.sort_lists_in_dicts(evaluator_input)
+                    evaluator_input = self.sort_collections(evaluator_input)
                     result = evaluator_input in evaluator_data
                     evaluation_result["passed"] = result
                 else:
