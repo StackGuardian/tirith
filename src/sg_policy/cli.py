@@ -5,7 +5,7 @@ CLI
 import argparse
 import sys
 import textwrap
-import json
+import simplejson as json
 from sg_policy.logging import setup_logging
 from sg_policy.status import ExitStatus
 import logging
