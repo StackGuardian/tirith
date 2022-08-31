@@ -1,0 +1,95 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "meta": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string",
+                    "default": "v1",
+                    "readOnly": true
+                },
+                "required_provider": {
+                    "type": "string",
+                    "enum": [
+                        "stackguardian/terraform_plan",
+                        "stackguardian/infracost",
+                        "stackguardian/sg_workflow"
+                    ]
+                }
+            },
+            "required": [
+                "version",
+                "required_provider"
+            ]
+        },
+        "final_result": {
+            "type": "boolean",
+            "enum": [
+                true,
+                false
+            ]
+        },
+        "evaluators": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "result": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "error": {
+                                        "type": "string"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "meta": {
+                                        "type": "object"
+                                    },
+                                    "passed": {
+                                        "type": "boolean",
+                                        "enum": [
+                                            true,
+                                            false
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "error",
+                                    "message",
+                                    "meta",
+                                    "passed"
+                                ]
+                            }
+                        },
+                        "passed": {
+                            "type": "boolean",
+                            "enum": [
+                                true,
+                                false
+                            ]
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "result",
+                        "passed"
+                    ]
+                }
+            ]
+        }
+    },
+    "required": [
+        "meta",
+        "final_result",
+        "evaluators"
+    ]
+}
