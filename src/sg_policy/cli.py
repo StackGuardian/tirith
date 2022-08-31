@@ -94,8 +94,20 @@ def main(args=None) -> ExitStatus:
             sys.stdout.write(formatted_result)
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
-            logger.exception(e)
-            sys.stderr.write("ERROR")
+            if args.json:
+                # Print empty JSON
+                sys.stderr.write("{}")
+            else:
+                logger.exception(e)
+                sys.stderr.write("ERROR")
+            return ExitStatus.ERROR
+
+        # TODO: move to core
+        # if not args.inputType:
+        #     print("'--input-type' argument is required")
+        #     return ExitStatus.ERROR
+
+        # inputType = args.inputType
 
     except KeyboardInterrupt:
         sys.stderr.write("\nFailed because of Keyboard Interrupt")
