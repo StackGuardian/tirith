@@ -59,6 +59,7 @@ class Contains(BaseEvaluator):
             # TODO: LOG
             print(e)
             return input
+
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
@@ -66,6 +67,8 @@ class Contains(BaseEvaluator):
             if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
                 result = evaluator_input in evaluator_data
                 evaluation_result["passed"] = result
+                if result:
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             # if evaluator_input is a list
             elif isinstance(evaluator_data, list):
                 evaluator_data = self.sort_collections(evaluator_data)
@@ -73,15 +76,17 @@ class Contains(BaseEvaluator):
                     evaluator_input = self.sort_collections(evaluator_input)
                     result = evaluator_input in evaluator_data
                     evaluation_result["passed"] = result
+                    if result:
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
                 else:
                     result = evaluator_input in evaluator_data
                     evaluation_result["passed"] = result
+                    if result:
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             elif isinstance(evaluator_data, dict):
                 if isinstance(evaluator_input, dict):
                     evaluation_result["passed"] = True
-                    evaluation_result["message"] = "Found {} inside {}".format(
-                        evaluator_input, evaluator_data
-                    )
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
                     for key in evaluator_input:
                         if key in evaluator_data:
                             if evaluator_data[key] != evaluator_input[key]:
@@ -102,7 +107,7 @@ class Contains(BaseEvaluator):
                     if result:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             else:
-                evaluation_result["message"] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
+                evaluation_result["message"] = "{} is an unsupported data type for in condition.expected".format(evaluator_data)
             return evaluation_result
         except Exception as e:
             logger.exception(e)
