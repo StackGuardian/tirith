@@ -7,13 +7,17 @@ checks_passing = [
     ("a", "a"),
     ("a", "minura"),
     ("a", {"a": "val1", "b": "val2"}),
-    ({"a": 2, "b": 6}, {"b": 6, "a": 2, "c":16}),
+    ({"a": 2, "b": 6}, {"b": 6, "a": 2, "c": 16}),
+    ({"a": 2}, {"b": 6, "a": 2, "c": 16}),
+    ({"a": ["a", "d"], "b": 6}, {"b": 6, "a": ["a", "d"], "c": 16}),
+    ({"a": [{"a": 2}, "d"], "b": 6}, {"b": 6, "a": [{"a": 2}, "d"], "c": 16}),
     ("a", ["a", "b"]),
-    ("b", ["a", "b"])
+    ("b", ["a", "b"]),
 ]
 
 checks_failing = [
     (["a", "b", "c", "d"], "e"),
+    ("e", ["a", "b", "c", "d"]),
     (["a"], "a"),
     (2, "a"),
     ("3", 3),
@@ -21,8 +25,6 @@ checks_failing = [
 ]
 
 checks_unsupported = [
-    (["a", "b", "c", "d"], "e"),
-    (["a"], "a"),
     (2, "a"),
     ("3", 3),
     (1, 1),
@@ -45,7 +47,9 @@ def test_evaluate_passing(evaluator_input, evaluator_data):
 @mark.parametrize("evaluator_input,evaluator_data", checks_failing)
 def test_evaluate_failing(evaluator_input, evaluator_data):
     result = evaluator.evaluate(evaluator_input, evaluator_data)
-    assert result["passed"] == True #{"passed": True, "message": f"Failed to find {evaluator_input} inside {evaluator_data}"}
+    assert (
+        result["passed"] == False
+    )  # {"passed": True, "message": f"Failed to find {evaluator_input} inside {evaluator_data}"}
 
 
 # pytest -v -m failing
@@ -53,4 +57,6 @@ def test_evaluate_failing(evaluator_input, evaluator_data):
 @mark.parametrize("evaluator_input,evaluator_data", checks_unsupported)
 def test_evaluate_unsupported(evaluator_input, evaluator_data):
     result = evaluator.evaluate(evaluator_input, evaluator_data)
-    assert result["passed"] == True #{"passed": True, "message": f"Failed to find {evaluator_input} inside {evaluator_data}"}
+    assert (
+        result["passed"] == False
+    )  # {"passed": True, "message": f"Failed to find {evaluator_input} inside {evaluator_data}"}
