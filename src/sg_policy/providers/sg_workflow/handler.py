@@ -78,7 +78,6 @@ def provide(provider_inputs, input_data):
             if resource_type:
                 result = __getValue(resource_type, input_data)
                 output = [{"value": result, "meta": None, "err": None}]
-                logger.debug(f"sg_workflow provider output : {output}")
                 return output
         else:
             logger.debug("resource_type not found in provider_inputs")

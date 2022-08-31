@@ -58,7 +58,6 @@ def provide(provider_inputs, input_data):
             if not resource_type or resource_type == "*" or resource_type == ["*"]:
                 value = __get_all_costs(costType, input_data)
                 output = [{"value": value, "meta": None, "err": None}]
-                logger.debug(f"infracost provider output : {output}")
                 return output
             else:
                 value = __get_resources_costs(resource_type, costType, input_data)

@@ -1,54 +1,35 @@
 {
     "meta": {
-        "version": "1.0.0",
-        "required_providers": {
-            "terraform_plan": {
-                "source": "stackguardian/terraform_plan",
-                "version": "~> 1.0"
-            },
-            "sg_workflow": {
-                "source": "stackguardian/terraform_plan",
-                "version": "~> 1.0"
-            },
-            "infracost": {
-                "source": "stackguardian/infracost",
-                "version": "~> 1.0"
-            },
-            "json": {
-                "source": "stackguardian/json",
-                "version": "~> 1.0"
-            }
-        }
+        "version": "1.0.0-alpha.1",
+        "required_provider": "infracost"
     },
     "evaluators": [
         {
             "id": "cost_check_1",
-            "provider": "infracost",
-            "provider_inputs": {
+            "provider_args": {
                 "resource_type": [
                     "aws_s3_bucket"
                 ],
-                "costType": "totalMonthlyCost"
+                "costType" : "totalMonthlyCost"
             },
-            "evaluator_ref": "LessThanEqualTo",
-            "evaluator_data": 100,
-            "criticality": "low",
-            "tags": []
+            "condition": {
+                "type": "Equals",
+                "expected": 100
+            }
         },
         {
             "id": "cost_check_2",
-            "provider": "infracost",
-            "provider_inputs": {
+            "provider_args": {
                 "resource_type": [
                     "aws_s3_bucket"
                 ],
-                "costType": "totalMonthlyCost"
+                "costType" : "totalHourlyCost"
             },
-            "evaluator_ref": "LessThanEqualTo",
-            "evaluator_data": 110,
-            "criticality": "low",
-            "tags": []
+            "condition": {
+                "type": "LessThanEqualTo",
+                "expected": 100
+            }
         }
     ],
-    "final_evaluation": "cost_check_1"
+    "eval_expression": "cost_check_1 && cost_check_2"
 }
