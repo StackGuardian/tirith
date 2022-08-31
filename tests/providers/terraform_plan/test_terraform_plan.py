@@ -14,18 +14,18 @@ def load_terraform_plan_json(json_path):
         return False
 
 
-input_data = load_terraform_plan_json("./input.json")
+input_data = load_terraform_plan_json('input.json')
 
 provider_inputs_1 = {
-    "input_type": "resource_changes",
-    "resource_type": "aws_vpc",
-    "attribute": "enable_dns_hostnames",
+    "operation_type": "resource_changes",
+    "terraform_resource_type": "aws_vpc",
+    "terraform_resource_attribute": "enable_dns_hostnames",
 }
 
 provider_inputs_2 = {
-    "input_type": "resource_changes",
-    "resource_type": "aws_vpc",
-    "attribute": "enable_dns_support",
+    "operation_type": "resource_changes",
+    "terraform_resource_type": "aws_vpc",
+    "terraform_resource_attribute": "enable_dns_support",
 }
 
 
@@ -140,9 +140,9 @@ def test_get_attribute_name_passing4():
 
 # actions
 provider_inputs_4 = {
-    "input_type": "resource_changes_actions",
-    "resource_type": "aws_vpc",
-    "attribute": "actions",
+    "operation_type": "resource_changes_actions",
+    "terraform_resource_type": "aws_vpc",
+    "terraform_resource_attribute": "actions",
 }
 
 
@@ -160,9 +160,9 @@ def test_get_attribute_name_failing6():
 
 # count
 provider_inputs_3 = {
-    "input_type": "resource_changes_count",
-    "resource_type": "aws_vpc",
-    "attribute": "index",
+    "operation_type": "resource_changes_count",
+    "terraform_resource_type": "aws_vpc",
+    "terraform_resource_attribute": "index",
 }
 
 
