@@ -15,9 +15,8 @@ def main():
 
         exit_status = ExitStatus.ERROR_CTRL_C
 
-    if exit_status is not None:
-        if exit_status.value:
-            sys.exit(exit_status.value)
+    if exit_status is not None and exit_status.value:
+        sys.exit(exit_status.value)
 
 
 if __name__ == "__main__":

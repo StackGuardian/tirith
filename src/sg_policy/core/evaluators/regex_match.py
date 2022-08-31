@@ -2,7 +2,7 @@ from .base_evaluator import BaseEvaluator
 import re
 
 
-class RegexEquals(BaseEvaluator):
+class RegexMatch(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
