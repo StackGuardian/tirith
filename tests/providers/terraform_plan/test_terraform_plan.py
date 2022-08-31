@@ -29,7 +29,7 @@ provider_inputs_2 = {
 }
 
 
-@pytest.mark.passingattr
+@pytest.mark.passing
 def test_get_attribute_name_passing1():
     res = handler.provide(provider_inputs_1, input_data)
     assert res == [
@@ -77,13 +77,13 @@ def test_get_attribute_name_passing1():
     ]
 
 
-@pytest.mark.passingattr
+@pytest.mark.passing
 def test_get_attribute_name_passing2():
     res = handler.provide(provider_inputs_1, input_data)
     assert res[0]["value"] == False
 
 
-@pytest.mark.passingattr
+@pytest.mark.passing
 def test_get_attribute_name_passing3():
     res = handler.provide(provider_inputs_2, input_data)
     print(res)
@@ -132,7 +132,7 @@ def test_get_attribute_name_passing3():
     ]
 
 
-@pytest.mark.passingattr
+@pytest.mark.passing
 def test_get_attribute_name_passing4():
     res = handler.provide(provider_inputs_2, input_data)
     assert res[0]["value"] == True
@@ -146,13 +146,13 @@ provider_inputs_4 = {
 }
 
 
-@pytest.mark.passingattr
+@pytest.mark.passing
 def test_get_attribute_name_passing5():
     res = handler.provide(provider_inputs_4, input_data)
     assert res[0]["value"] == ["create"]
 
 
-@pytest.mark.failingattr
+@pytest.mark.failing
 def test_get_attribute_name_failing6():
     res = handler.provide(provider_inputs_4, input_data)
     assert res[0]["value"] != ["create"]
@@ -166,13 +166,13 @@ provider_inputs_3 = {
 }
 
 
-@pytest.mark.passingattr
+@pytest.mark.passing
 def test_get_attribute_name_passing7():
     res = handler.provide(provider_inputs_3, input_data)
     assert res[0]["value"] >= 0
 
 
-@pytest.mark.failingattr
+@pytest.mark.failing
 def test_get_attribute_name_failing8():
     res = handler.provide(provider_inputs_3, input_data)
     assert res[0]["value"] == 0
