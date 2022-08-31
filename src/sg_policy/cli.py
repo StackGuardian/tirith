@@ -3,18 +3,16 @@ CLI
 """
 
 import argparse
+import json
+import logging
 import sys
 import textwrap
-import json
+
+import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
 from sg_policy.logging import setup_logging
 from sg_policy.status import ExitStatus
-import logging
-
 
 from .core import start_policy_evaluation
-
-# import sg_policy.providers as providers
-import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
 
 # TODO: Use at least __name__ for the logger name
 logger = logging.getLogger()
@@ -47,40 +45,44 @@ def main(args=None) -> ExitStatus:
             ),
         )
         parser.add_argument(
-            "--policy-path",
+            "-policy-path",
             metavar="PATH",
             type=str,
             dest="policyPath",
-            help="Path containing policy defined using SG Policy Framework",
+            help="Path containing policy defined using StackGuardian Policy Framework",
         )
         parser.add_argument(
-            "--input-path",
+            "-input-path",
             metavar="SOURCE-TYPE",
             type=str,
             dest="inputPath",
-            help="Input config path. Can be a file or dir, depending on --input-type",
+            help="Input file path",
         )
         parser.add_argument(
             "--json",
             dest="json",
             action="store_true",
-            help="Just print the result in JSON form (useful for passing to other programs)",
+            help="Only print the result in JSON form (useful for passing output to other programs)",
         )
         parser.add_argument(
             "--verbose",
             dest="verbose",
             action="store_true",
-            help="Show detailed logs of the program run",
+            help="Show detailed logs of from the run",
         )
         parser.add_argument("--version", action="version", version="1.0.0-alpha.1")
 
         args = parser.parse_args()
 
         if not args.policyPath:
-            print("'--policyPath' argument is required")
+            sys.stdout.write("'-policy-path' argument is required")
+            sys.stdout.write("-policy-path argument is required. Provide a path to SG policy")
             return ExitStatus.ERROR
         if not args.inputPath:
-            print("Path to input file should be provided to '--input-path' argument")
+            sys.stdout.write("Path to input file should be provided to '--input-path' argument")
+            sys.stdout.write(
+                "-input-path argument is required. Provide a path to JSON file compatible with the provider defined in the SG policy"
+            )
             return ExitStatus.ERROR
 
         if not args.json:
@@ -89,15 +91,15 @@ def main(args=None) -> ExitStatus:
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
             formatted_result = json.dumps(result, indent=3)
-            print(formatted_result)
+            sys.stdout.write(formatted_result)
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
             if args.json:
                 # Print empty JSON
-                print("{}")
+                sys.stderr.write("{}")
             else:
                 logger.exception(e)
-                print("ERROR")
+                sys.stderr.write("ERROR")
             return ExitStatus.ERROR
 
         # TODO: move to core
@@ -107,40 +109,6 @@ def main(args=None) -> ExitStatus:
 
         # inputType = args.inputType
 
-        # if inputType == "terraform_plan":
-        #     if not args.inputPath:
-        #         # TODO:check if the input and policy path exists.
-        #         print(
-        #             "Path to terraform plan file should be provided to '--input-path' argument"
-        #         )
-        #         return ExitStatus.ERROR
-        #     if not args.tfVersion:
-        #         print(
-        #             "'--tf-version' argument is required when --input-type=terraform_plan"
-        #         )
-        #         return ExitStatus.ERROR
-        #     # providers.opa.terraform_plan.handler(
-        #     #    args.policyPath, args.inputPath, args.tfVersion
-        #     # )
-        #
-        #     try:
-        #         result = start_policy_evaluation(args.policyPath, args.inputPath)
-        #         print(result)
-        #     except:
-        #         # TODO:write an exception class for all provider exceptions.
-        #         print("ERROR")
-        #         return ExitStatus.ERROR
-        #     # print(
-        #     #     f"Policy template successfully generated and stored in {args.policyPath.rsplit('/',1)[0]}/policy_template.json")
-        # elif inputType in ["terraform_hcl", "cloudformation_json"]:
-        #     print(
-        #         "Provided input type is not supported yet. Only 'terraform_plan' is supported at the moment."
-        #     )
-        #     return ExitStatus.ERROR
-        # else:
-        #     print("Unsupported --input-type specified.")
-        #     return ExitStatus.ERROR
-        # return ExitStatus.SUCCESS
     except KeyboardInterrupt:
         sys.stderr.write("\nFailed because of Keyboard Interrupt")
         return ExitStatus.ERROR_CTRL_C

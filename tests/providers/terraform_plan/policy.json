@@ -1,7 +1,7 @@
 {
     "meta": {
-        "version": "1.0.0-alpha.1",
-        "required_provider": "terraform_plan"
+        "version": "v1",
+        "required_provider": "stackguardian/terraform_plan"
     },
     "evaluators": [
         {
