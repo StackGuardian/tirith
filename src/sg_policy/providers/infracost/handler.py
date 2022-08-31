@@ -1,4 +1,10 @@
+import logging
+
+# TODO: Add at least __name__ as the name of the logger
+logger = logging.getLogger()
+
 def __get_all_costs(costType, input_data):
+    logger.debug(f"costType :  {costType}")
     totalSum = 0
     if "projects" in input_data:
         for project in input_data["projects"]:
@@ -9,6 +15,7 @@ def __get_all_costs(costType, input_data):
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
+                logger.debug(f"Total sum of {costType} of all resources :  {totalSum}")
                 return totalSum
             else:
                 raise KeyError("breakdown/resources not found in one of the project")
@@ -17,6 +24,7 @@ def __get_all_costs(costType, input_data):
 
 
 def __get_resources_costs(resource_type, costType, input_data):
+    logger.debug(f"costType :  {costType}")
     totalSum = 0
     if "projects" in input_data:
         for project in input_data["projects"]:
@@ -32,6 +40,7 @@ def __get_resources_costs(resource_type, costType, input_data):
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
+                logger.debug(f"Total sum of {costType} of specific resources :  {totalSum}")
                 return totalSum
             else:
                 raise KeyError("breakdown/resources not found in one of the project")
@@ -40,13 +49,17 @@ def __get_resources_costs(resource_type, costType, input_data):
 
 
 def provide(provider_inputs, input_data):
+    logger.debug("infracost provider")
+    logger.debug(f"infracost provider inputs : {provider_inputs}")
     try:
         if "resource_type" in provider_inputs and "costType" in provider_inputs:
             resource_type = provider_inputs["resource_type"]
             costType = provider_inputs["costType"]
             if not resource_type or resource_type == "*" or resource_type == ["*"]:
                 value = __get_all_costs(costType, input_data)
-                return [{"value": value, "meta": None, "err": None}]
+                output = [{"value": value, "meta": None, "err": None}]
+                logger.debug(f"infracost provider output : {output}")
+                return output
             else:
                 value = __get_resources_costs(resource_type, costType, input_data)
                 return [{"value": value, "meta": None, "err": None}]

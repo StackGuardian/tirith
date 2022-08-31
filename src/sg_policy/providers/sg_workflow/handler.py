@@ -1,11 +1,10 @@
 import logging
 
-
 # TODO: Add at least __name__ as the name of the logger
 logger = logging.getLogger()
 
-
 def __getValue(key, data):
+    logger.debug(f"Searching {key} in input data")
     result = ""
     if key == "integrationId":
         temp = []
@@ -66,17 +65,23 @@ def __getValue(key, data):
         else:
             raise KeyError(f"{key} not found in input_data")
 
+    logger.debug(f"Result obtained through __getValue method : {result}")
     return result
 
 
 def provide(provider_inputs, input_data):
+    logger.debug("sg_workflow provider")
+    logger.debug(f"sg_workflow provider inputs : {provider_inputs}")
     try:
         if "resource_type" in provider_inputs:
             resource_type = provider_inputs["resource_type"]
             if resource_type:
                 result = __getValue(resource_type, input_data)
-                return [{"value": result, "meta": None, "err": None}]
+                output = [{"value": result, "meta": None, "err": None}]
+                logger.debug(f"sg_workflow provider output : {output}")
+                return output
         else:
+            logger.debug("resource_type not found in provider_inputs")
             return [
                 {
                     "value": None,

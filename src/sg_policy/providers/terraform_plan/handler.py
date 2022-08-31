@@ -1,5 +1,11 @@
+import logging
+
+# TODO: Add at least __name__ as the name of the logger
+logger = logging.getLogger()
+
 # input->(list [s3,acl,*],value of resource)
 # returns->[any, any, any]
+
 def __get_expression_attribute(splitted_attr_name_expr, input_data):
 
     if not splitted_attr_name_expr:
