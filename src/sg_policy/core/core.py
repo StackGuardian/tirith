@@ -1,6 +1,6 @@
 import logging
 from .evaluators import *
-import json
+import simplejson as json
 from sg_policy.providers.infracost import provide as infracost_provider
 from sg_policy.providers.terraform_plan import provide as terraform_provider
 from sg_policy.providers.sg_workflow import provide as sg_wf_provider
@@ -67,7 +67,7 @@ def final_evaluator(eval_string, evalIdValues):
         eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
         return eval(eval_string)
     except Exception:
-        #TODO: Log Final Evaluation Failed
+        # TODO: Log Final Evaluation Failed
         return False
 
 
@@ -85,9 +85,8 @@ def start_policy_evaluation(policy_path, input_path):
     validator_instance = Validators()
     with open(policy_path) as json_file:
         policy_data = json.load(json_file)
-    policy_evalution=validator_instance.policy_validator(policy_data)
+    policy_evaluation = validator_instance.policy_validator(policy_data)
     # TODO: Take action on policy validation
-
 
     with open(input_path) as json_file:
         input_data = json.load(json_file)
@@ -106,7 +105,7 @@ def start_policy_evaluation(policy_path, input_path):
     final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
 
     final_output = {
-        "meta": {"version": policy_meta.get("version", ''), "required_provider": provider_module},
+        "meta": {"version": policy_meta.get("version", ""), "required_provider": provider_module},
         "final_result": final_evaluation_result,
         "evaluators": eval_results,
     }

@@ -1,5 +1,5 @@
 from . import handler
-import json
+import simplejson as json
 import pytest
 
 

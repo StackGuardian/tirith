@@ -1,36 +1,42 @@
-import json
+import simplejson as json
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
+import os
+
+
+POLICY_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources", "policy_schema.json")
+
+print("ddd: ", POLICY_SCHEMA_PATH)
+
+OUTPUT_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources", "output_schema.json")
 
 
 class Validators:
     # returns {"valid": bool, "message":str }
     # input
-    def policy_validator(self, policy_input):
-        # check if policy_input is valid JSON
+
+    def __init__(self, policy_path):
+        self.policy_path = policy_path
+        self.schema_path = POLICY_SCHEMA_PATH
+
+    def load_json(self, json_file):
         try:
-            json.dumps(policy_input)
-        except (TypeError, OverflowError):
-            return {"valid": False, "message": "Policy is not a valid JSON"}
-        # eval_objects = policy_data.get("evaluators")
-        # check meta
-        if "meta" not in policy_input or isinstance(policy_input["meta"], dict):
-            return {"valid": False, "message": "Policy does not have a valid meta included"}
-        elif "version" not in policy_input["meta"]:
-            return {"valid": False, "message": "Policy does not have a version included in meta"}
-        elif "required_provider" not in policy_input["meta"]:
-            return {"valid": False, "message": "Policy does not have a required_provider included in meta"}
-        # TODO: Verify the required_provider value
+            json.load(json_file)
+        except ValueError as err:
+            print(str(err))
+            return False
+        return True
 
-        if "evaluators" not in policy_input or isinstance(policy_input["evaluators"], list):
-            return {"valid": False, "message": "Policy does not have a valid list of evaluators"}
-        for evaluator in policy_input["evaluators"]:
-            validation_result = self.evaluator_validator(evaluator)
-            if not validation_result["valid"]:
-                return {"valid": False, "message": validation_result["message"]}
+    def policy_validator(self):
+        policy_json = self.load_json(self.policy_path)
+        schema_json = self.load_json(self.schema_path)
 
-        if "eval_expression" not in policy_input or isinstance(policy_input["eval_expression"], str):
-            return {"valid": False, "message": "Policy does not have a valid eval_expression"}
-
-        return {"valid": True, "message": "Policy Validated Successfully"}
+        try:
+            validate(instance=policy_json, schema=schema_json)
+        except ValidationError as err:
+            print(str(err))
+            return False
+        return True
 
     def evaluator_validator(self, evaluator):
         if not evaluator or isinstance(evaluator, dict):

@@ -1,0 +1,79 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "meta": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string",
+                    "default": "v1",
+                    "readOnly": true
+                },
+                "required_provider": {
+                    "type": "string",
+                    "enum": [
+                        "stackguardian/terraform_plan",
+                        "stackguardian/infracost",
+                        "stackguardian/sg_workflow"
+                    ]
+                }
+            },
+            "required": [
+                "version",
+                "required_provider"
+            ]
+        },
+        "evaluators": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "provider_args": {
+                        "type": "object"
+                    },
+                    "condition": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "Contains",
+                                    "Equals",
+                                    "GreaterThanEqualTo",
+                                    "GreaterThan",
+                                    "IsEmpty",
+                                    "IsNotEmpty",
+                                    "LessThanEqualTo",
+                                    "LessThan"
+                                ]
+                            },
+                            "expected": {}
+                        },
+                        "required": [
+                            "type",
+                            "expected"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "provider_args",
+                    "condition"
+                ]
+            },
+            "additionalItems": {}
+        },
+        "eval_expression": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "meta",
+        "evaluators",
+        "eval_expression"
+    ]
+}
