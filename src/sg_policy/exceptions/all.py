@@ -1,16 +1,16 @@
-class UnsupportedEvaluatorRef(Exception):
-    def __init__(self, message="Evaluator Ref does not exist"):
+class UnsupportedConditionTypeInPolicy(Exception):
+    def __init__(self, message="Condition Type is not supported"):
         self.message = message
         super().__init__(self.message)
 
 
-class UnsupportedKeyInPolicySchema(Exception):
-    def __init__(self, message="Unknown Schema validation failed"):
+class UnsupportedKeyInPolicy(Exception):
+    def __init__(self, message="Unsupported Key in policy"):
         self.message = message
         super().__init__(self.message)
 
 
-class UnsupportedProvider(Exception):
-    def __init__(self, message="Provider does not exist"):
+class UnsupportedProviderInPolicy(Exception):
+    def __init__(self, message="Unsupported Provider in policy"):
         self.message = message
         super().__init__(self.message)
