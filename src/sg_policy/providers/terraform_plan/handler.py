@@ -1,64 +1,26 @@
-# input->(list [s3,acl,*],value of resource)
+# input->(list ["a.b","c", "d"],value of resource)
 # returns->[any, any, any]
-def _get_expression_attribute(splitted_attr_name_expr, input_data):
-
-    if not splitted_attr_name_expr:
-
-        return input_data
-
-    lookup_key = splitted_attr_name_expr[0]
-
-    if lookup_key != "*":
-        print("lookup key    -", lookup_key)
-        print("input_data    -", input_data)
-        if type(input_data) == dict:
-            input_data_new = input_data[lookup_key]
-        elif type(input_data) == list:
-            print(input_data)
-            if type(input_data[0]) == list:
-
-                input_data_new = input_data[0][0][lookup_key]
-            else:
-                input_data_new = input_data[0][lookup_key]
-            print(input_data_new)
-
-        else:
-            input_data_new = input_data[lookup_key]
-
-        # print("input_new    -",input_data_new)
-
-        _get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
-
-    elif lookup_key == "*" and isinstance(input_data, list):
-        print("lookup key    -", lookup_key)
-        print("input_data    -", input_data)
-        values = []
-        lookup_key = splitted_attr_name_expr[1:2][0]
-        splitted_attr_name_expr = splitted_attr_name_expr[1:]
-        # for i in input_data:
-        #     values.append(i[lookup_key])
-        values = [i[lookup_key] for i in input_data]
-
-        input_data_new = values
-        _get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
-    elif lookup_key == "*" and isinstance(input_data, dict):
-        values = []
-        lookup_key = splitted_attr_name_expr[1:2][0]
-        splitted_attr_name_expr = splitted_attr_name_expr[1:]
-        for key, value in input_data.items():
-            if key == lookup_key:
-                values.append(value)
-            # print("values",values)
-
-        input_data_new = values
-        # print("1st data",splitted_attr_name_expr[1:])
-        # print("2nd data",input_data_new)
-        _get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
-
-    else:
-        # return blank array
-        return []
-
+import pydash
+def _get_exp_attribute(split_expressions, input_data):
+    #split_expressions=expression.split('*')
+    final_data=[]
+    for i, expression in enumerate(split_expressions):
+        intermidiate_val = pydash.get(input_data, expression)
+        # print(intermidiate_val)
+        if isinstance(intermidiate_val, list) and i<len(split_expressions)-1:
+            for val in intermidiate_val:
+                final_attributes=_get_exp_attribute(split_expressions[1:], val)
+                for final_attribute in final_attributes:
+                    final_data.append(final_attribute)
+        elif i==len(split_expressions)-1 and intermidiate_val:
+            final_data.append(intermidiate_val)
+        elif ".*" in expression:
+            intermidiate_exp=expression.split(".*")
+            intermidiate_data=pydash.get(input_data, intermidiate_exp[0])
+            if intermidiate_data and isinstance(intermidiate_data, list):
+                for val in intermidiate_data:
+                    final_data.append(val)
+    return final_data
 
 def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
@@ -86,9 +48,10 @@ def provide(provider_inputs, input_data):
                         }
                     )
                 elif "." in attribute or "*" in attribute:
-                    evaluated_output = _get_expression_attribute(attribute, input_resource_change_attrs)
-                    for val in evaluated_output:
-                        outputs.append({"value": val, "meta": resource_change, "err": None})
+                    splitted_attribute = attribute.split(".*.")
+                    evaluated_outputs = _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
+                    for evaluated_output in evaluated_outputs:
+                        outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
 
         return outputs
     # CASE 2
