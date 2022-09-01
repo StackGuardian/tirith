@@ -64,9 +64,10 @@ def provide(provider_inputs, input_data):
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
-                outputs.append(
+                for action in resource_change["change"]["actions"]:
+                    outputs.append(
                     {
-                        "value": resource_change["change"]["actions"],
+                        "value": action,
                         "meta": resource_change,
                         "err": None,
                     }
