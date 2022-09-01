@@ -1,10 +1,15 @@
+import ast
+import json
 import logging
-from .evaluators import *
+from pathlib import Path
+
 import simplejson as json
-from sg_policy.providers.infracost import provide as infracost_provider
-from sg_policy.providers.terraform_plan import provide as terraform_provider
-from sg_policy.providers.sg_workflow import provide as sg_wf_provider
 from sg_policy.core.utils import Validators
+from sg_policy.providers.infracost import provide as infracost_provider
+from sg_policy.providers.sg_workflow import provide as sg_wf_provider
+from sg_policy.providers.terraform_plan import provide as terraform_provider
+
+from .evaluators import *
 
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
@@ -34,44 +39,39 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     else:
         print("condition key is not supplied.")
 
-        evaluator_inputs = get_evaluator_inputs_from_provider_inputs(
-            provider_inputs, provider_module, input_data
-        )  # always an array of inputs for evaluators
-        result = {
-            "id": eval_id,
-            "passed": False,
-        }
+    evaluator_inputs = get_evaluator_inputs_from_provider_inputs(
+        provider_inputs, provider_module, input_data
+    )  # always an array of inputs for evaluators
+    result = {
+        "id": eval_id,
+        "passed": False,
+    }
+    if evaluator_class:
         try:
             evaluator_instance = eval(f"{evaluator_class}()")
-        except NameError as e:
+        except NameError:
             print(f"{evaluator_class} is not a supported evaluator")
-        evaluation_results = []
-        has_evaluation_passed = True
-        for evaluator_input in evaluator_inputs:
-            evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
-            evaluation_result["meta"] = evaluator_input.get("meta")
-            evaluation_results.append(evaluation_result)
-            if not evaluation_result["passed"]:
-                has_evaluation_passed = False
-        result["result"] = evaluation_results
-        result["passed"] = has_evaluation_passed
-        return result
-    except KeyError as e:
-        return {"result": [], "passed": False, "error": str(e), "id": eval_id}
+    evaluation_results = []
+    has_evaluation_passed = True
+    for evaluator_input in evaluator_inputs:
+        evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
+        evaluation_result["meta"] = evaluator_input.get("meta")
+        evaluation_results.append(evaluation_result)
+        if not evaluation_result["passed"]:
+            has_evaluation_passed = False
+    result["result"] = evaluation_results
+    result["passed"] = has_evaluation_passed
+    return result
 
 
-def final_evaluator(eval_string, evalIdValues):
-    try:
-        logger.info("Running final evaluator")
-        for key in evalIdValues:
-            eval_string = eval_string.replace(key, str(evalIdValues[key]["passed"]))
-            # print (eval_string)
-        # TODO: shall we use and, or and not instead of symbols?
-        eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
-        return eval(eval_string)
-    except Exception:
-        # TODO: Log Final Evaluation Failed
-        return False
+def final_evaluator(eval_string, eval_id_values):
+    logger.info("Running final evaluator")
+    for key in eval_id_values:
+        eval_string = eval_string.replace(key, str(eval_id_values[key]["passed"]))
+        # print (eval_string)
+    # TODO: shall we use and, or and not instead of symbols?
+    eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
+    return eval(eval_string)
 
 
 # print(final_evaluator("(!(pol_check_1  &&  pol_check_2)  && pol_check_3 ) && pol_check_4", {
@@ -85,11 +85,16 @@ def final_evaluator(eval_string, evalIdValues):
 
 
 def start_policy_evaluation(policy_path, input_path):
-    validator_instance = Validators()
+
+    # validator_instance = Validators()
+    # with open(policy_path) as json_file:
+    #     policy_data = json.load(json_file)
+    # policy_evaluation = validator_instance.policy_validator(policy_data)
+    # # TODO: Take action on policy validation
+
     with open(policy_path) as json_file:
         policy_data = json.load(json_file)
-    policy_evaluation = validator_instance.policy_validator(policy_data)
-    # TODO: Take action on policy validation
+    # TODO: validate policy_data against schema
 
     with open(input_path) as json_file:
         input_data = json.load(json_file)
@@ -104,13 +109,13 @@ def start_policy_evaluation(policy_path, input_path):
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
         logger.info(f"Processing evaluator '{eval_id}'")
-        eval_result= generate_evaluator_result(eval_obj, input_data, provider_module)
-        eval_result["id"]=eval_id
+        eval_result = generate_evaluator_result(eval_obj, input_data, provider_module)
+        eval_result["id"] = eval_id
         eval_results.append(eval_result)
     final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
 
     final_output = {
-        "meta": {"version": policy_meta.get("version", ""), "required_provider": provider_module},
+        "meta": {"version": policy_meta.get("version"), "required_provider": provider_module},
         "final_result": final_evaluation_result,
         "evaluators": eval_results,
     }
