@@ -10,25 +10,14 @@ from os.path import basename
 from os.path import dirname
 from os.path import join
 from os.path import splitext
-import os
 
 from setuptools import find_packages
 from setuptools import setup
-from setuptools.command.install import install
 
 
 def read(*names, **kwargs):
-    with io.open(
-        join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")
-    ) as fh:
+    with io.open(join(dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")) as fh:
         return fh.read()
-
-
-class CustomInstall(install):
-    def run(self):
-        install.run(self)
-        # custom stuff here
-        print("This is some custom stuff.")
 
 
 setup(
@@ -39,9 +28,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description="%s\n%s"
     % (
-        re.compile("^.. start-badges.*^.. end-badges", re.M | re.S).sub(
-            "", read("README.md")
-        ),
+        re.compile("^.. start-badges.*^.. end-badges", re.M | re.S).sub("", read("README.md")),
         re.sub(":[a-z]+:`~?(.*?)`", r"``\1``", read("CHANGELOG.md")),
     ),
     author="StackGuardian",
@@ -77,7 +64,7 @@ setup(
         "Topic :: System",
     ],
     project_urls={
-        "Changelog": "https://github.com/tandlabs/projectx-module1/blob/master/CHANGELOG.md",
+        "Changelog": "https://github.com/stackguardian/policy-framework/blob/main/CHANGELOG.md",
         "Issue Tracker": "https://github.com/stackguardian/policy-framework/issues",
     },
     keywords=["iac", "policy", "terraform", "policy as code"],
@@ -95,9 +82,5 @@ setup(
         "console_scripts": [
             "sg_policy=sg_policy.__main__:main",
         ]
-    },
-    cmdclass={
-        "install": CustomInstall,
-        # "develop": CustomInstall,
     },
 )

@@ -1,6 +1,6 @@
 # input->(list [s3,acl,*],value of resource)
 # returns->[any, any, any]
-def __get_expression_attribute(splitted_attr_name_expr, input_data):
+def _get_expression_attribute(splitted_attr_name_expr, input_data):
 
     if not splitted_attr_name_expr:
 
@@ -27,7 +27,7 @@ def __get_expression_attribute(splitted_attr_name_expr, input_data):
 
         # print("input_new    -",input_data_new)
 
-        __get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
+        _get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
 
     elif lookup_key == "*" and isinstance(input_data, list):
         print("lookup key    -", lookup_key)
@@ -40,7 +40,7 @@ def __get_expression_attribute(splitted_attr_name_expr, input_data):
         values = [i[lookup_key] for i in input_data]
 
         input_data_new = values
-        __get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
+        _get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
     elif lookup_key == "*" and isinstance(input_data, dict):
         values = []
         lookup_key = splitted_attr_name_expr[1:2][0]
@@ -53,7 +53,7 @@ def __get_expression_attribute(splitted_attr_name_expr, input_data):
         input_data_new = values
         # print("1st data",splitted_attr_name_expr[1:])
         # print("2nd data",input_data_new)
-        __get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
+        _get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
 
     else:
         # return blank array

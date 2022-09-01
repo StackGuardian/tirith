@@ -23,13 +23,16 @@ def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, 
 
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
-    eval_id = evaluator_obj.get("id", "")
-    try:
-        provider_inputs = evaluator_obj.get("provider_args")
-        condition = evaluator_obj.get("condition")
+
+    eval_id = evaluator_obj.get("id")
+    provider_inputs = evaluator_obj.get("provider_args")
+    condition = evaluator_obj.get("condition")
+    evaluator_class = None
+    if condition:
         evaluator_class = condition.get("type")
         evaluator_data = condition.get("expected")
-        eval_id = evaluator_obj.get("id")
+    else:
+        print("condition key is not supplied.")
 
         evaluator_inputs = get_evaluator_inputs_from_provider_inputs(
             provider_inputs, provider_module, input_data
@@ -97,11 +100,13 @@ def start_policy_evaluation(policy_path, input_path):
     final_evaluation_policy_string = policy_data.get("eval_expression")
     provider_module = policy_meta.get("required_provider", "core")
     # TODO: Write functionality for dynamically importing evaluators from other modules.
-    eval_results = {}
+    eval_results = []
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
         logger.info(f"Processing evaluator '{eval_id}'")
-        eval_results[eval_id] = generate_evaluator_result(eval_obj, input_data, provider_module)
+        eval_result= generate_evaluator_result(eval_obj, input_data, provider_module)
+        eval_result["id"]=eval_id
+        eval_results.append(eval_result)
     final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
 
     final_output = {
