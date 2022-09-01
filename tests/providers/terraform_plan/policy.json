@@ -1,40 +1,40 @@
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/terraform_plan"
+        "required_provider": "terraform_plan"
     },
     "evaluators": [
         {
-            "id": "pol_check_1",
+            "id": "check1",
             "provider_args": {
                 "operation_type": "attribute",
-                "terraform_resource_type": "aws_s3_bucket",
-                "terraform_resource_attribute": "versioning.enabled"
+                "terraform_resource_type": "aws_vpc",
+                "terraform_resource_attribute": "instance_tenancy"
             },
             "condition": {
-                "type": "equals",
-                "expected": true
+                "type": "Equals",
+                "expected": "default"
             }
         },
         {
-            "id": "pol_check_11",
+            "id": "check3",
             "provider_args": {
                 "operation_type": "count",
-                "terraform_resource_type": "aws_s3_bucket"
+                "terraform_resource_type": "aws_vpc"
             },
             "condition": {
-                "type": "lt",
+                "type": "GreaterThan",
                 "expected": 10
             }
         },
         {
-            "id": "pol_check_11",
+            "id": "check2",
             "provider_args": {
                 "operation_type": "action",
-                "terraform_resource_type": "aws_s3_bucket"
+                "terraform_resource_type": "aws_vpc"
             },
             "condition": {
-                "type": "contains",
+                "type": "Contains",
                 "expected": [
                     "create",
                     "update"
@@ -42,5 +42,5 @@
             }
         }
     ],
-    "eval_expression": "( ^(pol_check_1 && pol_check_11) && pol_check_2 ) || pol_check_2 "
+    "eval_expression": "( (check2 && check1) && check3 ) || check1 "
 }
