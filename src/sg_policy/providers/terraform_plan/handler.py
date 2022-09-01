@@ -87,7 +87,7 @@ def provide(provider_inputs, input_data):
 
         outputs.append(
             {
-                "value": count,
+                "value": count+1,
                 "meta": resource_meta,
                 "err": None,
             }
