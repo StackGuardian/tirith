@@ -1,7 +1,7 @@
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/terraform_plan"
+        "required_provider": "terraform_plan"
     },
     "evaluators": [
         {
@@ -12,29 +12,29 @@
                 "terraform_resource_attribute": "versioning.enabled"
             },
             "condition": {
-                "type": "equals",
+                "type": "Equals",
                 "expected": true
             }
         },
         {
-            "id": "pol_check_11",
+            "id": "pol_check_2",
             "provider_args": {
                 "operation_type": "count",
                 "terraform_resource_type": "aws_s3_bucket"
             },
             "condition": {
-                "type": "lt",
+                "type": "LessThan",
                 "expected": 10
             }
         },
         {
-            "id": "pol_check_11",
+            "id": "pol_check_3",
             "provider_args": {
                 "operation_type": "action",
                 "terraform_resource_type": "aws_s3_bucket"
             },
             "condition": {
-                "type": "contains",
+                "type": "Contains",
                 "expected": [
                     "create",
                     "update"
@@ -42,5 +42,5 @@
             }
         }
     ],
-    "eval_expression": "( ^(pol_check_1 && pol_check_11) && pol_check_2 ) || pol_check_2 "
+    "eval_expression": "( !(pol_check_1 && pol_check_2) && pol_check_3 ) || pol_check_3 "
 }

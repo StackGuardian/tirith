@@ -31,7 +31,7 @@ def provide(provider_inputs, input_data):
     # CASE 1
     # - Get value of an attribute for all instances of a resource
     # - resource_changes.*.change.after.<attr_name>
-    if input_type == "resource_changes":
+    if input_type == "attribute":
         attribute = provider_inputs["terraform_resource_attribute"]
         resource_type = provider_inputs["terraform_resource_type"]
 
@@ -57,7 +57,7 @@ def provide(provider_inputs, input_data):
     # CASE 2
     # - Get actions performed on a resource
     # - resource_changes.*.change.actions
-    elif input_type == "resource_changes_actions":
+    elif input_type == "action":
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
@@ -72,7 +72,7 @@ def provide(provider_inputs, input_data):
     # CASE 3
     # - Get count of a particular resource
     # - resource_changes.*.index
-    elif input_type == "resource_changes_count":
+    elif input_type == "count":
         count = 0
         resource_meta = {}
         resource_type = provider_inputs["terraform_resource_type"]
