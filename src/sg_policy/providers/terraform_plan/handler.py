@@ -57,7 +57,7 @@ def provide(provider_inputs, input_data):
                             }
                         )
                     elif "." in attribute or "*" in attribute:
-                        evaluated_outputs = __wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
+                        evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
                         for evaluated_output in evaluated_outputs:
                             outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
 
