@@ -6,6 +6,7 @@ import argparse
 import sys
 import textwrap
 import simplejson as json
+import logging
 from sg_policy.logging import setup_logging
 from sg_policy.status import ExitStatus
 
