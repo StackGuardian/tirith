@@ -1,26 +1,29 @@
 # input->(list ["a.b","c", "d"],value of resource)
 # returns->[any, any, any]
 import pydash
+
+
 def _get_exp_attribute(split_expressions, input_data):
-    #split_expressions=expression.split('*')
-    final_data=[]
+    # split_expressions=expression.split('*')
+    final_data = []
     for i, expression in enumerate(split_expressions):
-        intermidiate_val = pydash.get(input_data, expression)
-        # print(intermidiate_val)
-        if isinstance(intermidiate_val, list) and i<len(split_expressions)-1:
-            for val in intermidiate_val:
-                final_attributes=_get_exp_attribute(split_expressions[1:], val)
+        intermediate_val = pydash.get(input_data, expression)
+        # print(intermediate_val)
+        if isinstance(intermediate_val, list) and i < len(split_expressions) - 1:
+            for val in intermediate_val:
+                final_attributes = _get_exp_attribute(split_expressions[1:], val)
                 for final_attribute in final_attributes:
                     final_data.append(final_attribute)
-        elif i==len(split_expressions)-1 and intermidiate_val:
-            final_data.append(intermidiate_val)
+        elif i == len(split_expressions) - 1 and intermediate_val:
+            final_data.append(intermediate_val)
         elif ".*" in expression:
-            intermidiate_exp=expression.split(".*")
-            intermidiate_data=pydash.get(input_data, intermidiate_exp[0])
-            if intermidiate_data and isinstance(intermidiate_data, list):
-                for val in intermidiate_data:
+            intermediate_exp = expression.split(".*")
+            intermediate_data = pydash.get(input_data, intermediate_exp[0])
+            if intermediate_data and isinstance(intermediate_data, list):
+                for val in intermediate_data:
                     final_data.append(val)
     return final_data
+
 
 def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
