@@ -3,6 +3,11 @@
 import pydash
 
 
+def _wrapper_get_exp_attribute(attribute, input_resource_change_attrs):
+    splitted_attribute = attribute.split(".*.")
+    return _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
+
+
 def _get_exp_attribute(split_expressions, input_data):
     # split_expressions=expression.split('*')
     final_data = []
@@ -51,8 +56,7 @@ def provide(provider_inputs, input_data):
                         }
                     )
                 elif "." in attribute or "*" in attribute:
-                    splitted_attribute = attribute.split(".*.")
-                    evaluated_outputs = _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
+                    evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
                     for evaluated_output in evaluated_outputs:
                         outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
 
@@ -66,12 +70,12 @@ def provide(provider_inputs, input_data):
             if resource_change["type"] == resource_type:
                 for action in resource_change["change"]["actions"]:
                     outputs.append(
-                    {
-                        "value": action,
-                        "meta": resource_change,
-                        "err": None,
-                    }
-                )
+                        {
+                            "value": action,
+                            "meta": resource_change,
+                            "err": None,
+                        }
+                    )
             print(outputs)
         return outputs
     # CASE 3
@@ -88,7 +92,7 @@ def provide(provider_inputs, input_data):
 
         outputs.append(
             {
-                "value": count+1,
+                "value": count + 1,
                 "meta": resource_meta,
                 "err": None,
             }
