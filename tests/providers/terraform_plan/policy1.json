@@ -24,7 +24,7 @@
             },
             "condition": {
                 "type": "lt",
-                "expected": 10
+                "expected": 40
             }
         },
         {
@@ -36,11 +36,23 @@
             "condition": {
                 "type": "contains",
                 "expected": [
-                    "create",
+                    "create"
+                ]
+            }
+        },
+        {
+            "id": "pol_check_2",
+            "provider_args": {
+                "operation_type": "action",
+                "terraform_resource_type": "aws_s3_bucket"
+            },
+            "condition": {
+                "type": "contains",
+                "expected": [
                     "update"
                 ]
             }
         }
     ],
-    "eval_expression": "( pol_check_1 && pol_check_11 ) || ( pol_check_11 && pol_check_11 )"
+    "eval_expression": "( pol_check_1 && pol_check_11 ) || (pol_check_11 && pol_check_2)"
 }
