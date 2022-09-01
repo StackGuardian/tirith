@@ -101,6 +101,7 @@ def start_policy_evaluation(policy_path, input_path):
         eval_id = eval_obj.get("id")
         logger.info(f"Processing evaluator '{eval_id}'")
         eval_result= generate_evaluator_result(eval_obj, input_data, provider_module)
+        eval_result["id"]=eval_id
         eval_results.append(eval_result)
     final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
 
