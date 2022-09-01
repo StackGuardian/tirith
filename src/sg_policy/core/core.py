@@ -97,13 +97,15 @@ def start_policy_evaluation(policy_path, input_path):
     provider_module = policy_meta.get("required_provider", "core")
     # TODO: Write functionality for dynamically importing evaluators from other modules.
     eval_results = []
+    eval_results_obj={}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
         logger.info(f"Processing evaluator '{eval_id}'")
         eval_result= generate_evaluator_result(eval_obj, input_data, provider_module)
         eval_result["id"]=eval_id
+        eval_results_obj[eval_id]=eval_result
         eval_results.append(eval_result)
-    final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
+    final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results_obj)
 
     final_output = {
         "meta": {"version": policy_meta.get("version"), "required_provider": provider_module},
