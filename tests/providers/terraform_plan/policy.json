@@ -1,7 +1,7 @@
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/terraform_plan"
+        "required_provider": "terraform_plan"
     },
     "evaluators": [
         {
@@ -31,7 +31,7 @@
             "id": "check2",
             "provider_args": {
                 "operation_type": "action",
-                "terraform_resource_type": "aws_s3_bucket"
+                "terraform_resource_type": "aws_vpc"
             },
             "condition": {
                 "type": "Contains",
