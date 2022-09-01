@@ -1,0 +1,66 @@
+{
+    "DeploymentPlatformConfig": [
+     {
+      "config": {
+       "integrationId": "/integrations/aws-qa"
+      },
+      "kind": "AWS_RBAC"
+     }
+    ],
+    "Description": "test",
+    "DocVersion": "V3.BETA",
+    "EnvironmentVariables": [
+     {
+      "config": {
+       "textValue": "eu-central-1",
+       "varName": "AWS_DEFAULT_REGION"
+      },
+      "kind": "PLAIN_TEXT"
+     },
+     {
+      "config": {
+       "secretId": "/secrets/test",
+       "varName": "test"
+      },
+      "kind": "VAULT_SECRET"
+     }
+    ],
+    "ResourceName": "sg-workflow-provider",
+    "ResourceType": "WORKFLOW",
+    "Tags": [
+     "test",
+     "policy"
+    ],
+    "TerraformConfig": {
+     "approvalPreApply": true,
+     "driftCheck": false,
+     "managedTerraformState": true,
+     "terraformVersion": "1.1.3"
+    },
+    "VCSConfig": {
+     "iacInputData": {
+      "data": {
+       "bucket_region": "eu-west-1",
+       "s3_bucket_acl": "public-read",
+       "s3_bucket_block_public_acls": false,
+       "s3_bucket_block_public_policy": false,
+       "s3_bucket_force_destroy": true,
+       "s3_bucket_ignore_public_acls": false,
+       "s3_bucket_restrict_public_buckets": false,
+       "s3_bucket_tags": {},
+       "s3_bucket_versioning": {
+        "enabled": true,
+        "mfa_delete": false
+       }
+      },
+      "schemaType": "FORM_JSONSCHEMA"
+     },
+     "iacVCSConfig": {
+      "iacTemplateId": "/stackguardian/AWS-Pentest-Lab:3",
+      "useMarketplaceTemplate": true
+     }
+    },
+    "WfStepsConfig": [],
+    "WfType": "TERRAFORM",
+    "_SGInternals": {}
+   }

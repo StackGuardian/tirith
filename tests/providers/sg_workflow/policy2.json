@@ -1,0 +1,44 @@
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/sg_workflow"
+    },
+    "evaluators": [
+        {
+            "id": "wf_check_1",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "useMarketplaceTemplate"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": true
+            }
+        },
+        {
+            "id": "wf_check_2",
+            "provider_args": {
+                "operation_type": "count",
+                "workflow_attribute": "useMarketplaceTemplate"
+            },
+            "condition": {
+                "type": "lt",
+                "expected": 3
+            }
+        },
+        {
+            "id": "wf_check_3",
+            "provider_args": {
+                "operation_type": "action",
+                "workflow_attribute": "useMarketplaceTemplate"
+            },
+            "condition": {
+                "type": "contains",
+                "expected": [
+                    "delete"
+                ]
+            }
+        }
+    ],
+    "final_evaluation": "(wf_check_1 || wf_check_2) && wf_check_3"
+}
