@@ -8,12 +8,12 @@
             "id": "check1",
             "provider_args": {
                 "operation_type": "attribute",
-                "terraform_resource_type": "aws_s3_bucket",
-                "terraform_resource_attribute": "versioning.enabled"
+                "terraform_resource_type": "aws_vpc",
+                "terraform_resource_attribute": "instance_tenancy"
             },
             "condition": {
                 "type": "Equals",
-                "expected": true
+                "expected": "default"
             }
         },
         {
