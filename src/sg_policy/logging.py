@@ -1,17 +1,13 @@
 import logging
 import logging.config
 import sys
-
-from typing import Dict, Any
-
+from typing import Any, Dict
 
 DEFAULT_LOGGING_CONFIG: Dict[str, Any] = {
     "version": 1,
     "formatters": {
-        "verbose_formatter": {
-            "format": "(%(process)d) %(asctime)s %(name)s (line %(lineno)s) | %(levelname)s %(message)s"
-        },
-        "normal_formatter": {"format": "%(levelname)s %(message)s"},
+        "verbose_formatter": {"format": "[%(levelname)s] (%(process)d) %(asctime)s (line %(lineno)s) | %(message)s"},
+        "normal_formatter": {"format": "[%(levelname)s] %(message)s"},
     },
     "handlers": {
         "console_stdout": {

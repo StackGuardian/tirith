@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger()
 
 
-def __getValue(key, data):
+def _getValue(key, data):
     result = ""
     if key == "integrationId":
         temp = []
@@ -74,7 +74,7 @@ def provide(provider_inputs, input_data):
         if "resource_type" in provider_inputs:
             resource_type = provider_inputs["resource_type"]
             if resource_type:
-                result = __getValue(resource_type, input_data)
+                result = _getValue(resource_type, input_data)
                 return [{"value": result, "meta": None, "err": None}]
         else:
             return [
