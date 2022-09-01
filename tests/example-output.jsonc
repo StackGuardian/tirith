@@ -1,4 +1,6 @@
 {
+    "errors": [
+    ],
     "meta": {
         "version": "1.0.0-alpha.1",
         "required_provider": "terraform_plan"
