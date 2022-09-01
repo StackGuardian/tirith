@@ -1161,6 +1161,49 @@
                     }
                 }
             }
+        },
+        {
+            "address": "aws_vpc.this[0]",
+            "mode": "managed",
+            "type": "aws_vpc",
+            "name": "this",
+            "index": 1,
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "assign_generated_ipv6_cidr_block": false,
+                    "cidr_block": "10.0.0.0/18",
+                    "enable_dns_hostnames": false,
+                    "enable_dns_support": true,
+                    "instance_tenancy": "default",
+                    "tags": {
+                        "Name": ""
+                    },
+                    "tags_all": {}
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "default_network_acl_id": true,
+                    "default_route_table_id": true,
+                    "default_security_group_id": true,
+                    "dhcp_options_id": true,
+                    "enable_classiclink": true,
+                    "enable_classiclink_dns_support": true,
+                    "id": true,
+                    "ipv6_association_id": true,
+                    "ipv6_cidr_block": true,
+                    "main_route_table_id": true,
+                    "owner_id": true,
+                    "tags": {},
+                    "tags_all": {
+                        "Name": true
+                    }
+                }
+            }
         }
     ],
     "output_changes": {
