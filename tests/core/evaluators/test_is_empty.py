@@ -15,6 +15,6 @@ def test_evaluate_passing():
 
 # pytest -v -m passing
 @mark.failing
-def test_evaluate_passing():
+def test_evaluate_failing():
     result = evaluator.evaluate(evaluator_input2)
     assert result == {"message": f"{evaluator_input2} is not empty", "passed": False}
