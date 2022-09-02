@@ -29,24 +29,35 @@ logger = logging.getLogger()
 
 
 class Contains(BaseEvaluator):
-    def sort_lists_in_dicts(self, input):
-        if isinstance(input, str) or isinstance(input, float) or isinstance(input, int):
-            return input
+    def sort_collections(self, input):
         try:
-            for key in input:
-                if isinstance(input[key], list):
-                    if isinstance(input[key][0], dict) or isinstance(input[key][0], list):
-                        sorted_array = []
-                        for index, _ in enumerate(input[key]):
-                            sorted_array.append(self.sort_lists_in_dicts(input[key][index]))
-                        input[key] = sorted_array
-                    else:
-                        input[key] = sorted(input[key])
-                if isinstance(input[key], dict):
-                    self.sort_lists_in_dicts(input[key])
-            return input
+            if isinstance(input, str) or isinstance(input, float) or isinstance(input, int) or isinstance(input, bool):
+                return input
+            elif isinstance(input, list):
+                if (
+                    isinstance(input[0], str)
+                    or isinstance(input[0], float)
+                    or isinstance(input[0], int)
+                    or isinstance(input[0], bool)
+                ):
+                    input = sorted(input)
+                    return input
+                else:
+                    sorted_list = []
+                    for index, val in enumerate(input):
+                        sorted_list.append(self.sort_collections(val))
+                    return sorted_list
+            elif isinstance(input, dict):
+                sorted_dict = {}
+                for key in input:
+                    sorted_val = self.sort_collections(input[key])
+                    sorted_dict[key] = sorted_val
+                return sorted_dict
+            else:
+                return input
         except Exception as e:
-            logger.exception(e)
+            # TODO: LOG
+            print(e)
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
@@ -56,20 +67,36 @@ class Contains(BaseEvaluator):
             if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
                 result = evaluator_input in evaluator_data
                 evaluation_result["passed"] = result
+                if result:
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             # if evaluator_input is a list
-            if isinstance(evaluator_data, list):
-                evaluator_data = self.sort_lists_in_dicts(evaluator_data)
+            elif isinstance(evaluator_data, list):
+                evaluator_data = self.sort_collections(evaluator_data)
                 if isinstance(evaluator_input, list):
-                    evaluator_input = self.sort_lists_in_dicts(evaluator_input)
+                    evaluator_input = self.sort_collections(evaluator_input)
                     result = evaluator_input in evaluator_data
                     evaluation_result["passed"] = result
+                    if result:
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                    else:
+                        evaluation_result["message"] = "Failed to find {} inside {}".format(
+                                    evaluator_input, evaluator_data
+                        )
                 else:
                     result = evaluator_input in evaluator_data
                     evaluation_result["passed"] = result
-            if isinstance(evaluator_data, dict):
+                    if result:
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                    else:
+                        evaluation_result["message"] = "Failed to find {} inside {}".format(
+                                    evaluator_input, evaluator_data
+                        )
+            elif isinstance(evaluator_data, dict):
                 if isinstance(evaluator_input, dict):
-                    for key in evaluator_data:
-                        if key in evaluator_input:
+                    evaluation_result["passed"] = True
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                    for key in evaluator_input:
+                        if key in evaluator_data:
                             if evaluator_data[key] != evaluator_input[key]:
                                 evaluation_result["passed"] = False
                                 evaluation_result["message"] = "Failed to find {} inside {}".format(
@@ -88,7 +115,7 @@ class Contains(BaseEvaluator):
                     if result:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             else:
-                evaluation_result["message"] = "Failed to find {} inside {}".format(evaluator_input, evaluator_data)
+                evaluation_result["message"] = "{} is an unsupported data type for in condition.expected".format(evaluator_data)
             return evaluation_result
         except Exception as e:
             logger.exception(e)

@@ -1,13 +1,12 @@
-import logging
-
-from .evaluators import *
-from pathlib import Path
-import json
 import ast
+import json
+import logging
+from pathlib import Path
 
 from ..providers.infracost import provide as infracost_provider
-from ..providers.terraform_plan import provide as terraform_provider
 from ..providers.sg_workflow import provide as sg_wf_provider
+from ..providers.terraform_plan import provide as terraform_provider
+from .evaluators import *
 
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
@@ -27,11 +26,15 @@ def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, 
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
+    eval_id = evaluator_obj.get("id")
     provider_inputs = evaluator_obj.get("provider_args")
     condition = evaluator_obj.get("condition")
-    evaluator_class = condition.get("type")
-    evaluator_data = condition.get("expected")
-    eval_id = evaluator_obj.get("id")
+    evaluator_class = None
+    if condition:
+        evaluator_class = condition.get("type")
+        evaluator_data = condition.get("expected")
+    else:
+        print("condition key is not supplied.")
 
     evaluator_inputs = get_evaluator_inputs_from_provider_inputs(
         provider_inputs, provider_module, input_data
@@ -40,10 +43,11 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         "id": eval_id,
         "passed": False,
     }
-    try:
-        evaluator_instance = eval(f"{evaluator_class}()")
-    except NameError as e:
-        print(f"{evaluator_class} is not a supported evaluator")
+    if evaluator_class:
+        try:
+            evaluator_instance = eval(f"{evaluator_class}()")
+        except NameError:
+            print(f"{evaluator_class} is not a supported evaluator")
     evaluation_results = []
     has_evaluation_passed = True
     for evaluator_input in evaluator_inputs:
@@ -57,10 +61,10 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     return result
 
 
-def final_evaluator(eval_string, evalIdValues):
+def final_evaluator(eval_string, eval_id_values):
     logger.info("Running final evaluator")
-    for key in evalIdValues:
-        eval_string = eval_string.replace(key, str(evalIdValues[key]["passed"]))
+    for key in eval_id_values:
+        eval_string = eval_string.replace(key, str(eval_id_values[key]["passed"]))
         # print (eval_string)
     # TODO: shall we use and, or and not instead of symbols?
     eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
@@ -92,12 +96,16 @@ def start_policy_evaluation(policy_path, input_path):
     final_evaluation_policy_string = policy_data.get("eval_expression")
     provider_module = policy_meta.get("required_provider", "core")
     # TODO: Write functionality for dynamically importing evaluators from other modules.
-    eval_results = {}
+    eval_results = []
+    eval_results_obj={}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
         logger.info(f"Processing evaluator '{eval_id}'")
-        eval_results[eval_id] = generate_evaluator_result(eval_obj, input_data, provider_module)
-    final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results)
+        eval_result= generate_evaluator_result(eval_obj, input_data, provider_module)
+        eval_result["id"]=eval_id
+        eval_results_obj[eval_id]=eval_result
+        eval_results.append(eval_result)
+    final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results_obj)
 
     final_output = {
         "meta": {"version": policy_meta.get("version"), "required_provider": provider_module},

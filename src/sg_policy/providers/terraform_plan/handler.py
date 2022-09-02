@@ -1,63 +1,33 @@
-# input->(list [s3,acl,*],value of resource)
+# input->(list ["a.b","c", "d"],value of resource)
 # returns->[any, any, any]
-def __get_expression_attribute(splitted_attr_name_expr, input_data):
+import pydash
 
-    if not splitted_attr_name_expr:
 
-        return input_data
+def _wrapper_get_exp_attribute(attribute, input_resource_change_attrs):
+    splitted_attribute = attribute.split(".*.")
+    return _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
 
-    lookup_key = splitted_attr_name_expr[0]
 
-    if lookup_key != "*":
-        print("lookup key    -", lookup_key)
-        print("input_data    -", input_data)
-        if type(input_data) == dict:
-            input_data_new = input_data[lookup_key]
-        elif type(input_data) == list:
-            print(input_data)
-            if type(input_data[0]) == list:
-
-                input_data_new = input_data[0][0][lookup_key]
-            else:
-                input_data_new = input_data[0][lookup_key]
-            print(input_data_new)
-
-        else:
-            input_data_new = input_data[lookup_key]
-
-        # print("input_new    -",input_data_new)
-
-        __get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
-
-    elif lookup_key == "*" and isinstance(input_data, list):
-        print("lookup key    -", lookup_key)
-        print("input_data    -", input_data)
-        values = []
-        lookup_key = splitted_attr_name_expr[1:2][0]
-        splitted_attr_name_expr = splitted_attr_name_expr[1:]
-        # for i in input_data:
-        #     values.append(i[lookup_key])
-        values = [i[lookup_key] for i in input_data]
-
-        input_data_new = values
-        __get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
-    elif lookup_key == "*" and isinstance(input_data, dict):
-        values = []
-        lookup_key = splitted_attr_name_expr[1:2][0]
-        splitted_attr_name_expr = splitted_attr_name_expr[1:]
-        for key, value in input_data.items():
-            if key == lookup_key:
-                values.append(value)
-            # print("values",values)
-
-        input_data_new = values
-        # print("1st data",splitted_attr_name_expr[1:])
-        # print("2nd data",input_data_new)
-        __get_expression_attribute(splitted_attr_name_expr[1:], input_data_new)
-
-    else:
-        # return blank array
-        return []
+def _get_exp_attribute(split_expressions, input_data):
+    # split_expressions=expression.split('*')
+    final_data = []
+    for i, expression in enumerate(split_expressions):
+        intermediate_val = pydash.get(input_data, expression)
+        # print(intermediate_val)
+        if isinstance(intermediate_val, list) and i < len(split_expressions) - 1:
+            for val in intermediate_val:
+                final_attributes = _get_exp_attribute(split_expressions[1:], val)
+                for final_attribute in final_attributes:
+                    final_data.append(final_attribute)
+        elif i == len(split_expressions) - 1 and intermediate_val:
+            final_data.append(intermediate_val)
+        elif ".*" in expression:
+            intermediate_exp = expression.split(".*")
+            intermediate_data = pydash.get(input_data, intermediate_exp[0])
+            if intermediate_data and isinstance(intermediate_data, list):
+                for val in intermediate_data:
+                    final_data.append(val)
+    return final_data
 
 
 def provide(provider_inputs, input_data):
@@ -69,7 +39,7 @@ def provide(provider_inputs, input_data):
     # CASE 1
     # - Get value of an attribute for all instances of a resource
     # - resource_changes.*.change.after.<attr_name>
-    if input_type == "resource_changes":
+    if input_type == "attribute":
         attribute = provider_inputs["terraform_resource_attribute"]
         resource_type = provider_inputs["terraform_resource_type"]
 
@@ -86,30 +56,32 @@ def provide(provider_inputs, input_data):
                         }
                     )
                 elif "." in attribute or "*" in attribute:
-                    evaluated_output = __get_expression_attribute(attribute, input_resource_change_attrs)
-                    for val in evaluated_output:
-                        outputs.append({"value": val, "meta": resource_change, "err": None})
+                    evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
+                    for evaluated_output in evaluated_outputs:
+                        outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
 
         return outputs
     # CASE 2
     # - Get actions performed on a resource
     # - resource_changes.*.change.actions
-    elif input_type == "resource_changes_actions":
+    elif input_type == "action":
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
-                outputs.append(
-                    {
-                        "value": resource_change["change"]["actions"],
-                        "meta": resource_change,
-                        "err": None,
-                    }
-                )
+                for action in resource_change["change"]["actions"]:
+                    outputs.append(
+                        {
+                            "value": action,
+                            "meta": resource_change,
+                            "err": None,
+                        }
+                    )
+            print(outputs)
         return outputs
     # CASE 3
     # - Get count of a particular resource
     # - resource_changes.*.index
-    elif input_type == "resource_changes_count":
+    elif input_type == "count":
         count = 0
         resource_meta = {}
         resource_type = provider_inputs["terraform_resource_type"]
@@ -120,7 +92,7 @@ def provide(provider_inputs, input_data):
 
         outputs.append(
             {
-                "value": count,
+                "value": count + 1,
                 "meta": resource_meta,
                 "err": None,
             }
