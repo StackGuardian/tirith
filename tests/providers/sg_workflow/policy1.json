@@ -27,5 +27,5 @@
             }
         }
     ],
-    "final_evaluation": "wf_check_1 && wf_check_2"
+    "final_evaluation": "wf_check_1 || wf_check_2"
 }
