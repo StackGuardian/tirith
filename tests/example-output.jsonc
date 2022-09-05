@@ -3,7 +3,7 @@
     ],
     "meta": {
         "version": "1.0.0-alpha.1",
-        "required_provider": "terraform_plan"
+        "required_provider": "stackguardian/terraform_plan"
     },
     "final_result": false, //["(", "pol_check_1", "&&"] //infix stack evaluation for all evaluators, 
     "evaluators": [

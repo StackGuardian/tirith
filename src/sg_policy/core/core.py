@@ -7,6 +7,7 @@ from ..providers.infracost import provide as infracost_provider
 from ..providers.sg_workflow import provide as sg_wf_provider
 from ..providers.terraform_plan import provide as terraform_provider
 from .evaluators import *
+from .utils import Validators
 
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
@@ -83,10 +84,10 @@ def final_evaluator(eval_string, eval_id_values):
 
 def start_policy_evaluation(policy_path, input_path):
 
-    with open(policy_path) as json_file:
-        policy_data = json.load(json_file)
-    # TODO: validate policy_data against schema
+    validator = Validators(policy_path)
 
+    policy_data = validator.validate_policy()
+    
     with open(input_path) as json_file:
         input_data = json.load(json_file)
     # TODO: validate input_data using the optionally available validate function in provider
@@ -97,13 +98,13 @@ def start_policy_evaluation(policy_path, input_path):
     provider_module = policy_meta.get("required_provider", "core")
     # TODO: Write functionality for dynamically importing evaluators from other modules.
     eval_results = []
-    eval_results_obj={}
+    eval_results_obj = {}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
         logger.info(f"Processing evaluator '{eval_id}'")
-        eval_result= generate_evaluator_result(eval_obj, input_data, provider_module)
-        eval_result["id"]=eval_id
-        eval_results_obj[eval_id]=eval_result
+        eval_result = generate_evaluator_result(eval_obj, input_data, provider_module)
+        eval_result["id"] = eval_id
+        eval_results_obj[eval_id] = eval_result
         eval_results.append(eval_result)
     final_evaluation_result = final_evaluator(final_evaluation_policy_string, eval_results_obj)
 
