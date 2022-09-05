@@ -80,7 +80,7 @@ class Contains(BaseEvaluator):
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
                     else:
                         evaluation_result["message"] = "Failed to find {} inside {}".format(
-                                    evaluator_input, evaluator_data
+                            evaluator_input, evaluator_data
                         )
                 else:
                     result = evaluator_input in evaluator_data
@@ -89,7 +89,7 @@ class Contains(BaseEvaluator):
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
                     else:
                         evaluation_result["message"] = "Failed to find {} inside {}".format(
-                                    evaluator_input, evaluator_data
+                            evaluator_input, evaluator_data
                         )
             elif isinstance(evaluator_data, dict):
                 if isinstance(evaluator_input, dict):
@@ -115,7 +115,9 @@ class Contains(BaseEvaluator):
                     if result:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             else:
-                evaluation_result["message"] = "{} is an unsupported data type for in condition.expected".format(evaluator_data)
+                evaluation_result["message"] = "{} is an unsupported data type for in condition.expected".format(
+                    evaluator_data
+                )
             return evaluation_result
         except Exception as e:
             logger.exception(e)
