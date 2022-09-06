@@ -68,8 +68,6 @@ def test_cost_s3_bucket_module_fail():
     res = handler.provide(provider_inputs_3,input_data)
     assert bool(res[0]["value"] == 0) == False
 
-# the above test case is to check for the module
-# "name": "module.s3_bucket.aws_s3_bucket.this[0]" line 21 in input.json
 
 # if value equals 0 that means the service is deployed and is generating hourly costs  
 # if value not equals 0 that means no cost is generated and hence the service is not deployed  
