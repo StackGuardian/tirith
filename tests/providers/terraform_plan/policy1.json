@@ -54,5 +54,5 @@
             }
         }
     ],
-    "eval_expression": "( pol_check_1 && pol_check_11 ) || (pol_check_11 && pol_check_2)"
+    "eval_expression": "( pol_check_1 || pol_check_11 ) || (pol_check_11 && pol_check_2)"
 }
