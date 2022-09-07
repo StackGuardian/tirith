@@ -7,8 +7,6 @@ import os
 
 POLICY_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources", "policy_schema.json")
 
-print("ddd: ", POLICY_SCHEMA_PATH)
-
 OUTPUT_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources", "output_schema.json")
 
 
@@ -35,7 +33,7 @@ class Validators:
 
         try:
             validate(instance=policy_json, schema=schema_json)
-            return policy_json
+            return True
         except ValidationError as err:
             print(str(err))
             raise
