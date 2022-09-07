@@ -1,16 +1,18 @@
 from abc import ABC, abstractmethod
-from typing import TypedDict
+from typing import Any, Dict, TypedDict
 
 
 class EvaluatorResult(TypedDict):
     passed: bool
     message: str
     error: str
+    meta: Any
 
 
 class BaseEvaluator(ABC):
-
-    # evaluate method will be called when the policy is evaluated using the policy evaluator
     @abstractmethod
-    def evaluate(self) -> EvaluatorResult:
+    def evaluate(self, evaluator_input: Dict, evaluator_data: Dict) -> EvaluatorResult:
+        """
+        This method will be called when the policy is evaluated using the policy evaluator
+        """
         return

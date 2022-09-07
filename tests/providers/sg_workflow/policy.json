@@ -16,5 +16,5 @@
             }
         }
     ],
-    "final_evaluation": "wf_check_1"
+    "eval_expression": "wf_check_1"
 }
