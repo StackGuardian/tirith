@@ -6,7 +6,9 @@ from typing import Any, Dict
 DEFAULT_LOGGING_CONFIG: Dict[str, Any] = {
     "version": 1,
     "formatters": {
-        "verbose_formatter": {"format": "[%(levelname)s] (%(process)d) %(asctime)s (line %(lineno)s) | %(message)s"},
+        "verbose_formatter": {
+            "format": "[%(levelname)s] (%(process)d) %(asctime)s (%(pathname)s:%(lineno)s) | %(message)s"
+        },
         "normal_formatter": {"format": "[%(levelname)s] %(message)s"},
     },
     "handlers": {
