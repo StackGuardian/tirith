@@ -7,6 +7,7 @@ from ..providers.infracost import provide as infracost_provider
 from ..providers.sg_workflow import provide as sg_wf_provider
 from ..providers.terraform_plan import provide as terraform_provider
 from .evaluators import *
+import re 
 
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
@@ -64,9 +65,12 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 def final_evaluator(eval_string, eval_id_values):
     logger.info("Running final evaluator")
     for key in eval_id_values:
-        eval_string = eval_string.replace(key, str(eval_id_values[key]["passed"]))
+        regex_string="\\b"+key+"\\b"
+        eval_string = re.sub(regex_string, str(eval_id_values[key]["passed"]), eval_string)
+        # eval_string = eval_string.replace(key, str(eval_id_values[key]["passed"]))
         # print (eval_string)
     # TODO: shall we use and, or and not instead of symbols?
+   
     eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
     return eval(eval_string)
 
