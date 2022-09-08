@@ -57,7 +57,7 @@ class Contains(BaseEvaluator):
                 return input
         except Exception as e:
             # TODO: LOG
-            print(e)
+            logger.exception(e)
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
