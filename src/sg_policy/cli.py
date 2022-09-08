@@ -28,9 +28,13 @@ def main(args=None) -> ExitStatus:
     Return exit status code.
     """
     try:
+        class _WidthFormatter(argparse.RawTextHelpFormatter):
+            def __init__(self, prog='PROG' ) -> None:
+                super().__init__(prog, max_help_position=300)
+        
         parser = argparse.ArgumentParser(
             description="StackGuardian Policy Framework.",
-            formatter_class=argparse.RawTextHelpFormatter,
+            formatter_class=_WidthFormatter,
             epilog=textwrap.dedent(
                 """\
          About StackGuardian Policy Framework:
@@ -74,6 +78,10 @@ def main(args=None) -> ExitStatus:
 
         args = parser.parse_args()
 
+        if len(sys.argv) == 1:
+            parser.print_help()
+            sys.exit(0)
+
         if not args.policyPath:
             sys.stderr.write("'-policy-path' argument is required")
             sys.stderr.write("-policy-path argument is required. Provide a path to SG policy")
@@ -87,6 +95,7 @@ def main(args=None) -> ExitStatus:
 
         if not args.json:
             setup_logging(verbose=args.verbose)
+
 
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
