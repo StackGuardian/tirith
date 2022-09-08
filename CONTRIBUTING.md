@@ -36,6 +36,7 @@ For all changes you commit or submit by pull-request please follow these simple 
 * Raise Pull Request as soon as you start working on a feature, bug, test or hotfix and label it with `work-in-progress`, while it is not ready to be merged.
 * Commits or squashed commits in your pull-requests should have a useful description.
 * Always update CHANGELOG.md before merging Pull Requests.
+* Use "Rebase and merge" strategy to merge Pull Request.
 
 ### If you have commit access:
 
