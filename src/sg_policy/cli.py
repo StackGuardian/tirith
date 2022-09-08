@@ -75,12 +75,12 @@ def main(args=None) -> ExitStatus:
         args = parser.parse_args()
 
         if not args.policyPath:
-            sys.stdout.write("'-policy-path' argument is required")
-            sys.stdout.write("-policy-path argument is required. Provide a path to SG policy")
+            sys.stderr.write("'-policy-path' argument is required")
+            sys.stderr.write("-policy-path argument is required. Provide a path to SG policy")
             return ExitStatus.ERROR
         if not args.inputPath:
-            sys.stdout.write("Path to input file should be provided to '--input-path' argument")
-            sys.stdout.write(
+            sys.stderr.write("Path to input file should be provided to '--input-path' argument")
+            sys.stderr.write(
                 "-input-path argument is required. Provide a path to JSON file compatible with the provider defined in the SG policy"
             )
             return ExitStatus.ERROR
@@ -96,7 +96,7 @@ def main(args=None) -> ExitStatus:
             # TODO:write an exception class for all provider exceptions.
             if args.json:
                 # Print empty JSON
-                sys.stderr.write("{}")
+                sys.stdout.write("{}")
             else:
                 logger.exception(e)
                 sys.stderr.write("ERROR")

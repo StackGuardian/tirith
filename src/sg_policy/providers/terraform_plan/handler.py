@@ -76,7 +76,6 @@ def provide(provider_inputs, input_data):
                             "err": None,
                         }
                     )
-            print(outputs)
         return outputs
     # CASE 3
     # - Get count of a particular resource

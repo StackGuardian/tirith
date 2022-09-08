@@ -1,7 +1,7 @@
 {
     "meta": {
         "version": "v1",
-        "required_provider": "terraform_plan"
+        "required_provider": "stackguardian/terraform_plan"
     },
     "evaluators": [
         {
@@ -44,3 +44,4 @@
     ],
     "eval_expression": "(check1 && check11) || check111"
 }
+
