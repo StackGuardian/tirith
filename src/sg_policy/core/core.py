@@ -87,7 +87,7 @@ def start_policy_evaluation(policy_path, input_path):
     validator = Validators(policy_path)
 
     policy_data = validator.validate_policy()
-    
+
     with open(input_path) as json_file:
         input_data = json.load(json_file)
     # TODO: validate input_data using the optionally available validate function in provider

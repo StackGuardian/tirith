@@ -33,7 +33,7 @@ class Validators:
 
         try:
             validate(instance=policy_json, schema=schema_json)
-            return True
+            return policy_json
         except ValidationError as err:
             print(str(err))
             raise
