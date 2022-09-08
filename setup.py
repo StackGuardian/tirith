@@ -24,7 +24,7 @@ setup(
     name="sg_policy",
     version="1.0.0-alpha.1",
     license="Apache",
-    description="StackGuardian Policy Framework simplifies defining Policy as Code and leverages OPA as policy engine.",
+    description="StackGuardian Policy Framework simplifies defining Policy as Code.",
     long_description_content_type="text/markdown",
     long_description="%s\n%s"
     % (
