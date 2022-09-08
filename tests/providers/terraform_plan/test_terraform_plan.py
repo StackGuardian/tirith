@@ -82,7 +82,6 @@ def test_get_attribute_name_passing2():
 @pytest.mark.passing
 def test_get_attribute_name_passing3():
     res = handler.provide(provider_args_2, input_data)
-    print(res)
     assert res == [
         {
             "value": True,
