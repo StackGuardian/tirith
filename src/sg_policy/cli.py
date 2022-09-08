@@ -93,9 +93,11 @@ def main(args=None) -> ExitStatus:
             )
             return ExitStatus.ERROR
 
-        if not args.json:
+        if args.json:
+            # Disable all logging output
+            logging.disable(logging.CRITICAL)
+        else:
             setup_logging(verbose=args.verbose)
-
 
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
