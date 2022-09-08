@@ -17,7 +17,7 @@
             }
         },
         {
-            "id": "check3",
+            "id": "check111",
             "provider_args": {
                 "operation_type": "count",
                 "terraform_resource_type": "aws_vpc"
@@ -28,7 +28,7 @@
             }
         },
         {
-            "id": "check2",
+            "id": "check11",
             "provider_args": {
                 "operation_type": "action",
                 "terraform_resource_type": "aws_vpc"
@@ -42,5 +42,6 @@
             }
         }
     ],
-    "eval_expression": "( (check2 && check1) && check3 ) || check1 "
+    "eval_expression": "(check1 && check11) || check111"
 }
+

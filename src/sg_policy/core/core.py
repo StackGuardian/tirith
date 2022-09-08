@@ -1,10 +1,13 @@
 import json
 import logging
+import re
 
 from typing import Dict
-
 from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
+
+
+
 
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
@@ -73,8 +76,13 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, bool]) -> bool:
     """
     logger.info("Running final evaluator")
     for key in eval_id_values:
-        eval_string = eval_string.replace(key, str(eval_id_values[key]))
+        regex_string="\\b"+key+"\\b"
+        eval_string = re.sub(regex_string, str(eval_id_values[key]), eval_string)
+        # eval_string = eval_string.replace(key, str(eval_id_values[key]["passed"]))
+        # print (eval_string)
+
     # TODO: shall we use and, or and not instead of symbols?
+   
     eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
     return eval(eval_string)
 
