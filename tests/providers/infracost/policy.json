@@ -31,5 +31,5 @@
             }
         }
     ],
-    "final_evaluation": "cost_check_1 && cost_check_2"
+    "eval_expression": "cost_check_1 && cost_check_2"
 }
