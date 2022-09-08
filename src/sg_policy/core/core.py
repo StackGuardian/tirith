@@ -7,8 +7,6 @@ from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
 
 
-
-
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
 
