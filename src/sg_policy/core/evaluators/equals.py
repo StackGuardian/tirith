@@ -57,7 +57,7 @@ class Equals(BaseEvaluator):
                 return input
         except Exception as e:
             # TODO: LOG
-            print(e)
+            logger.exception(e)
             return input
 
     def sort_lists_in_dicts(self, input):
