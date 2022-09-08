@@ -46,12 +46,6 @@ def test_awsvpc_attribute_status_pass():
     res = handler.provide(provider_args_1, input_data)
     assert res[0]["value"] == False
 
-@pytest.mark.failing
-def test_awsvpc_attribute_status_fail():
-    res = handler.provide(provider_args_1, input_data)
-    assert bool(res[0]["value"] != False) == True
-
-
 # If the value of the attribute "enable_dns_support" is expected to be True, then the pass test test case should be considered or else the fail case should be considered  
 @pytest.mark.passing
 def test_awsvpc_attribute_status_pass():
