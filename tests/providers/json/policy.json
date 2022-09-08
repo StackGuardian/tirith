@@ -22,7 +22,7 @@
                 "key_path": "c"
             },
             "condition": {
-                "type": "Contains",
+                "type": "ContainedIn",
                 "expected": "aa"
             }
         }
