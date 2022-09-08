@@ -28,10 +28,11 @@ def main(args=None) -> ExitStatus:
     Return exit status code.
     """
     try:
+
         class _WidthFormatter(argparse.RawTextHelpFormatter):
-            def __init__(self, prog='PROG' ) -> None:
+            def __init__(self, prog="PROG") -> None:
                 super().__init__(prog, max_help_position=300)
-        
+
         parser = argparse.ArgumentParser(
             description="StackGuardian Policy Framework.",
             formatter_class=_WidthFormatter,
@@ -102,12 +103,12 @@ def main(args=None) -> ExitStatus:
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
             formatted_result = json.dumps(result, indent=3)
-            sys.stdout.write(formatted_result)
+            sys.stdout.write(formatted_result + "\n")
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
             if args.json:
                 # Print empty JSON
-                sys.stdout.write("{}")
+                sys.stdout.write("{}" + "\n")
             else:
                 logger.exception(e)
                 sys.stderr.write("ERROR")
