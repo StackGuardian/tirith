@@ -1,7 +1,7 @@
 {
     "meta": {
         "version": "v1",
-        "required_provider": "json"
+        "required_provider": "stackguardian/json"
     },
     "evaluators": [
         {
