@@ -9,13 +9,14 @@ def _getValue(key, data):
     result = ""
     if key == "integrationId":
         temp = []
-        if "DeploymentPlatformConfig" in data:
-            for obj in data["DeploymentPlatformConfig"]:
-                if "config" in obj and "integrationId" in obj["config"]:
-                    temp.append(obj["config"]["integrationId"].replace("/integrations/", ""))
-            result = temp
-        else:
+        if "DeploymentPlatformConfig" not in data:
             raise KeyError("DeploymentPlatformConfig not found in input_data")
+        for obj in data["DeploymentPlatformConfig"]:
+            if "config" in obj and "integrationId" in obj["config"]:
+                temp.append(obj["config"]["integrationId"].replace("/integrations/", ""))
+        result = temp    
+        
+            
 
     elif key in [
         "Description",
@@ -71,19 +72,19 @@ def _getValue(key, data):
 
 def provide(provider_inputs, input_data):
     try:
-        if "resource_type" in provider_inputs:
-            resource_type = provider_inputs["resource_type"]
-            if resource_type:
-                result = _getValue(resource_type, input_data)
-                return [{"value": result, "meta": None, "err": None}]
-        else:
+        if "resource_type" not in provider_inputs:
             return [
                 {
                     "value": None,
                     "meta": None,
-                    "err": f"resource_type not found in provider_inputs",
+                    "err": "resource_type not found in provider_inputs",
                 }
             ]
+        resource_type = provider_inputs["resource_type"]
+        if resource_type:
+            result = _getValue(resource_type, input_data)
+            return [{"value": result, "meta": None, "err": None}]
+
     except Exception as e:
         logger.exception(e)
         return [{"value": None, "meta": None, "err": str(e)}]
