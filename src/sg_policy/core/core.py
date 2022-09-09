@@ -72,7 +72,7 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, bool]) -> bool:
         "pol_check_4":False
     })
     """
-    logger.info("Running final evaluator")
+    logger.debug("Running final evaluator")
     for key in eval_id_values:
         regex_string="\\b"+key+"\\b"
         eval_string = re.sub(regex_string, str(eval_id_values[key]), eval_string)
@@ -103,7 +103,7 @@ def start_policy_evaluation(policy_path, input_path):
     eval_results_obj = {}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
-        logger.info(f"Processing evaluator '{eval_id}'")
+        logger.debug(f"Processing evaluator '{eval_id}'")
         eval_result = generate_evaluator_result(eval_obj, input_data, provider_module)
         eval_result["id"] = eval_id
         eval_results_obj[eval_id] = eval_result["passed"]
