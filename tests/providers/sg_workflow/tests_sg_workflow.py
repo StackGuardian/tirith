@@ -11,4 +11,3 @@ def load_terraform_plan_json(json_path):
 
 
 input_data = load_terraform_plan_json("input.json")
-
