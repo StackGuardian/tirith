@@ -24,10 +24,11 @@ provider_inputs_2 = {
 
 # @pytest.mark.passing
 def test_get_attribute_name_passing1():
-    res = handler.provide(provider_inputs_1,input_data)
+    res = handler.provide(provider_inputs_1, input_data)
     assert res[0]["value"] != 0
+
 
 # @pytest.mark.failing
 def test_get_attribute_name_failing1():
-    res = handler.provide(provider_inputs_1,input_data)
+    res = handler.provide(provider_inputs_1, input_data)
     assert res[0]["value"] > 0
