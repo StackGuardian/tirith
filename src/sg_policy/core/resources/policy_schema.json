@@ -41,7 +41,7 @@
                             "type": {
                                 "type": "string",
                                 "enum": [
-                                    "Contains",
+                                    "ContainedIn",
                                     "Equals",
                                     "GreaterThanEqualTo",
                                     "GreaterThan",

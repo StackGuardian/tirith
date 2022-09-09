@@ -24,8 +24,8 @@ class Validators:
                 print(str(err))
                 return False
         else:
-            print(str("Not a file path."))
-            return False
+            raise Exception("Not a file path.")
+            # return False
 
     def validate_policy(self):
         policy_json = self.load_json_from_file(self.policy_path)
