@@ -74,13 +74,13 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, bool]) -> bool:
     """
     logger.info("Running final evaluator")
     for key in eval_id_values:
-        regex_string="\\b"+key+"\\b"
+        regex_string = "\\b" + key + "\\b"
         eval_string = re.sub(regex_string, str(eval_id_values[key]), eval_string)
         # eval_string = eval_string.replace(key, str(eval_id_values[key]["passed"]))
         # print (eval_string)
 
     # TODO: shall we use and, or and not instead of symbols?
-   
+
     eval_string = eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ")
     return eval(eval_string)
 
