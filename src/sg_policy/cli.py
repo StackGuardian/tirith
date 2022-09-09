@@ -18,6 +18,14 @@ from .core import start_policy_evaluation
 logger = logging.getLogger()
 
 
+def eprint(*args, **kwargs):
+    """
+    Just like print() but prints to sys.stderr instead of stdout.
+    Use it when printing error messages.
+    """
+    print(*args, file=sys.stderr, **kwargs)
+
+
 def main(args=None) -> ExitStatus:
     """
     The main function.
@@ -28,9 +36,14 @@ def main(args=None) -> ExitStatus:
     Return exit status code.
     """
     try:
+
+        class _WidthFormatter(argparse.RawTextHelpFormatter):
+            def __init__(self, prog="PROG") -> None:
+                super().__init__(prog, max_help_position=300)
+
         parser = argparse.ArgumentParser(
             description="StackGuardian Policy Framework.",
-            formatter_class=argparse.RawTextHelpFormatter,
+            formatter_class=_WidthFormatter,
             epilog=textwrap.dedent(
                 """\
          About StackGuardian Policy Framework:
@@ -74,32 +87,39 @@ def main(args=None) -> ExitStatus:
 
         args = parser.parse_args()
 
+        if len(sys.argv) == 1:
+            parser.print_help()
+            sys.exit(0)
+
         if not args.policyPath:
-            sys.stderr.write("'-policy-path' argument is required")
-            sys.stderr.write("-policy-path argument is required. Provide a path to SG policy")
+            eprint("'-policy-path' argument is required")
+            eprint("-policy-path argument is required. Provide a path to SG policy")
             return ExitStatus.ERROR
         if not args.inputPath:
-            sys.stderr.write("Path to input file should be provided to '--input-path' argument")
-            sys.stderr.write(
+            eprint("Path to input file should be provided to '--input-path' argument")
+            eprint(
                 "-input-path argument is required. Provide a path to JSON file compatible with the provider defined in the SG policy"
             )
             return ExitStatus.ERROR
 
-        if not args.json:
+        if args.json:
+            # Disable all logging output
+            logging.disable(logging.CRITICAL)
+        else:
             setup_logging(verbose=args.verbose)
 
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
             formatted_result = json.dumps(result, indent=3)
-            sys.stdout.write(formatted_result)
+            print(formatted_result)
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
             if args.json:
                 # Print empty JSON
-                sys.stdout.write("{}")
+                print("{}")
             else:
                 logger.exception(e)
-                sys.stderr.write("ERROR")
+                eprint("ERROR")
             return ExitStatus.ERROR
 
         # TODO: move to core
@@ -110,14 +130,14 @@ def main(args=None) -> ExitStatus:
         # inputType = args.inputType
 
     except KeyboardInterrupt:
-        sys.stderr.write("\nFailed because of Keyboard Interrupt")
+        eprint("\nFailed because of Keyboard Interrupt")
         return ExitStatus.ERROR_CTRL_C
     except SystemExit as e:
         if e.code != ExitStatus.SUCCESS:
-            sys.stderr.write("\nFailed because of System Exit")
+            eprint("\nFailed because of System Exit")
             return ExitStatus.ERROR
     except Exception as e:
         # TODO: Further distinction between expected and unexpected errors.
-        sys.stderr.write(f"\n {type(e)}: {str(e)}")
-        sys.stderr.write("\nFailed because of an unhandled exception")
+        eprint(f"\n {type(e)}: {str(e)}")
+        eprint("\nFailed because of an unhandled exception")
         return ExitStatus.ERROR

@@ -34,7 +34,7 @@
                 "terraform_resource_type": "aws_vpc"
             },
             "condition": {
-                "type": "Contains",
+                "type": "ContainedIn",
                 "expected": [
                     "create",
                     "update"
