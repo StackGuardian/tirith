@@ -28,10 +28,11 @@ def main(args=None) -> ExitStatus:
     Return exit status code.
     """
     try:
+
         class _WidthFormatter(argparse.RawTextHelpFormatter):
-            def __init__(self, prog='PROG' ) -> None:
+            def __init__(self, prog="PROG") -> None:
                 super().__init__(prog, max_help_position=300)
-        
+
         parser = argparse.ArgumentParser(
             description="StackGuardian Policy Framework.",
             formatter_class=_WidthFormatter,
