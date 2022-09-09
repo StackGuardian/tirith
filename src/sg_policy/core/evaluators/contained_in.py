@@ -29,36 +29,33 @@ logger = logging.getLogger()
 
 
 class ContainedIn(BaseEvaluator):
-    def sort_collections(self, input):
+    def sort_collections(self, evaluator_input):
         try:
-            if isinstance(input, str) or isinstance(input, float) or isinstance(input, int) or isinstance(input, bool):
-                return input
-            elif isinstance(input, list):
+            if isinstance(evaluator_input, (str, float, int, bool)):
+                return evaluator_input
+            elif isinstance(evaluator_input, list):
                 if (
-                    isinstance(input[0], str)
-                    or isinstance(input[0], float)
-                    or isinstance(input[0], int)
-                    or isinstance(input[0], bool)
+                    isinstance(evaluator_input[0], (str, float, int, bool))
                 ):
-                    input = sorted(input)
-                    return input
+                    evaluator_input = sorted(evaluator_input)
+                    return evaluator_input
                 else:
                     sorted_list = []
-                    for index, val in enumerate(input):
+                    for index, val in enumerate(evaluator_input):
                         sorted_list.append(self.sort_collections(val))
                     return sorted_list
-            elif isinstance(input, dict):
+            elif isinstance(evaluator_input, dict):
                 sorted_dict = {}
-                for key in input:
-                    sorted_val = self.sort_collections(input[key])
+                for key in evaluator_input:
+                    sorted_val = self.sort_collections(evaluator_input[key])
                     sorted_dict[key] = sorted_val
                 return sorted_dict
             else:
-                return input
+                return evaluator_input
         except Exception as e:
             # TODO: LOG
             logger.exception(e)
-            return input
+            return evaluator_input
 
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"passed": False, "message": "Not evaluated"}
