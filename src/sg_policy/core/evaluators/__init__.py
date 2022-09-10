@@ -14,7 +14,7 @@ from .regex_match import RegexMatch
 
 EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
     "ContainedIn": ContainedIn,
-    "Contains":Contains,
+    "Contains": Contains,
     "Equals": Equals,
     "GreaterThanEqualTo": GreaterThanEqualTo,
     "GreaterThan": GreaterThan,
