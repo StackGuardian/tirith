@@ -2,6 +2,7 @@ import logging
 
 from .base_evaluator import BaseEvaluator
 from sg_policy.utils import sort_collections
+
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()
 
@@ -29,7 +30,6 @@ logger = logging.getLogger()
 
 
 class Equals(BaseEvaluator):
-
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
