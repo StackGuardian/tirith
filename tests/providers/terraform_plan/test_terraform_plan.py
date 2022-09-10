@@ -1,5 +1,8 @@
 import json
 import os
+import sys
+import subprocess
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pytest'])
 import pytest
 
 from sg_policy.providers.terraform_plan import handler
