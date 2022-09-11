@@ -10,6 +10,7 @@ import textwrap
 
 import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
 from sg_policy.logging import setup_logging
+from sg_policy.prettyprinter import pretty_print_result_dict
 from sg_policy.status import ExitStatus
 
 from .core import start_policy_evaluation
@@ -110,8 +111,13 @@ def main(args=None) -> ExitStatus:
 
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
-            formatted_result = json.dumps(result, indent=3)
-            print(formatted_result)
+
+            if args.json:
+                formatted_result = json.dumps(result, indent=3)
+                print(formatted_result)
+            else:
+                pretty_print_result_dict(result)
+            return ExitStatus.SUCCESS
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
             if args.json:
