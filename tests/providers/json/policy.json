@@ -1,0 +1,31 @@
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json"
+    },
+    "evaluators": [
+        {
+            "id": "check1",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "a.b"
+            },
+            "condition": {
+                "type": "LessThanEqualTo",
+                "expected": 1
+            }
+        },
+        {
+            "id": "check2",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "c"
+            },
+            "condition": {
+                "type": "ContainedIn",
+                "expected": "aa"
+            }
+        }
+    ],
+    "eval_expression": "check1 && check2"
+}

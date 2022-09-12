@@ -5,36 +5,36 @@
     },
     "evaluators": [
         {
-            "id": "pol_check_1",
+            "id": "check1",
             "provider_args": {
                 "operation_type": "attribute",
-                "terraform_resource_type": "aws_s3_bucket",
-                "terraform_resource_attribute": "versioning.enabled"
+                "terraform_resource_type": "aws_vpc",
+                "terraform_resource_attribute": "instance_tenancy"
             },
             "condition": {
-                "type": "equals",
-                "expected": true
+                "type": "Equals",
+                "expected": "default"
             }
         },
         {
-            "id": "pol_check_11",
+            "id": "check111",
             "provider_args": {
                 "operation_type": "count",
-                "terraform_resource_type": "aws_s3_bucket"
+                "terraform_resource_type": "aws_vpc"
             },
             "condition": {
-                "type": "lt",
+                "type": "GreaterThan",
                 "expected": 10
             }
         },
         {
-            "id": "pol_check_11",
+            "id": "check11",
             "provider_args": {
                 "operation_type": "action",
-                "terraform_resource_type": "aws_s3_bucket"
+                "terraform_resource_type": "aws_vpc"
             },
             "condition": {
-                "type": "contains",
+                "type": "ContainedIn",
                 "expected": [
                     "create",
                     "update"
@@ -42,5 +42,6 @@
             }
         }
     ],
-    "eval_expression": "( ^(pol_check_1 && pol_check_11) && pol_check_2 ) || pol_check_2 "
+    "eval_expression": "(check1 && check11) || check111"
 }
+
