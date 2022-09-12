@@ -28,7 +28,7 @@ logger = logging.getLogger()
 # .. versionadded:: 1.0.0-alpha.1
 
 
-class Contains(BaseEvaluator):
+class ContainedIn(BaseEvaluator):
     def sort_collections(self, input):
         try:
             if isinstance(input, str) or isinstance(input, float) or isinstance(input, int) or isinstance(input, bool):

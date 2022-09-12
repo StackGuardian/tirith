@@ -1,7 +1,7 @@
 from typing import Dict, Type
 
 from .base_evaluator import BaseEvaluator
-from .contains import Contains
+from .contained_in import ContainedIn
 from .equals import Equals
 from .greater_than_equal_to import GreaterThanEqualTo
 from .greater_than import GreaterThan
@@ -12,7 +12,7 @@ from .less_than import LessThan
 from .regex_match import RegexMatch
 
 EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
-    "Contains": Contains,
+    "ContainedIn": ContainedIn,
     "Equals": Equals,
     "GreaterThanEqualTo": GreaterThanEqualTo,
     "GreaterThan": GreaterThan,
