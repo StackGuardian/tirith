@@ -55,7 +55,7 @@ def __getValue(key, data):
             and "data" in data["VCSConfig"]["iacInputData"]
             and key in data["VCSConfig"]["iacInputData"]["data"]
         ):
-            result = data["VCSConfig"]["iacInputData"][data][key]
+            result = data["VCSConfig"]["iacInputData"]["data"][key]
         else:
             raise KeyError(f"{key} not found in input_data")
 
