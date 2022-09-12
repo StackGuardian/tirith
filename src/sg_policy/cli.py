@@ -116,7 +116,7 @@ def main(args=None) -> ExitStatus:
             # TODO:write an exception class for all provider exceptions.
             if args.json:
                 # Print empty JSON
-                print("{}")
+                print("{'errors': %s}".format(str(e)))
             else:
                 logger.exception(e)
                 eprint("ERROR")
