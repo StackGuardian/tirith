@@ -14,7 +14,152 @@
                 "type": "Equals",
                 "expected": true
             }
+        },
+        {
+            "id": "wf_check_2",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "integrationId"
+            },
+            "condition": {
+                "type": "ContainedIn",
+                "expected": "aws-qa"
+            }
+        },
+        {
+            "id": "wf_check_3",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "Description"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": "This is description"
+            }
+        },
+        {
+            "id": "wf_check_4",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "DocVersion"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": "V3.BETA"
+            }
+        },
+        {
+            "id": "wf_check_5",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "ResourceName"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": "sg-workflow-provider"
+
+            }
+        },
+        {
+            "id": "wf_check_6",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "ResourceType"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": "WORKFLOW"
+            }
+        },
+        {
+            "id": "wf_check_7",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "Tags"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": ["213" , "test"]
+            }
+        },
+        {
+            "id": "wf_check_8",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "WfType"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": "TERRAFORM"
+            }
+        },
+        {
+            "id": "wf_check_9",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "approvalPreApply"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": true
+            }
+        },
+        {
+            "id": "wf_check_10",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "driftCheck"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": true
+            }
+        },
+        {
+            "id": "wf_check_11",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "managedTerraformState"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": false
+            }
+        },
+         {
+            "id": "wf_check_12",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "terraformVersion"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": "2.0.0"
+            }
+        },
+        {
+            "id": "wf_check_13",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "s3_bucket_force_destroy"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": false
+            }
+        },
+        {
+            "id": "wf_check_14",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "iacTemplateId"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": "/stackguardian/s3-website:19"
+            }
         }
+
     ],
-    "eval_expression": "wf_check_1"
+    "eval_expression": "wf_check_1 && wf_check_2 && wf_check_3 && wf_check_4 && wf_check_5 && wf_check_6 && wf_check_7 && wf_check_8 && wf_check_9 && wf_check_10 && wf_check_11 && wf_check_12 && wf_check_13 && wf_check_14"
 }

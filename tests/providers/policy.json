@@ -1,33 +1,33 @@
 {
     "meta": {
-        "version": "v1",
-        "required_provider": "stackguardian/infracost"
+        "version": "1.0.0-alpha.1",
+        "required_provider": "infracost"
     },
     "evaluators": [
         {
             "id": "cost_check_1",
             "provider_args": {
-                "operation_type": "total_monthly_cost",
                 "resource_type": [
-                    "aws_s3_bucket" , "aws_ec2"
-                ]
+                    "aws_s3_bucket"
+                ],
+                "costType" : "totalMonthlyCost"
             },
             "condition": {
-                "type": "LessThanEqualTo",
+                "type": "Equals",
                 "expected": 100
             }
         },
         {
             "id": "cost_check_2",
             "provider_args": {
-                "operation_type": "total_hourly_cost",
                 "resource_type": [
-                    "aws_instance"
-                ]
+                    "aws_s3_bucket"
+                ],
+                "costType" : "totalHourlyCost"
             },
             "condition": {
                 "type": "LessThanEqualTo",
-                "expected": -1
+                "expected": 100
             }
         }
     ],
