@@ -20,4 +20,7 @@ def test_evaluate_passing():
 @mark.failing
 def test_evaluate_failing():
     result = evaluator.evaluate(evaluator_input2, evaluator_data2)
-    assert result == {"passed": False, "message": f"{evaluator_input2} is not greater than or equal to {evaluator_data2}"}
+    assert result == {
+        "passed": False,
+        "message": f"{evaluator_input2} is not greater than or equal to {evaluator_data2}",
+    }

@@ -1,28 +1,24 @@
 import json
-
+import os
 import pytest
 
 from sg_policy.providers.terraform_plan import handler
 
 
 def load_terraform_plan_json(json_path):
-    try:
-        with open(json_path, "r") as f:
-            data = json.load(f)
-        return data
-    except Exception:
-        return False
+    with open(f"{os.path.dirname(os.path.abspath(__file__))}/{json_path}", "r") as fp:
+        return json.load(fp)
 
 
-input_data = load_terraform_plan_json('input.json')
+input_data = load_terraform_plan_json("input.json")
 
-provider_inputs_1 = {
+provider_args_1 = {
     "operation_type": "resource_changes",
     "terraform_resource_type": "aws_vpc",
     "terraform_resource_attribute": "enable_dns_hostnames",
 }
 
-provider_inputs_2 = {
+provider_args_2 = {
     "operation_type": "resource_changes",
     "terraform_resource_type": "aws_vpc",
     "terraform_resource_attribute": "enable_dns_support",
@@ -31,7 +27,7 @@ provider_inputs_2 = {
 
 @pytest.mark.passing
 def test_get_attribute_name_passing1():
-    res = handler.provide(provider_inputs_1, input_data)
+    res = handler.provide(provider_args_1, input_data)
     assert res == [
         {
             "value": False,
@@ -79,14 +75,13 @@ def test_get_attribute_name_passing1():
 
 @pytest.mark.passing
 def test_get_attribute_name_passing2():
-    res = handler.provide(provider_inputs_1, input_data)
+    res = handler.provide(provider_args_1, input_data)
     assert res[0]["value"] == False
 
 
 @pytest.mark.passing
 def test_get_attribute_name_passing3():
-    res = handler.provide(provider_inputs_2, input_data)
-    print(res)
+    res = handler.provide(provider_args_2, input_data)
     assert res == [
         {
             "value": True,
@@ -134,12 +129,12 @@ def test_get_attribute_name_passing3():
 
 @pytest.mark.passing
 def test_get_attribute_name_passing4():
-    res = handler.provide(provider_inputs_2, input_data)
+    res = handler.provide(provider_args_2, input_data)
     assert res[0]["value"] == True
 
 
 # actions
-provider_inputs_4 = {
+provider_args_4 = {
     "operation_type": "resource_changes_actions",
     "terraform_resource_type": "aws_vpc",
     "terraform_resource_attribute": "actions",
@@ -148,18 +143,18 @@ provider_inputs_4 = {
 
 @pytest.mark.passing
 def test_get_attribute_name_passing5():
-    res = handler.provide(provider_inputs_4, input_data)
+    res = handler.provide(provider_args_4, input_data)
     assert res[0]["value"] == ["create"]
 
 
 @pytest.mark.failing
 def test_get_attribute_name_failing6():
-    res = handler.provide(provider_inputs_4, input_data)
+    res = handler.provide(provider_args_4, input_data)
     assert res[0]["value"] != ["create"]
 
 
 # count
-provider_inputs_3 = {
+provider_args_3 = {
     "operation_type": "resource_changes_count",
     "terraform_resource_type": "aws_vpc",
     "terraform_resource_attribute": "index",
@@ -168,11 +163,11 @@ provider_inputs_3 = {
 
 @pytest.mark.passing
 def test_get_attribute_name_passing7():
-    res = handler.provide(provider_inputs_3, input_data)
+    res = handler.provide(provider_args_3, input_data)
     assert res[0]["value"] >= 0
 
 
 @pytest.mark.failing
 def test_get_attribute_name_failing8():
-    res = handler.provide(provider_inputs_3, input_data)
+    res = handler.provide(provider_args_3, input_data)
     assert res[0]["value"] == 0

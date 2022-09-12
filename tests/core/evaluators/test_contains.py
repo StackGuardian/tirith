@@ -1,4 +1,4 @@
-from sg_policy.core.evaluators import Contains
+from sg_policy.core.evaluators import ContainedIn
 from pytest import mark
 
 
@@ -13,6 +13,7 @@ checks_passing = [
     ({"a": [{"a": 2}, "d"], "b": 6}, {"b": 6, "a": [{"a": 2}, "d"], "c": 16}),
     ("a", ["a", "b"]),
     ("b", ["a", "b"]),
+    (["b"], ["a", ["b"]]),
 ]
 
 checks_failing = [
@@ -32,7 +33,7 @@ checks_unsupported = [
     (["a"], ["a", "b", "c", "d"]),
 ]
 
-evaluator = Contains()
+evaluator = ContainedIn()
 
 # pytest -v -m passing
 @mark.passing

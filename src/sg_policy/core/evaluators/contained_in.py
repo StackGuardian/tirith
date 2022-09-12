@@ -28,7 +28,7 @@ logger = logging.getLogger()
 # .. versionadded:: 1.0.0-alpha.1
 
 
-class Contains(BaseEvaluator):
+class ContainedIn(BaseEvaluator):
     def sort_collections(self, input):
         try:
             if isinstance(input, str) or isinstance(input, float) or isinstance(input, int) or isinstance(input, bool):
@@ -57,7 +57,7 @@ class Contains(BaseEvaluator):
                 return input
         except Exception as e:
             # TODO: LOG
-            print(e)
+            logger.exception(e)
             return input
 
     def evaluate(self, evaluator_input, evaluator_data):
@@ -78,11 +78,19 @@ class Contains(BaseEvaluator):
                     evaluation_result["passed"] = result
                     if result:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                    else:
+                        evaluation_result["message"] = "Failed to find {} inside {}".format(
+                            evaluator_input, evaluator_data
+                        )
                 else:
                     result = evaluator_input in evaluator_data
                     evaluation_result["passed"] = result
                     if result:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                    else:
+                        evaluation_result["message"] = "Failed to find {} inside {}".format(
+                            evaluator_input, evaluator_data
+                        )
             elif isinstance(evaluator_data, dict):
                 if isinstance(evaluator_input, dict):
                     evaluation_result["passed"] = True
@@ -107,7 +115,9 @@ class Contains(BaseEvaluator):
                     if result:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             else:
-                evaluation_result["message"] = "{} is an unsupported data type for in condition.expected".format(evaluator_data)
+                evaluation_result["message"] = "{} is an unsupported data type for in condition.expected".format(
+                    evaluator_data
+                )
             return evaluation_result
         except Exception as e:
             logger.exception(e)
