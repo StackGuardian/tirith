@@ -1,0 +1,29 @@
+{
+    "meta": {
+        "version": "1.0.0-alpha.1",
+        "required_provider": "sg_workflow"
+    },
+    "evaluators": [
+        {
+            "id": "wf_check_1",
+            "provider_args": {
+                "resource_type": "driftCheck"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": true
+            }
+        },
+        {
+            "id": "wf_check_2",
+            "provider_args": {
+                "resource_type": "useMarketplaceTemplate"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": true
+            }
+        }
+    ],
+    "eval_expression": "wf_check_1 && wf_check_2"
+}
