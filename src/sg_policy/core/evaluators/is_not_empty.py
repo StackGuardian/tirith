@@ -21,7 +21,7 @@ from .base_evaluator import BaseEvaluator
 
 
 class IsNotEmpty(BaseEvaluator):
-    def evaluate(self, evaluator_input, evaluator_data = None):
+    def evaluate(self, evaluator_input, evaluator_data=None):
         input = evaluator_input
         evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
