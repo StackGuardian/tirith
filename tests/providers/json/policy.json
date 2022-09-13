@@ -1,7 +1,7 @@
 {
     "meta": {
         "version": "v1",
-        "required_provider": "json"
+        "required_provider": "stackguardian/json"
     },
     "evaluators": [
         {
@@ -22,7 +22,7 @@
                 "key_path": "c"
             },
             "condition": {
-                "type": "Contains",
+                "type": "ContainedIn",
                 "expected": "aa"
             }
         }
