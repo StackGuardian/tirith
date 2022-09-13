@@ -66,6 +66,6 @@
             }
         }
     ],
-    "eval_expression": "(check1 && check11) && check111"
+    "eval_expression": "check1 && check11 && check111 & check2 & check22"
 }
 
