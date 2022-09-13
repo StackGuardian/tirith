@@ -1,11 +1,11 @@
 import logging
 
-
 # TODO: Add at least __name__ as the name of the logger
 logger = logging.getLogger()
 
 
-def _getValue(key, data):
+def __getValue(key, data):
+    logger.debug(f"Searching {key} in input data")
     result = ""
     if key == "integrationId":
         temp = []
@@ -56,7 +56,7 @@ def _getValue(key, data):
             and "data" in data["VCSConfig"]["iacInputData"]
             and key in data["VCSConfig"]["iacInputData"]["data"]
         ):
-            result = data["VCSConfig"]["iacInputData"][data][key]
+            result = data["VCSConfig"]["iacInputData"]["data"][key]
         else:
             raise KeyError(f"{key} not found in input_data")
 
@@ -66,22 +66,27 @@ def _getValue(key, data):
         else:
             raise KeyError(f"{key} not found in input_data")
 
+    logger.debug(f"Result obtained through __getValue method : {result}")
     return result
 
 
-def provide(provider_inputs, input_data):
+def provide(provider_args, input_data):
+    logger.debug("sg_workflow provider")
+    logger.debug(f"sg_workflow provider inputs : {provider_args}")
     try:
-        if "resource_type" in provider_inputs:
-            resource_type = provider_inputs["resource_type"]
-            if resource_type:
-                result = _getValue(resource_type, input_data)
-                return [{"value": result, "meta": None, "err": None}]
+        if "workflow_attribute" in provider_args:
+            workflow_attribute = provider_args["workflow_attribute"]
+            if workflow_attribute:
+                result = __getValue(workflow_attribute, input_data)
+                output = [{"value": result, "meta": None, "err": None}]
+                return output
         else:
+            logger.debug("workflow_attribute not found in provider_args")
             return [
                 {
                     "value": None,
                     "meta": None,
-                    "err": f"resource_type not found in provider_inputs",
+                    "err": f"workflow_attribute not found in provider_args",
                 }
             ]
     except Exception as e:

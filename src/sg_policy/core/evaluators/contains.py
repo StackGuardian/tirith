@@ -29,61 +29,61 @@ logger = logging.getLogger()
 # .. versionadded:: 1.0.0-alpha.1
 
 
-class ContainedIn(BaseEvaluator):
+class Contains(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data):
         evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
             # if evaluator_input and evaluator_data are both strings
             if isinstance(evaluator_input, str) and isinstance(evaluator_data, str):
-                result = evaluator_input in evaluator_data
+                result = evaluator_data in evaluator_input
                 evaluation_result["passed"] = result
                 if result:
-                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
             # if evaluator_input is a list
-            elif isinstance(evaluator_data, list):
-                evaluator_data = sort_collections(evaluator_data)
-                if isinstance(evaluator_input, list):
-                    evaluator_input = sort_collections(evaluator_input)
-                    result = evaluator_input in evaluator_data
+            elif isinstance(evaluator_input, list):
+                evaluator_input = sort_collections(evaluator_input)
+                if isinstance(evaluator_data, list):
+                    evaluator_data = sort_collections(evaluator_data)
+                    result = evaluator_data in evaluator_input
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
                     else:
                         evaluation_result["message"] = "Failed to find {} inside {}".format(
-                            evaluator_input, evaluator_data
+                            evaluator_data, evaluator_input
                         )
                 else:
-                    result = evaluator_input in evaluator_data
+                    result = evaluator_data in evaluator_input
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
                     else:
                         evaluation_result["message"] = "Failed to find {} inside {}".format(
-                            evaluator_input, evaluator_data
+                            evaluator_data, evaluator_input
                         )
-            elif isinstance(evaluator_data, dict):
-                if isinstance(evaluator_input, dict):
+            elif isinstance(evaluator_input, dict):
+                if isinstance(evaluator_data, dict):
                     evaluation_result["passed"] = True
-                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
-                    for key in evaluator_input:
-                        if key in evaluator_data:
-                            if evaluator_data[key] != evaluator_input[key]:
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
+                    for key in evaluator_data:
+                        if key in evaluator_input:
+                            if evaluator_input[key] != evaluator_data[key]:
                                 evaluation_result["passed"] = False
                                 evaluation_result["message"] = "Failed to find {} inside {}".format(
-                                    evaluator_input, evaluator_data
+                                    evaluator_data, evaluator_input
                                 )
                                 break
                         else:
                             evaluation_result["passed"] = False
                             evaluation_result["message"] = "Failed to find {} inside {}".format(
-                                evaluator_input, evaluator_data
+                                evaluator_data, evaluator_input
                             )
                             break
                 else:
-                    result = evaluator_input in evaluator_data
+                    result = evaluator_data in evaluator_input
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
             else:
                 evaluation_result["message"] = "{} is an unsupported data type for in condition.expected".format(
                     evaluator_data
