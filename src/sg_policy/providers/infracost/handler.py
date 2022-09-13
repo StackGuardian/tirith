@@ -3,12 +3,10 @@ import logging
 # TODO: Add at least __name__ as the name of the logger
 logger = logging.getLogger()
 
+
 def __get_all_costs(operation_type, input_data):
     logger.debug(f"costType :  {operation_type}")
-    pointer = {
-        "total_monthly_cost" : "totalMonthlyCost",
-        "total_hourly_cost" : "totalHourlyCost"
-    }
+    pointer = {"total_monthly_cost": "totalMonthlyCost", "total_hourly_cost": "totalHourlyCost"}
     totalSum = 0
     if "projects" in input_data:
         for project in input_data["projects"]:
@@ -29,10 +27,7 @@ def __get_all_costs(operation_type, input_data):
 
 def __get_resources_costs(resource_type, operation_type, input_data):
     logger.debug(f"costType :  {operation_type}")
-    pointer = {
-        "total_monthly_cost": "totalMonthlyCost",
-        "total_hourly_cost": "totalHourlyCost"
-    }
+    pointer = {"total_monthly_cost": "totalMonthlyCost", "total_hourly_cost": "totalHourlyCost"}
     totalSum = 0
     if "projects" in input_data:
         for project in input_data["projects"]:
