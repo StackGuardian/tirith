@@ -21,7 +21,8 @@ from .base_evaluator import BaseEvaluator
 
 
 class IsEmpty(BaseEvaluator):
-    def evaluate(self, input):
+    def evaluate(self, evaluator_input, evaluator_data = None):
+        input = evaluator_input
         evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
             if (isinstance(input, str) or isinstance(input, list) or isinstance(input, dict)) and not input:
