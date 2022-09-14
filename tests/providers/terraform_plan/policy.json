@@ -40,8 +40,32 @@
                     "update"
                 ]
             }
+        },
+        {
+            "id": "check2",
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_vpc",
+                "terraform_resource_attribute": "intra_acl_tags"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": {}
+            }
+        },
+        {
+            "id": "check22",
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_vpc",
+                "terraform_resource_attribute": "intra_dedicated_network_acl"
+            },
+            "condition": {
+                "type": "Equals",
+                "expected": false
+            }
         }
     ],
-    "eval_expression": "(check1 && check11) || check111"
+    "eval_expression": "check1 && check11 && check111 & check2 & check22"
 }
 
