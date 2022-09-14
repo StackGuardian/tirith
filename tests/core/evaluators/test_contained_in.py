@@ -1,25 +1,25 @@
-from sg_policy.core.evaluators import Contains
+from sg_policy.core.evaluators import ContainedIn
 from pytest import mark
 
 
 checks_passing = [
-    (["a", "b", "c", "d"], "a"),
+    ("a", ["a", "b", "c", "d"]),
     ("a", "a"),
-    ("minura", "a"),
-    ({"a": "val1", "b": "val2"}, "a"),
-    ({"b": 6, "a": 2, "c": 16}, {"a": 2, "b": 6}),
-    ({"b": 6, "a": 2, "c": 16}, {"a": 2}),
-    ({"b": 6, "a": ["a", "d"], "c": 16}, {"a": ["a", "d"], "b": 6}),
-    ({"b": 6, "a": [{"a": 2}, "d"], "c": 16}, {"a": [{"a": 2}, "d"], "b": 6}),
-    (["a", "b"], "a"),
-    (["a", "b"], "b"),
-    (["a", ["b"]], ["b"]),
-    (["a"], "a"),
+    ("a", "minura"),
+    ("a", {"a": "val1", "b": "val2"}),
+    ({"a": 2, "b": 6}, {"b": 6, "a": 2, "c": 16}),
+    ({"a": 2}, {"b": 6, "a": 2, "c": 16}),
+    ({"a": ["a", "d"], "b": 6}, {"b": 6, "a": ["a", "d"], "c": 16}),
+    ({"a": [{"a": 2}, "d"], "b": 6}, {"b": 6, "a": [{"a": 2}, "d"], "c": 16}),
+    ("a", ["a", "b"]),
+    ("b", ["a", "b"]),
+    (["b"], ["a", ["b"]]),
 ]
 
 checks_failing = [
     (["a", "b", "c", "d"], "e"),
     ("e", ["a", "b", "c", "d"]),
+    (["a"], "a"),
     (2, "a"),
     ("3", 3),
     ("c", ["a", "b"]),
@@ -33,7 +33,7 @@ checks_unsupported = [
     (["a"], ["a", "b", "c", "d"]),
 ]
 
-evaluator = Contains()
+evaluator = ContainedIn()
 
 # pytest -v -m passing
 @mark.passing
