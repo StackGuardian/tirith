@@ -3,6 +3,7 @@ import logging
 # TODO: Add at least __name__ as the name of the logger
 logger = logging.getLogger()
 
+
 def __getValue(key, data):
     logger.debug(f"Searching {key} in input data")
     result = ""
