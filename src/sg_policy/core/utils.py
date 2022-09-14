@@ -24,7 +24,7 @@ class Validators:
                 print(str(err))
                 return False
         else:
-            raise Exception("Not a file path.")
+            raise Exception(f"{json_file} is not a file or does not exist.")
             # return False
 
     def validate_policy(self):
