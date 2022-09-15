@@ -10,11 +10,11 @@
                 "resource_type": [
                     "aws_s3_bucket"
                 ],
-                "costType" : "totalMonthlyCost"
+                "costType": "totalMonthlyCost"
             },
             "condition": {
                 "type": "Equals",
-                "expected": 100
+                "value": 100
             }
         },
         {
@@ -23,11 +23,11 @@
                 "resource_type": [
                     "aws_s3_bucket"
                 ],
-                "costType" : "totalHourlyCost"
+                "costType": "totalHourlyCost"
             },
             "condition": {
                 "type": "LessThanEqualTo",
-                "expected": 100
+                "value": 100
             }
         }
     ],

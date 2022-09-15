@@ -11,7 +11,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": true
+                "value": true
             }
         },
         {
@@ -21,7 +21,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": true
+                "value": true
             }
         }
     ],

@@ -13,7 +13,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": "default"
+                "value": "default"
             }
         },
         {
@@ -24,7 +24,7 @@
             },
             "condition": {
                 "type": "GreaterThan",
-                "expected": 10
+                "value": 10
             }
         },
         {
@@ -35,7 +35,7 @@
             },
             "condition": {
                 "type": "ContainedIn",
-                "expected": [
+                "value": [
                     "create",
                     "update"
                 ]
@@ -50,7 +50,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": {}
+                "value": {}
             }
         },
         {
@@ -62,10 +62,9 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": false
+                "value": false
             }
         }
     ],
     "eval_expression": "check1 && check11 && check111 & check2 & check22"
 }
-

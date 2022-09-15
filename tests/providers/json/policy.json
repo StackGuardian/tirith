@@ -12,7 +12,7 @@
             },
             "condition": {
                 "type": "LessThanEqualTo",
-                "expected": 1
+                "value": 1
             }
         },
         {
@@ -23,7 +23,7 @@
             },
             "condition": {
                 "type": "ContainedIn",
-                "expected": "aa"
+                "value": "aa"
             }
         }
     ],
