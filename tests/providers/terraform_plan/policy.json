@@ -18,6 +18,7 @@
         },
         {
             "id": "check111",
+            "description": "check count of aws_vpc",
             "provider_args": {
                 "operation_type": "count",
                 "terraform_resource_type": "aws_vpc"
