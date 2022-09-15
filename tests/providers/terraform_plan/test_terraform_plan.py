@@ -41,22 +41,25 @@ provider_args_4 = {
 }
 
 
-# If the value of the attribute "enable_dns_hostnames" is given false, the test case should pass, otherwise fail case should pass 
+# If the value of the attribute "enable_dns_hostnames" is given false, the test case should pass, otherwise fail case should pass
 @pytest.mark.passing
 def test_awsvpc_attribute_status_pass():
     res = handler.provide(provider_args_1, input_data)
     assert res[0]["value"] == False
 
+
 def test_awsvpc_attribute_status_fail():
     res = handler.provide(provider_args_1, input_data)
-    assert res[0]["value"] != True 
+    assert res[0]["value"] != True
+
 
 # input_data
-# If the value of the attribute "enable_dns_support" is expected to be True, then the pass test test case should be considered or else the fail case should be considered  
+# If the value of the attribute "enable_dns_support" is expected to be True, then the pass test test case should be considered or else the fail case should be considered
 @pytest.mark.passing
 def test_awsvpc_attribute_status_pass():
-    res = handler.provide(provider_args_2, )
+    res = handler.provide(provider_args_2, input_data)
     assert res[0]["value"] == True
+
 
 @pytest.mark.failing
 def test_awsvpc_attribute_status_fail():
@@ -68,14 +71,13 @@ def test_awsvpc_attribute_status_fail():
 @pytest.mark.passing
 def test_awsvpc_actions_pass():
     res = handler.provide(provider_args_4, input_data)
-    assert bool(res[0]["value"] == 'create') == True
+    assert bool(res[0]["value"] == "create") == True
 
 
 @pytest.mark.failing
 def test_awsvpc_actions_fail():
     res = handler.provide(provider_args_4, input_data)
-    assert bool(res[0]["value"] != 'create') == False # output to be False
-
+    assert bool(res[0]["value"] != "create") == False  # output to be False
 
 
 # If the count of the resources matches with what user expects, then the pass test caset to be considered and if not then the fail test case to be considered
@@ -83,6 +85,7 @@ def test_awsvpc_actions_fail():
 def test_count_value_passing():
     res = handler.provide(provider_args_3, input_data)
     assert res[0]["value"] > 0
+
 
 @pytest.mark.failing
 def test_count_value_failing():
