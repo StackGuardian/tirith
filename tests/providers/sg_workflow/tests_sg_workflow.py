@@ -31,12 +31,12 @@ provider_args_1 = {
     "workflow_attribute": "ResourceType",
 }
 
-def test_ResourceType_pass():
+def test_resource_type_pass():
     res = handler.provide(provider_args_1,input_data)
     assert bool(res[0]["value"] == "WORKFLOW") == True
 
 
-def test_ResourceType_fail():
+def test_resource_type_fail():
     res = handler.provide(provider_args_1,input_data)
     assert bool(res[0]["value"] != "WORKFLOW") == False
 
@@ -46,12 +46,12 @@ provider_args_2 = {
     "workflow_attribute": "WfType",
 }
 
-def test_WfType_pass():
+def test_wftype_pass():
     res = handler.provide(provider_args_2,input_data)
     assert bool(res[0]["value"] == "TERRAFORM") == True
 
 
-def test_WfType_fail():
+def test_wftype_fail():
     res = handler.provide(provider_args_2,input_data)
     assert bool(res[0]["value"] != "TERRAFORM") == False
 
@@ -61,38 +61,38 @@ provider_args_3 = {
     "workflow_attribute": "approvalPreApply",
 }
 
-def test_approvalPreApply_pass():
+def test_approval_pre_apply_pass():
     res = handler.provide(provider_args_3,input_data)
     assert bool(res[0]["value"] == True) == True
 
 
-def test_approvalPreApply_fail():
+def test_approval_pre_apply_fail():
     res = handler.provide(provider_args_3,input_data)
     assert bool(res[0]["value"] != True) == False
 
-#condition comeing false means value is true: test pass; not so test fail
+#condition coming false means value is true therefore test pass, not so test fail
 
 #----------------------------------------------------------------------------- 
 provider_args_4 = {
     "workflow_attribute": "driftCheck",
 }
-def test_driftCheck_pass():
+def test_drift_check_pass():
     res = handler.provide(provider_args_4,input_data)
     assert bool(res[0]["value"] == False) == True
 
 
-def test_driftCheck_fail():
+def test_drift_check_fail():
     res = handler.provide(provider_args_4,input_data)
     assert bool(res[0]["value"] == True) == False
 #----------------------------------------------------------------------------- 
 provider_args_5 = {
     "workflow_attribute": "managedTerraformState",
 }
-def test_managedTerraformState_pass():
+def test_managed_terraform_state_pass():
     res = handler.provide(provider_args_5,input_data)
     assert bool(res[0]["value"] == True) == True
 
-def test_managedTerraformState_fail():
+def test_managed_terraform_state_fail():
     res = handler.provide(provider_args_5,input_data)
     assert bool(res[0]["value"] != True) == False
 
@@ -187,12 +187,12 @@ provider_args_14 = {
     "workflow_attribute": "useMarketplaceTemplate",
 }
 
-def test_useMarketplaceTemplate_passing():
+def test_use_marketplace_template_passing():
     res = handler.provide(provider_args_14,input_data)
     assert bool(res[0]["value"] == True) == True
 
 
-def test_useMarketplaceTemplate_failing():
+def test_use_marketplace_template_failing():
     res = handler.provide(provider_args_14,input_data)
     assert bool(res[0]["value"] != True) == False
 
