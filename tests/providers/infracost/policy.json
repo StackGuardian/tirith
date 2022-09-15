@@ -9,12 +9,13 @@
             "provider_args": {
                 "operation_type": "total_monthly_cost",
                 "resource_type": [
-                    "aws_s3_bucket" , "aws_ec2"
+                    "aws_s3_bucket",
+                    "aws_ec2"
                 ]
             },
             "condition": {
                 "type": "LessThanEqualTo",
-                "expected": 100
+                "value": 100
             }
         },
         {
@@ -27,7 +28,7 @@
             },
             "condition": {
                 "type": "LessThanEqualTo",
-                "expected": -1
+                "value": -1
             }
         }
     ],

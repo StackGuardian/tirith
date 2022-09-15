@@ -85,7 +85,7 @@ class ContainedIn(BaseEvaluator):
                     if result:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             else:
-                evaluation_result["message"] = "{} is an unsupported data type for in condition.expected".format(
+                evaluation_result["message"] = "{} is an unsupported data type for in condition.value".format(
                     evaluator_data
                 )
             return evaluation_result

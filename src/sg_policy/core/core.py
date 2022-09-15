@@ -26,7 +26,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     provider_inputs = evaluator_obj.get("provider_args")
     condition = evaluator_obj.get("condition")
     evaluator_name: str = condition.get("type")
-    evaluator_data = condition.get("expected")
+    evaluator_data = condition.get("value")
 
     if not condition:
         logger.error("condition key is not supplied.")

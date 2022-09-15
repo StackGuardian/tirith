@@ -12,7 +12,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": true
+                "value": true
             }
         },
         {
@@ -23,7 +23,7 @@
             },
             "condition": {
                 "type": "ContainedIn",
-                "expected": "aws-qa"
+                "value": "aws-qa"
             }
         },
         {
@@ -34,7 +34,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": "This is description"
+                "value": "This is description"
             }
         },
         {
@@ -45,7 +45,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": "V3.BETA"
+                "value": "V3.BETA"
             }
         },
         {
@@ -56,8 +56,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": "sg-workflow-provider"
-
+                "value": "sg-workflow-provider"
             }
         },
         {
@@ -68,7 +67,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": "WORKFLOW"
+                "value": "WORKFLOW"
             }
         },
         {
@@ -79,7 +78,10 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": ["213" , "test"]
+                "value": [
+                    "213",
+                    "test"
+                ]
             }
         },
         {
@@ -90,7 +92,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": "TERRAFORM"
+                "value": "TERRAFORM"
             }
         },
         {
@@ -101,7 +103,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": true
+                "value": true
             }
         },
         {
@@ -112,7 +114,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": true
+                "value": true
             }
         },
         {
@@ -123,10 +125,10 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": false
+                "value": false
             }
         },
-         {
+        {
             "id": "wf_check_12",
             "provider_args": {
                 "operation_type": "attribute",
@@ -134,7 +136,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": "2.0.0"
+                "value": "2.0.0"
             }
         },
         {
@@ -145,7 +147,7 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": false
+                "value": false
             }
         },
         {
@@ -156,10 +158,9 @@
             },
             "condition": {
                 "type": "Equals",
-                "expected": "/stackguardian/s3-website:19"
+                "value": "/stackguardian/s3-website:19"
             }
         }
-
     ],
     "eval_expression": "wf_check_1 && wf_check_2 && wf_check_3 && wf_check_4 && wf_check_5 && wf_check_6 && wf_check_7 && wf_check_8 && wf_check_9 && wf_check_10 && wf_check_11 && wf_check_12 && wf_check_13 && wf_check_14"
 }
