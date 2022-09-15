@@ -87,11 +87,11 @@ def provide(provider_inputs, input_data):
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
                 resource_meta = resource_change
-                count = max(count, resource_change["index"])
+                count = +1
 
         outputs.append(
             {
-                "value": count + 1,
+                "value": count,
                 "meta": resource_meta,
                 "err": None,
             }
