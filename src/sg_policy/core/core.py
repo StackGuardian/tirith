@@ -54,6 +54,9 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         evaluation_results.append(evaluation_result)
         if not evaluation_result["passed"]:
             has_evaluation_passed = False
+    if not evaluation_results:
+        has_evaluation_passed = False
+        evaluation_results = [{"passed": False, "message": "Could not find input value"}]
     result["result"] = evaluation_results
     result["passed"] = has_evaluation_passed
     return result
