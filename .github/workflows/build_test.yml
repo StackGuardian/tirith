@@ -1,0 +1,21 @@
+name: Build & test
+
+on: [push]
+
+jobs:
+  run_test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+    name: Run unittests
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        cache-dependency-path: Pipfile.lock
+    - run: pip install . && pip install pipenv && pipenv install
+    - run: pytest
+
