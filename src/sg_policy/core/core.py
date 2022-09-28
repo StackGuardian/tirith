@@ -49,6 +49,13 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     has_evaluation_passed = True
 
     for evaluator_input in evaluator_inputs:
+        if evaluator_input["value"] is None and evaluator_input.get("err", None):
+            # Skip the evaluation
+            skip_result = {"passed": None, "message": evaluator_input["err"]}
+            evaluation_results.append(skip_result)
+            has_evaluation_passed = None
+            continue
+
         evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
         evaluation_result["meta"] = evaluator_input.get("meta")
         evaluation_results.append(evaluation_result)
@@ -67,6 +74,10 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, bool]) -> bool:
     Evaluate a given boolean expression string `eval_string` based on the boolean
     values provided by `eval_id_values`.
 
+    Variable that has the value of `None` (we use it to mark a check as skipped) will
+    be replaced with `True`. This is due to the truthy value of None equals to False
+    which will interfere with the final evaluation result.
+
     Example usage:
     >>> final_evaluator("(!(pol_check_1  &&  pol_check_2)  && pol_check_3 ) && pol_check_4", {
         "pol_check_1":False,
@@ -77,6 +88,10 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, bool]) -> bool:
     """
     logger.debug("Running final evaluator")
     for key in eval_id_values:
+        if eval_id_values[key] is None:
+            # Replace None with True when there's a skipped check
+            eval_id_values[key] = True
+
         regex_string = "\\b" + key + "\\b"
         eval_string = re.sub(regex_string, str(eval_id_values[key]), eval_string)
         # eval_string = eval_string.replace(key, str(eval_id_values[key]["passed"]))
