@@ -45,12 +45,20 @@ class TermStyle:
         return TermStyle.str_with_style(message, TermStyle.LIGHT_GREEN + TermStyle.BOLD)
 
     @staticmethod
+    def skipped(message: str) -> str:
+        return TermStyle.str_with_style(message, TermStyle.GREY + TermStyle.BOLD)
+
+    @staticmethod
     def fail(message: str) -> str:
         return TermStyle.str_with_style(message, TermStyle.BRIGHT_RED + TermStyle.BOLD)
 
     @staticmethod
     def warning(message: str) -> str:
         return TermStyle.str_with_style(message, TermStyle.YELLOW + TermStyle.BOLD)
+
+    @staticmethod
+    def grey(message: str) -> str:
+        return TermStyle.str_with_style(message, TermStyle.GREY)
 
     @staticmethod
     def green(message: str) -> str:
@@ -71,6 +79,7 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
     checks = final_result_dict["evaluators"]
     num_passed_checks = 0
     num_failed_checks = 0
+    num_skipped_checks = 0
 
     for check_dict in checks:
         check_id = check_dict["id"]
@@ -79,6 +88,10 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
             print(TermStyle.success(f"Check: {check_id}"))
             print(f"  {TermStyle.success('PASSED')}")
             num_passed_checks += 1
+        elif check_dict["passed"] is None:
+            print(TermStyle.skipped(f"Check: {check_id}"))
+            print(f"  {TermStyle.skipped('SKIPPED')}")
+            num_skipped_checks += 1
         else:
             print(TermStyle.fail(f"Check: {check_id}"))
             print(f"  {TermStyle.fail('FAILED')}")
@@ -89,12 +102,16 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
             result_message = result_dict["message"]
             if result_dict["passed"]:
                 print(TermStyle.green(f"    {result_num+1}. PASSED: {result_message}"))
+            elif check_dict["passed"] is None:
+                print(TermStyle.grey(f"    {result_num+1}. SKIPPED: {result_message}"))
             else:
                 print(TermStyle.red(f"    {result_num+1}. FAILED: {result_message}"))
         print()
 
-    print(f"Passed: {num_passed_checks} Failed: {num_failed_checks}")
+    print(f"Passed: {num_passed_checks} Failed: {num_failed_checks} Skipped: {num_skipped_checks}")
     if final_result_dict["final_result"]:
         print(TermStyle.success("✔ Passed final evaluator"))
+    elif final_result_dict["final_result"] is None:
+        print(TermStyle.skipped("= Skipped final evaluator"))
     else:
         print(TermStyle.fail("✘ Not passed final evaluator"))

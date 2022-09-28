@@ -43,11 +43,15 @@ def provide(provider_inputs, input_data):
         attribute = provider_inputs["terraform_resource_attribute"]
         resource_type = provider_inputs["terraform_resource_type"]
 
+        is_resource_found = False
+        is_attribute_found = False
+
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
+                is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
                 if attribute in input_resource_change_attrs:
-                    # attribute key found in the changes
+                    is_attribute_found = True
                     outputs.append(
                         {
                             "value": input_resource_change_attrs[attribute],
@@ -57,8 +61,25 @@ def provide(provider_inputs, input_data):
                     )
                 elif "." in attribute or "*" in attribute:
                     evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
+                    if evaluated_outputs:
+                        is_attribute_found = True
                     for evaluated_output in evaluated_outputs:
                         outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
+        if not outputs:
+            if not is_resource_found:
+                outputs.append(
+                    {
+                        "value": None,
+                        "err": f"resource_type: '{resource_type}' is not found",
+                    }
+                )
+            if not is_attribute_found:
+                outputs.append(
+                    {
+                        "value": None,
+                        "err": f"attribute: '{attribute}' is not found",
+                    }
+                )
 
         return outputs
     # CASE 2
@@ -68,6 +89,7 @@ def provide(provider_inputs, input_data):
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
+                # TODO: Send err result to core when there's no matching resource_type
                 for action in resource_change["change"]["actions"]:
                     outputs.append(
                         {
@@ -86,6 +108,7 @@ def provide(provider_inputs, input_data):
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
+                # TODO: Send err result to core when there's no matching resource_type
                 resource_meta = resource_change
                 count = +1
 
