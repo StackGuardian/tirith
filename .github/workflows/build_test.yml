@@ -16,6 +16,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
         cache-dependency-path: Pipfile.lock
-    - run: pip install . && pip install pipenv && pipenv install
+    - run: pip install . && pip install pipenv && pipenv install --system -d
     - run: pytest
 
