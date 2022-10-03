@@ -1,4 +1,4 @@
-from sg_policy.core.evaluators import RegexMatch
+from tirith.core.evaluators import RegexMatch
 from pytest import mark
 
 evaluator_data1 = "^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"

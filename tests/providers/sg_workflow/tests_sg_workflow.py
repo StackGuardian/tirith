@@ -2,7 +2,7 @@ import json
 import os
 import pytest
 
-from sg_policy.providers.sg_workflow import handler
+from tirith.providers.sg_workflow import handler
 
 
 def load_terraform_plan_json(json_path):
@@ -15,7 +15,7 @@ import json
 import os
 import pytest
 
-from sg_policy.providers.sg_workflow import handler
+from tirith.providers.sg_workflow import handler
 
 
 def load_sg_workflow_plan_json(json_path):

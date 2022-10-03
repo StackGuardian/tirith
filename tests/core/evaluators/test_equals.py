@@ -1,4 +1,4 @@
-from sg_policy.core.evaluators import Equals
+from tirith.core.evaluators import Equals
 from pytest import mark
 
 checks_passing = [({1, 2, 3, 4}, {1, 2, 3, 4}), ([2, 4, 3], [2, 3, 4])]

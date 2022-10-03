@@ -1,5 +1,5 @@
 """
-sg_policy: Execute policies defined using StackGuardian Policy Framework
+tirith: Execute policies defined using Tirith (StackGuardian Policy Framework)
 """
 
 __version__ = "1.0.0-alpha.1"
