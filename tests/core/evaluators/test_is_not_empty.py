@@ -1,4 +1,4 @@
-from sg_policy.core.evaluators import IsNotEmpty
+from tirith.core.evaluators import IsNotEmpty
 from pytest import mark
 
 evaluator_input1 = "abc"

@@ -1,4 +1,4 @@
-from sg_policy.providers.terraform_plan import handler
+from tirith.providers.terraform_plan import handler
 from pytest import mark
 
 checks_passing = [

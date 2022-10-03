@@ -1,4 +1,4 @@
-from sg_policy.core.evaluators import LessThan
+from tirith.core.evaluators import LessThan
 from pytest import mark
 
 evaluator_input1 = 5

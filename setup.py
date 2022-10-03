@@ -21,10 +21,10 @@ def read(*names, **kwargs):
 
 
 setup(
-    name="sg_policy",
+    name="tirith",
     version="1.0.0-alpha.1",
     license="Apache",
-    description="StackGuardian Policy Framework simplifies defining Policy as Code.",
+    description="Tirith simplifies defining Policy as Code.",
     long_description_content_type="text/markdown",
     long_description="%s\n%s"
     % (
@@ -33,7 +33,7 @@ setup(
     ),
     author="StackGuardian",
     author_email="team@stackguardian.io",
-    url="https://github.com/stackguardian/policy-framework",
+    url="https://github.com/stackguardian/tirith",
     packages=find_packages("src"),
     package_dir={"": "src"},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
@@ -64,8 +64,8 @@ setup(
         "Topic :: System",
     ],
     project_urls={
-        "Changelog": "https://github.com/stackguardian/policy-framework/blob/main/CHANGELOG.md",
-        "Issue Tracker": "https://github.com/stackguardian/policy-framework/issues",
+        "Changelog": "https://github.com/stackguardian/tirith/blob/main/CHANGELOG.md",
+        "Issue Tracker": "https://github.com/stackguardian/tirith/issues",
     },
     keywords=["iac", "policy", "terraform", "policy as code"],
     python_requires=">=3.8.*",
@@ -80,7 +80,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "sg_policy=sg_policy.__main__:main",
+            "tirith=tirith.__main__:main",
         ]
     },
 )
