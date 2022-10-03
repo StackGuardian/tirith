@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Entrypoint module when invoked like `python -m sg_policy`.
+Entrypoint module when invoked like `python -m tirith`.
 """
 import sys
 
@@ -11,7 +11,7 @@ def main():
 
         exit_status = main()
     except KeyboardInterrupt:
-        from sg_policy.status import ExitStatus
+        from tirith.status import ExitStatus
 
         exit_status = ExitStatus.ERROR_CTRL_C
 
