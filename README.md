@@ -3,13 +3,13 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=alert_status&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=sqale_rating&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
 
-# StackGuardian Policy Framework
+# Tirith (StackGuardian Policy Framework)
 
 ## A call for contributors
 
 We are calling for contributors to help build out new features, review pull requests, fix bugs, and maintain overall code quality. If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
 
-StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using JSON.
+Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using JSON.
 
 ## Content
 
@@ -36,7 +36,7 @@ StackGuardian Policy Framework scans declarative Infrastructure as Code (IaC) co
 
 ## Feature Road-map
 
-This is only a list of approved features that will be included in the StackGuardian Policy Framework over the next few months.
+This is only a list of approved features that will be included in Tirith over the next few months.
 
 - Support for CloudFormation config scanning
 - Support for ARM config scanning
@@ -76,24 +76,24 @@ And leave the rest to us!!!
 
 ### Getting an issue assigned
 
-Go to the <a href="https://github.com/StackGuardian/policy-framework">StackGuardian Policy Framework Repository</a> and in the <a href="https://github.com/stackguardian/policy-framework/issues">issues</a> tab describe any bug or feature you want to add. If found relevant, the maintainers will assign the issue to you and you may start working on it as mentioned in the next section.
+Go to the <a href="https://github.com/StackGuardian/tirith">Tirith Repository</a> and in the <a href="https://github.com/stackguardian/tirith/issues">issues</a> tab describe any bug or feature you want to add. If found relevant, the maintainers will assign the issue to you and you may start working on it as mentioned in the next section.
 
 <p>The kinds of issues a contributor can open:</p>
  <ul>
 	<li>Report Bugs</li>
 	<li>Feature Enhancement</li>
-	<li>If any "help" is needed with the policy framework</li>
+	<li>If any "help" is needed with using Tirith</li>
  </ul>
 
 ### A bug report
 
-Head over to the <a href="https://github.com/StackGuardian/policy-framework">StackGuardian Policy Framework Repository</a> and in the <a href="https://github.com/stackguardian/policy-framework/issues">issues</a> tab describe the bug you encountered and we will be happy to take a look into it.
+Head over to the <a href="https://github.com/StackGuardian/tirith">Tirith repository</a> and in the <a href="https://github.com/stackguardian/tirith/issues">issues</a> tab describe the bug you encountered and we will be happy to take a look into it.
 
 ### Opening a Pull Request and getting it merged?
 
-1.  Go to the <a href ="https://github.com/StackGuardian/policy-framework">repository</a> and fork it.
+1.  Go to the <a href ="https://github.com/StackGuardian/tirith">repository</a> and fork it.
 2.  Clone the repository in your local machine.
-3.  Open your terminal and `cd policy-framework`
+3.  Open your terminal and `cd tirith`
 4.  Create your own branch to work on the changes you intend to perform. For e.g. if you want some changes or bug fix to any function in the evaluators, name your branch with something relevant like, `git branch bug-fix-equals-evaluator`
 5.  After necessary changes, `git push --set-upstream origin bug-fix-equals-evaluator`, `git checkout main` and `git merge bug-fix-equals-evaluator` or use the GUI to create a "Pull Request" after pushing it in the respective branch.
 6.  A review request will be sent to the repository maintainers and your changes will be merged if found relevant.

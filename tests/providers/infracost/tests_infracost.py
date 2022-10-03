@@ -2,7 +2,7 @@ import json
 import os
 import pytest
 
-from sg_policy.providers.infracost import handler
+from tirith.providers.infracost import handler
 
 
 def load_terraform_plan_json(json_path):

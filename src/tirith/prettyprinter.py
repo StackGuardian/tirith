@@ -114,4 +114,4 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
     elif final_result_dict["final_result"] is None:
         print(TermStyle.skipped("= Skipped final evaluator"))
     else:
-        print(TermStyle.fail("✘ Not passed final evaluator"))
+        print(TermStyle.fail("✘ Failed final evaluation"))

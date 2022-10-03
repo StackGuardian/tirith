@@ -1,4 +1,4 @@
-from sg_policy.core.evaluators import ContainedIn
+from tirith.core.evaluators import ContainedIn
 from pytest import mark
 
 

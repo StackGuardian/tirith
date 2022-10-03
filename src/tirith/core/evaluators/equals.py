@@ -1,7 +1,7 @@
 import logging
 
 from .base_evaluator import BaseEvaluator
-from sg_policy.utils import sort_collections
+from tirith.utils import sort_collections
 
 # TODO: Use __name__ for the logger name instead of using the root logger
 logger = logging.getLogger()

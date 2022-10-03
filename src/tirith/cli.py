@@ -8,10 +8,10 @@ import logging
 import sys
 import textwrap
 
-import sg_policy.providers.terraform_plan.handler as python_tf_plan_handler
-from sg_policy.logging import setup_logging
-from sg_policy.prettyprinter import pretty_print_result_dict
-from sg_policy.status import ExitStatus
+import tirith.providers.terraform_plan.handler as python_tf_plan_handler
+from tirith.logging import setup_logging
+from tirith.prettyprinter import pretty_print_result_dict
+from tirith.status import ExitStatus
 
 from .core import start_policy_evaluation
 
@@ -43,19 +43,19 @@ def main(args=None) -> ExitStatus:
                 super().__init__(prog, max_help_position=300)
 
         parser = argparse.ArgumentParser(
-            description="StackGuardian Policy Framework.",
+            description="Tirith (StackGuardian Policy Framework)",
             formatter_class=_WidthFormatter,
             epilog=textwrap.dedent(
                 """\
-         About StackGuardian Policy Framework:
+         About Tirith:
          
-                                * Abstract away the implementation complexity of policy engine underneath.
-                                * Simplify creation of declarative policies that are easy to read and interpret.
-                                * Provide a standard framework for scanning various configurations with granularity.
-                                * Provide modularity to enable easy extensibility
-                                * Github - https://github.com/StackGuardian/policy-framework
-                                * Docs - https://docs.stackguardian.io/docs/policy-framework/overview
-         """
+            * Abstract away the implementation complexity of policy engine underneath.
+            * Simplify creation of declarative policies that are easy to read and interpret.
+            * Provide a standard framework for scanning various configurations with granularity.
+            * Provide modularity to enable easy extensibility
+            * Github - https://github.com/StackGuardian/tirith
+            * Docs - https://docs.stackguardian.io/docs/tirith/overview
+        """
             ),
         )
         parser.add_argument(
@@ -63,7 +63,7 @@ def main(args=None) -> ExitStatus:
             metavar="PATH",
             type=str,
             dest="policyPath",
-            help="Path containing policy defined using StackGuardian Policy Framework",
+            help="Path containing Tirith policy as code",
         )
         parser.add_argument(
             "-input-path",
