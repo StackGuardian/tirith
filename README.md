@@ -13,10 +13,11 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 
 ## Content
 
-- [Features](#features)
 <!-- - [Feature Road-Map](#feature-road-map) -->
-- [How to use it?](#how-to-use-it)
 <!-- - [Local Development Environment](#local-development-environment) -->
+- [Features](#features)
+- [Usage](#usage)
+- [Example Tirith policies](#example-tirith-policies)
 - [Want to contribute?](#want-to-contribute)
   - [Getting an issue assigned](#getting-an-issue-assigned)
   - [A bug report](#a-bug-report)
@@ -40,7 +41,7 @@ This is only a list of approved features that will be included in Tirith over th
 - Support for Cloudformation and ARM
 - Extended library of evaluator functions -->
 
-## How to use it?
+## Usage
 ```
 usage: tirith [-h] [-policy-path PATH] [-input-path SOURCE-TYPE] [--json] [--verbose] [--version]
 
@@ -53,6 +54,101 @@ optional arguments:
   --json                   Only print the result in JSON form (useful for passing output to other programs)
   --verbose                Show detailed logs of from the run
   --version                show program's version number and exit
+```
+
+## Example Tirith policies
+
+[Examples using various providers](tests/providers)
+
+1. VPC and EC2 instance policy (using Terraform plan provider)
+- AWS VPC instance_tenancy is "default"
+- EC2 instance cannot be destroyed
+
+```json
+{
+  "meta": {
+    "required_provider": "stackguardian/terraform_plan",
+    "version": "v1"
+  },
+  "evaluators": [
+    {
+      "id": "check2",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_vpc",
+        "terraform_resource_attribute": "instance_tenancy"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "default"
+      }
+    },
+    {
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_instance"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": ["destroy"]
+      },
+      "id": "destroy_ec2"
+    }
+  ],
+  "eval_expression": "check_ec2_tags_are_present && !destroy_ec2"
+}
+```
+
+2. Cost control policy (using Terraform plan provider)
+- EC2 instance cost is lower than 100 USD per month
+
+```json
+{
+  "meta": {
+    "required_provider": "stackguardian/infracost",
+    "version": "v1"
+  },
+  "evaluators": [
+    {
+      "provider_args": {
+        "operation_type": "total_monthly_cost",
+        "resource_type": ["aws_ec2"]
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 100
+      },
+      "id": "ec2_cost_below_100_per_month"
+    }
+  ],
+  "eval_expression": "ec2_cost_below_100_per_month"
+}
+```
+
+3. StackGuardian Workflow Policy (using Terraform plan provider)
+- Terraform Workflow should require an approval to create or destroy resources
+
+```json
+{
+  "meta": {
+    "required_provider": "stackguardian/sg_workflow",
+    "version": "v1"
+  },
+  "evaluators": [
+    {
+      "provider_args": {
+        "operation_type": "attribute",
+        "workflow_attribute": "approvalPreApply"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      },
+      "id": "require_approval_before_creating_ec2"
+    }
+  ],
+  "eval_expression": "require_approval_before_creating_ec2"
+}
 ```
 
 <!-- ## Local Development Environment
