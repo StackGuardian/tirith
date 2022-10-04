@@ -14,9 +14,9 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 ## Content
 
 - [Features](#features)
-- [Feature Road-Map](#feature-road-map)
+<!-- - [Feature Road-Map](#feature-road-map) -->
 - [How to use it?](#how-to-use-it)
-- [Local Development Environment](#local-development-environment)
+<!-- - [Local Development Environment](#local-development-environment) -->
 - [Want to contribute?](#want-to-contribute)
   - [Getting an issue assigned](#getting-an-issue-assigned)
   - [A bug report](#a-bug-report)
@@ -27,30 +27,38 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 
 ## Features
 
-- A simple interface to define compliance policies as declarative config, which can be enforced proactively on Infrastructure as Code to detect breaches.
-- Pluggable architecture allows to integrate into policy engines like OPA for policy evaluation.
-- Summarizes evaluation output and provides brief output formatting.
-- Cli support with data and input as arguments.
-- Very easy to use.
-- Works on Mac, Linux and Windows.
+- An easy to read and simple way to define policy as code against structured formats.
+- Use providers to define policies for terraform plan, infracost or any abstract JSON.
+- Easily evaluate inputs against policy using pre-defined evaluators like ContainedIn, Equals, RegexMatch etc.
+- Write your own provider (plugin) by leveraging a highly extensible and pluggable architecture to support any input formats.
 
-## Feature Road-map
+<!-- ## Feature Road-map
 
-This is only a list of approved features that will be included in Tirith over the next few months.
+This is only a list of approved features that will be included in Tirith over the next iterations.
 
-- Support for CloudFormation config scanning
-- Support for ARM config scanning
-- Extended library of evaluator functions
+- Extended support for Terraform Plan
+- Support for Cloudformation and ARM
+- Extended library of evaluator functions -->
 
 ## How to use it?
+```
+usage: tirith [-h] [-policy-path PATH] [-input-path SOURCE-TYPE] [--json] [--verbose] [--version]
 
-## Local Development Environment
+Tirith (StackGuardian Policy Framework)
 
-- Any operating system is supported(Windows, Mac, or Linux).
+optional arguments:
+  -h, --help               show this help message and exit
+  -policy-path PATH        Path containing Tirith policy as code
+  -input-path SOURCE-TYPE  Input file path
+  --json                   Only print the result in JSON form (useful for passing output to other programs)
+  --verbose                Show detailed logs of from the run
+  --version                show program's version number and exit
+```
+
+<!-- ## Local Development Environment
+
 - [Python 3.6 or higher](https://www.python.org/downloads/) is required.
-- [pip](https://pip.pypa.io/en/stable/) is required.
-
-And leave the rest to us!!!
+- [pip](https://pip.pypa.io/en/stable/) is required. -->
 
 <!-- ## Publish Package on test.pypi.org
 * Use the following command to install the latest version of the setuptools package.
@@ -73,6 +81,8 @@ And leave the rest to us!!!
   ``` -->
 
 ## Want to contribute?
+
+If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
 
 ### Getting an issue assigned
 
