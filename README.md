@@ -72,7 +72,7 @@ optional arguments:
   },
   "evaluators": [
     {
-      "id": "check2",
+      "id": "check_ec2_tags_are_present",
       "provider_args": {
         "operation_type": "attribute",
         "terraform_resource_type": "aws_vpc",
@@ -99,7 +99,7 @@ optional arguments:
 }
 ```
 
-2. Cost control policy (using Terraform plan provider)
+2. Cost control policy (using Infracost provider)
 - EC2 instance cost is lower than 100 USD per month
 
 ```json
@@ -125,7 +125,7 @@ optional arguments:
 }
 ```
 
-3. StackGuardian Workflow Policy (using Terraform plan provider)
+3. StackGuardian Workflow Policy (using SG workflow provider)
 - Terraform Workflow should require an approval to create or destroy resources
 
 ```json
