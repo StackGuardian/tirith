@@ -156,7 +156,7 @@
                 "full_name": "registry.terraform.io/hashicorp/aws",
                 "expressions": {
                     "access_key": {
-                        "constant_value": "AKIA2jhaebkaejkf"
+                        "constant_value": "AKIA2jhaebkeaejkf"
                     },
                     "region": {
                         "constant_value": "us-east-1"
