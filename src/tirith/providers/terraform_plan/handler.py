@@ -3,6 +3,10 @@
 import pydash
 
 
+class PydashPathNotFound:
+    pass
+
+
 def _wrapper_get_exp_attribute(attribute, input_resource_change_attrs):
     splitted_attribute = attribute.split(".*.")
     return _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
@@ -12,19 +16,18 @@ def _get_exp_attribute(split_expressions, input_data):
     # split_expressions=expression.split('*')
     final_data = []
     for i, expression in enumerate(split_expressions):
-        intermediate_val = pydash.get(input_data, expression)
-        # print(intermediate_val)
+        intermediate_val = pydash.get(input_data, expression, default=PydashPathNotFound)
         if isinstance(intermediate_val, list) and i < len(split_expressions) - 1:
             for val in intermediate_val:
                 final_attributes = _get_exp_attribute(split_expressions[1:], val)
                 for final_attribute in final_attributes:
                     final_data.append(final_attribute)
-        elif i == len(split_expressions) - 1 and intermediate_val:
+        elif i == len(split_expressions) - 1 and intermediate_val is not PydashPathNotFound:
             final_data.append(intermediate_val)
         elif ".*" in expression:
             intermediate_exp = expression.split(".*")
-            intermediate_data = pydash.get(input_data, intermediate_exp[0])
-            if intermediate_data and isinstance(intermediate_data, list):
+            intermediate_data = pydash.get(input_data, intermediate_exp[0], default=PydashPathNotFound)
+            if intermediate_data is not PydashPathNotFound and isinstance(intermediate_data, list):
                 for val in intermediate_data:
                     final_data.append(val)
     return final_data

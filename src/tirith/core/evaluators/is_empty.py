@@ -24,11 +24,14 @@ class IsEmpty(BaseEvaluator):
     def evaluate(self, evaluator_input, evaluator_data=None):
         evaluation_result = {"passed": False, "message": "Not evaluated"}
         try:
-            if (
-                isinstance(evaluator_input, str)
-                or isinstance(evaluator_input, list)
-                or isinstance(evaluator_input, dict)
-            ) and not evaluator_input:
+            if evaluator_input is None or (
+                (
+                    isinstance(evaluator_input, str)
+                    or isinstance(evaluator_input, list)
+                    or isinstance(evaluator_input, dict)
+                )
+                and not evaluator_input
+            ):
                 evaluation_result["passed"] = True
                 evaluation_result["message"] = "{} is empty".format(evaluator_input)
             if not evaluation_result["passed"]:
