@@ -1,0 +1,69 @@
+{
+    "meta": {
+        "required_provider": "stackguardian/terraform_plan",
+        "version": "v1"
+    },
+    "evaluators": [
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "ingress.*.rule_no"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 100
+            },
+            "id": "check_ingress_rule_no"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "ingress.*.to_port"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 80
+            },
+            "id": "check_ingress_to_port"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "egress.*.rule_no"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 200
+            },
+            "id": "check_egress_rule_no"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "egress.*.to_port"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 443
+            },
+            "id": "check_egress_to_port"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "egress.*.cidr_block"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "10.3.0.0/18"
+            },
+            "id": "check_egress_cidr_block"
+        }
+    ],
+    "eval_expression": "check_ingress_rule_no && check_ingress_to_port && check_egress_rule_no && (check_egress_to_port && check_egress_cidr_block)"
+}
