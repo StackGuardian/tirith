@@ -1,0 +1,57 @@
+{
+    "meta": {
+        "required_provider": "stackguardian/terraform_plan",
+        "version": "v1"
+    },
+    "evaluators": [
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "ingress.0.to_port"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 3389
+            },
+            "id": "check_ingress_to_port"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "ingress.0.from_port"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 3389
+            },
+            "id": "check_ingress_from_port"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "ingress.0.cidr_block"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "0.0.0.0/0"
+            },
+            "id": "check_ingress_cidr_block"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_network_acl",
+                "terraform_resource_attribute": "ingress.0.ipv6_cidr_block"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "['::/0', '0000:0000:0000:0000:0000:0000:0000:0000/0']"
+            },
+            "id": "check_ingress_ipv6_cidr_block"
+        }
+    ],
+    "eval_expression": "! check_ingress_to_port && ! check_ingress_from_port && ! check_ingress_cidr_block && ! check_ingress_ipv6_cidr_block"
+}
