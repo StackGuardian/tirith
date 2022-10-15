@@ -1,0 +1,26 @@
+{
+    "meta": {
+        "required_provider": "stackguardian/terraform_plan",
+        "version": "v1"
+    },
+    "evaluators": [
+        {
+            "id": "check_enabled_cluster_log_types",
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_eks_cluster",
+                "terraform_resource_attribute": "enabled_cluster_log_types.0"
+            },
+            "condition": {
+                "type": "ContainedIn",
+                "value": [
+                    "api",
+                    "audit",
+                    "authenticator",
+                    "controllerManager",
+                    "scheduler"
+                ]
+            }
+        }
+    ]
+}
