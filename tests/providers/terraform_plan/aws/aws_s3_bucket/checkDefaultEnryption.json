@@ -1,0 +1,21 @@
+{
+    "meta": {
+      "required_provider": "stackguardian/terraform_plan",
+      "version": "v1"
+    },
+    "evaluators": [
+      {
+        "id": "s3_bucket_default_encryption_enabled",
+        "provider_args": {
+          "operation_type": "attribute",
+          "terraform_resource_type": "aws_s3_bucket",
+          "terraform_resource_attribute": "server_side_encryption_configuration"
+        },
+        "condition": {
+          "type": "Equals",
+          "value": "true"
+        }
+      }  
+    ],
+    "eval_expression": "s3_bucket_default_encryption_enabled"
+  }
