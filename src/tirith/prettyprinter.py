@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 
 class TermStyle:
@@ -106,6 +106,13 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
                 print(TermStyle.grey(f"    {result_num+1}. SKIPPED: {result_message}"))
             else:
                 print(TermStyle.red(f"    {result_num+1}. FAILED: {result_message}"))
+        print()
+
+    errors: List[str] = final_result_dict["errors"]
+    if errors:
+        print(TermStyle.fail("Errors:"))
+        for error in errors:
+            print(TermStyle.fail(f"- {error}"))
         print()
 
     print(f"Passed: {num_passed_checks} Failed: {num_failed_checks} Skipped: {num_skipped_checks}")
