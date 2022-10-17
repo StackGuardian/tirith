@@ -144,13 +144,13 @@
                 "full_name": "registry.terraform.io/hashicorp/aws",
                 "expressions": {
                     "access_key": {
-                        "constant_value": "AKIAQCA7RRSGZQO6NB4H"
+                        "constant_value": ""
                     },
                     "region": {
                         "constant_value": "us-east-1"
                     },
                     "secret_key": {
-                        "constant_value": "DMYtZmXnVDpN24wyMWUK7V+QTguuD6So7WOTwOmL"
+                        "constant_value": ""
                     }
                 }
             }
