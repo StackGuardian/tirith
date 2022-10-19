@@ -1,0 +1,21 @@
+{
+    "meta": {
+        "required_provider": "stackguardian/terraform_plan",
+        "version": "v1"
+    },
+    "evaluators": [
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_sagemaker_notebook_instance",
+                "terraform_resource_attribute": "instance_type"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "ml.t2.medium"
+            },
+            "id": "check_instance_type"
+        }
+    ],
+    "eval_expression": "check_instance_type"
+}
