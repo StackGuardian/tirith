@@ -1,0 +1,45 @@
+{
+    "meta": {
+        "required_provider": "stackguardian/terraform_plan",
+        "version": "v1"
+    },
+    "evaluators": [
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_glue_security_configuration",
+                "terraform_resource_attribute": "encryption_configuration.0.job_bookmarks_encryption.0.job_bookmarks_encryption_mode"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "CSE-KMS"
+            },
+            "id": "check_job_bookmarks_encryption_mode"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_glue_security_configuration",
+                "terraform_resource_attribute": "encryption_configuration.0.cloudwatch_encryption.0.cloudwatch_encryption_mode"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "SSE-KMS"
+            },
+            "id": "check_cloudwatch_encryption_mode"
+        },
+        {
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_glue_security_configuration",
+                "terraform_resource_attribute": "encryption_configuration.0.s3_encryption.0.s3_encryption_mode"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "DISABLED"
+            },
+            "id": "check_s3_encryption_mode"
+        }
+    ],
+    "eval_expression": "check_job_bookmarks_encryption_mode && check_cloudwatch_encryption_mode && !check_s3_encryption_mode"
+}
