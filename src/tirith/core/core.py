@@ -5,6 +5,8 @@ import re
 from types import CodeType
 
 from typing import Any, Dict, List, Tuple, Optional
+
+from tirith.providers.common import ProviderError
 from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
 
@@ -24,11 +26,14 @@ def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, 
 
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
+    DEFAULT_ERROR_TOLERANCE = 0
+
     eval_id = evaluator_obj.get("id")
     provider_inputs = evaluator_obj.get("provider_args")
     condition = evaluator_obj.get("condition")
     evaluator_name: str = condition.get("type")
     evaluator_data = condition.get("value")
+    evaluator_error_tolerance: int = condition.get("error_tolerance", DEFAULT_ERROR_TOLERANCE)
 
     if not condition:
         logger.error("condition key is not supplied.")
@@ -51,10 +56,18 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     has_evaluation_passed = True
 
     for evaluator_input in evaluator_inputs:
-        if evaluator_input["value"] is None and evaluator_input.get("err", None):
-            # Skip the evaluation
-            skip_result = {"passed": None, "message": evaluator_input["err"]}
-            evaluation_results.append(skip_result)
+        if isinstance(evaluator_input["value"], ProviderError) and evaluator_input.get("err", None):
+            severity_value = evaluator_input["value"].severity_value
+            result = dict(message=evaluator_input["err"])
+
+            if severity_value > evaluator_error_tolerance:
+                result.update(dict(passed=False))
+                evaluation_results.append(result)
+                has_evaluation_passed = False
+                continue
+            # Mark as skipped evaluation
+            result.update(dict(passed=None))
+            evaluation_results.append(result)
             has_evaluation_passed = None
             continue
 
