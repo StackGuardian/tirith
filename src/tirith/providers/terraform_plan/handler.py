@@ -1,6 +1,15 @@
+"""
+terraform_plan provider
+
+Error severity values explanation
+Value = 1, When a resource is not found
+Value = 2, When an attribute of a resource is not found
+"""
 # input->(list ["a.b","c", "d"],value of resource)
 # returns->[any, any, any]
 import pydash
+
+from ..common import ProviderError
 
 
 class PydashPathNotFound:
@@ -72,14 +81,15 @@ def provide(provider_inputs, input_data):
             if not is_resource_found:
                 outputs.append(
                     {
-                        "value": None,
+                        "value": ProviderError(severity_value=1),
                         "err": f"resource_type: '{resource_type}' is not found",
                     }
                 )
+                return outputs
             if not is_attribute_found:
                 outputs.append(
                     {
-                        "value": None,
+                        "value": ProviderError(severity_value=2),
                         "err": f"attribute: '{attribute}' is not found",
                     }
                 )
