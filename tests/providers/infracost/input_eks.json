@@ -1,0 +1,100 @@
+{
+    "timeGenerated": "2022-11-27T13:43:01.217421863Z",
+    "summary": {
+        "totalUnsupportedResources": 0,
+        "totalUsageBasedResources": 0,
+        "totalNoPriceResources": 0,
+        "noPriceResourceCounts": {},
+        "totalDetectedResources": 1,
+        "totalSupportedResources": 1,
+        "unsupportedResourceCounts": {}
+    },
+    "post_apply": true,
+    "diffTotalHourlyCost": "0.1",
+    "metadata": {
+        "vcsCommitTimestamp": "2022-10-21T14:39:01Z",
+        "vcsCommitMessage": "Changes",
+        "vcsBranch": "HEAD",
+        "vcsCommitAuthorName": "AksharSans",
+        "infracostCommand": "breakdown",
+        "vcsCommitSha": "7bcf86c5dd3628a2f74ae123d3000668a4b439c1",
+        "vcsCommitAuthorEmail": "sanyalamitrakshar@gmail.com"
+    },
+    "projects": [
+        {
+            "name": "/tmp/STACKGUARDIAN_WORKSPACE/user/terraform_aws_eks_cluster/tf_plan.json",
+            "pastBreakdown": {
+                "resources": [],
+                "totalMonthlyCost": "0",
+                "totalHourlyCost": "0"
+            },
+            "summary": {
+                "totalUnsupportedResources": 0,
+                "totalUsageBasedResources": 0,
+                "totalNoPriceResources": 0,
+                "noPriceResourceCounts": {},
+                "totalDetectedResources": 1,
+                "totalSupportedResources": 1,
+                "unsupportedResourceCounts": {}
+            },
+            "metadata": {
+                "type": "terraform_plan_json",
+                "vcsSubPath": "tf_plan.json",
+                "path": "/tmp/STACKGUARDIAN_WORKSPACE/user/terraform_aws_eks_cluster/tf_plan.json"
+            },
+            "diff": {
+                "resources": [
+                    {
+                        "name": "aws_eks_cluster.example",
+                        "hourlyCost": "0.1",
+                        "metadata": {},
+                        "costComponents": [
+                            {
+                                "unit": "hours",
+                                "hourlyQuantity": "1",
+                                "price": "0.1",
+                                "name": "EKS cluster",
+                                "hourlyCost": "0.1",
+                                "monthlyQuantity": "730",
+                                "monthlyCost": "73"
+                            }
+                        ],
+                        "monthlyCost": "73"
+                    }
+                ],
+                "totalMonthlyCost": "73",
+                "totalHourlyCost": "0.1"
+            },
+            "breakdown": {
+                "resources": [
+                    {
+                        "name": "aws_eks_cluster.example",
+                        "hourlyCost": "0.1",
+                        "metadata": {},
+                        "costComponents": [
+                            {
+                                "unit": "hours",
+                                "hourlyQuantity": "1",
+                                "price": "0.1",
+                                "name": "EKS cluster",
+                                "hourlyCost": "0.1",
+                                "monthlyQuantity": "730",
+                                "monthlyCost": "73"
+                            }
+                        ],
+                        "monthlyCost": "73"
+                    }
+                ],
+                "totalMonthlyCost": "73",
+                "totalHourlyCost": "0.1"
+            }
+        }
+    ],
+    "pastTotalMonthlyCost": "0",
+    "version": "0.2",
+    "pastTotalHourlyCost": "0",
+    "totalMonthlyCost": "73",
+    "diffTotalMonthlyCost": "73",
+    "currency": "USD",
+    "totalHourlyCost": "0.1"
+}

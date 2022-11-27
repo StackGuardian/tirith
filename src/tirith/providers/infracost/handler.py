@@ -6,14 +6,20 @@ logger = logging.getLogger()
 
 def __get_all_costs(operation_type, input_data):
     logger.debug(f"costType :  {operation_type}")
-    pointer = {"total_monthly_cost": "totalMonthlyCost", "total_hourly_cost": "totalHourlyCost"}
+    pointer = {
+        "total_monthly_cost": ["totalMonthlyCost", "monthlyCost"],
+        "total_hourly_cost": ["totalHourlyCost", "hourlyCost"],
+    }
     totalSum = 0
     if "projects" in input_data:
         for project in input_data["projects"]:
             if "breakdown" in project and "resources" in project["breakdown"]:
                 for resource in project["breakdown"]["resources"]:
-                    if pointer[operation_type] in resource and resource[pointer[operation_type]] != "null":
-                        totalSum += float(resource[pointer[operation_type]])
+                    if pointer[operation_type][0] in resource and resource[pointer[operation_type][0]] != "null":
+                        totalSum += float(resource[pointer[operation_type][0]])
+                    elif pointer[operation_type][1] in resource and resource[pointer[operation_type][1]] != "null":
+                        # Support new schema for Infracost
+                        totalSum += float(resource[pointer[operation_type][1]])
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
