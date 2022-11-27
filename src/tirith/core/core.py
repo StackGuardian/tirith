@@ -58,16 +58,16 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     for evaluator_input in evaluator_inputs:
         if isinstance(evaluator_input["value"], ProviderError) and evaluator_input.get("err", None):
             severity_value = evaluator_input["value"].severity_value
-            result = dict(message=evaluator_input["err"])
+            err_result = dict(message=evaluator_input["err"])
 
             if severity_value > evaluator_error_tolerance:
-                result.update(dict(passed=False))
-                evaluation_results.append(result)
+                err_result.update(dict(passed=False))
+                evaluation_results.append(err_result)
                 has_evaluation_passed = False
                 continue
             # Mark as skipped evaluation
-            result.update(dict(passed=None))
-            evaluation_results.append(result)
+            err_result.update(dict(passed=None))
+            evaluation_results.append(err_result)
             has_evaluation_passed = None
             continue
 
