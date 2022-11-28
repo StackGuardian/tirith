@@ -1,0 +1,199 @@
+{
+    "timeGenerated": "2022-11-26T01:22:09.456864713Z",
+    "summary": {
+        "totalUnsupportedResources": 0,
+        "totalUsageBasedResources": 1,
+        "totalNoPriceResources": 1,
+        "noPriceResourceCounts": {
+            "aws_s3_bucket_public_access_block": 1
+        },
+        "totalDetectedResources": 2,
+        "totalSupportedResources": 1,
+        "unsupportedResourceCounts": {}
+    },
+    "post_apply": true,
+    "diffTotalHourlyCost": "0",
+    "metadata": {
+        "vcsCommitTimestamp": "2022-09-02T09:32:25Z",
+        "vcsCommitMessage": "Merge pull request #5 from naveen8801/f/topbar\n\nTopbar added",
+        "vcsBranch": "HEAD",
+        "vcsCommitAuthorName": "Akshat Tandon",
+        "infracostCommand": "breakdown",
+        "vcsCommitSha": "b1fe1e03b475e8a8fb39fe7de839cf928f61f16d",
+        "vcsRepositoryUrl": "https://github.com/stackguardian/template-tf-aws-s3-demo-website",
+        "vcsCommitAuthorEmail": "tandonakshat7@gmail.com"
+    },
+    "projects": [
+        {
+            "name": "stackguardian/template-tf-aws-s3-demo-website/tf_plan.json",
+            "pastBreakdown": {
+                "resources": [
+                    {
+                        "name": "module.s3_bucket.aws_s3_bucket.this[0]",
+                        "hourlyCost": null,
+                        "subresources": [
+                            {
+                                "name": "Standard",
+                                "hourlyCost": null,
+                                "metadata": {},
+                                "costComponents": [
+                                    {
+                                        "unit": "GB",
+                                        "hourlyQuantity": null,
+                                        "price": "0.0245",
+                                        "name": "Storage",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    },
+                                    {
+                                        "unit": "1k requests",
+                                        "hourlyQuantity": null,
+                                        "price": "0.0054",
+                                        "name": "PUT, COPY, POST, LIST requests",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    },
+                                    {
+                                        "unit": "1k requests",
+                                        "hourlyQuantity": null,
+                                        "price": "0.00043",
+                                        "name": "GET, SELECT, and all other requests",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    },
+                                    {
+                                        "unit": "GB",
+                                        "hourlyQuantity": null,
+                                        "price": "0.00225",
+                                        "name": "Select data scanned",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    },
+                                    {
+                                        "unit": "GB",
+                                        "hourlyQuantity": null,
+                                        "price": "0.0008",
+                                        "name": "Select data returned",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    }
+                                ],
+                                "monthlyCost": null
+                            }
+                        ],
+                        "metadata": {},
+                        "monthlyCost": null,
+                        "tags": {
+                            "Owner": "stackguardian"
+                        }
+                    }
+                ],
+                "totalMonthlyCost": "0",
+                "totalHourlyCost": "0"
+            },
+            "summary": {
+                "totalUnsupportedResources": 0,
+                "totalUsageBasedResources": 1,
+                "totalNoPriceResources": 1,
+                "noPriceResourceCounts": {
+                    "aws_s3_bucket_public_access_block": 1
+                },
+                "totalDetectedResources": 2,
+                "totalSupportedResources": 1,
+                "unsupportedResourceCounts": {}
+            },
+            "metadata": {
+                "type": "terraform_plan_json",
+                "vcsSubPath": "tf_plan.json",
+                "path": "/tmp/STACKGUARDIAN_WORKSPACE/user/template-tf-aws-s3-demo-website/tf_plan.json"
+            },
+            "diff": {
+                "resources": [],
+                "totalMonthlyCost": "0",
+                "totalHourlyCost": "0"
+            },
+            "breakdown": {
+                "resources": [
+                    {
+                        "name": "module.s3_bucket.aws_s3_bucket.this[0]",
+                        "hourlyCost": null,
+                        "subresources": [
+                            {
+                                "name": "Standard",
+                                "hourlyCost": null,
+                                "metadata": {},
+                                "costComponents": [
+                                    {
+                                        "unit": "GB",
+                                        "hourlyQuantity": null,
+                                        "price": "0.0245",
+                                        "name": "Storage",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    },
+                                    {
+                                        "unit": "1k requests",
+                                        "hourlyQuantity": null,
+                                        "price": "0.0054",
+                                        "name": "PUT, COPY, POST, LIST requests",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    },
+                                    {
+                                        "unit": "1k requests",
+                                        "hourlyQuantity": null,
+                                        "price": "0.00043",
+                                        "name": "GET, SELECT, and all other requests",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    },
+                                    {
+                                        "unit": "GB",
+                                        "hourlyQuantity": null,
+                                        "price": "0.00225",
+                                        "name": "Select data scanned",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    },
+                                    {
+                                        "unit": "GB",
+                                        "hourlyQuantity": null,
+                                        "price": "0.0008",
+                                        "name": "Select data returned",
+                                        "hourlyCost": null,
+                                        "monthlyQuantity": null,
+                                        "monthlyCost": null
+                                    }
+                                ],
+                                "monthlyCost": null
+                            }
+                        ],
+                        "metadata": {},
+                        "monthlyCost": null,
+                        "tags": {
+                            "Owner": "stackguardian"
+                        }
+                    }
+                ],
+                "totalMonthlyCost": "0",
+                "totalHourlyCost": "0"
+            }
+        }
+    ],
+    "pastTotalMonthlyCost": "0",
+    "version": "0.2",
+    "pastTotalHourlyCost": "0",
+    "totalMonthlyCost": "0",
+    "diffTotalMonthlyCost": "0",
+    "currency": "USD",
+    "totalHourlyCost": "0"
+}

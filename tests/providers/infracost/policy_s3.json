@@ -1,0 +1,25 @@
+{
+    "evaluators": [
+        {
+            "description": "monthly_cost_below_30",
+            "condition": {
+                "type": "LessThanEqualTo",
+                "value": 30
+            },
+            "id": "monthly_cost_below_30",
+            "provider_args": {
+                "resource_type": [
+                    "*"
+                ],
+                "terraform_resource_type": "",
+                "operation_type": "total_monthly_cost",
+                "terraform_resource_attribute": ""
+            }
+        }
+    ],
+    "meta": {
+        "required_provider": "stackguardian/infracost",
+        "version": "v1"
+    },
+    "eval_expression": "monthly_cost_below_30"
+}

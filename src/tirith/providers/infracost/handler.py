@@ -15,9 +15,17 @@ def __get_all_costs(operation_type, input_data):
         for project in input_data["projects"]:
             if "breakdown" in project and "resources" in project["breakdown"]:
                 for resource in project["breakdown"]["resources"]:
-                    if pointer[operation_type][0] in resource and resource[pointer[operation_type][0]] != "null":
+                    if (
+                        pointer[operation_type][0] in resource
+                        and resource[pointer[operation_type][0]]
+                        and resource[pointer[operation_type][0]] != "null"
+                    ):
                         totalSum += float(resource[pointer[operation_type][0]])
-                    elif pointer[operation_type][1] in resource and resource[pointer[operation_type][1]] != "null":
+                    elif (
+                        pointer[operation_type][1] in resource
+                        and resource[pointer[operation_type][1]]
+                        and resource[pointer[operation_type][1]] != "null"
+                    ):
                         # Support new schema for Infracost
                         totalSum += float(resource[pointer[operation_type][1]])
                     else:
@@ -48,6 +56,7 @@ def __get_resources_costs(resource_type, operation_type, input_data):
                         pointer[operation_type][0] in resource
                         and "name" in resource
                         and resource["name"].split(".")[0] in resource_type
+                        and resource[pointer[operation_type][0]]
                         and resource[pointer[operation_type][0]] != "null"
                     ):
                         totalSum += float(resource[pointer[operation_type][0]])
@@ -55,6 +64,7 @@ def __get_resources_costs(resource_type, operation_type, input_data):
                         pointer[operation_type][1] in resource
                         and "name" in resource
                         and resource["name"].split(".")[0] in resource_type
+                        and resource[pointer[operation_type][0]]
                         and resource[pointer[operation_type][1]] != "null"
                     ):
                         totalSum += float(resource[pointer[operation_type][1]])
