@@ -51,7 +51,6 @@ def __get_resources_costs(resource_type, operation_type, input_data):
         for project in input_data["projects"]:
             if "breakdown" in project and "resources" in project["breakdown"]:
                 for resource in project["breakdown"]["resources"]:
-                    print("resource_type: ", resource_type)
                     if (
                         pointer[operation_type][0] in resource
                         and "name" in resource
