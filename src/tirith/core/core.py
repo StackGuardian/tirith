@@ -204,7 +204,7 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]])
     return final_eval_result, []
 
 
-def start_policy_evaluation(policy_path, input_path):
+def start_policy_evaluation(policy_path: str, input_path: str) -> Dict:
     with open(policy_path) as json_file:
         policy_data = json.load(json_file)
     # TODO: validate policy_data against schema
@@ -213,9 +213,13 @@ def start_policy_evaluation(policy_path, input_path):
         input_data = json.load(json_file)
     # TODO: validate input_data using the optionally available validate function in provider
 
-    policy_meta = policy_data.get("meta")
-    eval_objects = policy_data.get("evaluators")
-    final_evaluation_policy_string = policy_data.get("eval_expression")
+    return start_policy_evaluation_from_dict(policy_data, input_data)
+
+
+def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict) -> Dict:
+    policy_meta = policy_dict.get("meta")
+    eval_objects = policy_dict.get("evaluators")
+    final_evaluation_policy_string = policy_dict.get("eval_expression")
     provider_module = policy_meta.get("required_provider", "core")
     # TODO: Write functionality for dynamically importing evaluators from other modules.
     eval_results = []
@@ -224,7 +228,7 @@ def start_policy_evaluation(policy_path, input_path):
         eval_id = eval_obj.get("id")
         eval_description = eval_obj.get("description")
         logger.debug(f"Processing evaluator '{eval_id}'")
-        eval_result = generate_evaluator_result(eval_obj, input_data, provider_module)
+        eval_result = generate_evaluator_result(eval_obj, input_dict, provider_module)
         eval_result["id"] = eval_id
         eval_result["description"] = eval_description
         eval_results_obj[eval_id] = eval_result["passed"]
