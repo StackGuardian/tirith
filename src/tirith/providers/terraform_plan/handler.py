@@ -47,7 +47,18 @@ def provide(provider_inputs, input_data):
     outputs = []
     input_resource_change_attrs = {}
     input_type = provider_inputs["operation_type"]
-    resource_changes = input_data["resource_changes"]
+    resource_changes = input_data.get("resource_changes")
+
+    if resource_changes is None:
+        # Skip the check immediately
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=0),
+                "err": "Key `resource_changes` is not found in the input_data, skipping the check",
+            }
+        )
+        return outputs
+
     # CASE 1
     # - Get value of an attribute for all instances of a resource
     # - resource_changes.*.change.after.<attr_name>

@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+from tirith.providers.common import ProviderError
 
 from tirith.providers.terraform_plan import handler
 
@@ -11,6 +12,7 @@ def load_terraform_plan_json(json_path):
 
 
 input_data = load_terraform_plan_json("input.json")
+input_data_with_no_resource_changes = load_terraform_plan_json("input_with_no_resource_changes.json")
 
 #  1 and 2 -----> To check output of the attribute that if the functionality is active or not
 provider_args_1 = {
@@ -95,3 +97,14 @@ def test_count_value_failing():
 
 # if count == 0, no services deployed
 # if count > 0 services deployed
+
+
+@pytest.mark.passing
+def test_skip_when_no_resource_changes():
+    res = handler.provide(provider_args_1, input_data_with_no_resource_changes)
+    assert len(res) == 1
+
+    res = res[0]
+    assert res["err"] == "Key `resource_changes` is not found in the input_data, skipping the check"
+    assert isinstance(res["value"], ProviderError)
+    assert res["value"].severity_value == 0
