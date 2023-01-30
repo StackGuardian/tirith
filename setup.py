@@ -68,7 +68,7 @@ setup(
         "Issue Tracker": "https://github.com/stackguardian/tirith/issues",
     },
     keywords=["iac", "policy", "terraform", "policy as code"],
-    python_requires=">=3.8.*",
+    python_requires=">=3.8",
     install_requires=["simplejson==3.17.2", "pydash==5.1.0"],
     extras_require={
         # eg:
