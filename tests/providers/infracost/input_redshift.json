@@ -1,0 +1,136 @@
+{
+    "version": "0.2",
+    "metadata": {
+        "infracostCommand": "breakdown",
+        "vcsBranch": "HEAD",
+        "vcsCommitSha": "5d29fd22b8236abff02e9468a2922a795e895fb5",
+        "vcsCommitAuthorName": "Sonali Arora",
+        "vcsCommitAuthorEmail": "sonaliarora2012@icloud.com",
+        "vcsCommitTimestamp": "2023-01-31T05: 12: 45Z",
+        "vcsCommitMessage": "Create main.tf"
+    },
+    "currency": "USD",
+    "projects": [
+        {
+            "name": "/tmp/STACKGUARDIAN_WORKSPACE/user/redshift_automatic_snap_policy/tf_plan.json",
+            "metadata": {
+                "path": "/tmp/STACKGUARDIAN_WORKSPACE/user/redshift_automatic_snap_policy/tf_plan.json",
+                "type": "terraform_plan_json",
+                "vcsSubPath": "tf_plan.json"
+            },
+            "pastBreakdown": {
+                "resources": [],
+                "totalHourlyCost": "0",
+                "totalMonthlyCost": "0"
+            },
+            "breakdown": {
+                "resources": [
+                    {
+                        "name": "aws_redshift_cluster.example",
+                        "metadata": {},
+                        "hourlyCost": "0.25",
+                        "monthlyCost": "182.5",
+                        "costComponents": [
+                            {
+                                "name": "Cluster usage (on-demand, dc1.large)",
+                                "unit": "hours",
+                                "hourlyQuantity": "1",
+                                "monthlyQuantity": "730",
+                                "price": "0.25",
+                                "hourlyCost": "0.25",
+                                "monthlyCost": "182.5"
+                            },
+                            {
+                                "name": "Spectrum",
+                                "unit": "TB",
+                                "hourlyQuantity": null,
+                                "monthlyQuantity": null,
+                                "price": "5",
+                                "hourlyCost": null,
+                                "monthlyCost": null
+                            },
+                            {
+                                "name": "Backup storage (first 50 TB)",
+                                "unit": "GB",
+                                "hourlyQuantity": null,
+                                "monthlyQuantity": null,
+                                "price": "0.023",
+                                "hourlyCost": null,
+                                "monthlyCost": null
+                            }
+                        ]
+                    }
+                ],
+                "totalHourlyCost": "0.25",
+                "totalMonthlyCost": "182.5"
+            },
+            "diff": {
+                "resources": [
+                    {
+                        "name": "aws_redshift_cluster.example",
+                        "metadata": {},
+                        "hourlyCost": "0.25",
+                        "monthlyCost": "182.5",
+                        "costComponents": [
+                            {
+                                "name": "Cluster usage (on-demand, dc1.large)",
+                                "unit": "hours",
+                                "hourlyQuantity": "1",
+                                "monthlyQuantity": "730",
+                                "price": "0.25",
+                                "hourlyCost": "0.25",
+                                "monthlyCost": "182.5"
+                            },
+                            {
+                                "name": "Spectrum",
+                                "unit": "TB",
+                                "hourlyQuantity": "0",
+                                "monthlyQuantity": "0",
+                                "price": "5",
+                                "hourlyCost": "0",
+                                "monthlyCost": "0"
+                            },
+                            {
+                                "name": "Backup storage (first 50 TB)",
+                                "unit": "GB",
+                                "hourlyQuantity": "0",
+                                "monthlyQuantity": "0",
+                                "price": "0.023",
+                                "hourlyCost": "0",
+                                "monthlyCost": "0"
+                            }
+                        ]
+                    }
+                ],
+                "totalHourlyCost": "0.25",
+                "totalMonthlyCost": "182.5"
+            },
+            "summary": {
+                "totalDetectedResources": 1,
+                "totalSupportedResources": 1,
+                "totalUnsupportedResources": 0,
+                "totalUsageBasedResources": 1,
+                "totalNoPriceResources": 0,
+                "unsupportedResourceCounts": {},
+                "noPriceResourceCounts": {}
+            }
+        }
+    ],
+    "totalHourlyCost": "0.25",
+    "totalMonthlyCost": "182.5",
+    "pastTotalHourlyCost": "0",
+    "pastTotalMonthlyCost": "0",
+    "diffTotalHourlyCost": "0.25",
+    "diffTotalMonthlyCost": "182.5",
+    "timeGenerated": "2023-02-27T09: 56: 57.050133394Z",
+    "summary": {
+        "totalDetectedResources": 1,
+        "totalSupportedResources": 1,
+        "totalUnsupportedResources": 0,
+        "totalUsageBasedResources": 1,
+        "totalNoPriceResources": 0,
+        "unsupportedResourceCounts": {},
+        "noPriceResourceCounts": {}
+    },
+    "post_apply": true
+}

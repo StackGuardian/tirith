@@ -1,0 +1,26 @@
+{
+    "meta": {
+        "required_provider": "stackguardian/infracost",
+        "version": "v1"
+    },
+    "evaluators": [
+        {
+            "id": "eval-id-1",
+            "description": "",
+            "provider_args": {
+                "operation_type": "total_monthly_cost",
+                "terraform_resource_type": "",
+                "terraform_resource_attribute": "",
+                "resource_type": [
+                    "aws_redshift_cluster"
+                ]
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 2,
+                "error_tolerance": 0
+            }
+        }
+    ],
+    "eval_expression": "eval-id-1"
+}

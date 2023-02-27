@@ -63,7 +63,7 @@ def __get_resources_costs(resource_type, operation_type, input_data):
                         pointer[operation_type][1] in resource
                         and "name" in resource
                         and resource["name"].split(".")[0] in resource_type
-                        and resource[pointer[operation_type][0]]
+                        and resource[pointer[operation_type][1]]
                         and resource[pointer[operation_type][1]] != "null"
                     ):
                         totalSum += float(resource[pointer[operation_type][1]])
