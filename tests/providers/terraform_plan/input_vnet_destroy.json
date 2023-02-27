@@ -1,0 +1,986 @@
+{
+    "format_version": "1.1",
+    "terraform_version": "1.2.6",
+    "variables": {
+        "address_space": {
+            "value": [
+                "172.16.0.0/22"
+            ]
+        },
+        "bgp_community": {
+            "value": null
+        },
+        "ddos_protection_plan": {
+            "value": null
+        },
+        "dns_servers": {
+            "value": []
+        },
+        "nsg_ids": {
+            "value": {}
+        },
+        "resource_group_name": {
+            "value": "test"
+        },
+        "route_tables_ids": {
+            "value": {}
+        },
+        "subnet_delegation": {
+            "value": {}
+        },
+        "subnet_enforce_private_link_endpoint_network_policies": {
+            "value": {}
+        },
+        "subnet_enforce_private_link_service_network_policies": {
+            "value": {}
+        },
+        "subnet_names": {
+            "value": [
+                "subnet1",
+                "subnet2",
+                "subnet3"
+            ]
+        },
+        "subnet_prefixes": {
+            "value": [
+                "172.16.0.0/24",
+                "172.16.1.0/24",
+                "172.16.2.0/24"
+            ]
+        },
+        "subnet_service_endpoints": {
+            "value": {}
+        },
+        "tags": {
+            "value": {
+                "ENV": "test"
+            }
+        },
+        "use_for_each": {
+            "value": false
+        },
+        "vnet_location": {
+            "value": "Germany West Central"
+        },
+        "vnet_name": {
+            "value": "acctvwe2t-12-demo"
+        }
+    },
+    "planned_values": {
+        "root_module": {}
+    },
+    "resource_changes": [
+        {
+            "address": "azurerm_subnet.subnet_count[0]",
+            "mode": "managed",
+            "type": "azurerm_subnet",
+            "name": "subnet_count",
+            "index": 0,
+            "provider_name": "registry.terraform.io/hashicorp/azurerm",
+            "change": {
+                "actions": [
+                    "delete"
+                ],
+                "before": {
+                    "address_prefixes": [
+                        "172.16.0.0/24"
+                    ],
+                    "delegation": [],
+                    "enforce_private_link_endpoint_network_policies": false,
+                    "enforce_private_link_service_network_policies": false,
+                    "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet1",
+                    "name": "subnet1",
+                    "private_endpoint_network_policies_enabled": true,
+                    "private_link_service_network_policies_enabled": true,
+                    "resource_group_name": "test",
+                    "service_endpoint_policy_ids": [],
+                    "service_endpoints": [],
+                    "timeouts": null,
+                    "virtual_network_name": "acctvwe2t-12-demo"
+                },
+                "after": null,
+                "after_unknown": {},
+                "before_sensitive": {
+                    "address_prefixes": [
+                        false
+                    ],
+                    "delegation": [],
+                    "service_endpoint_policy_ids": [],
+                    "service_endpoints": []
+                },
+                "after_sensitive": false
+            }
+        },
+        {
+            "address": "azurerm_subnet.subnet_count[1]",
+            "mode": "managed",
+            "type": "azurerm_subnet",
+            "name": "subnet_count",
+            "index": 1,
+            "provider_name": "registry.terraform.io/hashicorp/azurerm",
+            "change": {
+                "actions": [
+                    "delete"
+                ],
+                "before": {
+                    "address_prefixes": [
+                        "172.16.1.0/24"
+                    ],
+                    "delegation": [],
+                    "enforce_private_link_endpoint_network_policies": false,
+                    "enforce_private_link_service_network_policies": false,
+                    "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet2",
+                    "name": "subnet2",
+                    "private_endpoint_network_policies_enabled": true,
+                    "private_link_service_network_policies_enabled": true,
+                    "resource_group_name": "test",
+                    "service_endpoint_policy_ids": [],
+                    "service_endpoints": [],
+                    "timeouts": null,
+                    "virtual_network_name": "acctvwe2t-12-demo"
+                },
+                "after": null,
+                "after_unknown": {},
+                "before_sensitive": {
+                    "address_prefixes": [
+                        false
+                    ],
+                    "delegation": [],
+                    "service_endpoint_policy_ids": [],
+                    "service_endpoints": []
+                },
+                "after_sensitive": false
+            }
+        },
+        {
+            "address": "azurerm_subnet.subnet_count[2]",
+            "mode": "managed",
+            "type": "azurerm_subnet",
+            "name": "subnet_count",
+            "index": 2,
+            "provider_name": "registry.terraform.io/hashicorp/azurerm",
+            "change": {
+                "actions": [
+                    "delete"
+                ],
+                "before": {
+                    "address_prefixes": [
+                        "172.16.2.0/24"
+                    ],
+                    "delegation": [],
+                    "enforce_private_link_endpoint_network_policies": false,
+                    "enforce_private_link_service_network_policies": false,
+                    "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet3",
+                    "name": "subnet3",
+                    "private_endpoint_network_policies_enabled": true,
+                    "private_link_service_network_policies_enabled": true,
+                    "resource_group_name": "test",
+                    "service_endpoint_policy_ids": [],
+                    "service_endpoints": [],
+                    "timeouts": null,
+                    "virtual_network_name": "acctvwe2t-12-demo"
+                },
+                "after": null,
+                "after_unknown": {},
+                "before_sensitive": {
+                    "address_prefixes": [
+                        false
+                    ],
+                    "delegation": [],
+                    "service_endpoint_policy_ids": [],
+                    "service_endpoints": []
+                },
+                "after_sensitive": false
+            }
+        },
+        {
+            "address": "azurerm_virtual_network.vnet",
+            "mode": "managed",
+            "type": "azurerm_virtual_network",
+            "name": "vnet",
+            "provider_name": "registry.terraform.io/hashicorp/azurerm",
+            "change": {
+                "actions": [
+                    "delete"
+                ],
+                "before": {
+                    "address_space": [
+                        "172.16.0.0/22"
+                    ],
+                    "bgp_community": "",
+                    "ddos_protection_plan": [],
+                    "dns_servers": [],
+                    "edge_zone": "",
+                    "flow_timeout_in_minutes": 0,
+                    "guid": "7998a59d-7868-405d-bb7f-f591376ae376",
+                    "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo",
+                    "location": "germanywestcentral",
+                    "name": "acctvwe2t-12-demo",
+                    "resource_group_name": "test",
+                    "subnet": [
+                        {
+                            "address_prefix": "172.16.0.0/24",
+                            "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet1",
+                            "name": "subnet1",
+                            "security_group": ""
+                        },
+                        {
+                            "address_prefix": "172.16.1.0/24",
+                            "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet2",
+                            "name": "subnet2",
+                            "security_group": ""
+                        },
+                        {
+                            "address_prefix": "172.16.2.0/24",
+                            "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet3",
+                            "name": "subnet3",
+                            "security_group": ""
+                        }
+                    ],
+                    "tags": {
+                        "ENV": "test"
+                    },
+                    "timeouts": null
+                },
+                "after": null,
+                "after_unknown": {},
+                "before_sensitive": {
+                    "address_space": [
+                        false
+                    ],
+                    "ddos_protection_plan": [],
+                    "dns_servers": [],
+                    "subnet": [
+                        {},
+                        {},
+                        {}
+                    ],
+                    "tags": {}
+                },
+                "after_sensitive": false
+            }
+        }
+    ],
+    "output_changes": {
+        "vnet_address_space": {
+            "actions": [
+                "delete"
+            ],
+            "before": [
+                "172.16.0.0/22"
+            ],
+            "after": null,
+            "after_unknown": false,
+            "before_sensitive": false,
+            "after_sensitive": false
+        },
+        "vnet_id": {
+            "actions": [
+                "delete"
+            ],
+            "before": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo",
+            "after": null,
+            "after_unknown": false,
+            "before_sensitive": false,
+            "after_sensitive": false
+        },
+        "vnet_location": {
+            "actions": [
+                "delete"
+            ],
+            "before": "germanywestcentral",
+            "after": null,
+            "after_unknown": false,
+            "before_sensitive": false,
+            "after_sensitive": false
+        },
+        "vnet_name": {
+            "actions": [
+                "delete"
+            ],
+            "before": "acctvwe2t-12-demo",
+            "after": null,
+            "after_unknown": false,
+            "before_sensitive": false,
+            "after_sensitive": false
+        },
+        "vnet_subnets": {
+            "actions": [
+                "delete"
+            ],
+            "before": [
+                "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet1",
+                "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet2",
+                "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet3"
+            ],
+            "after": null,
+            "after_unknown": false,
+            "before_sensitive": false,
+            "after_sensitive": false
+        },
+        "vnet_subnets_name_id": {
+            "actions": [
+                "delete"
+            ],
+            "before": {
+                "subnet1": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet1",
+                "subnet2": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet2",
+                "subnet3": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet3"
+            },
+            "after": null,
+            "after_unknown": false,
+            "before_sensitive": false,
+            "after_sensitive": false
+        }
+    },
+    "prior_state": {
+        "format_version": "1.0",
+        "terraform_version": "1.2.6",
+        "values": {
+            "outputs": {
+                "vnet_address_space": {
+                    "sensitive": false,
+                    "value": [
+                        "172.16.0.0/22"
+                    ],
+                    "type": [
+                        "list",
+                        "string"
+                    ]
+                },
+                "vnet_id": {
+                    "sensitive": false,
+                    "value": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo",
+                    "type": "string"
+                },
+                "vnet_location": {
+                    "sensitive": false,
+                    "value": "germanywestcentral",
+                    "type": "string"
+                },
+                "vnet_name": {
+                    "sensitive": false,
+                    "value": "acctvwe2t-12-demo",
+                    "type": "string"
+                },
+                "vnet_subnets": {
+                    "sensitive": false,
+                    "value": [
+                        "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet1",
+                        "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet2",
+                        "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet3"
+                    ],
+                    "type": [
+                        "list",
+                        "string"
+                    ]
+                },
+                "vnet_subnets_name_id": {
+                    "sensitive": false,
+                    "value": {
+                        "subnet1": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet1",
+                        "subnet2": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet2",
+                        "subnet3": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet3"
+                    },
+                    "type": [
+                        "object",
+                        {
+                            "subnet1": "string",
+                            "subnet2": "string",
+                            "subnet3": "string"
+                        }
+                    ]
+                }
+            },
+            "root_module": {
+                "resources": [
+                    {
+                        "address": "azurerm_subnet.subnet_count[0]",
+                        "mode": "managed",
+                        "type": "azurerm_subnet",
+                        "name": "subnet_count",
+                        "index": 0,
+                        "provider_name": "registry.terraform.io/hashicorp/azurerm",
+                        "schema_version": 0,
+                        "values": {
+                            "address_prefixes": [
+                                "172.16.0.0/24"
+                            ],
+                            "delegation": [],
+                            "enforce_private_link_endpoint_network_policies": false,
+                            "enforce_private_link_service_network_policies": false,
+                            "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet1",
+                            "name": "subnet1",
+                            "private_endpoint_network_policies_enabled": true,
+                            "private_link_service_network_policies_enabled": true,
+                            "resource_group_name": "test",
+                            "service_endpoint_policy_ids": [],
+                            "service_endpoints": [],
+                            "timeouts": null,
+                            "virtual_network_name": "acctvwe2t-12-demo"
+                        },
+                        "sensitive_values": {
+                            "address_prefixes": [
+                                false
+                            ],
+                            "delegation": [],
+                            "service_endpoint_policy_ids": [],
+                            "service_endpoints": []
+                        },
+                        "depends_on": [
+                            "azurerm_virtual_network.vnet"
+                        ]
+                    },
+                    {
+                        "address": "azurerm_subnet.subnet_count[1]",
+                        "mode": "managed",
+                        "type": "azurerm_subnet",
+                        "name": "subnet_count",
+                        "index": 1,
+                        "provider_name": "registry.terraform.io/hashicorp/azurerm",
+                        "schema_version": 0,
+                        "values": {
+                            "address_prefixes": [
+                                "172.16.1.0/24"
+                            ],
+                            "delegation": [],
+                            "enforce_private_link_endpoint_network_policies": false,
+                            "enforce_private_link_service_network_policies": false,
+                            "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet2",
+                            "name": "subnet2",
+                            "private_endpoint_network_policies_enabled": true,
+                            "private_link_service_network_policies_enabled": true,
+                            "resource_group_name": "test",
+                            "service_endpoint_policy_ids": [],
+                            "service_endpoints": [],
+                            "timeouts": null,
+                            "virtual_network_name": "acctvwe2t-12-demo"
+                        },
+                        "sensitive_values": {
+                            "address_prefixes": [
+                                false
+                            ],
+                            "delegation": [],
+                            "service_endpoint_policy_ids": [],
+                            "service_endpoints": []
+                        },
+                        "depends_on": [
+                            "azurerm_virtual_network.vnet"
+                        ]
+                    },
+                    {
+                        "address": "azurerm_subnet.subnet_count[2]",
+                        "mode": "managed",
+                        "type": "azurerm_subnet",
+                        "name": "subnet_count",
+                        "index": 2,
+                        "provider_name": "registry.terraform.io/hashicorp/azurerm",
+                        "schema_version": 0,
+                        "values": {
+                            "address_prefixes": [
+                                "172.16.2.0/24"
+                            ],
+                            "delegation": [],
+                            "enforce_private_link_endpoint_network_policies": false,
+                            "enforce_private_link_service_network_policies": false,
+                            "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet3",
+                            "name": "subnet3",
+                            "private_endpoint_network_policies_enabled": true,
+                            "private_link_service_network_policies_enabled": true,
+                            "resource_group_name": "test",
+                            "service_endpoint_policy_ids": [],
+                            "service_endpoints": [],
+                            "timeouts": null,
+                            "virtual_network_name": "acctvwe2t-12-demo"
+                        },
+                        "sensitive_values": {
+                            "address_prefixes": [
+                                false
+                            ],
+                            "delegation": [],
+                            "service_endpoint_policy_ids": [],
+                            "service_endpoints": []
+                        },
+                        "depends_on": [
+                            "azurerm_virtual_network.vnet"
+                        ]
+                    },
+                    {
+                        "address": "azurerm_virtual_network.vnet",
+                        "mode": "managed",
+                        "type": "azurerm_virtual_network",
+                        "name": "vnet",
+                        "provider_name": "registry.terraform.io/hashicorp/azurerm",
+                        "schema_version": 0,
+                        "values": {
+                            "address_space": [
+                                "172.16.0.0/22"
+                            ],
+                            "bgp_community": "",
+                            "ddos_protection_plan": [],
+                            "dns_servers": [],
+                            "edge_zone": "",
+                            "flow_timeout_in_minutes": 0,
+                            "guid": "7998a59d-7868-405d-bb7f-f591376ae376",
+                            "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo",
+                            "location": "germanywestcentral",
+                            "name": "acctvwe2t-12-demo",
+                            "resource_group_name": "test",
+                            "subnet": [
+                                {
+                                    "address_prefix": "172.16.0.0/24",
+                                    "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet1",
+                                    "name": "subnet1",
+                                    "security_group": ""
+                                },
+                                {
+                                    "address_prefix": "172.16.1.0/24",
+                                    "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet2",
+                                    "name": "subnet2",
+                                    "security_group": ""
+                                },
+                                {
+                                    "address_prefix": "172.16.2.0/24",
+                                    "id": "/subscriptions/a97621d8-9158-4681-81b6-38b1222afba4/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/acctvwe2t-12-demo/subnets/subnet3",
+                                    "name": "subnet3",
+                                    "security_group": ""
+                                }
+                            ],
+                            "tags": {
+                                "ENV": "test"
+                            },
+                            "timeouts": null
+                        },
+                        "sensitive_values": {
+                            "address_space": [
+                                false
+                            ],
+                            "ddos_protection_plan": [],
+                            "dns_servers": [],
+                            "subnet": [
+                                {},
+                                {},
+                                {}
+                            ],
+                            "tags": {}
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "configuration": {
+        "provider_config": {
+            "azurerm": {
+                "name": "azurerm",
+                "full_name": "registry.terraform.io/hashicorp/azurerm",
+                "version_constraint": "\u003e= 3.11.0, \u003c 4.0.0",
+                "expressions": {
+                    "client_id": {
+                        "constant_value": "a854be1d01"
+                    },
+                    "client_secret": {
+                        "constant_value": "efelklfkelfk8Hcui"
+                    },
+                    "features": [
+                        {}
+                    ],
+                    "skip_provider_registration": {
+                        "constant_value": true
+                    },
+                    "subscription_id": {
+                        "constant_value": "a97f22fff2afba4"
+                    },
+                    "tenant_id": {
+                        "constant_value": "esfeed2a4a3"
+                    }
+                }
+            }
+        },
+        "root_module": {
+            "outputs": {
+                "vnet_address_space": {
+                    "expression": {
+                        "references": [
+                            "azurerm_virtual_network.vnet.address_space",
+                            "azurerm_virtual_network.vnet"
+                        ]
+                    },
+                    "description": "The address space of the newly created vNet"
+                },
+                "vnet_id": {
+                    "expression": {
+                        "references": [
+                            "azurerm_virtual_network.vnet.id",
+                            "azurerm_virtual_network.vnet"
+                        ]
+                    },
+                    "description": "The id of the newly created vNet"
+                },
+                "vnet_location": {
+                    "expression": {
+                        "references": [
+                            "azurerm_virtual_network.vnet.location",
+                            "azurerm_virtual_network.vnet"
+                        ]
+                    },
+                    "description": "The location of the newly created vNet"
+                },
+                "vnet_name": {
+                    "expression": {
+                        "references": [
+                            "azurerm_virtual_network.vnet.name",
+                            "azurerm_virtual_network.vnet"
+                        ]
+                    },
+                    "description": "The Name of the newly created vNet"
+                },
+                "vnet_subnets": {
+                    "expression": {
+                        "references": [
+                            "local.azurerm_subnets"
+                        ]
+                    },
+                    "description": "The ids of subnets created inside the newly created vNet"
+                },
+                "vnet_subnets_name_id": {
+                    "expression": {
+                        "references": [
+                            "local.azurerm_subnets_name_id_map"
+                        ]
+                    },
+                    "description": "Can be queried subnet-id by subnet name by using lookup(module.vnet.vnet_subnets_name_id, subnet1)"
+                }
+            },
+            "resources": [
+                {
+                    "address": "azurerm_subnet.subnet_count",
+                    "mode": "managed",
+                    "type": "azurerm_subnet",
+                    "name": "subnet_count",
+                    "provider_config_key": "azurerm",
+                    "expressions": {
+                        "address_prefixes": {
+                            "references": [
+                                "var.subnet_prefixes",
+                                "count.index"
+                            ]
+                        },
+                        "enforce_private_link_endpoint_network_policies": {
+                            "references": [
+                                "var.subnet_enforce_private_link_endpoint_network_policies",
+                                "var.subnet_names",
+                                "count.index"
+                            ]
+                        },
+                        "enforce_private_link_service_network_policies": {
+                            "references": [
+                                "var.subnet_enforce_private_link_service_network_policies",
+                                "var.subnet_names",
+                                "count.index"
+                            ]
+                        },
+                        "name": {
+                            "references": [
+                                "var.subnet_names",
+                                "count.index"
+                            ]
+                        },
+                        "resource_group_name": {
+                            "references": [
+                                "var.resource_group_name"
+                            ]
+                        },
+                        "service_endpoints": {
+                            "references": [
+                                "var.subnet_service_endpoints",
+                                "var.subnet_names",
+                                "count.index"
+                            ]
+                        },
+                        "virtual_network_name": {
+                            "references": [
+                                "azurerm_virtual_network.vnet.name",
+                                "azurerm_virtual_network.vnet"
+                            ]
+                        }
+                    },
+                    "schema_version": 0,
+                    "count_expression": {
+                        "references": [
+                            "var.use_for_each",
+                            "var.subnet_names"
+                        ]
+                    }
+                },
+                {
+                    "address": "azurerm_subnet.subnet_for_each",
+                    "mode": "managed",
+                    "type": "azurerm_subnet",
+                    "name": "subnet_for_each",
+                    "provider_config_key": "azurerm",
+                    "expressions": {
+                        "address_prefixes": {
+                            "references": [
+                                "local.subnet_names_prefixes",
+                                "each.value"
+                            ]
+                        },
+                        "enforce_private_link_endpoint_network_policies": {
+                            "references": [
+                                "var.subnet_enforce_private_link_endpoint_network_policies",
+                                "each.value"
+                            ]
+                        },
+                        "enforce_private_link_service_network_policies": {
+                            "references": [
+                                "var.subnet_enforce_private_link_service_network_policies",
+                                "each.value"
+                            ]
+                        },
+                        "name": {
+                            "references": [
+                                "each.value"
+                            ]
+                        },
+                        "resource_group_name": {
+                            "references": [
+                                "var.resource_group_name"
+                            ]
+                        },
+                        "service_endpoints": {
+                            "references": [
+                                "var.subnet_service_endpoints",
+                                "each.value"
+                            ]
+                        },
+                        "virtual_network_name": {
+                            "references": [
+                                "azurerm_virtual_network.vnet.name",
+                                "azurerm_virtual_network.vnet"
+                            ]
+                        }
+                    },
+                    "schema_version": 0,
+                    "for_each_expression": {
+                        "references": [
+                            "var.use_for_each",
+                            "var.subnet_names"
+                        ]
+                    }
+                },
+                {
+                    "address": "azurerm_subnet_network_security_group_association.vnet",
+                    "mode": "managed",
+                    "type": "azurerm_subnet_network_security_group_association",
+                    "name": "vnet",
+                    "provider_config_key": "azurerm",
+                    "expressions": {
+                        "network_security_group_id": {
+                            "references": [
+                                "each.value"
+                            ]
+                        },
+                        "subnet_id": {
+                            "references": [
+                                "local.azurerm_subnets_name_id_map",
+                                "each.key"
+                            ]
+                        }
+                    },
+                    "schema_version": 0,
+                    "for_each_expression": {
+                        "references": [
+                            "var.nsg_ids"
+                        ]
+                    }
+                },
+                {
+                    "address": "azurerm_subnet_route_table_association.vnet",
+                    "mode": "managed",
+                    "type": "azurerm_subnet_route_table_association",
+                    "name": "vnet",
+                    "provider_config_key": "azurerm",
+                    "expressions": {
+                        "route_table_id": {
+                            "references": [
+                                "each.value"
+                            ]
+                        },
+                        "subnet_id": {
+                            "references": [
+                                "local.azurerm_subnets_name_id_map",
+                                "each.key"
+                            ]
+                        }
+                    },
+                    "schema_version": 0,
+                    "for_each_expression": {
+                        "references": [
+                            "var.route_tables_ids"
+                        ]
+                    }
+                },
+                {
+                    "address": "azurerm_virtual_network.vnet",
+                    "mode": "managed",
+                    "type": "azurerm_virtual_network",
+                    "name": "vnet",
+                    "provider_config_key": "azurerm",
+                    "expressions": {
+                        "address_space": {
+                            "references": [
+                                "var.address_space"
+                            ]
+                        },
+                        "bgp_community": {
+                            "references": [
+                                "var.bgp_community"
+                            ]
+                        },
+                        "dns_servers": {
+                            "references": [
+                                "var.dns_servers"
+                            ]
+                        },
+                        "location": {
+                            "references": [
+                                "var.vnet_location"
+                            ]
+                        },
+                        "name": {
+                            "references": [
+                                "var.vnet_name"
+                            ]
+                        },
+                        "resource_group_name": {
+                            "references": [
+                                "var.resource_group_name"
+                            ]
+                        },
+                        "tags": {
+                            "references": [
+                                "var.tags"
+                            ]
+                        }
+                    },
+                    "schema_version": 0
+                }
+            ],
+            "variables": {
+                "address_space": {
+                    "default": [
+                        "10.0.0.0/16"
+                    ],
+                    "description": "The address space that is used by the virtual network."
+                },
+                "bgp_community": {
+                    "default": null,
+                    "description": "(Optional) The BGP community attribute in format `\u003cas-number\u003e:\u003ccommunity-value\u003e`."
+                },
+                "ddos_protection_plan": {
+                    "default": null,
+                    "description": "The set of DDoS protection plan configuration"
+                },
+                "dns_servers": {
+                    "default": [],
+                    "description": "The DNS servers to be used with vNet."
+                },
+                "nsg_ids": {
+                    "default": {},
+                    "description": "A map of subnet name to Network Security Group IDs"
+                },
+                "resource_group_name": {
+                    "description": "Name of the resource group to be imported."
+                },
+                "route_tables_ids": {
+                    "default": {},
+                    "description": "A map of subnet name to Route table ids"
+                },
+                "subnet_delegation": {
+                    "default": {},
+                    "description": "A map of subnet name to delegation block on the subnet"
+                },
+                "subnet_enforce_private_link_endpoint_network_policies": {
+                    "default": {},
+                    "description": "A map of subnet name to enable/disable private link endpoint network policies on the subnet."
+                },
+                "subnet_enforce_private_link_service_network_policies": {
+                    "default": {},
+                    "description": "A map of subnet name to enable/disable private link service network policies on the subnet."
+                },
+                "subnet_names": {
+                    "default": [
+                        "subnet1",
+                        "subnet2",
+                        "subnet3"
+                    ],
+                    "description": "A list of public subnets inside the vNet."
+                },
+                "subnet_prefixes": {
+                    "default": [
+                        "10.0.1.0/24",
+                        "10.0.2.0/24",
+                        "10.0.3.0/24"
+                    ],
+                    "description": "The address prefix to use for the subnet."
+                },
+                "subnet_service_endpoints": {
+                    "default": {},
+                    "description": "A map of subnet name to service endpoints to add to the subnet."
+                },
+                "tags": {
+                    "default": {
+                        "ENV": "test"
+                    },
+                    "description": "The tags to associate with your network and subnets."
+                },
+                "use_for_each": {
+                    "default": false,
+                    "description": "Use `for_each` instead of `count` to create multiple resource instances."
+                },
+                "vnet_location": {
+                    "description": "The location of the vnet to create."
+                },
+                "vnet_name": {
+                    "default": "acctvnet",
+                    "description": "Name of the vnet to create"
+                }
+            }
+        }
+    },
+    "relevant_attributes": [
+        {
+            "resource": "azurerm_virtual_network.vnet",
+            "attribute": [
+                "name"
+            ]
+        },
+        {
+            "resource": "azurerm_virtual_network.vnet",
+            "attribute": [
+                "location"
+            ]
+        },
+        {
+            "resource": "azurerm_virtual_network.vnet",
+            "attribute": [
+                "address_space"
+            ]
+        },
+        {
+            "resource": "azurerm_virtual_network.vnet",
+            "attribute": [
+                "id"
+            ]
+        },
+        {
+            "resource": "azurerm_subnet.subnet_for_each",
+            "attribute": []
+        },
+        {
+            "resource": "azurerm_subnet.subnet_count",
+            "attribute": []
+        }
+    ]
+}
