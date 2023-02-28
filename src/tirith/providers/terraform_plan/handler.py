@@ -62,21 +62,29 @@ def provide(provider_inputs, input_data):
             if resource_change["type"] == resource_type:
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
-                if attribute in input_resource_change_attrs:
-                    is_attribute_found = True
+                if input_resource_change_attrs:
+                    if attribute in input_resource_change_attrs:
+                        is_attribute_found = True
+                        outputs.append(
+                            {
+                                "value": input_resource_change_attrs[attribute],
+                                "meta": resource_change,
+                                "err": None,
+                            }
+                        )
+                    elif "." in attribute or "*" in attribute:
+                        evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
+                        if evaluated_outputs:
+                            is_attribute_found = True
+                        for evaluated_output in evaluated_outputs:
+                            outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
+                else:
                     outputs.append(
                         {
-                            "value": input_resource_change_attrs[attribute],
-                            "meta": resource_change,
-                            "err": None,
+                            "value": ProviderError(severity_value=0),
+                            "err": f"attribute: '{attribute}' is not found",
                         }
                     )
-                elif "." in attribute or "*" in attribute:
-                    evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
-                    if evaluated_outputs:
-                        is_attribute_found = True
-                    for evaluated_output in evaluated_outputs:
-                        outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
         if not outputs:
             if not is_resource_found:
                 outputs.append(
