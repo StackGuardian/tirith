@@ -47,7 +47,15 @@ def provide(provider_inputs, input_data):
     outputs = []
     input_resource_change_attrs = {}
     input_type = provider_inputs["operation_type"]
-    resource_changes = input_data["resource_changes"]
+    resource_changes = input_data.get("resource_changes")
+    if not resource_changes:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=0),
+                "err": f"No Terraform resources changes are found",
+            }
+        )
+        return outputs
     # CASE 1
     # - Get value of an attribute for all instances of a resource
     # - resource_changes.*.change.after.<attr_name>
