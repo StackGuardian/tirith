@@ -90,7 +90,7 @@ def provide(provider_inputs, input_data):
                     outputs.append(
                         {
                             "value": ProviderError(severity_value=0),
-                            "err": f"attribute: '{attribute}' is not found",
+                            "err": f"No Terraform changes found for resource type: '{resource_type}'",
                         }
                     )
         if not outputs:
