@@ -116,6 +116,8 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
         print()
 
     print(f"Passed: {num_passed_checks} Failed: {num_failed_checks} Skipped: {num_skipped_checks}")
+    print()
+    print(f"Final expression used:\n-> {TermStyle.grey(final_result_dict['eval_expression'])}")
     if final_result_dict["final_result"]:
         print(TermStyle.success("✔ Passed final evaluator"))
     elif final_result_dict["final_result"] is None:
