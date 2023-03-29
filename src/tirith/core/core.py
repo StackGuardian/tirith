@@ -240,5 +240,6 @@ def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict) -> Di
         "final_result": final_evaluation_result,
         "evaluators": eval_results,
         "errors": errors,
+        "eval_expression": final_evaluation_policy_string,
     }
     return final_output
