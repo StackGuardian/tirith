@@ -11,6 +11,8 @@ from .is_not_empty import IsNotEmpty
 from .less_than_equal_to import LessThanEqualTo
 from .less_than import LessThan
 from .regex_match import RegexMatch
+from .not_equals import NotEquals
+from .not_contained_in import NotContainedIn
 
 EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
     "ContainedIn": ContainedIn,
@@ -23,4 +25,6 @@ EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
     "LessThanEqualTo": LessThanEqualTo,
     "LessThan": LessThan,
     "RegexMatch": RegexMatch,
+    "NotEquals": NotEquals,
+    "NotContainedIn": NotContainedIn,
 }
