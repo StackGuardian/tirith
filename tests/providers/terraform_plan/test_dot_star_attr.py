@@ -48,6 +48,7 @@ checks_passing = [
     ),
 ]
 
+
 # pytest -v -m passing
 @mark.passing
 @mark.parametrize("split_expressions,input_data,expected_result", checks_passing)
