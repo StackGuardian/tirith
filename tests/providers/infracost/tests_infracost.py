@@ -17,6 +17,7 @@ provider_inputs_1 = {
     "costType": "totalMonthlyCost",
 }
 
+
 # Considered test cases based on totalMonthlyCost and totalHourlyCost of the services deployed
 @pytest.mark.passing
 def test_get_monthly_cost_pass():

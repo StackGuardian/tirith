@@ -7,6 +7,7 @@ checks_failing = [({1, 2, 3, 4}, {2, 3, 4}), ({2, 3, 4}, [2, 3, 4])]
 
 evaluator = Equals()
 
+
 # pytest -v -m passing
 @mark.passing
 @mark.parametrize("evaluator_input,evaluator_data", checks_passing)

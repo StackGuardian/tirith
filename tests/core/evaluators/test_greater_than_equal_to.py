@@ -9,6 +9,7 @@ evaluator_data2 = 27
 
 evaluator = GreaterThanEqualTo()
 
+
 # pytest -v -m passing
 @mark.passing
 def test_evaluate_passing():
