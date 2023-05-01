@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-beta] - 2023-05-01
+
+### Added
+- NotEquals and NotContainedIn evaluators (a7c3a)
+
+### Fixed
+- Improve `terraform_plan` provider for operator `action`: return error=1 when the resource isn't found (a7c3a3)
+- Improve `terraform_plan` provider: skip if no `after` key is found
+- Improve error messages in `terraform_plan` provider
+
+
 ## [1.0.0-alpha.1] - 2022-10-04
 
 - Initial realease of Tirith (StackGuardian Policy Framework)
