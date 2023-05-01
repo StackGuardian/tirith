@@ -116,9 +116,10 @@ def provide(provider_inputs, input_data):
     # - resource_changes.*.change.actions
     elif input_type == "action":
         resource_type = provider_inputs["terraform_resource_type"]
+        is_resource_type_found = False
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
-                # TODO: Send err result to core when there's no matching resource_type
+                is_resource_type_found = True
                 for action in resource_change["change"]["actions"]:
                     outputs.append(
                         {
@@ -127,6 +128,13 @@ def provide(provider_inputs, input_data):
                             "err": None,
                         }
                     )
+        if not is_resource_type_found:
+            outputs.append(
+                {
+                    "value": ProviderError(severity_value=1),
+                    "err": f"resource_type: '{resource_type}' is not found",
+                }
+            )
         return outputs
     # CASE 3
     # - Get count of a particular resource
@@ -137,7 +145,8 @@ def provide(provider_inputs, input_data):
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_change["type"] == resource_type:
-                # TODO: Send err result to core when there's no matching resource_type
+                # No need to check if the resource is not found
+                # because the count of a resource can be zero
                 resource_meta = resource_change
                 count = +1
 
