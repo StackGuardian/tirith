@@ -95,3 +95,21 @@ def test_count_value_failing():
 
 # if count == 0, no services deployed
 # if count > 0 services deployed
+
+
+def test_direct_dependencies():
+    provider_args_dict = {"operation_type": "direct_dependencies", "terraform_resource_type": "aws_instance"}
+    result = handler.provide(provider_args_dict, load_terraform_plan_json("input_instance_deps_s3.json"))
+
+    assert len(result) == 1
+    assert result[0]["value"] == ["aws_s3_bucket"]
+
+
+def test_direct_references():
+    provider_args_dict = {"operation_type": "direct_references", "terraform_resource_type": "aws_elb"}
+    result = handler.provide(provider_args_dict, load_terraform_plan_json("input_implicit_elb_secgroup.json"))
+
+    # There are two aws_elbs one with aws_security_group and one without
+    assert len(result) == 2
+    assert result[0]["value"] == ["aws_security_group"]
+    assert result[1]["value"] == []

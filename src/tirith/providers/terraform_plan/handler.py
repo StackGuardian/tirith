@@ -159,5 +159,89 @@ def provide(provider_inputs, input_data):
         )
         return outputs
     # CASE 4
-    # TODO: Get relationship between resources
+    elif input_type == "direct_dependencies":
+        direct_dependencies_operator(input_data, provider_inputs, outputs)
+    elif input_type == "direct_references":
+        direct_references_operator(input_data, provider_inputs, outputs)
+    else:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=99),
+                "err": f"operation_type: '{input_type}' is not supported (severity_value: 99)",
+            }
+        )
     return outputs
+
+
+def direct_dependencies_operator(input_data: dict, provider_inputs: dict, outputs: list):
+    config_resources = input_data.get("configuration", {}).get("root_module", {}).get("resources", [])
+    resource_type = provider_inputs.get("terraform_resource_type")
+
+    if not resource_type:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=99),
+                "err": "`terraform_resource_type` must be provided in the provider input (severity_value: 99))",
+            }
+        )
+        return
+
+    is_resource_found = False
+
+    for resource in config_resources:
+        if resource.get("type") != resource_type:
+            continue
+        is_resource_found = True
+        deps_resource_type = {resource_id.split(".")[0] for resource_id in resource.get("depends_on", [])}
+        outputs.append({"value": list(deps_resource_type), "meta": config_resources})
+
+    if not is_resource_found:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=1),
+                "err": f"resource_type: '{resource_type}' is not found",
+                "meta": config_resources,
+            }
+        )
+
+
+def direct_references_operator(input_data: dict, provider_inputs: dict, outputs: list):
+    config_resources = input_data.get("configuration", {}).get("root_module", {}).get("resources", [])
+    resource_type = provider_inputs.get("terraform_resource_type")
+
+    if not resource_type:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=99),
+                "err": "`terraform_resource_type` must be provided in the provider input (severity_value: 99))",
+            }
+        )
+        return
+
+    is_resource_found = False
+
+    for resource in config_resources:
+        if resource.get("type") != resource_type:
+            continue
+        is_resource_found = True
+        resource_references = set()
+        for expressions_val in resource.get("expressions", {}).values():
+            # Currently we don't support expressions other than dict
+            # Might be needed in the future to search references in lists
+            # Ideally we should do `*.references`
+            if not isinstance(expressions_val, dict):
+                continue
+            for reference in expressions_val.get("references", []):
+                # Only get the resource type
+                resource_references.add(reference.split(".")[0])
+
+        outputs.append({"value": list(resource_references), "meta": resource})
+
+    if not is_resource_found:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=1),
+                "err": f"resource_type: '{resource_type}' is not found",
+                "meta": config_resources,
+            }
+        )
