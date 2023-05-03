@@ -151,6 +151,30 @@ optional arguments:
 }
 ```
 
+4. Make sure that AWS ELBs are attached to security group (using Terraform plan provider)
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "aws_elbs_have_direct_references_to_security_group",
+      "provider_args": {
+        "operation_type": "direct_references",
+        "terraform_resource_type": "aws_elb"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "aws_security_group",
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "aws_elbs_have_direct_references_to_security_group"
+}
+```
 <!-- ## Local Development Environment
 
 - [Python 3.6 or higher](https://www.python.org/downloads/) is required.
