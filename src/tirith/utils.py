@@ -8,6 +8,8 @@ def sort_collections(inputs):
         if isinstance(inputs, str) or isinstance(inputs, float) or isinstance(inputs, int) or isinstance(inputs, bool):
             return inputs
         elif isinstance(inputs, list):
+            if len(inputs) == 0:
+                return inputs
             if (
                 isinstance(inputs[0], str)
                 or isinstance(inputs[0], float)
