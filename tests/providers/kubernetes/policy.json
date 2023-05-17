@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "kinds_have_null_liveness_probe",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Pod",
+        "attribute_path": "spec.containers.*.livenessProbe"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": null,
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "!kinds_have_null_liveness_probe"
+}

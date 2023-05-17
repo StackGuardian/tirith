@@ -2,6 +2,7 @@ import ast
 import json
 import logging
 import re
+import yaml
 from types import CodeType
 
 from typing import Any, Dict, List, Tuple, Optional
@@ -205,12 +206,17 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]])
 
 
 def start_policy_evaluation(policy_path: str, input_path: str) -> Dict:
-    with open(policy_path) as json_file:
-        policy_data = json.load(json_file)
+    with open(policy_path) as f:
+        policy_data = json.load(f)
     # TODO: validate policy_data against schema
 
-    with open(input_path) as json_file:
-        input_data = json.load(json_file)
+    with open(input_path) as f:
+        if input_path.endswith(".yaml") or input_path.endswith(".yml"):
+            # safe_load_all returns a generator, we need to convert it into a
+            # dictionary because start_policy_evaluation_from_dict expects a dictionary
+            input_data = dict(yamls=list(yaml.safe_load_all(f)))
+        else:
+            input_data = json.load(f)
     # TODO: validate input_data using the optionally available validate function in provider
 
     return start_policy_evaluation_from_dict(policy_data, input_data)
