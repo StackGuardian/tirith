@@ -44,13 +44,9 @@ def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
     attribute_path: str = provider_args.get("attribute_path", "")
 
     if target_kind is None:
-        return create_result_dict(
-            value=ProviderError(severity_value=99),
-            err="kubernetes_kind must be provided")
+        return create_result_dict(value=ProviderError(severity_value=99), err="kubernetes_kind must be provided")
     if attribute_path == "":
-        return create_result_dict(
-            value=ProviderError(severity_value=99),
-            err="attribute_path must be provided")
+        return create_result_dict(value=ProviderError(severity_value=99), err="attribute_path must be provided")
 
     kubernetes_resources = input_data["yamls"]
     is_kind_found = False
@@ -66,9 +62,9 @@ def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
         outputs.append(create_result_dict(value=values))
 
     if not is_kind_found:
-        outputs.append(create_result_dict(
-            value=ProviderError(severity_value=1),
-            err=f"kind: {target_kind} is not found"))
+        outputs.append(
+            create_result_dict(value=ProviderError(severity_value=1), err=f"kind: {target_kind} is not found")
+        )
 
     return outputs
 
