@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 simplejson = "==3.17.2"
 pydash = "==5.1.0"
-PyYAML = "==6.0"
+PyYAML = "==6.0.1"
 
 [dev-packages]
 black = "*"
