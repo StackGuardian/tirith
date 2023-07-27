@@ -175,6 +175,36 @@ optional arguments:
   "eval_expression": "aws_elbs_have_direct_references_to_security_group"
 }
 ```
+
+5. Kubernetes (using Kubernetes provider)
+- Make sure that all pods have a liveness probe defined
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "kinds_have_null_liveness_probe",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Pod",
+        "attribute_path": "spec.containers.*.livenessProbe"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": null,
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "!kinds_have_null_liveness_probe"
+}
+```
+
+
 <!-- ## Local Development Environment
 
 - [Python 3.6 or higher](https://www.python.org/downloads/) is required.
