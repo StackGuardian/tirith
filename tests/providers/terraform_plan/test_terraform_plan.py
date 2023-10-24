@@ -1,13 +1,7 @@
-import json
-import os
 import pytest
 
 from tirith.providers.terraform_plan import handler
-
-
-def load_terraform_plan_json(json_path):
-    with open(f"{os.path.dirname(os.path.abspath(__file__))}/{json_path}", "r") as fp:
-        return json.load(fp)
+from utils import load_terraform_plan_json
 
 
 input_data = load_terraform_plan_json("input.json")
