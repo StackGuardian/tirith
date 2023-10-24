@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "required_provider": "stackguardian/terraform_plan",
+    "version": "v1"
+  },
+  "evaluators": [
+    {
+      "id": "elbRefsToSecGroup",
+      "description": "Make sure ELBs references to security groups",
+      "provider_args": {
+        "operation_type": "direct_references",
+        "terraform_resource_type": "aws_elb",
+        "references_to": "aws_security_group"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 0
+      }
+    }
+  ],
+  "eval_expression": "elbRefsToSecGroup"
+}

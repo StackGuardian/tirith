@@ -205,7 +205,118 @@ def direct_dependencies_operator(input_data: dict, provider_inputs: dict, output
         )
 
 
+def direct_references_operator_referenced_by(input_data: dict, provider_inputs: dict, outputs: list):
+    # Verify that all of the terraform_resource_type instances are
+    # referenced by `referenced_by`
+    # Idea:
+    # - Get all of the resource_type instances id save it in a list
+    # - Iterate through all of the referenced_by instances, read what it references to,
+    #   check if it is in the list of resource_type instances, if it is, pop the element
+    # - If the list is empty, then all of the resource_type instances are
+    #   referenced by `referenced_by` return true, otherwise false
+    config_resources = input_data.get("configuration", {}).get("root_module", {}).get("resources", [])
+    resource_type = provider_inputs.get("terraform_resource_type")
+    referenced_by = provider_inputs.get("referenced_by")
+
+    reference_target = set()
+    is_resource_found = False
+
+    # Loop for adding reference_target
+    for config_resource in config_resources:
+        if config_resource.get("type") != resource_type:
+            continue
+        reference_target.add(config_resource.get("address"))
+        is_resource_found = True
+
+    if not is_resource_found:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=1),
+                "err": f"resource_type: '{resource_type}' is not found (severity_value: 1)",
+                "meta": config_resources,
+            }
+        )
+        return
+
+    # Loop for removing reference_target
+    for config_resource in config_resources:
+        if config_resource.get("type") != referenced_by:
+            continue
+
+        for expression_val_dict in config_resource.get("expressions", {}).values():
+            if not isinstance(expression_val_dict, dict):
+                continue
+
+            for reference in expression_val_dict.get("references", []):
+                if reference in reference_target:
+                    reference_target.remove(reference)
+
+    is_all_referenced = len(reference_target) == 0
+    outputs.append({"value": is_all_referenced, "meta": config_resources})
+
+
+def direct_references_operator_references_to(input_data: dict, provider_inputs: dict, outputs: list):
+    # The exact opposite of `direct_references_operator_referenced_by`
+    config_resources = input_data.get("configuration", {}).get("root_module", {}).get("resources", [])
+    resource_type = provider_inputs.get("terraform_resource_type")
+    references_to = provider_inputs.get("references_to")
+
+    resource_type_count = 0
+    reference_count = 0
+    is_resource_found = False
+
+    for config_resource in config_resources:
+        if config_resource.get("type") != resource_type:
+            continue
+        is_resource_found = True
+        resource_type_count += 1
+
+        for expression_val_dict in config_resource.get("expressions", {}).values():
+            if not isinstance(expression_val_dict, dict):
+                continue
+
+            for reference in expression_val_dict.get("references", []):
+                reference_res_type = reference.split(".")[0]
+                if reference_res_type == references_to:
+                    reference_count += 1
+                    # We break early because most of the times the references
+                    # list contains something like this:
+                    # ["aws_s3_bucket.a.id", "aws_s3_bucket.a"]
+                    break
+
+    if not is_resource_found:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=1),
+                "err": f"resource_type: '{resource_type}' is not found (severity_value: 1)",
+                "meta": config_resources,
+            }
+        )
+        return
+
+    is_all_resource_type_references_to = resource_type_count == reference_count
+    outputs.append({"value": is_all_resource_type_references_to, "meta": config_resources})
+
+
 def direct_references_operator(input_data: dict, provider_inputs: dict, outputs: list):
+    referenced_by = provider_inputs.get("referenced_by")
+    references_to = provider_inputs.get("references_to")
+
+    if referenced_by is not None and references_to is not None:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=99),
+                "err": "Only one of `referenced_by` or `references_to` must be provided in the provider input (severity_value: 99))",
+            }
+        )
+        return
+
+    if referenced_by is not None:
+        return direct_references_operator_referenced_by(input_data, provider_inputs, outputs)
+
+    if references_to is not None:
+        return direct_references_operator_references_to(input_data, provider_inputs, outputs)
+
     config_resources = input_data.get("configuration", {}).get("root_module", {}).get("resources", [])
     resource_type = provider_inputs.get("terraform_resource_type")
 
@@ -241,7 +352,7 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
         outputs.append(
             {
                 "value": ProviderError(severity_value=1),
-                "err": f"resource_type: '{resource_type}' is not found",
+                "err": f"resource_type: '{resource_type}' is not found (severity_value: 1)",
                 "meta": config_resources,
             }
         )
