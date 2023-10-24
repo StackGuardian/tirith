@@ -118,7 +118,7 @@ def provide(provider_inputs, input_data):
         resource_type = provider_inputs["terraform_resource_type"]
         is_resource_type_found = False
         for resource_change in resource_changes:
-            if resource_change["type"] == resource_type:
+            if resource_type in (resource_change["type"], "*"):
                 is_resource_type_found = True
                 for action in resource_change["change"]["actions"]:
                     outputs.append(
