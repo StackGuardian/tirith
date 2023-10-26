@@ -151,7 +151,7 @@ optional arguments:
 }
 ```
 
-4. Make sure that AWS ELBs are attached to security group (using Terraform plan provider)
+4. Make sure that all AWS ELBs are attached to security group (using Terraform plan provider)
 ```json
 {
   "meta": {
@@ -164,11 +164,12 @@ optional arguments:
       "provider_args": {
         "operation_type": "direct_references",
         "terraform_resource_type": "aws_elb"
+        "references_to": "aws_security_group"
       },
       "condition": {
-        "type": "Contains",
-        "value": "aws_security_group",
-        "error_tolerance": 2
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 0
       }
     }
   ],
@@ -176,7 +177,34 @@ optional arguments:
 }
 ```
 
-5. Kubernetes (using Kubernetes provider)
+5. Make sure that all `aws_s3_bucket` are referenced by `aws_s3_bucket_intelligent_tiering_configuration` (using Terraform plan provider)
+```json
+{
+  "meta": {
+    "required_provider": "stackguardian/terraform_plan",
+    "version": "v1"
+  },
+  "evaluators": [
+    {
+      "id": "s3HasLifeCycleIntelligentTiering",
+      "description": "Make sure all aws_s3_bucket are referenced by aws_s3_bucket_intelligent_tiering_configuration",
+      "provider_args": {
+        "operation_type": "direct_references",
+        "terraform_resource_type": "aws_s3_bucket",
+        "referenced_by": "aws_s3_bucket_intelligent_tiering_configuration"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 0
+      }
+    }
+  ],
+  "eval_expression": "s3HasLifeCycleIntelligentTiering"
+}
+```
+
+6. Kubernetes (using Kubernetes provider)
 - Make sure that all pods have a liveness probe defined
 
 ```json
