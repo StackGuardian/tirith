@@ -5,6 +5,8 @@ import shutil
 
 from subprocess import Popen
 from tirith.core.core import start_policy_evaluation_from_dict
+from tirith.providers.terraform_plan import handler
+from utils import load_terraform_plan_json
 
 
 # TODO: Move these helper functions to a utils file
@@ -209,3 +211,24 @@ def test_old_direct_references_should_fail_when_no_resource_type_is_found():
         result["evaluators"][0]["result"][0]["message"]
         == "resource_type: 'aws_s3_bucket_intelligent_tiering_configuration' is not found (severity_value: 1)"
     )
+
+
+def test_direct_referenced_by_should_fail_when_the_resource_isnt_found_in_resource_changes():
+    """
+    Test that `direct_references` `referenced_by` should read resource changes as
+    its main point.
+
+    So for example, s3 intelligent tiering is setup in the module and referencing
+    to the aws_s3_bucket but if it's not created in the resource_changes it should fail
+    """
+    provider_args_dict = {
+        "operation_type": "direct_references",
+        "terraform_resource_type": "aws_s3_bucket",
+        "referenced_by": "aws_s3_bucket_intelligent_tiering_configuration",
+    }
+    result = handler.provide(
+        provider_args_dict, load_terraform_plan_json("input_s3_tiering_in_the_module_but_not_created.json")
+    )
+
+    assert len(result) == 1
+    assert result[0]["value"] is False
