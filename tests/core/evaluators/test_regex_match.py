@@ -22,3 +22,13 @@ def test_regex_passing():
 def test_regex_failing():
     result = evaluator.evaluate(evaluator_input2, evaluator_data2)
     assert result == {"passed": False, "message": f"{evaluator_input2} does not match regex pattern {evaluator_data2}"}
+
+
+def test_regex_list():
+    result = evaluator.evaluate(evaluator_input=["something"], evaluator_data=r"\['something'\]")
+    assert result["passed"] is True
+
+
+def test_regex_dict():
+    result = evaluator.evaluate(evaluator_input=dict(a=2), evaluator_data=r"{'a': 2}")
+    assert result["passed"] is True
