@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-beta.8] - 2023-11-13
+
+### Fixed
+- `terraform_plan/direct_references`: Fixed bug where `references_to` and `referenced_by` were not accounting the no-op resources
+- `json/get_value`: Fixed bug where `get_value` always return list of values even if the value is not a list
+
 ## [1.0.0-beta.7] - 2023-11-08
 
 ### Fixed
