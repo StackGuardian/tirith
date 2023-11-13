@@ -224,8 +224,8 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
 
     # Loop for adding reference_target
     for resource_change in resource_changes:
-        if resource_change.get("type") != resource_type or resource_change.get("change", {}).get("actions") != [
-            "create"
+        if resource_change.get("type") != resource_type or resource_change.get("change", {}).get("actions") == [
+            "destroy"
         ]:
             continue
         reference_target_addresses.add(resource_change.get("address"))
@@ -288,8 +288,8 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
     is_resource_found = False
 
     for resource_change in resource_changes:
-        if resource_change.get("type") != resource_type or resource_change.get("change", {}).get("actions") != [
-            "create"
+        if resource_change.get("type") != resource_type or resource_change.get("change", {}).get("actions") == [
+            "destroy"
         ]:
             continue
         is_resource_found = True
