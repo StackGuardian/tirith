@@ -2,5 +2,18 @@
 	"a": {
 			"b": 1
 		},
-	"c": ["aa", "bb"]
+	"c": ["aa", "bb"],
+	"nested_map": {
+		"e": {
+			"f": "3"
+		}
+	},
+	"list_of_dict": [
+		{
+			"key1": "value1"
+		},
+		{
+			"key1": "value1"
+		}
+	]
 }
