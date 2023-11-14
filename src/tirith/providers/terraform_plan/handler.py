@@ -165,6 +165,8 @@ def provide(provider_inputs, input_data):
         direct_references_operator(input_data, provider_inputs, outputs)
     elif input_type == "terraform_version":
         terraform_version_operator(input_data, provider_inputs, outputs)
+    elif input_type == "provider_config":
+        provider_config_operator(input_data, provider_inputs, outputs)
     else:
         outputs.append(
             {
@@ -173,6 +175,78 @@ def provide(provider_inputs, input_data):
             }
         )
     return outputs
+
+
+def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: list):
+    """
+    Operation type handler to get the provider config from terraform plan
+
+    :param input_data:      The input data
+    :param provider_inputs: The provider inputs
+    :param outputs:         The outputs
+    """
+    SUPPORTED_ATTRIBUTES = ("version_constraint", "region")
+
+    terraform_provider_full_name = provider_inputs.get("terraform_provider_full_name")
+    attribute_to_get = provider_inputs.get("attribute")
+
+    if attribute_to_get not in SUPPORTED_ATTRIBUTES:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=99),
+                "err": f"attribute_to_get: '{attribute_to_get}' is not supported. Supported values: {SUPPORTED_ATTRIBUTES} (severity_value: 99)",
+            }
+        )
+        return
+    if terraform_provider_full_name is None:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=99),
+                "err": "`terraform_provider_full_name` must be provided in the provider input (severity_value: 99))",
+            }
+        )
+        return
+
+    input_provider_configs_dict = input_data.get("configuration", {}).get("provider_config", {})
+
+    is_provider_full_name_found = False
+
+    for provider_config_dict in input_provider_configs_dict.values():
+        if provider_config_dict.get("full_name") != terraform_provider_full_name:
+            continue
+
+        is_provider_full_name_found = True
+
+        if attribute_to_get == "version_constraint":
+            version_constraint = provider_config_dict.get("version_constraint")
+            if version_constraint is None:
+                outputs.append(
+                    {
+                        "value": ProviderError(severity_value=2),
+                        "err": f"version_constraint is not found in the provider_config (severity_value: 2)",
+                        "meta": provider_config_dict,
+                    }
+                )
+                return
+            outputs.append({"value": version_constraint, "meta": provider_config_dict})
+        elif attribute_to_get == "region":
+            # TODO: The region might not be in the constant_value, it can be in a variable
+            outputs.append(
+                {
+                    "value": provider_config_dict.get("expressions", {}).get("region", {}).get("constant_value"),
+                    "meta": provider_config_dict,
+                }
+            )
+
+    if not is_provider_full_name_found:
+        outputs.append(
+            {
+                "value": ProviderError(severity_value=1),
+                "err": f"terraform_provider_full_name: '{terraform_provider_full_name}' is not found (severity_value: 1)",
+                "meta": input_provider_configs_dict,
+            }
+        )
+        return
 
 
 def terraform_version_operator(input_data: dict, provider_inputs: dict, outputs: list):
