@@ -163,6 +163,8 @@ def provide(provider_inputs, input_data):
         direct_dependencies_operator(input_data, provider_inputs, outputs)
     elif input_type == "direct_references":
         direct_references_operator(input_data, provider_inputs, outputs)
+    elif input_type == "terraform_version":
+        terraform_version_operator(input_data, provider_inputs, outputs)
     else:
         outputs.append(
             {
@@ -171,6 +173,17 @@ def provide(provider_inputs, input_data):
             }
         )
     return outputs
+
+
+def terraform_version_operator(input_data: dict, provider_inputs: dict, outputs: list):
+    """
+    Operation type handler to get the terraform version from terraform plan
+
+    :param input_data:      The input data
+    :param provider_inputs: The provider inputs
+    :param outputs:         The outputs
+    """
+    outputs.append({"value": input_data.get("terraform_version"), "meta": input_data})
 
 
 def direct_dependencies_operator(input_data: dict, provider_inputs: dict, outputs: list):
