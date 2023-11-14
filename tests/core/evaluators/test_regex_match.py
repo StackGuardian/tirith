@@ -32,3 +32,54 @@ def test_regex_list():
 def test_regex_dict():
     result = evaluator.evaluate(evaluator_input=dict(a=2), evaluator_data=r"{'a': 2}")
     assert result["passed"] is True
+
+
+def test_multiline_string_match_with_simple_regex():
+    evaluator_input = """
+    {
+      "costcenter":"123",
+      "test":123
+    }
+    """
+    result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r"costcenter")
+    assert result["passed"] is True
+
+
+def test_multiline_string_match_with_full_regex():
+    evaluator_input = """
+    {
+      "costcenter":"123",
+      "test":123
+    }
+    """
+    result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r".*costcenter.*")
+    assert result["passed"] is True
+
+
+def test_multiline_string_match_with_full_regex_should_fail():
+    evaluator_input = """
+    {
+      "costcenter":"123",
+      "test":123
+    }
+    """
+    result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r"^costcenter$")
+    assert result["passed"] is False
+
+
+def test_singleline_string_match_with_simple_regex():
+    evaluator_input = '{ "costcenter":"123", "test":123 }'
+    result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r"costcenter")
+    assert result["passed"] is True
+
+
+def test_singleline_string_match_with_full_regex():
+    evaluator_input = '{ "costcenter":"123", "test":123 }'
+    result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r".*costcenter.*")
+    assert result["passed"] is True
+
+
+def test_singleline_string_match_with_fullmatch_regex():
+    evaluator_input = '{ "costcenter":"123", "test":123 }'
+    result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r'^{ "costcenter":"123", "test":123 }$')
+    assert result["passed"] is True
