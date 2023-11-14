@@ -107,3 +107,11 @@ def test_direct_references():
     assert len(result) == 2
     assert result[0]["value"] == ["aws_security_group"]
     assert result[1]["value"] == []
+
+
+def test_get_terraform_version():
+    provider_args_dict = {"operation_type": "terraform_version"}
+    result = handler.provide(provider_args_dict, load_terraform_plan_json("input_instance_deps_s3.json"))
+
+    assert len(result) == 1
+    assert result[0]["value"] == "1.4.5"
