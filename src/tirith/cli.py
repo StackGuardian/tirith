@@ -84,7 +84,7 @@ def main(args=None) -> ExitStatus:
             action="store_true",
             help="Show detailed logs of from the run",
         )
-        parser.add_argument("--version", action="version", version="1.0.0-beta.8")
+        parser.add_argument("--version", action="version", version="1.0.0-beta.9")
 
         args = parser.parse_args()
 
