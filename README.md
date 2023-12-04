@@ -15,6 +15,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 
 <!-- - [Feature Road-Map](#feature-road-map) -->
 <!-- - [Local Development Environment](#local-development-environment) -->
+
 - [Features](#features)
 - [Usage](#usage)
 - [Example Tirith policies](#example-tirith-policies)
@@ -42,15 +43,16 @@ This is only a list of approved features that will be included in Tirith over th
 - Extended library of evaluator functions -->
 
 ## Usage
+
 ```
-usage: tirith [-h] [-policy-path PATH] [-input-path SOURCE-TYPE] [--json] [--verbose] [--version]
+usage: tirith [-h] [-policy-path PATH] [-input-path PATH] [--json] [--verbose] [--version]
 
 Tirith (StackGuardian Policy Framework)
 
 optional arguments:
   -h, --help               show this help message and exit
   -policy-path PATH        Path containing Tirith policy as code
-  -input-path SOURCE-TYPE  Input file path
+  -input-path PATH         Input file path
   --json                   Only print the result in JSON form (useful for passing output to other programs)
   --verbose                Show detailed logs of from the run
   --version                show program's version number and exit
@@ -61,6 +63,7 @@ optional arguments:
 [Examples using various providers](tests/providers)
 
 1. VPC and EC2 instance policy (using Terraform plan provider)
+
 - AWS VPC instance_tenancy is "default"
 - EC2 instance cannot be destroyed
 
@@ -72,7 +75,7 @@ optional arguments:
   },
   "evaluators": [
     {
-      "id": "check_ec2_tags_are_present",
+      "id": "check_ec2_tenancy",
       "provider_args": {
         "operation_type": "attribute",
         "terraform_resource_type": "aws_vpc",
@@ -84,6 +87,7 @@ optional arguments:
       }
     },
     {
+      "id": "destroy_ec2",
       "provider_args": {
         "operation_type": "action",
         "terraform_resource_type": "aws_instance"
@@ -91,15 +95,15 @@ optional arguments:
       "condition": {
         "type": "ContainedIn",
         "value": ["destroy"]
-      },
-      "id": "destroy_ec2"
+      }
     }
   ],
-  "eval_expression": "check_ec2_tags_are_present && !destroy_ec2"
+  "eval_expression": "check_ec2_tenancy && !destroy_ec2"
 }
 ```
 
 2. Cost control policy (using Infracost provider)
+
 - EC2 instance cost is lower than 100 USD per month
 
 ```json
@@ -110,6 +114,7 @@ optional arguments:
   },
   "evaluators": [
     {
+      "id": "ec2_cost_below_100_per_month",
       "provider_args": {
         "operation_type": "total_monthly_cost",
         "resource_type": ["aws_ec2"]
@@ -117,8 +122,7 @@ optional arguments:
       "condition": {
         "type": "LessThanEqualTo",
         "value": 100
-      },
-      "id": "ec2_cost_below_100_per_month"
+      }
     }
   ],
   "eval_expression": "ec2_cost_below_100_per_month"
@@ -126,6 +130,7 @@ optional arguments:
 ```
 
 3. StackGuardian Workflow Policy (using SG workflow provider)
+
 - Terraform Workflow should require an approval to create or destroy resources
 
 ```json
@@ -136,6 +141,7 @@ optional arguments:
   },
   "evaluators": [
     {
+      "id": "require_approval_before_creating_ec2",
       "provider_args": {
         "operation_type": "attribute",
         "workflow_attribute": "approvalPreApply"
@@ -143,8 +149,7 @@ optional arguments:
       "condition": {
         "type": "Equals",
         "value": true
-      },
-      "id": "require_approval_before_creating_ec2"
+      }
     }
   ],
   "eval_expression": "require_approval_before_creating_ec2"
@@ -152,6 +157,7 @@ optional arguments:
 ```
 
 4. Make sure that all AWS ELBs are attached to security group (using Terraform plan provider)
+
 ```json
 {
   "meta": {
@@ -178,6 +184,7 @@ optional arguments:
 ```
 
 5. Make sure that all `aws_s3_bucket` are referenced by `aws_s3_bucket_intelligent_tiering_configuration` (using Terraform plan provider)
+
 ```json
 {
   "meta": {
@@ -205,6 +212,7 @@ optional arguments:
 ```
 
 6. Kubernetes (using Kubernetes provider)
+
 - Make sure that all pods have a liveness probe defined
 
 ```json
@@ -231,7 +239,6 @@ optional arguments:
   "eval_expression": "!kinds_have_null_liveness_probe"
 }
 ```
-
 
 <!-- ## Local Development Environment
 

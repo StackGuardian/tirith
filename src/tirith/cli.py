@@ -67,7 +67,7 @@ def main(args=None) -> ExitStatus:
         )
         parser.add_argument(
             "-input-path",
-            metavar="SOURCE-TYPE",
+            metavar="PATH",
             type=str,
             dest="inputPath",
             help="Input file path",
