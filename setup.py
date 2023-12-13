@@ -22,7 +22,7 @@ def read(*names, **kwargs):
 
 setup(
     name="py-tirith",
-    version="1.0.0-beta.9",
+    version="1.0.0-beta.10",
     license="Apache",
     description="Tirith simplifies defining Policy as Code.",
     long_description_content_type="text/markdown",
@@ -69,7 +69,7 @@ setup(
     },
     keywords=["iac", "policy", "terraform", "policy as code"],
     python_requires=">=3.8",
-    install_requires=["simplejson==3.17.2", "pydash==5.1.0", "PyYAML==6.0.1"],
+    install_requires=["simplejson==3.17.2", "pydash==6.0.0", "PyYAML==6.0.1"],
     extras_require={
         # eg:
         #   'rst': ['docutils>=0.11'],
