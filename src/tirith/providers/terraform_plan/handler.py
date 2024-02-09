@@ -218,26 +218,30 @@ def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: l
 
         is_provider_full_name_found = True
 
+        attribute_value = None
+
         if attribute_to_get == "version_constraint":
-            version_constraint = provider_config_dict.get("version_constraint")
-            if version_constraint is None:
-                outputs.append(
-                    {
-                        "value": ProviderError(severity_value=2),
-                        "err": f"version_constraint is not found in the provider_config (severity_value: 2)",
-                        "meta": provider_config_dict,
-                    }
-                )
-                return
-            outputs.append({"value": version_constraint, "meta": provider_config_dict})
+            attribute_value = provider_config_dict.get("version_constraint")
         elif attribute_to_get == "region":
-            # TODO: The region might not be in the constant_value, it can be in a variable
+            # FIXME: The region might not be in the constant_value, it can be in a variable
+            attribute_value = provider_config_dict.get("expressions", {}).get("region", {}).get("constant_value")
+
+        if attribute_value is None:
+            severity_value = 2
             outputs.append(
                 {
-                    "value": provider_config_dict.get("expressions", {}).get("region", {}).get("constant_value"),
+                    "value": ProviderError(severity_value=severity_value),
+                    "err": f"`{attribute_to_get}` is not found in the provider_config (severity_value: {severity_value})",
                     "meta": provider_config_dict,
                 }
             )
+            return
+        outputs.append(
+            {
+                "value": attribute_value,
+                "meta": provider_config_dict,
+            }
+        )
 
     if not is_provider_full_name_found:
         outputs.append(
