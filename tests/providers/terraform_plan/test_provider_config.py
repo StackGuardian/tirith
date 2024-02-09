@@ -15,6 +15,20 @@ def test_get_terraform_provider_get_region():
     assert result[0]["value"] == "eu-central-1"
 
 
+def test_get_terraform_provider_get_region_not_found():
+    provider_args_dict = {
+        "operation_type": "provider_config",
+        "terraform_provider_full_name": "registry.terraform.io/hashicorp/aws",
+        "attribute": "region",
+    }
+    result = handler.provide(provider_args_dict, load_terraform_plan_json("input_instance_deps_s3_no_region.json"))
+
+    assert len(result) == 1
+    assert isinstance(result[0]["value"], ProviderError)
+    assert result[0]["value"].severity_value == 2
+    assert result[0]["err"] == "`region` is not found in the provider_config (severity_value: 2)"
+
+
 def test_get_terraform_provider_get_version_constraint_not_found():
     provider_args_dict = {
         "operation_type": "provider_config",
@@ -26,7 +40,7 @@ def test_get_terraform_provider_get_version_constraint_not_found():
     assert len(result) == 1
     assert isinstance(result[0]["value"], ProviderError)
     assert result[0]["value"].severity_value == 2
-    assert result[0]["err"] == "version_constraint is not found in the provider_config (severity_value: 2)"
+    assert result[0]["err"] == "`version_constraint` is not found in the provider_config (severity_value: 2)"
 
 
 def test_get_terraform_provider_get_version_constraint():
