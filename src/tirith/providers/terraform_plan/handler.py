@@ -5,6 +5,7 @@ Error severity values explanation
 Value = 1, When a resource is not found
 Value = 2, When an attribute of a resource is not found
 """
+
 # input->(list ["a.b","c", "d"],value of resource)
 # returns->[any, any, any]
 import pydash

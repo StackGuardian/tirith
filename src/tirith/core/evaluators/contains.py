@@ -85,10 +85,10 @@ class Contains(BaseEvaluator):
                     if result:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
             else:
-                evaluation_result[
-                    "message"
-                ] = "{} is an unsupported data type for evaluating against value in 'condition.value'".format(
-                    evaluator_data
+                evaluation_result["message"] = (
+                    "{} is an unsupported data type for evaluating against value in 'condition.value'".format(
+                        evaluator_data
+                    )
                 )
             return evaluation_result
         except Exception as e:

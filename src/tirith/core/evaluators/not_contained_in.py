@@ -75,10 +75,10 @@ class NotContainedIn(BaseEvaluator):
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
             else:
                 evaluation_result["passed"] = False
-                evaluation_result[
-                    "message"
-                ] = "{} is an unsupported data type for evaluating against value in 'condition.value'".format(
-                    evaluator_data
+                evaluation_result["message"] = (
+                    "{} is an unsupported data type for evaluating against value in 'condition.value'".format(
+                        evaluator_data
+                    )
                 )
             return evaluation_result
         except Exception as e:
