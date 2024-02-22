@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-beta.11] - 2024-02-22
+
+### Fixed
+- `terraform_plan/provider_config`: Properly handle the case where the region is not defined in the provider config
+- `json/get_value`: Properly handle the case where the keypath is not found
+
+
 ## [1.0.0-beta.10] - 2023-11-16
 
 ### Added
