@@ -1,7 +1,7 @@
 import pydash
 
 from typing import Callable, Dict, List
-from ..common import create_result_dict
+from ..common import create_result_dict, ProviderError
 
 
 class PydashPathNotFound:
@@ -39,6 +39,16 @@ def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
     key_path: str = provider_args["key_path"]
 
     values = get_path_value_from_dict(key_path, input_data)
+
+    if len(values) == 0:
+        severity_value = 2
+        return [
+            create_result_dict(
+                value=ProviderError(severity_value=severity_value),
+                err=f"key_path: `{key_path}` is not found (severity: {severity_value})",
+            )
+        ]
+
     outputs = [create_result_dict(value=value, meta=None, err=None) for value in values]
 
     return outputs

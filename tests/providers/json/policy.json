@@ -5,6 +5,18 @@
     },
     "evaluators": [
         {
+            "id": "check0",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "z.b"
+            },
+            "condition": {
+                "type": "LessThanEqualTo",
+                "value": 1,
+                "error_tolerance": 2
+            }
+        },
+        {
             "id": "check1",
             "provider_args": {
                 "operation_type": "get_value",
