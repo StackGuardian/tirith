@@ -13,7 +13,7 @@ logger = logging.getLogger()
 #     other (mixed): Other value to compare.
 
 # Returns:
-#     bool: Whether :attr:`value` is equal to :attr:`other`.
+#     bool: Whether :attr:`value` is contained in :attr:`other`.
 
 # Example:
 
