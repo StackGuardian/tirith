@@ -8,6 +8,7 @@ Value = 2, When an attribute of a resource is not found
 
 # input->(list ["a.b","c", "d"],value of resource)
 # returns->[any, any, any]
+from typing import Iterable, Tuple
 import pydash
 
 from ..common import ProviderError
@@ -339,12 +340,15 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
             continue
 
         # Look to the resource_config to get the references
-        for resource_config in get_resource_config_by_type(input_data, referenced_by):
+        for resource_config, module_path in get_resource_config_by_type(input_data, referenced_by):
             for expression_val_dict in resource_config.get("expressions", {}).values():
                 if not isinstance(expression_val_dict, dict):
                     continue
-
-                for reference_address in expression_val_dict.get("references", []):
+                for relative_reference_address in expression_val_dict.get("references", []):
+                    if module_path == "":
+                        reference_address = relative_reference_address
+                    else:
+                        reference_address = f"{module_path}.{relative_reference_address}"
                     if reference_address in reference_target_addresses:
                         reference_target_addresses.remove(reference_address)
 
@@ -352,7 +356,29 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
     outputs.append({"value": is_all_referenced, "meta": config_resources})
 
 
-def get_resource_config_by_type(input_data: dict, resource_type: str) -> iter:
+def get_module_resources_by_type_recursive(module: dict, resource_type: str, current_module_path: str = "") -> iter:
+    """
+    Recursively retrieves all resources of a given type within a module.
+
+    :param module:           The module to search for resources.
+    :param resource_type:    The type of resources to retrieve.
+    :yield:                  dict: A resource of the specified type.
+
+    """
+    for resource in module.get("resources", []):
+        if resource.get("type") == resource_type:
+            yield resource, current_module_path
+    for module_name, module_call in module.get("module_calls", {}).items():
+        yield from get_module_resources_by_type_recursive(
+            module_call.get("module", {}),
+            resource_type,
+            current_module_path=(
+                f"{current_module_path}.module.{module_name}" if current_module_path else f"module.{module_name}"
+            ),
+        )
+
+
+def get_resource_config_by_type(input_data: dict, resource_type: str) -> Iterable[Tuple[dict, str]]:
     """
     Get all of the resource config by type
 
@@ -360,12 +386,8 @@ def get_resource_config_by_type(input_data: dict, resource_type: str) -> iter:
     :param resource_type: The resource type
     :return:              The resource config (iterable)
     """
-    config_resources = input_data.get("configuration", {}).get("root_module", {}).get("resources", [])
-
-    for config_resource in config_resources:
-        if config_resource.get("type") != resource_type:
-            continue
-        yield config_resource
+    root_module = input_data.get("configuration", {}).get("root_module", {})
+    yield from get_module_resources_by_type_recursive(root_module, resource_type)
 
 
 def direct_references_operator_references_to(input_data: dict, provider_inputs: dict, outputs: list):
@@ -389,7 +411,8 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
         resource_change_address = resource_change.get("address")
 
         # Look to the resource_config to get the references
-        for resource_config in get_resource_config_by_type(input_data, resource_type):
+        # TODO: Use the module_path
+        for resource_config, module_path in get_resource_config_by_type(input_data, resource_type):
             if resource_config.get("address") != resource_change_address:
                 continue
             for expression_val_dict in resource_config.get("expressions", {}).values():
