@@ -233,4 +233,5 @@ def test_direct_referenced_by_should_fail_when_the_resource_isnt_found_in_resour
     assert len(result) == 1
     assert result[0]["value"] is False
 
+
 # TODO: Add tests for using the resources inside a recursive tf modules
