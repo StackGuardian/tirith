@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-beta.12] - 2024-04-02
+
+### Fixed
+- `terraform_plan/referenced_by`: Fixed bug where `referenced_by` was not accounting references in another modules
+- `terraform_plan/referenced_by`: Now outputs the result per resource instead of a single boolean
+
+
 ## [1.0.0-beta.11] - 2024-02-22
 
 ### Fixed
