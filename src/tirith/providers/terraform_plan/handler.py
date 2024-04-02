@@ -351,9 +351,13 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
                         reference_address = f"{module_path}.{relative_reference_address}"
                     if reference_address in reference_target_addresses:
                         reference_target_addresses.remove(reference_address)
+                        outputs.append(
+                            {"value": True, "meta": {"address": reference_address, "referenced_by": resource_config}}
+                        )
 
-    is_all_referenced = len(reference_target_addresses) == 0
-    outputs.append({"value": is_all_referenced, "meta": config_resources})
+    # For all of the reference_target_addresses that don't have a reference
+    for reference_target_address in reference_target_addresses:
+        outputs.append({"value": False, "meta": {"address": reference_target_address, "referenced_by": {}}})
 
 
 def get_module_resources_by_type_recursive(module: dict, resource_type: str, current_module_path: str = "") -> iter:
