@@ -50,13 +50,22 @@ usage: tirith [-h] [-policy-path PATH] [-input-path PATH] [--json] [--verbose] [
 
 Tirith (StackGuardian Policy Framework)
 
-optional arguments:
-  -h, --help               show this help message and exit
-  -policy-path PATH        Path containing Tirith policy as code
-  -input-path PATH         Input file path
-  --json                   Only print the result in JSON form (useful for passing output to other programs)
-  --verbose                Show detailed logs of from the run
-  --version                show program's version number and exit
+options:
+  -h, --help         show this help message and exit
+  -policy-path PATH  Path containing Tirith policy as code
+  -input-path PATH   Input file path
+  --json             Only print the result in JSON form (useful for passing output to other programs)
+  --verbose          Show detailed logs of from the run
+  --version          show program's version number and exit
+
+About Tirith:
+
+   * Abstract away the implementation complexity of policy engine underneath.
+   * Simplify creation of declarative policies that are easy to read and interpret.
+   * Provide a standard framework for scanning various configurations with granularity.
+   * Provide modularity to enable easy extensibility
+   * Github - https://github.com/StackGuardian/tirith
+   * Docs - https://docs.stackguardian.io/docs/tirith/overview
 ```
 
 ## Example Tirith policies
