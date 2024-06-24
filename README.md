@@ -16,7 +16,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 
 <!-- - [Feature Road-Map](#feature-road-map) -->
 <!-- - [Local Development Environment](#local-development-environment) -->
-
+- [What is Tirith?](#what-is-tirith)
 - [Features](#features)
 - [Usage](#usage)
 - [Example Tirith policies](#example-tirith-policies)
@@ -27,6 +27,16 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 - [Submitting a feedback](#submitting-a-feedback)
 - [Support](#support)
 - [License](#license)
+
+## What is Tirith?
+
+Tirith is a policy framework developed by StackGuardian for enforcing policies on infrastructure configurations such as Terraform, CloudFormation, Kubernetes etc. It simplifies policy creation and enforcement ensuring compliance with infrastructure policies through a user-friendly approach.
+
+## Who is the project for?
+- DevSecOps engineers
+- Infrastructure architects
+- Cloud administrators
+- Anyone involved in managing and enforcing infrastructure guardrails
 
 ## Features
 
