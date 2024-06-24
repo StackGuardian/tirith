@@ -38,6 +38,14 @@ Tirith is a policy framework developed by StackGuardian for enforcing policies o
 - Cloud administrators
 - Anyone involved in managing and enforcing infrastructure guardrails
 
+
+## Why is it important and useful for users?
+
+- **Simplifies Policy Management**: Managing policies in IaC can be complex and costly, requiring multiple codebases. Tirith abstracts these complexities, allowing for centralized and streamlined policy management.
+- **Extends Beyond Resource Configurations**: Tirith's policies cover more than just resource configurations, including cost management and CI/CD definitions, offering a comprehensive compliance solution.
+- **Cost-Efficient**: Maintaining policies within IaC logic is expensive. Tirith reduces costs by centralizing policy management, eliminating the need for duplicate policies across different IaC codebases.
+- **Eases Policy Creation**: Writing Policy as Code is challenging. Tirith simplifies this by providing an intuitive, declarative approach, making it easier to ensure compliance and security.
+
 ## Features
 
 - An easy to read and simple way to define policy as code against structured formats.
