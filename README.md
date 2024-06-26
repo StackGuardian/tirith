@@ -22,7 +22,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 - [Example Tirith policies](#example-tirith-policies)
     - [Terraform Plan](#terraform-plan-provider)
     - [Infracost](#infracost-provider)
-    - [StackGuardian Workflow Policy](#)
+    - [StackGuardian Workflow Policy](#stackguardian-workflow-policy-using-sg-workflow-provider)
     - []
     - [Kubernetes](#kubernetes)
 - [Want to contribute?](#want-to-contribute)
@@ -435,6 +435,52 @@ Example Input:
 Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/sg_workflow_example.gif)
 
+
+JSON Output:
+
+```json 
+
+{
+   "meta": {
+      "version": "v1",
+      "required_provider": "stackguardian/sg_workflow"
+   },
+   "final_result": false,
+   "evaluators": [
+      {
+         "id": "wf_check_1",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "True is equal to True",
+               "meta": null
+            }
+         ],
+         "description": null
+        
+      },
+     
+ ...
+
+      {
+         "id": "wf_check_11",
+         "passed": false,
+         "result": [
+            {
+               "passed": false,
+               "message": "True is not equal to False",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+
+   ],
+   "errors": [],
+   "eval_expression": "wf_check_1 && wf_check_2 && wf_check_3 && wf_check_4 && wf_check_5 && wf_check_6 && wf_check_7 && wf_check_8 && wf_check_9 && wf_check_10 && wf_check_11 && wf_check_12 && wf_check_13 && wf_check_14"
+}
+```
 4. Make sure that all AWS ELBs are attached to security group (using Terraform plan provider)
 
 ```json
