@@ -20,6 +20,11 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 - [Features](#features)
 - [Usage](#usage)
 - [Example Tirith policies](#example-tirith-policies)
+    - [Terraform Plan](#terraform-plan-provider)
+    - [Infracost](#infracost-provider)
+    - [StackGuardian Workflow Policy](#)
+    - []
+    - [Kubernetes](#kubernetes)
 - [Want to contribute?](#want-to-contribute)
   - [Getting an issue assigned](#getting-an-issue-assigned)
   - [A bug report](#a-bug-report)
@@ -90,7 +95,10 @@ About Tirith:
 
 [Examples using various providers](tests/providers)
 
-1. VPC and EC2 instance policy (using Terraform plan provider)
+### Terraform plan provider
+
+#### Example 1:
+VPC and EC2 instance policy
 
 - AWS VPC instance_tenancy is "default"
 - EC2 instance cannot be destroyed
@@ -129,9 +137,11 @@ About Tirith:
   "eval_expression": "check_ec2_tenancy && !destroy_ec2"
 }
 ```
-Example policy:
 
-```
+#### Example 2:
+Policy:
+
+```json
 {
     "meta": {
         "version": "v1",
@@ -169,10 +179,9 @@ Example policy:
 
 ```
 
+Input:
 
-Example Input:
-
-```
+```json
 {
     "format_version": "0.1",
     "terraform_version": "0.14.11",
@@ -212,8 +221,11 @@ Example Input:
 Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/tf_example.gif)
 
-2. Cost control policy (using Infracost provider)
+### Infracost Provider
 
+Cost control policy
+
+#### Example 1
 - EC2 instance cost is lower than 100 USD per month
 
 ```json
@@ -238,8 +250,88 @@ Output:
   "eval_expression": "ec2_cost_below_100_per_month"
 }
 ```
+#### Example 2
+Policy:
 
-3. StackGuardian Workflow Policy (using SG workflow provider)
+```json
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/infracost"
+    },
+    "evaluators": [
+        {
+            "id": "cost_check_1",
+            "provider_args": {
+                "operation_type": "total_monthly_cost",
+                "resource_type": [
+                    "*"
+                ]
+            },
+            "condition": {
+                "type": "LessThanEqualTo",
+                "value": 20
+            }
+        },
+        {
+            "id": "cost_check_2",
+            "provider_args": {
+                "operation_type": "total_monthly_cost",
+                "resource_type": [
+                    "aws_eks_cluster",
+                    "aws_s3_bucket"
+                ]
+            },
+            "condition": {
+                "type": "LessThanEqualTo",
+                "value": -1
+            }
+        }
+    ],
+    "eval_expression": "cost_check_1 && cost_check_2"
+}
+```
+
+Input:
+
+```json
+{
+  "timeGenerated": "2022-04-03T15:19:53.271995639Z",
+  "summary": {
+    "totalUnsupportedResources": 0.0,
+    "totalUsageBasedResources": 1.0,
+    "totalNoPriceResources": 1.0,
+    "noPriceResourceCounts": {
+      "aws_s3_bucket_public_access_block": 1.0
+    },
+    "totalDetectedResources": 2.0,
+    "totalSupportedResources": 1.0,
+    "unsupportedResourceCounts": {}
+  },
+  "diffTotalHourlyCost": "0",
+  "projects": [
+    {
+      "name": "github.com/StackGuardian/template-tf-aws-s3-demo-website/tf_plan.json",
+      "pastBreakdown": {
+
+        ...
+        }
+    ],
+    "pastTotalHourlyCost": "0",
+    "totalMonthlyCost": "100",
+    "diffTotalMonthlyCost": "0",
+    "currency": "USD",
+    "totalHourlyCost": "0",
+    "pastTotalMonthlyCost": "0",
+    "version": "0.2"
+  }
+
+```
+
+Output:
+![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/infracost_example.gif)
+
+### StackGuardian Workflow Policy (using SG workflow provider)
 
 - Terraform Workflow should require an approval to create or destroy resources
 
@@ -266,6 +358,83 @@ Output:
 }
 ```
 
+#### Example 2
+
+Policy:
+
+```json
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/sg_workflow"
+    },
+    "evaluators": [
+        {
+            "id": "wf_check_1",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "useMarketplaceTemplate"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": true
+            }
+        },
+        ...
+          {
+            "id": "wf_check_14",
+            "provider_args": {
+                "operation_type": "attribute",
+                "workflow_attribute": "iacTemplateId"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "/stackguardian/s3-website:19"
+            }
+        }
+    ],
+    "eval_expression": "wf_check_1 && wf_check_2 && wf_check_3 && wf_check_4 && wf_check_5 && wf_check_6 && wf_check_7 && wf_check_8 && wf_check_9 && wf_check_10 && wf_check_11 && wf_check_12 && wf_check_13 && wf_check_14"
+}
+```
+
+Example Input:
+
+```json
+{
+ "DeploymentPlatformConfig": [
+  {
+   "config": {
+    "integrationId": "/integrations/aws-qa"
+   },
+   "kind": "AWS_RBAC"
+  }
+ ],
+ "Description": "test",
+ "DocVersion": "V3.BETA",
+ "EnvironmentVariables": [
+  {
+   "config": {
+    "textValue": "eu-central-1",
+    "varName": "AWS_DEFAULT_REGION"
+   },
+   ...
+   
+   "schemaType": "FORM_JSONSCHEMA"
+  },
+  "iacVCSConfig": {
+   "iacTemplateId": "/stackguardian/s3-website:19",
+   "useMarketplaceTemplate": true
+  }
+ },
+ "WfStepsConfig": [],
+ "WfType": "TERRAFORM",
+ "_SGInternals": {}
+}
+```
+
+Output:
+![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/sg_workflow_example.gif)
+
 4. Make sure that all AWS ELBs are attached to security group (using Terraform plan provider)
 
 ```json
@@ -279,7 +448,7 @@ Output:
       "id": "aws_elbs_have_direct_references_to_security_group",
       "provider_args": {
         "operation_type": "direct_references",
-        "terraform_resource_type": "aws_elb"
+        "terraform_resource_type": "aws_elb",
         "references_to": "aws_security_group"
       },
       "condition": {
@@ -320,7 +489,7 @@ Output:
   "eval_expression": "s3HasLifeCycleIntelligentTiering"
 }
 ```
-
+### Kubernetes
 6. Kubernetes (using Kubernetes provider)
 
 - Make sure that all pods have a liveness probe defined
@@ -349,6 +518,68 @@ Output:
   "eval_expression": "!kinds_have_null_liveness_probe"
 }
 ```
+
+Example Policy:
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "kinds_have_null_liveness_probe",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Pod",
+        "attribute_path": "spec.containers.*.livenessProbe"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": null,
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "!kinds_have_null_liveness_probe"
+}
+```
+
+Example Input:
+
+```yml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wfs-demp-wfs-demo
+  labels:
+    helm.sh/chart: wfs-demo-0.1.0
+    app.kubernetes.io/name: wfs-demo
+    app.kubernetes.io/instance: wfs-demp
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: wfs-demo/templates/user-acces.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+...
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['wfs-demp-wfs-demo:80']
+      livenessProbe:
+        exec:
+          command:
+          - cat
+          - /tmp/healthy
+        initialDelaySeconds: 5
+        periodSeconds: 5
+  restartPolicy: Never
+
+```
+
+Output:
+![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/kubernetes_example.gif)
 
 <!-- ## Local Development Environment
 
