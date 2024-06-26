@@ -7,7 +7,7 @@ little bit helps, and credit will always be given.
 The following is a set of guidelines for contributing to Tirith on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 ## Join the StackGuardian Community
-We'd love for you to join our community! Join our [Slack](#https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ) to ask questions, share ideas, and connect with other contributors. Follow us on [LinkedIn](#https://www.linkedin.com/company/stackguardian/posts/?feedView=all) to stay updated on the latest news and announcements.
+We'd love for you to join our community! Join our [Slack](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ) to ask questions, share ideas, and connect with other contributors. Follow us on [LinkedIn](https://www.linkedin.com/company/stackguardian/posts/?feedView=all) to stay updated on the latest news and announcements.
 
 ## Contribution types
 
