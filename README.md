@@ -129,6 +129,87 @@ About Tirith:
   "eval_expression": "check_ec2_tenancy && !destroy_ec2"
 }
 ```
+Example policy:
+
+```
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/terraform_plan"
+    },
+    "evaluators": [
+        {
+            "id": "check1",
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_vpc",
+                "terraform_resource_attribute": "instance_tenancy"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "default"
+            }
+        },
+        ...
+         {
+            "id": "check22",
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_type": "aws_vpc",
+                "terraform_resource_attribute": "intra_dedicated_network_acl"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": false
+            }
+        }
+    ],
+    "eval_expression": "check1 && check11 && check111 & check2 & check22"
+}
+
+```
+
+
+Example Input:
+
+```
+{
+    "format_version": "0.1",
+    "terraform_version": "0.14.11",
+    "variables": {
+        "amazon_side_asn": {
+            "value": "64512"
+        },
+        "assign_ipv6_address_on_creation": {
+            "value": false
+        },
+        "azs": {
+            "value": []
+        },
+        "cidr": {
+            "value": "10.0.0.0/18"
+        },
+        "create_database_internet_gateway_route": {
+            "value": false
+        },
+
+        ...
+
+         "vpn_gateway_id": {
+                    "default": "",
+                    "description": "ID of VPN Gateway to attach to the VPC"
+                },
+                "vpn_gateway_tags": {
+                    "default": {},
+                    "description": "Additional tags for the VPN gateway"
+                }
+            }
+        }
+    
+```
+
+
+Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/tf_example.gif)
 
 2. Cost control policy (using Infracost provider)
