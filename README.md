@@ -129,6 +129,8 @@ About Tirith:
   "eval_expression": "check_ec2_tenancy && !destroy_ec2"
 }
 ```
+![]
+(https://github.com/StackGuardian/tirith/blob/updating_readme/docs/tf_example.gif)
 
 2. Cost control policy (using Infracost provider)
 
