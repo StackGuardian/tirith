@@ -6,6 +6,9 @@ little bit helps, and credit will always be given.
 
 The following is a set of guidelines for contributing to Tirith on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
+## Join the StackGuardian Community
+We'd love for you to join our community! Join our [Slack](#https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ) to ask questions, share ideas, and connect with other contributors. Follow us on [LinkedIn](#https://www.linkedin.com/company/stackguardian/posts/?feedView=all) to stay updated on the latest news and announcements.
+
 ## Contribution types
 
 ### Report Bugs
@@ -28,13 +31,23 @@ Please use GitHub Discussions to submit feedback and engage with community [http
 
 ## Basic guidelines
 
-For all changes you commit or submit by pull-request please follow these simple guidelines:
+### Pull Requests
 
-### Advice on pull requests:
+- **Stay Updated**: Make sure your PR is based on the latest code from the `main` branch.
+- **Clear Title and Description**: Try to include a clear, descriptive title and a detailed explanation of your changes.
+- **Reference Issues**: If applicable, link to related issues and PRs.
+- **Pass Tests**: Ensure all tests pass before submitting your PR.
+- **Be Open to Feedback**: We're all here to help each other improve, so please be open to feedback and ready to make adjustments.
 
-- Raise Pull Request as soon as you start working on a feature, bug, test or hotfix and label it with `work-in-progress`, while it is not ready to be merged.
-- Commits or squashed commits in your pull-requests should have a useful description.
-- Always update CHANGELOG.md before merging Pull Requests.
+### Issues
+
+- **Search First**: It helps to check if your problem or feature request has already been discussed before opening a new issue.
+- **Be Detailed**: When you open a new issue, providing as much detail as possible really helps. Feel free to use our templates for bugs and feature requests.
+- **Be Respectful**: Let's all be kind and considerate in our communication.
+
+Thank you for taking the time to help improve our project!
+
+
 
 ### If you have commit access:
 
