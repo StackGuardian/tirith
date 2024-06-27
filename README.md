@@ -23,7 +23,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
     - [Terraform Plan](#terraform-plan-provider)
     - [Infracost](#infracost-provider)
     - [StackGuardian Workflow Policy](#stackguardian-workflow-policy-using-sg-workflow-provider)
-    - []
+    - [JSON](#json)
     - [Kubernetes](#kubernetes)
 - [Want to contribute?](#want-to-contribute)
   - [Getting an issue assigned](#getting-an-issue-assigned)
@@ -96,6 +96,7 @@ About Tirith:
 [Examples using various providers](tests/providers)
 
 ### Terraform plan provider
+<details>
 
 #### Example 1:
 VPC and EC2 instance policy
@@ -164,8 +165,34 @@ Make sure that all `aws_s3_bucket` are referenced by `aws_s3_bucket_intelligent_
   "eval_expression": "s3HasLifeCycleIntelligentTiering"
 }
 ```
-
 #### Example 2:
+Make sure that all AWS ELBs are attached to security group (using Terraform plan provider)
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "aws_elbs_have_direct_references_to_security_group",
+      "provider_args": {
+        "operation_type": "direct_references",
+        "terraform_resource_type": "aws_elb",
+        "references_to": "aws_security_group"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 0
+      }
+    }
+  ],
+  "eval_expression": "aws_elbs_have_direct_references_to_security_group"
+}
+```
+#### Example 3:
 Policy:
 
 ```json
@@ -247,8 +274,10 @@ Input:
 
 Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/tf_example.gif)
+</details>
 
 ### Infracost Provider
+<details>
 
 Cost control policy
 
@@ -343,7 +372,7 @@ Input:
 
         ...
         }
-    ],
+}],
     "pastTotalHourlyCost": "0",
     "totalMonthlyCost": "100",
     "diffTotalMonthlyCost": "0",
@@ -357,6 +386,8 @@ Input:
 
 Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/infracost_example.gif)
+
+</details>
 
 ### StackGuardian Workflow Policy (using SG workflow provider)
 
@@ -407,7 +438,7 @@ Policy:
                 "value": true
             }
         },
-        ...
+        "..."
           {
             "id": "wf_check_14",
             "provider_args": {
@@ -443,16 +474,16 @@ Example Input:
    "config": {
     "textValue": "eu-central-1",
     "varName": "AWS_DEFAULT_REGION"
-   },
-   ...
-   
+   }}]
+   "..."
+   {
    "schemaType": "FORM_JSONSCHEMA"
   },
   "iacVCSConfig": {
    "iacTemplateId": "/stackguardian/s3-website:19",
    "useMarketplaceTemplate": true
-  }
- },
+  },
+ 
  "WfStepsConfig": [],
  "WfType": "TERRAFORM",
  "_SGInternals": {}
@@ -488,7 +519,7 @@ JSON Output:
         
       },
      
- ...
+ "..."
 
       {
          "id": "wf_check_11",
@@ -508,32 +539,114 @@ JSON Output:
    "eval_expression": "wf_check_1 && wf_check_2 && wf_check_3 && wf_check_4 && wf_check_5 && wf_check_6 && wf_check_7 && wf_check_8 && wf_check_9 && wf_check_10 && wf_check_11 && wf_check_12 && wf_check_13 && wf_check_14"
 }
 ```
-4. Make sure that all AWS ELBs are attached to security group (using Terraform plan provider)
 
+### JSON
+
+Example Policy
 ```json
 {
-  "meta": {
-    "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
-  },
-  "evaluators": [
-    {
-      "id": "aws_elbs_have_direct_references_to_security_group",
-      "provider_args": {
-        "operation_type": "direct_references",
-        "terraform_resource_type": "aws_elb",
-        "references_to": "aws_security_group"
-      },
-      "condition": {
-        "type": "Equals",
-        "value": true,
-        "error_tolerance": 0
-      }
-    }
-  ],
-  "eval_expression": "aws_elbs_have_direct_references_to_security_group"
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json"
+    },
+    "evaluators": [
+        {
+            "id": "check0",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "z.b"
+            },
+            "condition": {
+                "type": "LessThanEqualTo",
+                "value": 1,
+                "error_tolerance": 2
+            }
+        },
+        {
+            "id": "check1",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "a.b"
+            },
+            "condition": {
+                "type": "LessThanEqualTo",
+                "value": 1
+            }
+        },
+        {
+            "id": "check2",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "c"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "aa"
+            }
+        },
+        {
+            "id": "check3",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "nested_map.e.f"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "3"
+            }
+        },
+        {
+            "id": "check4",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "list_of_dict.*.key1"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "value1"
+            }
+        },
+        {
+            "id": "check5",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "nested_map"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": { "e": { "f": "3" } }
+            }
+        }
+    ],
+    "eval_expression": "check1 && check2 && check3 && check4 && check5"
 }
 ```
+
+Example Input
+```json
+{
+	"a": {
+			"b": 1
+		},
+	"c": ["aa", "bb"],
+	"nested_map": {
+		"e": {
+			"f": "3"
+		}
+	},
+	"list_of_dict": [
+		{
+			"key1": "value1"
+		},
+		{
+			"key1": "value1"
+		}
+	]
+}
+```
+
+Output:
+![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/json_example.gif)
 
 
 ### Kubernetes
