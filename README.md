@@ -718,6 +718,7 @@ JSON Output:
 ### JSON
 <details>
 Example Policy
+
 ```json
 {
     "meta": {
