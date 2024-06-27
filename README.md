@@ -214,7 +214,7 @@ Policy:
                 "value": "default"
             }
         },
-        ...
+        "..."
          {
             "id": "check22",
             "provider_args": {
@@ -256,7 +256,7 @@ Input:
             "value": false
         },
 
-        ...
+        "..."
 
          "vpn_gateway_id": {
                     "default": "",
@@ -274,6 +274,142 @@ Input:
 
 Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/tf_example.gif)
+
+JSON Output:
+```json
+{
+   "final_result": false,
+   "evaluators": [
+      {
+         "id": "check1",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "default is equal to default",
+               "meta": {
+                  "address": "aws_vpc.this[0]",
+                  "mode": "managed",
+                  "type": "aws_vpc",
+                  "name": "this",
+                  "index": 0,
+                  "provider_name": "registry.terraform.io/hashicorp/aws",
+                  "change": {
+                     "actions": [
+                        "create"
+                     ],
+                     "before": null,
+                     "after": {
+                        "assign_generated_ipv6_cidr_block": false,
+                        "cidr_block": "10.0.0.0/18",
+                        "enable_dns_hostnames": false,
+                        "enable_dns_support": true,
+                        "instance_tenancy": "default",
+                        "tags": {
+                           "Name": ""
+                        },
+                        "tags_all": {}
+                     },
+                     "after_unknown": {
+                        "arn": true,
+                        "default_network_acl_id": true,
+                        "default_route_table_id": true,
+                        "default_security_group_id": true,
+                        "dhcp_options_id": true,
+                        "enable_classiclink": true,
+                        "enable_classiclink_dns_support": true,
+                        "id": true,
+                        "ipv6_association_id": true,
+                        "ipv6_cidr_block": true,
+                        "main_route_table_id": true,
+                        "owner_id": true,
+                        "tags": {},
+                        "tags_all": {
+                           "Name": true
+                        }
+                     }
+                  }
+               }
+            },
+            {
+               "passed": true,
+               "message": "default is equal to default",
+               "meta": {
+                  "address": "aws_vpc.this[0]",
+                  "mode": "managed",
+                  "type": "aws_vpc",
+                  "name": "this",
+                  "index": 1,
+                  "provider_name": "registry.terraform.io/hashicorp/aws",
+                  "change": {
+                     "actions": [
+                        "create"
+                     ],
+                     "before": null,
+                     "after": {
+                        "assign_generated_ipv6_cidr_block": false,
+                        "cidr_block": "10.0.0.0/18",
+                        "enable_dns_hostnames": false,
+                        "enable_dns_support": true,
+                        "instance_tenancy": "default",
+                        "tags": {
+                           "Name": ""
+                        },
+                        "tags_all": {}
+                     },
+                     "after_unknown": {
+                        "arn": true,
+                        "default_network_acl_id": true,
+                        "default_route_table_id": true,
+                        "default_security_group_id": true,
+                        "dhcp_options_id": true,
+                        "enable_classiclink": true,
+                        "enable_classiclink_dns_support": true,
+                        "id": true,
+                        "ipv6_association_id": true,
+                        "ipv6_cidr_block": true,
+                        "main_route_table_id": true,
+                        "owner_id": true,
+                        "tags": {},
+                        "tags_all": {
+                           "Name": true
+                        }
+                     }
+                  }
+               }
+            }
+         ],
+         "description": null
+      },
+         "..."    
+      {
+         "id": "check2",
+         "passed": false,
+         "result": [
+            {
+               "message": "attribute: 'intra_acl_tags' is not found",
+               "passed": false
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check22",
+         "passed": false,
+         "result": [
+            {
+               "message": "attribute: 'intra_dedicated_network_acl' is not found",
+               "passed": false
+            }
+         ],
+         "description": null
+      }
+   ],
+   "errors": [],
+   "eval_expression": "check1 && check11 && check111 & check2 & check22"
+}
+
+```
 </details>
 
 ### Infracost Provider
@@ -387,10 +523,48 @@ Input:
 Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/infracost_example.gif)
 
+JSON Output:
+```json
+{
+   "meta": {
+      "version": "v1",
+      "required_provider": "stackguardian/infracost"
+   },
+   "final_result": false,
+   "evaluators": [
+      {
+         "id": "cost_check_1",
+         "passed": false,
+         "result": [
+            {
+               "passed": false,
+               "message": "300.1 is not less than or equal to 20",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "cost_check_2",
+         "passed": false,
+         "result": [
+            {
+               "passed": false,
+               "message": "100.1 is not less than or equal to -1",
+               "meta": null
+            }
+         ],
+         "description": null
+      }
+   ],
+   "errors": [],
+   "eval_expression": "cost_check_1 && cost_check_2"
+}
+```
 </details>
 
 ### StackGuardian Workflow Policy (using SG workflow provider)
-
+<details>
 - Terraform Workflow should require an approval to create or destroy resources
 
 ```json
@@ -539,9 +713,10 @@ JSON Output:
    "eval_expression": "wf_check_1 && wf_check_2 && wf_check_3 && wf_check_4 && wf_check_5 && wf_check_6 && wf_check_7 && wf_check_8 && wf_check_9 && wf_check_10 && wf_check_11 && wf_check_12 && wf_check_13 && wf_check_14"
 }
 ```
+</details>
 
 ### JSON
-
+<details>
 Example Policy
 ```json
 {
@@ -648,10 +823,102 @@ Example Input
 Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/json_example.gif)
 
+JSON Output
+```json
+{
+   "meta": {
+      "version": "v1",
+      "required_provider": "stackguardian/json"
+   },
+   "final_result": true,
+   "evaluators": [
+      {
+         "id": "check0",
+         "passed": null,
+         "result": [
+            {
+               "message": "key_path: `z.b` is not found (severity: 2)",
+               "passed": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check1",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "1 is less than equal to 1",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check2",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "Found aa inside ['aa', 'bb']",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check3",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "3 is equal to 3",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check4",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "value1 is equal to value1",
+               "meta": null
+            },
+            {
+               "passed": true,
+               "message": "value1 is equal to value1",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check5",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "{'e': {'f': '3'}} is equal to {'e': {'f': '3'}}",
+               "meta": null
+            }
+         ],
+         "description": null
+      }
+   ],
+   "errors": [],
+   "eval_expression": "check1 && check2 && check3 && check4 && check5"
+```
+</details>
 
 ### Kubernetes
-6. Kubernetes (using Kubernetes provider)
+<details>
 
+Kubernetes (using Kubernetes provider)
+#### Example 1
 - Make sure that all pods have a liveness probe defined
 
 ```json
@@ -678,6 +945,7 @@ Output:
   "eval_expression": "!kinds_have_null_liveness_probe"
 }
 ```
+#### Example 2
 
 Example Policy:
 
@@ -741,6 +1009,34 @@ apiVersion: rbac.authorization.k8s.io/v1
 Output:
 ![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/kubernetes_example.gif)
 
+JSON Output:
+```json
+{
+   "meta": {
+      "version": "v1",
+      "required_provider": "stackguardian/kubernetes"
+   },
+   "final_result": false,
+   "evaluators": [
+      {
+         "id": "kinds_have_null_liveness_probe",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "Found None inside [None, {'exec': {'command': ['/tmp/healthy', 'cat']}, 'initialDelaySeconds': 5, 'periodSeconds': 5}]",
+               "meta": null
+            }
+         ],
+         "description": null
+      }
+   ],
+   "errors": [],
+   "eval_expression": "!kinds_have_null_liveness_probe"
+}
+```
+
+</details>
 <!-- ## Local Development Environment
 
 - [Python 3.6 or higher](https://www.python.org/downloads/) is required.
