@@ -273,7 +273,7 @@ Input:
 
 
 Output:
-![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/tf_example.gif)
+![](docs/tf_plan_example.gif)
 
 JSON Output:
 ```json
@@ -521,7 +521,7 @@ Input:
 ```
 
 Output:
-![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/infracost_example.gif)
+![](docs/infracost_example.gif)
 
 JSON Output:
 ```json
@@ -665,7 +665,7 @@ Example Input:
 ```
 
 Output:
-![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/sg_workflow_example.gif)
+![](docs/sg_workflow_example.gif)
 
 
 JSON Output:
@@ -822,7 +822,7 @@ Example Input
 ```
 
 Output:
-![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/json_example.gif)
+![](docs/json_example.gif)
 
 JSON Output
 ```json
@@ -1008,7 +1008,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 ```
 
 Output:
-![](https://github.com/StackGuardian/tirith/blob/updating_readme/docs/kubernetes_example.gif)
+![](docs/kubernetes_example.gif)
 
 JSON Output:
 ```json
