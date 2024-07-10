@@ -69,7 +69,13 @@ This is only a list of approved features that will be included in Tirith over th
 
 ## Installation
 
-### Setup Tirith on your system (developer install)
+### For users
+
+```
+pip install git+https://github.com/StackGuardian/tirith.git
+```
+
+### For developers
 Here we are going to install Tirith in a Python virtual environment.
 
 1. Clone the Tirith repository to your system
