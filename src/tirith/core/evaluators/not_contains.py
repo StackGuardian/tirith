@@ -40,7 +40,7 @@ class NotContains(BaseEvaluator):
                 if result:
                     evaluation_result["message"] = "Did not find {} inside {}".format(evaluator_data, evaluator_input)
                 else:
-                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input) 
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
             # if evaluator_input is a list
             elif isinstance(evaluator_input, list):
                 evaluator_input = sort_collections(evaluator_input)
@@ -49,20 +49,20 @@ class NotContains(BaseEvaluator):
                     result = evaluator_data not in evaluator_input
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Did not find {} inside {}".format(evaluator_data, evaluator_input)
-                    else:
-                        evaluation_result["message"] = "Found {} inside {}".format(
+                        evaluation_result["message"] = "Did not find {} inside {}".format(
                             evaluator_data, evaluator_input
                         )
+                    else:
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
                 else:
                     result = evaluator_data not in evaluator_input
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Did not find {} inside {}".format(evaluator_data, evaluator_input)
-                    else:
-                        evaluation_result["message"] = "Found {} inside {}".format(
+                        evaluation_result["message"] = "Did not find {} inside {}".format(
                             evaluator_data, evaluator_input
                         )
+                    else:
+                        evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
             elif isinstance(evaluator_input, dict):
                 if isinstance(evaluator_data, dict):
                     evaluation_result["passed"] = True
@@ -71,7 +71,7 @@ class NotContains(BaseEvaluator):
                         if key not in evaluator_input:
                             continue
 
-                        if evaluator_input[key] == evaluator_data[key]:#changes for xontains
+                        if evaluator_input[key] == evaluator_data[key]:  # changes for xontains
                             evaluation_result["passed"] = False
                             evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
                             break
@@ -79,10 +79,12 @@ class NotContains(BaseEvaluator):
                     result = evaluator_data not in evaluator_input
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Did not find {} inside {}".format(evaluator_data, evaluator_input)
+                        evaluation_result["message"] = "Did not find {} inside {}".format(
+                            evaluator_data, evaluator_input
+                        )
                     else:
                         evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
-         
+
             else:
                 evaluation_result["passed"] = False
                 evaluation_result["message"] = (
