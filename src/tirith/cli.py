@@ -112,12 +112,17 @@ def main(args=None) -> ExitStatus:
 
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath)
-
+        
+            
             if args.json:
                 formatted_result = json.dumps(result, indent=3)
                 print(formatted_result)
             else:
                 pretty_print_result_dict(result)
+
+            if result["final_result"] == False:
+                return ExitStatus.ERROR
+            
             return ExitStatus.SUCCESS
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
