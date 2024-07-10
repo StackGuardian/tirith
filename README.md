@@ -18,6 +18,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 <!-- - [Local Development Environment](#local-development-environment) -->
 - [What is Tirith?](#what-is-tirith)
 - [Features](#features)
+- [Installation](#installation)
 - [Usage](#usage)
 - [Example Tirith policies](#example-tirith-policies)
     - [Terraform Plan](#terraform-plan-provider)
@@ -65,6 +66,47 @@ This is only a list of approved features that will be included in Tirith over th
 - Extended support for Terraform Plan
 - Support for Cloudformation and ARM
 - Extended library of evaluator functions -->
+
+## Installation
+
+### Setup Tirith on your system (developer install)
+Here we are going to install Tirith in a Python virtual environment.
+
+1. Clone the Tirith repository to your system
+```
+git clone https://github.com/StackGuardian/tirith.git
+```
+
+2. Change directory to the cloned repository
+```
+cd tirith
+```
+
+3. Setup a virtualenv
+```
+virtualenv .venv
+```
+
+4. Activate the virtualenv
+```
+source .venv/bin/activate
+```
+
+5. Install Tirith in the virtualenv
+```
+# The -e is optional, just in case you wanna make some changes to the codebase
+pip install -e .
+```
+
+6. Verify that Tirith is installed
+
+```
+tirith --version
+1.0.0-beta.12
+
+```
+
+Congratulations! Tirith has been setup in your system
 
 ## Usage
 
