@@ -1,7 +1,8 @@
+from typing import Callable, Dict, List
+
 import pydash
 
-from typing import Callable, Dict, List
-from ..common import create_result_dict, ProviderError
+from ..common import ProviderError, create_result_dict
 
 
 class PydashPathNotFound:

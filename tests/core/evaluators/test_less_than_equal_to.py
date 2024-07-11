@@ -1,5 +1,6 @@
-from tirith.core.evaluators import LessThanEqualTo
 from pytest import mark
+
+from tirith.core.evaluators import LessThanEqualTo
 
 evaluator_input1 = 26
 evaluator_data1 = 27

@@ -1,7 +1,8 @@
 import logging
 
-from .base_evaluator import BaseEvaluator
 from tirith.utils import sort_collections
+
+from .base_evaluator import BaseEvaluator
 
 # TODO: At least add __name__ as the name for the logger
 logger = logging.getLogger()

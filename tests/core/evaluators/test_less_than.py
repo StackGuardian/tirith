@@ -1,5 +1,6 @@
-from tirith.core.evaluators import LessThan
 from pytest import mark
+
+from tirith.core.evaluators import LessThan
 
 evaluator_input1 = 5
 evaluator_data1 = 10

@@ -1,5 +1,6 @@
-from tirith.core.evaluators import IsEmpty
 from pytest import mark
+
+from tirith.core.evaluators import IsEmpty
 
 checks_passing = ("", None, [], dict())
 checks_failing = ("stackguardian", 1, [None], dict(a=1))

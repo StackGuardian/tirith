@@ -1,12 +1,13 @@
 import json
 import os
-import pytest
 import shutil
-
 from subprocess import Popen
+
+import pytest
+from utils import load_terraform_plan_json
+
 from tirith.core.core import start_policy_evaluation_from_dict
 from tirith.providers.terraform_plan import handler
-from utils import load_terraform_plan_json
 
 
 # TODO: Move these helper functions to a utils file

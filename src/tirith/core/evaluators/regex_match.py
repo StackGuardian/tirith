@@ -1,5 +1,6 @@
-from .base_evaluator import BaseEvaluator
 import re
+
+from .base_evaluator import BaseEvaluator
 
 
 class RegexMatch(BaseEvaluator):

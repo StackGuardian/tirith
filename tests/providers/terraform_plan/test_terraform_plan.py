@@ -1,8 +1,7 @@
 import pytest
-
-from tirith.providers.terraform_plan import handler
 from utils import load_terraform_plan_json
 
+from tirith.providers.terraform_plan import handler
 
 input_data = load_terraform_plan_json("input.json")
 

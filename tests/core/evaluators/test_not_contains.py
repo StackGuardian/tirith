@@ -1,6 +1,6 @@
-from tirith.core.evaluators import NotContains
 from pytest import mark
 
+from tirith.core.evaluators import NotContains
 
 checks_failing = [
     (["a", "b", "c", "d"], "a"),

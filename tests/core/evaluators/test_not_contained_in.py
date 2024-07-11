@@ -1,6 +1,6 @@
-from tirith.core.evaluators import NotContainedIn
 from pytest import mark
 
+from tirith.core.evaluators import NotContainedIn
 
 checks_failing = [
     ("a", ["a", "b", "c", "d"]),

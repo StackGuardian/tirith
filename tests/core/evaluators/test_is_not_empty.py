@@ -1,5 +1,6 @@
-from tirith.core.evaluators import IsNotEmpty
 from pytest import mark
+
+from tirith.core.evaluators import IsNotEmpty
 
 evaluator_input1 = "abc"
 evaluator_input2 = ""
