@@ -26,6 +26,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
     - [StackGuardian Workflow Policy](#stackguardian-workflow-policy-using-sg-workflow-provider)
     - [JSON](#json)
     - [Kubernetes](#kubernetes)
+- [Getting Started](#getting-started)
 - [Want to contribute?](#want-to-contribute)
   - [Getting an issue assigned](#getting-an-issue-assigned)
   - [A bug report](#a-bug-report)
@@ -1110,6 +1111,146 @@ JSON Output:
   ```
     twine upload --repository-url https://test.pypi.org/legacy/ dist/*
   ``` -->
+## Getting Started
+
+create two files, one for input.json one for
+policy.json.
+
+**input.json**
+
+```json
+{
+  "path": "/stackguardian/wfgrps/test",
+  "verb": "POST",
+  "meta": {
+    "epoch": 1718860398,
+    "User-Agent": {
+        "name": "User-Agent",
+        "value": "PostmanRuntime/7.26.8"
+    }
+  }
+}
+```
+
+**policy.json**
+
+```json
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json"
+    },
+    "evaluators": [
+        {
+            "id": "can_post",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "verb"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "POST"
+            }
+        },
+        {
+            "id": "wfgrps_path",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "path"
+            },
+            "condition": {
+                "type": "RegexMatch",
+                "value": "/stackguardian/wfgrps/test.*"
+            }
+        },
+        {
+            "id": "epoch_less_than_8th_july_2024",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "meta.epoch"
+            },
+            "condition": {
+                "type": "LessThan",
+                "value": 1720415598
+            }
+        }
+    ],
+    "eval_expression": "can_post && wfgrps_path && epoch_less_than_8th_july_2024"
+}
+```
+
+### Evaluating the policy against the input
+
+To evaluate the policy against the input, run the following command:
+
+```sh
+tirith -input-path input.json -policy-path policy.json
+```
+
+Explanation:
+
+-   **tirith**:
+    -   This is the command to run the Tirith program, which is part of
+         the StackGuardian Policy Framework.
+
+-   **-input-path input.json**:
+    -   The -input-path option specifies the path to the input file.
+    -   input.json is the file that contains the input data to be
+         scanned by Tirith.
+
+-   **-policy-path policy.json**:
+    -   The -policy-path option specifies the path to the policy file.
+    -   policy.json is the file that contains the policies (rules)
+         defined in Tirith\'s policy as code.
+
+It should print:
+```
+Check: can_post
+  PASSED
+  Results:
+	1. PASSED: POST is equal to POST
+
+Check: wfgrps_path
+  PASSED
+  Results:
+	1. PASSED: /stackguardian/wfgrps/test matches regex pattern /stackguardian/wfgrps/test.*
+
+Check: epoch_less_than_8th_july_2024
+  PASSED
+  Results:
+	1. PASSED: 1718860398 is less than 1720415598
+
+Passed: 3 Failed: 0 Skipped: 0
+
+Final expression used:
+-> can_post && wfgrps_path && epoch_less_than_8th_july_2024
+✔ Passed final evaluator
+```
+
+
+### Error tolerance
+
+What if sometimes one or more keys inside the input file are not found?
+Let's try to delete the **verb** key inside the **input.json** and see
+what happens when we try to run the evaluation again using the same
+command above.
+
+It should fail the evaluation.
+
+What if we, as a user, want the evaluator to "skips" itself (don't
+include the result to the final evaluator) when a particular key is not
+found?
+
+This is when **error tolerance** can be helpful.
+
+A provider can raise an error and the error itself has a **severity**
+value. (see Appendix). In this case the JSON provider raises an error of
+severity value 2 when the `get_value` operation can't find the JSON
+path inside the input.
+
+By setting the **error_tolerance** value to 2 or more inside the
+**condition** key in the evaluator, it will mark the evaluator as Skipped instead of Failed.
+
 
 ## Want to contribute?
 
