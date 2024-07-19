@@ -12,6 +12,7 @@ import tirith.providers.terraform_plan.handler as python_tf_plan_handler
 from tirith.logging import setup_logging
 from tirith.prettyprinter import pretty_print_result_dict
 from tirith.status import ExitStatus
+from tirith import __version__
 
 from .core import start_policy_evaluation
 
@@ -84,7 +85,7 @@ def main(args=None) -> ExitStatus:
             action="store_true",
             help="Show detailed logs of from the run",
         )
-        parser.add_argument("--version", action="version", version="1.0.0-beta.12")
+        parser.add_argument("--version", action="version", version=__version__)
 
         args = parser.parse_args()
 
