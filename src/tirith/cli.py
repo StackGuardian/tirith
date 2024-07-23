@@ -16,8 +16,8 @@ from tirith import __version__
 
 from .core import start_policy_evaluation
 
-# TODO: Use at least __name__ for the logger name
-logger = logging.getLogger()
+
+logger = logging.getLogger(__name__)
 
 
 def eprint(*args, **kwargs):
