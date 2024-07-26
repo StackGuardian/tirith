@@ -31,6 +31,11 @@ Please use GitHub Discussions to submit feedback and engage with community [http
 
 ## Basic guidelines
 
+### Commits
+
+-  Use the imperative, present tense («change», not «changed» or «changes») to be consistent with generated messages from commands like git merge.
+- Describe the changes you have made
+
 ### Pull Requests
 
 - **Stay Updated**: Make sure your PR is based on the latest code from the `main` branch.
@@ -44,6 +49,7 @@ Please use GitHub Discussions to submit feedback and engage with community [http
 - **Search First**: It helps to check if your problem or feature request has already been discussed before opening a new issue.
 - **Be Detailed**: When you open a new issue, providing as much detail as possible really helps. Feel free to use our templates for bugs and feature requests.
 - **Be Respectful**: Let's all be kind and considerate in our communication.
+- **Solving Issues**: Don't take on more than 3-4 `good first issues` at once, and work on only one issue at a time.
 
 Thank you for taking the time to help improve our project!
 
