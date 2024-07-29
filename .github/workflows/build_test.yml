@@ -3,7 +3,6 @@ name: Build & test
 on:
   push:
   pull_request:
-    types: [opened, reopened]
 
 jobs:
   run_test:
