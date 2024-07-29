@@ -1,7 +1,9 @@
 name: Linting
-
-on: [push]
-
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+    
 jobs:
   black:
     runs-on: ubuntu-latest
