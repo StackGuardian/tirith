@@ -36,6 +36,22 @@ Please use GitHub Discussions to submit feedback and engage with community [http
 -  Use the imperative, present tense («change», not «changed» or «changes») to be consistent with generated messages from commands like git merge.
 - Describe the changes you have made
 
+#### Examples
+ - **Good example**: 
+  `Add feature to calculate total monthly cost for AWS resources`\
+  Why It’s Good:
+    > **Clarity**: Clearly states the action and the feature.\
+    >**Specificity**: Specifies what the feature is and what it affects (AWS resources).\
+    >**Consistency**: Uses imperative, present tense, aligning with best practices.
+
+
+- **Bad Example**:  
+  `Fixed some stuff`\
+  Why It’s Bad:
+    > **Vague**: Does not explain what was fixed.\
+    > **Lacks Detail**: Provides no insight into what "stuff" refers to or how it was changed.\
+    > Does not use imperitve present tense.
+
 ### Pull Requests
 
 - **Stay Updated**: Make sure your PR is based on the latest code from the `main` branch.
@@ -49,7 +65,8 @@ Please use GitHub Discussions to submit feedback and engage with community [http
 - **Search First**: It helps to check if your problem or feature request has already been discussed before opening a new issue.
 - **Be Detailed**: When you open a new issue, providing as much detail as possible really helps. Feel free to use our templates for bugs and feature requests.
 - **Be Respectful**: Let's all be kind and considerate in our communication.
-- **Solving Issues**: Don't take on more than 3-4 `good first issues` at once, and work on only one issue at a time.
+- **Solving Issues**: Limit yourself to solving a maximum of four `good first issues`. Once you've reached this limit, consider tackling other types of issues.
+- Work on only one issue at a time.
 
 Thank you for taking the time to help improve our project!
 
