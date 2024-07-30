@@ -18,6 +18,26 @@ class PydashPathNotFound:
     pass
 
 
+def validate_provider_args(provider_input):
+    #validating the provider_args and rejecting any unknown args
+    VALID_PROVIDER_ARGS = [
+    "operation_type",
+    "terraform_resource_type",
+    "terraform_resource_attribute",
+    "referenced_by"
+]
+    for evaluator in provider_input["evaluators"]:
+        provider_args = evaluator.get("provider_args", {})
+    unknown_args = [arg for arg in provider_args if arg not in VALID_PROVIDER_ARGS]
+    if unknown_args:    
+        return {
+            "value": ProviderError(severity_value=1),
+            "err": f"Unknown provider_args : {', '.join(unknown_args)}",
+            }
+    else:
+        return True
+
+
 def _wrapper_get_exp_attribute(attribute, input_resource_change_attrs):
     splitted_attribute = attribute.split(".*.")
     return _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
@@ -47,6 +67,12 @@ def _get_exp_attribute(split_expressions, input_data):
 def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
     outputs = []
+
+    validation = validate_provider_args(provider_inputs)
+    if validation != True:
+        outputs.append(validation)
+        return outputs
+    
     input_resource_change_attrs = {}
     input_type = provider_inputs["operation_type"]
     resource_changes = input_data.get("resource_changes")
