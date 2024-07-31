@@ -37,17 +37,25 @@ Please use GitHub Discussions to submit feedback and engage with community [http
 - Describe the changes you have made
 
 #### Examples
- - **Good example**: 
-  `Add feature to calculate total monthly cost for AWS resources`\
-  Why It’s Good:
+**Good example**: 
+ - Commit Message:\
+  `Add feature to calculate total monthly cost for AWS resources`
+
+- Description:\
+`Implement a function that calculates the total monthly cost for AWS resources. Update the documentation to reflect this new feature.`
+
+  Why it’s Good:
     > **Clarity**: Clearly states the action and the feature.\
     >**Specificity**: Specifies what the feature is and what it affects (AWS resources).\
     >**Consistency**: Uses imperative, present tense, aligning with best practices.
 
 
-- **Bad Example**:  
-  `Fixed some stuff`\
-  Why It’s Bad:
+**Bad Example**:  
+- Commit Message:\
+  `Fixed some stuff`
+- Description:\
+`Made changes to the code to fix issues. Updated a few things here and there.`
+  Why it’s Bad:
     > **Vague**: Does not explain what was fixed.\
     > **Lacks Detail**: Provides no insight into what "stuff" refers to or how it was changed.\
     > Does not use imperitve present tense.
@@ -60,13 +68,17 @@ Please use GitHub Discussions to submit feedback and engage with community [http
 - **Pass Tests**: Ensure all tests pass before submitting your PR.
 - **Be Open to Feedback**: We're all here to help each other improve, so please be open to feedback and ready to make adjustments.
 
-### Issues
+### Creating Issues
 
 - **Search First**: It helps to check if your problem or feature request has already been discussed before opening a new issue.
 - **Be Detailed**: When you open a new issue, providing as much detail as possible really helps. Feel free to use our templates for bugs and feature requests.
 - **Be Respectful**: Let's all be kind and considerate in our communication.
-- **Solving Issues**: Limit yourself to solving a maximum of four `good first issues`. Once you've reached this limit, consider tackling other types of issues.
-- Work on only one issue at a time.
+
+### Solving Issues
+
+- Limit yourself to solving a maximum of four `good first issues`. Once you've reached this limit, consider tackling other types of issues.
+- Please work on only one issue at a time.
+- Please ask for assignee before working, and if there's no update for about a week on a particular issue, we'll remove the assignee.
 
 Thank you for taking the time to help improve our project!
 
