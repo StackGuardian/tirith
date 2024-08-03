@@ -1,3 +1,7 @@
+"""
+Sets up logging configuration for the application.
+"""
+
 import logging
 import logging.config
 import sys
@@ -38,6 +42,13 @@ DEFAULT_LOGGING_CONFIG: Dict[str, Any] = {
 
 
 def setup_logging(verbose: bool = False):
+    """
+    Set up logging configuration.
+
+    :param verbose:  If set to `True` will log all messages higher than DEBUG
+                     level, otherwise it will log the messages that are higher
+                     than INFO level ('INFO', 'WARNING', 'CRITICAL')
+    """
     if verbose:
         DEFAULT_LOGGING_CONFIG["root"]["handlers"] = ["console_stderr_verbose"]
     logging.config.dictConfig(DEFAULT_LOGGING_CONFIG)
