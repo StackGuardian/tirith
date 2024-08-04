@@ -1,17 +1,11 @@
 import pydash
 
 from typing import Callable, Dict, List
-from ..common import create_result_dict, ProviderError
+from ..common import create_result_dict, ProviderError, get_path_value_from_dict
 
 
 class PydashPathNotFound:
     pass
-
-
-def get_path_value_from_dict(key_path, input_dict):
-    # TODO: Make this function more general and then move it to common.py
-    splitted_attribute = key_path.split(".*.")
-    return _get_path_value_from_dict(splitted_attribute, input_dict)
 
 
 def _get_path_value_from_dict(splitted_paths, input_dict):
@@ -38,7 +32,7 @@ def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
     # Must be validated first whether the provider args are valid for this op type
     key_path: str = provider_args["key_path"]
 
-    values = get_path_value_from_dict(key_path, input_data)
+    values = get_path_value_from_dict(key_path, input_data, _get_path_value_from_dict)
 
     if len(values) == 0:
         severity_value = 2

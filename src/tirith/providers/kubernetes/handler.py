@@ -1,17 +1,11 @@
 import pydash
 
 from typing import Callable, Dict, List
-from ..common import create_result_dict, ProviderError
+from ..common import create_result_dict, ProviderError, get_path_value_from_dict
 
 
 class PydashPathNotFound:
     pass
-
-
-def get_path_value_from_dict(key_path, input_dict):
-    # TODO: Make this function more general and then move it to common.py
-    splitted_attribute = key_path.split(".*.")
-    return _get_path_value_from_dict(splitted_attribute, input_dict)
 
 
 def _get_path_value_from_dict(splitted_paths, input_dict):
@@ -55,7 +49,7 @@ def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
         if resource["kind"] != target_kind:
             continue
         is_kind_found = True
-        values = get_path_value_from_dict(attribute_path, resource)
+        values = get_path_value_from_dict(attribute_path, resource, _get_path_value_from_dict)
         if ".*." not in attribute_path:
             # If there's no * in the attribute path, the values always have 1 member
             values = values[0]
