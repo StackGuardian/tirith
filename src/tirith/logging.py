@@ -38,6 +38,14 @@ DEFAULT_LOGGING_CONFIG: Dict[str, Any] = {
 
 
 def setup_logging(verbose: bool = False):
+
+    """
+    This function sets up logging configuration. The default argument verbose: bool = False.
+
+    Here, if verbose = True, all the log messages higher than DEBUG level will be displayed in verbose format.
+    But, if verbose = False, all the log messages that are higher than INFO level i.e. ('INFO', 'WARNING', 'CRITICAL') will be dsiplayed in normal format.
+
+    """
     if verbose:
         DEFAULT_LOGGING_CONFIG["root"]["handlers"] = ["console_stderr_verbose"]
     logging.config.dictConfig(DEFAULT_LOGGING_CONFIG)
