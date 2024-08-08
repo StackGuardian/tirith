@@ -118,6 +118,10 @@ def main(args=None) -> ExitStatus:
                 print(formatted_result)
             else:
                 pretty_print_result_dict(result)
+
+            if result["final_result"] == False:
+                return ExitStatus.ERROR
+
             return ExitStatus.SUCCESS
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
