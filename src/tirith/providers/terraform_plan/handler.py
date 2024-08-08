@@ -9,6 +9,7 @@ Value = 2, When an attribute of a resource is not found
 # input->(list ["a.b","c", "d"],value of resource)
 # returns->[any, any, any]
 from typing import Iterable, Tuple
+
 import pydash
 
 from ..common import ProviderError

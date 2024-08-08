@@ -2,15 +2,15 @@ import ast
 import json
 import logging
 import re
-import yaml
 from types import CodeType
+from typing import Any, Dict, List, Optional, Tuple
 
-from typing import Any, Dict, List, Tuple, Optional
+import yaml
 
 from tirith.providers.common import ProviderError
+
 from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
-
 
 
 logger = logging.getLogger(__name__)

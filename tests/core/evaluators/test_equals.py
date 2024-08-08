@@ -1,5 +1,6 @@
-from tirith.core.evaluators import Equals
 from pytest import mark
+
+from tirith.core.evaluators import Equals
 
 checks_passing = [({1, 2, 3, 4}, {1, 2, 3, 4}), ([2, 4, 3], [2, 3, 4])]
 

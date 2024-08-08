@@ -1,5 +1,6 @@
-from tirith.providers.terraform_plan import handler
 from pytest import mark
+
+from tirith.providers.terraform_plan import handler
 
 checks_passing = [
     (

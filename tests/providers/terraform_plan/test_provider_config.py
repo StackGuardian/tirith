@@ -1,6 +1,7 @@
+from utils import load_terraform_plan_json
+
 from tirith.providers.common import ProviderError
 from tirith.providers.terraform_plan import handler
-from utils import load_terraform_plan_json
 
 
 def test_get_terraform_provider_get_region():

@@ -1,5 +1,6 @@
-from tirith.providers.terraform_plan import handler
 from utils import load_terraform_plan_json
+
+from tirith.providers.terraform_plan import handler
 
 
 def test_action_star_resource_type_should_include_every_resource_types():

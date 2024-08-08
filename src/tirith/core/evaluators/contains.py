@@ -1,10 +1,10 @@
 import logging
 
-from .base_evaluator import BaseEvaluator
 from tirith.utils import sort_collections
 
 
 logger = logging.getLogger(__name__)
+
 
 # Checks if :attr: `evaluator_input` is contained in :attr:`evaluator_data`.
 

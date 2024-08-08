@@ -1,5 +1,6 @@
-from tirith.core.evaluators import GreaterThanEqualTo
 from pytest import mark
+
+from tirith.core.evaluators import GreaterThanEqualTo
 
 evaluator_input1 = 27
 evaluator_data1 = 26

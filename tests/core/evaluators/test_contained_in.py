@@ -1,6 +1,6 @@
-from tirith.core.evaluators import ContainedIn
 from pytest import mark
 
+from tirith.core.evaluators import ContainedIn
 
 checks_passing = [
     ("a", ["a", "b", "c", "d"]),
