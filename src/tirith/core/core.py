@@ -12,7 +12,6 @@ from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
 
 
-
 logger = logging.getLogger(__name__)
 
 
