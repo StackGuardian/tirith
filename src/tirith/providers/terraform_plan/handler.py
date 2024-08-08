@@ -44,7 +44,7 @@ def _get_exp_attribute(split_expressions, input_data):
                     final_data.append(val)
     return final_data
 
-
+    
 def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
     outputs = []
