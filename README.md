@@ -6,6 +6,11 @@
 
 # Tirith (StackGuardian Policy Framework)
 
+## Maintainers
+
+This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
+
+
 ## A call for contributors
 
 We are calling for contributors to help build out new features, review pull requests, fix bugs, and maintain overall code quality. If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
