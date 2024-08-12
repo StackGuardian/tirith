@@ -1,3 +1,13 @@
+"""
+Sets up logging configuration for the application.
+
+It provides a default logging configuration with different handlers and formatters
+to control the verbosity and formatting of log messages. The ``setup_logging`` function
+allows switching between verbose and normal logging modes.
+
+"""
+
+
 import logging
 import logging.config
 import sys
@@ -40,11 +50,11 @@ DEFAULT_LOGGING_CONFIG: Dict[str, Any] = {
 def setup_logging(verbose: bool = False):
 
     """
-    This function sets up logging configuration. The default argument verbose: bool = False.
+    Set up logging configuration. The default argument verbose: bool = False.
 
-    Here, if verbose = True, all the log messages higher than DEBUG level will be displayed in verbose format.
-    But, if verbose = False, all the log messages that are higher than INFO level i.e. ('INFO', 'WARNING', 'CRITICAL') will be dsiplayed in normal format.
-
+    Here, if `verbose` is set to ``True``,then all the log messages higher than DEBUG level will be displayed in `verbose` format.
+    But, if `verbose` is set to ``False``, all the log messages that are higher than INFO level i.e. ('INFO', 'WARNING', 'CRITICAL') will be dsiplayed in `normal` format.
+    
     """
     if verbose:
         DEFAULT_LOGGING_CONFIG["root"]["handlers"] = ["console_stderr_verbose"]
