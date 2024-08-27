@@ -1,6 +1,8 @@
 import pytest
+import json
+from subprocess import Popen, PIPE
 
-from tirith.core.policy_parameterization import replace_vars, PydashPathNotFound
+from tirith.core.policy_parameterization import get_policy_with_vars_replaced, _VariableNotFound
 
 
 @pytest.fixture
@@ -27,20 +29,50 @@ def processed_policy():
     }
 
     # Run the function once and return the result
-    return replace_vars(input_dict, var_dict)
+    return get_policy_with_vars_replaced(input_dict, var_dict)
 
 
 def test_nested_dict(processed_policy):
-    assert processed_policy["meta"]["required_provider"] == "stackguardian/json"
-
-
-def test_path_not_found(processed_policy):
-    assert processed_policy["evaluators"][0]["provider_args"]["key_path"] == PydashPathNotFound
+    assert processed_policy[0]["meta"]["required_provider"] == "stackguardian/json"
 
 
 def test_var_value_in_list(processed_policy):
-    assert processed_policy["evaluators"][0]["condition"]["value"] == 2
+    assert processed_policy[0]["evaluators"][0]["condition"]["value"] == 2
 
 
 def test_eval_expression_parameterization(processed_policy):
-    assert processed_policy["eval_expression"] == "check0"
+    assert processed_policy[0]["eval_expression"] == "check0"
+
+
+def test_not_found_variable(processed_policy):
+    assert processed_policy[1] == ["key_path"]
+
+
+# TODO: Create testcases for:
+# - test inline vars precendece over var files
+# - test undefined vars
+# - test var syntax is not valid
+# - test with var files
+# - test with var files and inline vars together
+# - test with var files and inline vars overlapping
+def test_e2e_inline_vars():
+    # Run the tirith binary with the inline variables
+    process = Popen(
+        [
+            "tirith",
+            "-policy-path",
+            "tests/core/fixtures/policy_parametrized.json",
+            "-input-path",
+            "tests/core/fixtures/input.json",
+            "-var",
+            'city={"name": "New York"}',
+            "--json",
+        ],
+        stdout=PIPE,
+        stderr=PIPE,
+    )
+    stdout, stderr = process.communicate()
+    tirith_result = json.loads(stdout)
+    assert tirith_result["final_result"] is True
+    assert process.returncode == 0
+    assert stderr == b""
