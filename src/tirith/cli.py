@@ -74,6 +74,24 @@ def main(args=None) -> ExitStatus:
             help="Input file path",
         )
         parser.add_argument(
+            "-var-path",
+            metavar="PATH",
+            type=str,
+            default=[],
+            action="append",
+            dest="varPaths",
+            help="Variable file path(s)",
+        )
+        parser.add_argument(
+            "-var",
+            metavar="PATH",
+            type=str,
+            default=[],
+            action="append",
+            dest="inlineVars",
+            help="Inline variable(s)",
+        )
+        parser.add_argument(
             "--json",
             dest="json",
             action="store_true",
@@ -111,7 +129,7 @@ def main(args=None) -> ExitStatus:
             setup_logging(verbose=args.verbose)
 
         try:
-            result = start_policy_evaluation(args.policyPath, args.inputPath)
+            result = start_policy_evaluation(args.policyPath, args.inputPath, args.varPaths, args.inlineVars)
 
             if args.json:
                 formatted_result = json.dumps(result, indent=3)
@@ -119,15 +137,17 @@ def main(args=None) -> ExitStatus:
             else:
                 pretty_print_result_dict(result)
             return ExitStatus.SUCCESS
-        except Exception as e:
-            # TODO:write an exception class for all provider exceptions.
-            if args.json:
-                # Print empty JSON
-                print("{}")
-            else:
-                logger.exception(e)
-                eprint("ERROR")
-            return ExitStatus.ERROR
+        finally:
+            pass
+        # except Exception as e:
+        #     # TODO:write an exception class for all provider exceptions.
+        #     if args.json:
+        #         # Print empty JSON
+        #         print("{}")
+        #     else:
+        #         logger.exception(e)
+        #         eprint("ERROR")
+        #     return ExitStatus.ERROR
 
         # TODO: move to core
         # if not args.inputType:
@@ -143,8 +163,8 @@ def main(args=None) -> ExitStatus:
         if e.code != ExitStatus.SUCCESS:
             eprint("\nFailed because of System Exit")
             return ExitStatus.ERROR
-    except Exception as e:
-        # TODO: Further distinction between expected and unexpected errors.
-        eprint(f"\n {type(e)}: {str(e)}")
-        eprint("\nFailed because of an unhandled exception")
-        return ExitStatus.ERROR
+    # except Exception as e:
+    #     # TODO: Further distinction between expected and unexpected errors.
+    #     eprint(f"\n {type(e)}: {str(e)}")
+    #     eprint("\nFailed because of an unhandled exception")
+    #     return ExitStatus.ERROR

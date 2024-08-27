@@ -1,6 +1,6 @@
 import pytest
 
-from tirith.core.policy_parameterization import replace_vars, PydashPathNotFound
+from tirith.core.policy_parameterization import get_policy_with_vars_replaced, _VariableNotFound
 
 
 @pytest.fixture
@@ -27,20 +27,19 @@ def processed_policy():
     }
 
     # Run the function once and return the result
-    return replace_vars(input_dict, var_dict)
+    return get_policy_with_vars_replaced(input_dict, var_dict)
 
 
 def test_nested_dict(processed_policy):
-    assert processed_policy["meta"]["required_provider"] == "stackguardian/json"
-
-
-def test_path_not_found(processed_policy):
-    assert processed_policy["evaluators"][0]["provider_args"]["key_path"] == PydashPathNotFound
+    assert processed_policy[0]["meta"]["required_provider"] == "stackguardian/json"
 
 
 def test_var_value_in_list(processed_policy):
-    assert processed_policy["evaluators"][0]["condition"]["value"] == 2
+    assert processed_policy[0]["evaluators"][0]["condition"]["value"] == 2
 
 
 def test_eval_expression_parameterization(processed_policy):
-    assert processed_policy["eval_expression"] == "check0"
+    assert processed_policy[0]["eval_expression"] == "check0"
+
+def test_not_found_variable(processed_policy):
+    assert processed_policy[1] == ["key_path"]
