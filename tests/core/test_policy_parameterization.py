@@ -2,6 +2,7 @@ import pytest
 
 from tirith.core.policy_parameterization import replace_vars, PydashPathNotFound
 
+
 @pytest.fixture
 def processed_policy():
     var_dict = {
