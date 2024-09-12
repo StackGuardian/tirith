@@ -6,6 +6,11 @@
 
 # Tirith (StackGuardian Policy Framework)
 
+## Maintainers
+
+This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
+
+
 ## A call for contributors
 
 We are calling for contributors to help build out new features, review pull requests, fix bugs, and maintain overall code quality. If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
@@ -26,6 +31,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
     - [StackGuardian Workflow Policy](#stackguardian-workflow-policy-using-sg-workflow-provider)
     - [JSON](#json)
     - [Kubernetes](#kubernetes)
+- [Getting Started](#getting-started)
 - [Want to contribute?](#want-to-contribute)
   - [Getting an issue assigned](#getting-an-issue-assigned)
   - [A bug report](#a-bug-report)
@@ -1110,6 +1116,123 @@ JSON Output:
   ```
     twine upload --repository-url https://test.pypi.org/legacy/ dist/*
   ``` -->
+## Getting Started
+
+This is a short getting started guide for Tirith. We will take a look on how we can use Tirith to guardrail a JSON input.
+
+Create two files, one for input.json one for policy.json.
+
+**input.json**
+
+```json
+{
+  "path": "/stackguardian/wfgrps/test",
+  "verb": "POST",
+  "meta": {
+    "epoch": 1718860398,
+    "User-Agent": {
+        "name": "User-Agent",
+        "value": "PostmanRuntime/7.26.8"
+    }
+  }
+}
+```
+
+**policy.json**
+
+```json
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json"
+    },
+    "evaluators": [
+        {
+            "id": "can_post",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "verb"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "POST"
+            }
+        },
+        {
+            "id": "wfgrps_path",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "path"
+            },
+            "condition": {
+                "type": "RegexMatch",
+                "value": "/stackguardian/wfgrps/test.*"
+            }
+        },
+        {
+            "id": "epoch_less_than_8th_july_2024",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "meta.epoch"
+            },
+            "condition": {
+                "type": "LessThan",
+                "value": 1720415598
+            }
+        }
+    ],
+    "eval_expression": "can_post && wfgrps_path && epoch_less_than_8th_july_2024"
+}
+```
+
+### Evaluating the policy against the input
+
+To evaluate the policy against the input, run the following command:
+
+```sh
+tirith -input-path input.json -policy-path policy.json
+```
+
+Explanation:
+
+-   `tirith`:
+    -   This is the command to run the Tirith program, which is part of
+         the StackGuardian Policy Framework.
+
+-   `-input-path input.json`:
+    -   The `-input-path` option specifies the path to the input file.
+    -   input.json is the file that contains the input data to be
+         scanned by Tirith.
+
+-   `-policy-path policy.json`:
+    -   The `-policy-path option` specifies the path to the policy file.
+    -   policy.json is the file that contains the policies (rules)
+         defined in Tirith\'s policy as code.
+
+It should print:
+```
+Check: can_post
+  PASSED
+  Results:
+	1. PASSED: POST is equal to POST
+
+Check: wfgrps_path
+  PASSED
+  Results:
+	1. PASSED: /stackguardian/wfgrps/test matches regex pattern /stackguardian/wfgrps/test.*
+
+Check: epoch_less_than_8th_july_2024
+  PASSED
+  Results:
+	1. PASSED: 1718860398 is less than 1720415598
+
+Passed: 3 Failed: 0 Skipped: 0
+
+Final expression used:
+-> can_post && wfgrps_path && epoch_less_than_8th_july_2024
+✔ Passed final evaluator
+```
+
 
 ## Want to contribute?
 
