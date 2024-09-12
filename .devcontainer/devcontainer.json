@@ -1,0 +1,12 @@
+{
+  "name": "Tirith Dev Container",
+  "dockerFile": "Dockerfile",
+  "context": "..",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.9"
+    }
+  },
+  "postCreateCommand": "python -m virtualenv .venv && source .venv/bin/activate && pip install -e .",
+  "remoteUser": "root"
+}
