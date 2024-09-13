@@ -4,7 +4,7 @@
   "context": "..",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.9"
+      "version": "3.11"
     }
   },
   "postCreateCommand": "python -m virtualenv .venv && source .venv/bin/activate && pip install -e .",

@@ -1,5 +1,5 @@
 # Base image: Python with additional tools
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 # Set the working directory inside the container
 WORKDIR /workspace/tirith
@@ -7,7 +7,7 @@ WORKDIR /workspace/tirith
 # Install virtualenv for creating isolated environments
 RUN pip install virtualenv
 
-# Install any system-level dependencies here if needed (for example, git)
+
 RUN apt-get update && apt-get install -y git
 
 # Copy only the files necessary for pip install first to leverage Docker caching
