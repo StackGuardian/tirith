@@ -12,8 +12,7 @@ from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
 
 
-# TODO: Use __name__ for the logger name instead of using the root logger
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, input_data):

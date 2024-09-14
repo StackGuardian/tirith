@@ -1,7 +1,7 @@
 import logging
 
-# TODO: Add at least __name__ as the name of the logger
-logger = logging.getLogger()
+
+logger = logging.getLogger(__name__)
 
 
 def __getValue(key, data):
