@@ -1,0 +1,994 @@
+************* Module setup
+setup.py:19:0: C0301: Line too long (106/100) (line-too-long)
+setup.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+setup.py:18:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module src.tirith.cli
+src\tirith\cli.py:102:0: C0301: Line too long (133/100) (line-too-long)
+src\tirith\cli.py:122:13: W0511: TODO:write an exception class for all provider exceptions. (fixme)
+src\tirith\cli.py:131:9: W0511: TODO: move to core (fixme)
+src\tirith\cli.py:146:9: W0511: TODO: Further distinction between expected and unexpected errors. (fixme)
+src\tirith\cli.py:145:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\cli.py:121:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\cli.py:121:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\cli.py:141:4: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\cli.py:145:4: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\cli.py:30:0: R0911: Too many return statements (7/6) (too-many-return-statements)
+src\tirith\cli.py:30:0: R0912: Too many branches (14/12) (too-many-branches)
+src\tirith\cli.py:30:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module src.tirith.logging
+src\tirith\logging.py:10:0: C0301: Line too long (105/100) (line-too-long)
+src\tirith\logging.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\logging.py:40:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module src.tirith.prettyprinter
+src\tirith\prettyprinter.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\prettyprinter.py:4:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\prettyprinter.py:40:4: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\prettyprinter.py:44:4: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\prettyprinter.py:48:4: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\prettyprinter.py:52:4: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\prettyprinter.py:56:4: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\prettyprinter.py:60:4: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\prettyprinter.py:64:4: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\prettyprinter.py:68:4: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\prettyprinter.py:72:0: R0912: Too many branches (13/12) (too-many-branches)
+************* Module src.tirith.status
+src\tirith\status.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module src.tirith.utils
+src\tirith\utils.py:8:0: C0301: Line too long (119/100) (line-too-long)
+src\tirith\utils.py:35:9: W0511: TODO: LOG (fixme)
+src\tirith\utils.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\utils.py:6:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\utils.py:34:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\utils.py:8:8: R1705: Unnecessary "elif" after "return", remove the leading "el" from "elif" (no-else-return)
+src\tirith\utils.py:8:11: R1701: Consider merging these isinstance calls to isinstance(inputs, (bool, float, int, str)) (consider-merging-isinstance)
+src\tirith\utils.py:13:12: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+src\tirith\utils.py:14:16: R1701: Consider merging these isinstance calls to isinstance(inputs[0], (bool, float, int, str)) (consider-merging-isinstance)
+src\tirith\utils.py:34:4: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\utils.py:6:0: R0911: Too many return statements (7/6) (too-many-return-statements)
+src\tirith\utils.py:23:20: W0612: Unused variable 'index' (unused-variable)
+************* Module src.tirith.__main__
+src\tirith\__main__.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\__main__.py:10:8: W0621: Redefining name 'main' from outer scope (line 8) (redefined-outer-name)
+src\tirith\__main__.py:10:8: C0415: Import outside toplevel (cli.main) (import-outside-toplevel)
+src\tirith\__main__.py:14:8: C0415: Import outside toplevel (tirith.status.ExitStatus) (import-outside-toplevel)
+************* Module src.tirith.core.core
+src\tirith\core\core.py:87:0: C0301: Line too long (109/100) (line-too-long)
+src\tirith\core\core.py:153:0: C0301: Line too long (107/100) (line-too-long)
+src\tirith\core\core.py:182:0: C0301: Line too long (111/100) (line-too-long)
+src\tirith\core\core.py:185:0: C0301: Line too long (101/100) (line-too-long)
+src\tirith\core\core.py:188:0: C0301: Line too long (121/100) (line-too-long)
+src\tirith\core\core.py:192:0: C0301: Line too long (101/100) (line-too-long)
+src\tirith\core\core.py:202:0: C0301: Line too long (116/100) (line-too-long)
+src\tirith\core\core.py:241:0: C0301: Line too long (103/100) (line-too-long)
+src\tirith\core\core.py:19:5: W0511: TODO: Get the inputs from given providers (fixme)
+src\tirith\core\core.py:180:5: W0511: TODO: shall we use and, or and not instead of symbols? (fixme)
+src\tirith\core\core.py:210:5: W0511: TODO: validate policy_data against schema (fixme)
+src\tirith\core\core.py:219:5: W0511: TODO: validate input_data using the optionally available validate function in provider (fixme)
+src\tirith\core\core.py:229:5: W0511: TODO: Write functionality for dynamically importing evaluators from other modules. (fixme)
+src\tirith\core\core.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\core.py:18:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\core\core.py:23:8: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\core\core.py:28:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\core\core.py:28:0: R0914: Too many local variables (20/15) (too-many-locals)
+src\tirith\core\core.py:29:4: C0103: Variable name "DEFAULT_ERROR_TOLERANCE" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\core.py:51:8: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\core\core.py:61:25: R1735: Consider using '{"message": evaluator_input['err']}' instead of a call to 'dict'. (use-dict-literal)
+src\tirith\core\core.py:64:34: R1735: Consider using '{"passed": False}' instead of a call to 'dict'. (use-dict-literal)
+src\tirith\core\core.py:69:30: R1735: Consider using '{"passed": None}' instead of a call to 'dict'. (use-dict-literal)
+src\tirith\core\core.py:87:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\core\core.py:89:4: C0103: Variable name "MAX_TRIES" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\core.py:91:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\core\core.py:95:4: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\core.py:102:8: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\core\core.py:102:8: C0103: Method name "visit_Name" doesn't conform to snake_case naming style (invalid-name)
+src\tirith\core\core.py:102:8: R1711: Useless return at end of function or method (useless-return)
+src\tirith\core\core.py:106:4: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\core.py:107:8: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\core\core.py:107:8: C0103: Method name "visit_BoolOp" doesn't conform to snake_case naming style (invalid-name)
+src\tirith\core\core.py:118:4: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\core.py:119:8: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\core\core.py:119:8: C0103: Method name "visit_UnaryOp" doesn't conform to snake_case naming style (invalid-name)
+src\tirith\core\core.py:143:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\core.py:146:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\core.py:199:24: W0123: Use of eval (eval-used)
+src\tirith\core\core.py:207:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\core\core.py:208:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+src\tirith\core\core.py:208:30: C0103: Variable name "f" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\core.py:212:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+src\tirith\core\core.py:212:29: C0103: Variable name "f" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\core.py:216:25: R1735: Consider using '{"yamls": list(yaml.safe_load_all(f))}' instead of a call to 'dict'. (use-dict-literal)
+src\tirith\core\core.py:224:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\core\core.py:235:8: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\core\core.py:6:0: C0411: standard import "types.CodeType" should be placed before third party import "yaml" (wrong-import-order)
+src\tirith\core\core.py:8:0: C0411: standard import "typing.Any" should be placed before third party import "yaml" (wrong-import-order)
+************* Module src.tirith.core
+src\tirith\core\__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module src.tirith.core.evaluators.base_evaluator
+src\tirith\core\evaluators\base_evaluator.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\base_evaluator.py:5:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\base_evaluator.py:12:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\base_evaluator.py:12:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module src.tirith.core.evaluators.contained_in
+src\tirith\core\evaluators\contained_in.py:40:0: C0301: Line too long (111/100) (line-too-long)
+src\tirith\core\evaluators\contained_in.py:49:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\contained_in.py:58:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\contained_in.py:66:0: C0301: Line too long (111/100) (line-too-long)
+src\tirith\core\evaluators\contained_in.py:85:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\contained_in.py:88:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\core\evaluators\contained_in.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\contained_in.py:31:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\contained_in.py:93:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\contained_in.py:40:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:49:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:51:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:58:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:60:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:66:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:71:63: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:77:59: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:34:8: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+src\tirith\core\evaluators\contained_in.py:85:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:88:20: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contained_in.py:93:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\contained_in.py:32:4: R0912: Too many branches (19/12) (too-many-branches)
+src\tirith\core\evaluators\contained_in.py:31:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+src\tirith\core\evaluators\contained_in.py:4:0: C0411: first party import "tirith.utils.sort_collections" should be placed before local import "base_evaluator.BaseEvaluator" (wrong-import-order)
+************* Module src.tirith.core.evaluators.contains
+src\tirith\core\evaluators\contains.py:41:0: C0301: Line too long (111/100) (line-too-long)
+src\tirith\core\evaluators\contains.py:50:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\contains.py:59:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\contains.py:67:0: C0301: Line too long (111/100) (line-too-long)
+src\tirith\core\evaluators\contains.py:86:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\contains.py:89:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\core\evaluators\contains.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\contains.py:32:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\contains.py:94:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\contains.py:41:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:50:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:52:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:59:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:61:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:67:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:72:63: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:78:59: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:35:8: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+src\tirith\core\evaluators\contains.py:86:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:89:20: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\contains.py:94:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\contains.py:33:4: R0912: Too many branches (19/12) (too-many-branches)
+src\tirith\core\evaluators\contains.py:32:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+src\tirith\core\evaluators\contains.py:4:0: C0411: first party import "tirith.utils.sort_collections" should be placed before local import "base_evaluator.BaseEvaluator" (wrong-import-order)
+************* Module src.tirith.core.evaluators.equals
+src\tirith\core\evaluators\equals.py:8:0: C0301: Line too long (109/100) (line-too-long)
+src\tirith\core\evaluators\equals.py:44:0: C0301: Line too long (106/100) (line-too-long)
+src\tirith\core\evaluators\equals.py:46:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\core\evaluators\equals.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\equals.py:31:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\equals.py:48:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\equals.py:37:15: R1701: Consider merging these isinstance calls to isinstance(value1, (dict, list)) (consider-merging-isinstance)
+src\tirith\core\evaluators\equals.py:39:15: R1701: Consider merging these isinstance calls to isinstance(value2, (dict, list)) (consider-merging-isinstance)
+src\tirith\core\evaluators\equals.py:44:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\equals.py:46:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\equals.py:48:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\equals.py:31:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+src\tirith\core\evaluators\equals.py:4:0: C0411: first party import "tirith.utils.sort_collections" should be placed before local import "base_evaluator.BaseEvaluator" (wrong-import-order)
+************* Module src.tirith.core.evaluators.greater_than
+src\tirith\core\evaluators\greater_than.py:4:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\core\evaluators\greater_than.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\greater_than.py:25:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\greater_than.py:37:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\greater_than.py:33:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\greater_than.py:35:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\greater_than.py:37:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\greater_than.py:25:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module src.tirith.core.evaluators.greater_than_equal_to
+src\tirith\core\evaluators\greater_than_equal_to.py:3:0: C0301: Line too long (122/100) (line-too-long)
+src\tirith\core\evaluators\greater_than_equal_to.py:34:0: C0301: Line too long (102/100) (line-too-long)
+src\tirith\core\evaluators\greater_than_equal_to.py:36:0: C0301: Line too long (109/100) (line-too-long)
+src\tirith\core\evaluators\greater_than_equal_to.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\greater_than_equal_to.py:26:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\greater_than_equal_to.py:38:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\greater_than_equal_to.py:34:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\greater_than_equal_to.py:36:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\greater_than_equal_to.py:38:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\greater_than_equal_to.py:26:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module src.tirith.core.evaluators.is_empty
+src\tirith\core\evaluators\is_empty.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\is_empty.py:23:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\is_empty.py:40:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\is_empty.py:29:20: R1701: Consider merging these isinstance calls to isinstance(evaluator_input, (dict, list, str)) (consider-merging-isinstance)
+src\tirith\core\evaluators\is_empty.py:36:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\is_empty.py:38:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\is_empty.py:40:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\is_empty.py:23:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module src.tirith.core.evaluators.is_not_empty
+src\tirith\core\evaluators\is_not_empty.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\is_not_empty.py:23:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\is_not_empty.py:37:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\is_not_empty.py:28:16: R1701: Consider merging these isinstance calls to isinstance(evaluator_input, (dict, list, str)) (consider-merging-isinstance)
+src\tirith\core\evaluators\is_not_empty.py:33:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\is_not_empty.py:35:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\is_not_empty.py:37:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\is_not_empty.py:23:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module src.tirith.core.evaluators.less_than
+src\tirith\core\evaluators\less_than.py:3:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\core\evaluators\less_than.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\less_than.py:24:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\less_than.py:36:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\less_than.py:32:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\less_than.py:34:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\less_than.py:36:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\less_than.py:24:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module src.tirith.core.evaluators.less_than_equal_to
+src\tirith\core\evaluators\less_than_equal_to.py:3:0: C0301: Line too long (122/100) (line-too-long)
+src\tirith\core\evaluators\less_than_equal_to.py:39:0: C0301: Line too long (106/100) (line-too-long)
+src\tirith\core\evaluators\less_than_equal_to.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\less_than_equal_to.py:26:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\less_than_equal_to.py:41:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\less_than_equal_to.py:37:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\less_than_equal_to.py:39:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\less_than_equal_to.py:41:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\less_than_equal_to.py:26:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module src.tirith.core.evaluators.not_contained_in
+src\tirith\core\evaluators\not_contained_in.py:30:0: C0301: Line too long (118/100) (line-too-long)
+src\tirith\core\evaluators\not_contained_in.py:32:0: C0301: Line too long (111/100) (line-too-long)
+src\tirith\core\evaluators\not_contained_in.py:45:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\not_contained_in.py:54:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\not_contained_in.py:58:0: C0301: Line too long (118/100) (line-too-long)
+src\tirith\core\evaluators\not_contained_in.py:65:0: C0301: Line too long (119/100) (line-too-long)
+src\tirith\core\evaluators\not_contained_in.py:75:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\not_contained_in.py:79:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\core\evaluators\not_contained_in.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\not_contained_in.py:21:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\not_contained_in.py:84:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\not_contained_in.py:30:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:32:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:41:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:45:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:50:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:54:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:58:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:65:59: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:71:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:75:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:79:20: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contained_in.py:84:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\not_contained_in.py:22:4: R0912: Too many branches (20/12) (too-many-branches)
+src\tirith\core\evaluators\not_contained_in.py:21:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+src\tirith\core\evaluators\not_contained_in.py:4:0: C0411: first party import "tirith.utils.sort_collections" should be placed before local import "base_evaluator.BaseEvaluator" (wrong-import-order)
+************* Module src.tirith.core.evaluators.not_contains
+src\tirith\core\evaluators\not_contains.py:41:0: C0301: Line too long (118/100) (line-too-long)
+src\tirith\core\evaluators\not_contains.py:43:0: C0301: Line too long (111/100) (line-too-long)
+src\tirith\core\evaluators\not_contains.py:56:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\not_contains.py:65:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\not_contains.py:69:0: C0301: Line too long (118/100) (line-too-long)
+src\tirith\core\evaluators\not_contains.py:76:0: C0301: Line too long (119/100) (line-too-long)
+src\tirith\core\evaluators\not_contains.py:86:0: C0301: Line too long (115/100) (line-too-long)
+src\tirith\core\evaluators\not_contains.py:91:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\core\evaluators\not_contains.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\not_contains.py:32:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\not_contains.py:96:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\not_contains.py:41:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:43:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:52:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:56:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:61:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:65:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:69:51: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:76:59: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:82:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:86:55: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:91:20: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_contains.py:96:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\not_contains.py:33:4: R0912: Too many branches (20/12) (too-many-branches)
+src\tirith\core\evaluators\not_contains.py:32:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+src\tirith\core\evaluators\not_contains.py:4:0: C0411: first party import "tirith.utils.sort_collections" should be placed before local import "base_evaluator.BaseEvaluator" (wrong-import-order)
+************* Module src.tirith.core.evaluators.not_equals
+src\tirith\core\evaluators\not_equals.py:8:0: C0301: Line too long (113/100) (line-too-long)
+src\tirith\core\evaluators\not_equals.py:44:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\core\evaluators\not_equals.py:46:0: C0301: Line too long (106/100) (line-too-long)
+src\tirith\core\evaluators\not_equals.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\not_equals.py:31:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\not_equals.py:48:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\not_equals.py:37:15: R1701: Consider merging these isinstance calls to isinstance(value1, (dict, list)) (consider-merging-isinstance)
+src\tirith\core\evaluators\not_equals.py:39:15: R1701: Consider merging these isinstance calls to isinstance(value2, (dict, list)) (consider-merging-isinstance)
+src\tirith\core\evaluators\not_equals.py:44:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_equals.py:46:47: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\not_equals.py:48:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\not_equals.py:31:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+src\tirith\core\evaluators\not_equals.py:4:0: C0411: first party import "tirith.utils.sort_collections" should be placed before local import "base_evaluator.BaseEvaluator" (wrong-import-order)
+************* Module src.tirith.core.evaluators.regex_match
+src\tirith\core\evaluators\regex_match.py:16:0: C0301: Line too long (112/100) (line-too-long)
+src\tirith\core\evaluators\regex_match.py:21:0: C0301: Line too long (105/100) (line-too-long)
+src\tirith\core\evaluators\regex_match.py:26:0: C0301: Line too long (108/100) (line-too-long)
+src\tirith\core\evaluators\regex_match.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\core\evaluators\regex_match.py:5:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\core\evaluators\regex_match.py:29:15: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\core\evaluators\regex_match.py:10:62: C0123: Use isinstance() rather than type() for a typecheck. (unidiomatic-typecheck)
+src\tirith\core\evaluators\regex_match.py:16:35: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\regex_match.py:21:35: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\regex_match.py:26:31: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+src\tirith\core\evaluators\regex_match.py:29:8: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\core\evaluators\regex_match.py:5:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+src\tirith\core\evaluators\regex_match.py:2:0: C0411: standard import "re" should be placed before local import "base_evaluator.BaseEvaluator" (wrong-import-order)
+************* Module src.tirith.core.evaluators
+src\tirith\core\evaluators\__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module src.tirith.exceptions.all
+src\tirith\exceptions\all.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\exceptions\all.py:1:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\exceptions\all.py:7:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\exceptions\all.py:13:0: C0115: Missing class docstring (missing-class-docstring)
+************* Module src.tirith.providers.common
+src\tirith\providers\common.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\providers\common.py:4:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\common.py:5:11: R1735: Consider using '{"value": value, "meta": meta, "err": err}' instead of a call to 'dict'. (use-dict-literal)
+src\tirith\providers\common.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\common.py:13:0: R0903: Too few public methods (0/2) (too-few-public-methods)
+************* Module src.tirith.providers
+src\tirith\providers\__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module src.tirith.providers.infracost.handler
+src\tirith\providers\infracost\handler.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\providers\infracost\handler.py:7:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\providers\infracost\handler.py:15:12: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+src\tirith\providers\infracost\handler.py:33:16: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\providers\infracost\handler.py:42:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\providers\infracost\handler.py:51:12: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+src\tirith\providers\infracost\handler.py:72:16: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\providers\infracost\handler.py:80:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\infracost\handler.py:82:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\providers\infracost\handler.py:87:12: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+src\tirith\providers\infracost\handler.py:96:4: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+************* Module src.tirith.providers.infracost
+src\tirith\providers\infracost\__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module src.tirith.providers.json.handler
+src\tirith\providers\json\handler.py:24:0: C0301: Line too long (103/100) (line-too-long)
+src\tirith\providers\json\handler.py:60:9: W0511: TODO: We should think of a mechanism to tell the core that this error message (fixme)
+src\tirith\providers\json\handler.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\providers\json\handler.py:7:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\providers\json\handler.py:7:0: R0903: Too few public methods (0/2) (too-few-public-methods)
+src\tirith\providers\json\handler.py:31:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\json\handler.py:54:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\json\handler.py:3:0: C0411: standard import "typing.Callable" should be placed before third party import "pydash" (wrong-import-order)
+************* Module src.tirith.providers.json
+src\tirith\providers\json\__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module src.tirith.providers.kubernetes.handler
+src\tirith\providers\kubernetes\handler.py:41:0: C0301: Line too long (113/100) (line-too-long)
+src\tirith\providers\kubernetes\handler.py:43:0: C0301: Line too long (112/100) (line-too-long)
+src\tirith\providers\kubernetes\handler.py:60:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\providers\kubernetes\handler.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\providers\kubernetes\handler.py:7:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\providers\kubernetes\handler.py:7:0: R0903: Too few public methods (0/2) (too-few-public-methods)
+src\tirith\providers\kubernetes\handler.py:35:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\kubernetes\handler.py:69:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\kubernetes\handler.py:3:0: C0411: standard import "typing.Callable" should be placed before third party import "pydash" (wrong-import-order)
+************* Module src.tirith.providers.kubernetes
+src\tirith\providers\kubernetes\__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module src.tirith.providers.sg_workflow.handler
+src\tirith\providers\sg_workflow\handler.py:64:0: C0301: Line too long (116/100) (line-too-long)
+src\tirith\providers\sg_workflow\handler.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+src\tirith\providers\sg_workflow\handler.py:7:0: C0103: Function name "__getValue" doesn't conform to snake_case naming style (invalid-name)
+src\tirith\providers\sg_workflow\handler.py:8:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\providers\sg_workflow\handler.py:69:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\providers\sg_workflow\handler.py:7:0: R0912: Too many branches (17/12) (too-many-branches)
+src\tirith\providers\sg_workflow\handler.py:73:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\sg_workflow\handler.py:75:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+src\tirith\providers\sg_workflow\handler.py:92:11: W0718: Catching too general exception Exception (broad-exception-caught)
+src\tirith\providers\sg_workflow\handler.py:89:27: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+src\tirith\providers\sg_workflow\handler.py:92:4: C0103: Variable name "e" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\providers\sg_workflow\handler.py:73:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module src.tirith.providers.sg_workflow
+src\tirith\providers\sg_workflow\__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module src.tirith.providers.terraform_plan.handler
+src\tirith\providers\terraform_plan\handler.py:40:0: C0301: Line too long (103/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:86:0: C0301: Line too long (110/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:90:0: C0301: Line too long (109/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:95:0: C0301: Line too long (102/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:199:0: C0301: Line too long (145/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:207:0: C0301: Line too long (117/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:228:0: C0301: Line too long (113/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:235:0: C0301: Line too long (122/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:251:0: C0301: Line too long (122/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:270:0: C0301: Line too long (102/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:277:0: C0301: Line too long (112/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:288:0: C0301: Line too long (106/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:301:0: C0301: Line too long (101/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:310:0: C0301: Line too long (102/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:320:0: C0301: Line too long (112/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:355:0: C0301: Line too long (117/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:360:0: C0301: Line too long (108/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:363:0: C0301: Line too long (116/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:380:0: C0301: Line too long (113/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:397:0: C0301: Line too long (101/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:399:0: C0301: Line too long (102/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:409:0: C0301: Line too long (112/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:456:0: C0301: Line too long (133/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:467:0: C0301: Line too long (102/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:474:0: C0301: Line too long (112/100) (line-too-long)
+src\tirith\providers\terraform_plan\handler.py:227:13: W0511: FIXME: The region might not be in the constant_value, it can be in a variable (fixme)
+src\tirith\providers\terraform_plan\handler.py:418:9: W0511: TODO: Use the module_path (fixme)
+src\tirith\providers\terraform_plan\handler.py:17:0: C0115: Missing class docstring (missing-class-docstring)
+src\tirith\providers\terraform_plan\handler.py:17:0: R0903: Too few public methods (0/2) (too-few-public-methods)
+src\tirith\providers\terraform_plan\handler.py:47:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\terraform_plan\handler.py:47:0: R0914: Too many local variables (17/15) (too-many-locals)
+src\tirith\providers\terraform_plan\handler.py:57:23: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+src\tirith\providers\terraform_plan\handler.py:64:4: R1705: Unnecessary "elif" after "return", remove the leading "el" from "elif" (no-else-return)
+src\tirith\providers\terraform_plan\handler.py:64:4: R1702: Too many nested blocks (6/5) (too-many-nested-blocks)
+src\tirith\providers\terraform_plan\handler.py:47:0: R0912: Too many branches (26/12) (too-many-branches)
+src\tirith\providers\terraform_plan\handler.py:47:0: R0915: Too many statements (57/50) (too-many-statements)
+src\tirith\providers\terraform_plan\handler.py:190:4: C0103: Variable name "SUPPORTED_ATTRIBUTES" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\providers\terraform_plan\handler.py:258:49: W0613: Unused argument 'provider_inputs' (unused-argument)
+src\tirith\providers\terraform_plan\handler.py:269:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\terraform_plan\handler.py:301:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\terraform_plan\handler.py:301:0: R0914: Too many local variables (16/15) (too-many-locals)
+src\tirith\providers\terraform_plan\handler.py:301:0: R0912: Too many branches (13/12) (too-many-branches)
+src\tirith\providers\terraform_plan\handler.py:397:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\terraform_plan\handler.py:397:0: R0914: Too many local variables (18/15) (too-many-locals)
+src\tirith\providers\terraform_plan\handler.py:444:4: C0103: Variable name "is_all_resource_type_references_to" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+src\tirith\providers\terraform_plan\handler.py:419:29: W0612: Unused variable 'module_path' (unused-variable)
+src\tirith\providers\terraform_plan\handler.py:448:0: C0116: Missing function or method docstring (missing-function-docstring)
+src\tirith\providers\terraform_plan\handler.py:448:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module src.tirith.providers.terraform_plan
+src\tirith\providers\terraform_plan\__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+************* Module tests.core.test_core
+tests\core\test_core.py:9:0: C0301: Line too long (116/100) (line-too-long)
+tests\core\test_core.py:12:0: C0301: Line too long (117/100) (line-too-long)
+tests\core\test_core.py:19:0: C0301: Line too long (106/100) (line-too-long)
+tests\core\test_core.py:27:0: C0301: Line too long (107/100) (line-too-long)
+tests\core\test_core.py:38:0: C0301: Line too long (112/100) (line-too-long)
+tests\core\test_core.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\test_core.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\test_core.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\test_core.py:9:71: R1735: Consider using '{"skipped_check": None, "passing_check": True}' instead of a call to 'dict'. (use-dict-literal)
+tests\core\test_core.py:12:71: R1735: Consider using '{"skipped_check": None, "passing_check": False}' instead of a call to 'dict'. (use-dict-literal)
+tests\core\test_core.py:17:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\test_core.py:19:62: R1735: Consider using '{"skipped_check": None, "passing_check": True}' instead of a call to 'dict'. (use-dict-literal)
+tests\core\test_core.py:27:62: R1735: Consider using '{"skipped_check": None, "passing_check": False}' instead of a call to 'dict'. (use-dict-literal)
+tests\core\test_core.py:36:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\test_core.py:38:68: R1735: Consider using '{"skipped_check": None, "passing_check": True}' instead of a call to 'dict'. (use-dict-literal)
+************* Module tests.core.evaluators.test_contained_in
+tests\core\evaluators\test_contained_in.py:44:0: C0301: Line too long (118/100) (line-too-long)
+tests\core\evaluators\test_contained_in.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_contained_in.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_contained_in.py:42:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_contained_in.py:44:11: C0121: Comparison 'result['passed'] == True' should be 'result['passed'] is True' if checking for the singleton value True, or 'result['passed']' if testing for truthiness (singleton-comparison)
+tests\core\evaluators\test_contained_in.py:50:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_contained_in.py:53:8: C0121: Comparison 'result['passed'] == False' should be 'result['passed'] is False' if checking for the singleton value False, or 'not result['passed']' if testing for falsiness (singleton-comparison)
+tests\core\evaluators\test_contained_in.py:60:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_contained_in.py:63:8: C0121: Comparison 'result['passed'] == False' should be 'result['passed'] is False' if checking for the singleton value False, or 'not result['passed']' if testing for falsiness (singleton-comparison)
+tests\core\evaluators\test_contained_in.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.ContainedIn"  (wrong-import-order)
+************* Module tests.core.evaluators.test_contains
+tests\core\evaluators\test_contains.py:44:0: C0301: Line too long (118/100) (line-too-long)
+tests\core\evaluators\test_contains.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_contains.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_contains.py:42:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_contains.py:44:11: C0121: Comparison 'result['passed'] == True' should be 'result['passed'] is True' if checking for the singleton value True, or 'result['passed']' if testing for truthiness (singleton-comparison)
+tests\core\evaluators\test_contains.py:50:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_contains.py:53:8: C0121: Comparison 'result['passed'] == False' should be 'result['passed'] is False' if checking for the singleton value False, or 'not result['passed']' if testing for falsiness (singleton-comparison)
+tests\core\evaluators\test_contains.py:60:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_contains.py:63:8: C0121: Comparison 'result['passed'] == False' should be 'result['passed'] is False' if checking for the singleton value False, or 'not result['passed']' if testing for falsiness (singleton-comparison)
+tests\core\evaluators\test_contains.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.Contains"  (wrong-import-order)
+************* Module tests.core.evaluators.test_equals
+tests\core\evaluators\test_equals.py:24:0: C0301: Line too long (104/100) (line-too-long)
+tests\core\evaluators\test_equals.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_equals.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_equals.py:14:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_equals.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_equals.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.Equals"  (wrong-import-order)
+************* Module tests.core.evaluators.test_greater_than
+tests\core\evaluators\test_greater_than.py:17:0: C0301: Line too long (105/100) (line-too-long)
+tests\core\evaluators\test_greater_than.py:24:0: C0301: Line too long (110/100) (line-too-long)
+tests\core\evaluators\test_greater_than.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_greater_than.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_greater_than.py:4:0: C0103: Constant name "evaluator_input1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_greater_than.py:5:0: C0103: Constant name "evaluator_data1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_greater_than.py:7:0: C0103: Constant name "evaluator_input2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_greater_than.py:8:0: C0103: Constant name "evaluator_data2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_greater_than.py:15:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_greater_than.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_greater_than.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.GreaterThan"  (wrong-import-order)
+************* Module tests.core.evaluators.test_greater_than_equal_to
+tests\core\evaluators\test_greater_than_equal_to.py:17:0: C0301: Line too long (114/100) (line-too-long)
+tests\core\evaluators\test_greater_than_equal_to.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_greater_than_equal_to.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_greater_than_equal_to.py:4:0: C0103: Constant name "evaluator_input1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_greater_than_equal_to.py:5:0: C0103: Constant name "evaluator_data1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_greater_than_equal_to.py:7:0: C0103: Constant name "evaluator_input2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_greater_than_equal_to.py:8:0: C0103: Constant name "evaluator_data2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_greater_than_equal_to.py:15:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_greater_than_equal_to.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_greater_than_equal_to.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.GreaterThanEqualTo"  (wrong-import-order)
+************* Module tests.core.evaluators.test_is_empty
+tests\core\evaluators\test_is_empty.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_is_empty.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_is_empty.py:4:32: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
+tests\core\evaluators\test_is_empty.py:5:46: R1735: Consider using '{"a": 1}' instead of a call to 'dict'. (use-dict-literal)
+tests\core\evaluators\test_is_empty.py:12:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_is_empty.py:19:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_is_empty.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.IsEmpty"  (wrong-import-order)
+************* Module tests.core.evaluators.test_is_not_empty
+tests\core\evaluators\test_is_not_empty.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_is_not_empty.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_is_not_empty.py:4:0: C0103: Constant name "evaluator_input1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_is_not_empty.py:5:0: C0103: Constant name "evaluator_input2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_is_not_empty.py:12:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_is_not_empty.py:19:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_is_not_empty.py:19:0: E0102: function already defined line 12 (function-redefined)
+tests\core\evaluators\test_is_not_empty.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.IsNotEmpty"  (wrong-import-order)
+************* Module tests.core.evaluators.test_less_than
+tests\core\evaluators\test_less_than.py:17:0: C0301: Line too long (102/100) (line-too-long)
+tests\core\evaluators\test_less_than.py:24:0: C0301: Line too long (107/100) (line-too-long)
+tests\core\evaluators\test_less_than.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_less_than.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_less_than.py:4:0: C0103: Constant name "evaluator_input1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_less_than.py:5:0: C0103: Constant name "evaluator_data1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_less_than.py:7:0: C0103: Constant name "evaluator_input2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_less_than.py:8:0: C0103: Constant name "evaluator_data2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_less_than.py:15:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_less_than.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_less_than.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.LessThan"  (wrong-import-order)
+************* Module tests.core.evaluators.test_less_than_equal_to
+tests\core\evaluators\test_less_than_equal_to.py:17:0: C0301: Line too long (111/100) (line-too-long)
+tests\core\evaluators\test_less_than_equal_to.py:24:0: C0301: Line too long (119/100) (line-too-long)
+tests\core\evaluators\test_less_than_equal_to.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_less_than_equal_to.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_less_than_equal_to.py:4:0: C0103: Constant name "evaluator_input1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_less_than_equal_to.py:5:0: C0103: Constant name "evaluator_data1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_less_than_equal_to.py:7:0: C0103: Constant name "evaluator_input2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_less_than_equal_to.py:8:0: C0103: Constant name "evaluator_data2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_less_than_equal_to.py:15:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_less_than_equal_to.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_less_than_equal_to.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.LessThanEqualTo"  (wrong-import-order)
+************* Module tests.core.evaluators.test_not_contained_in
+tests\core\evaluators\test_not_contained_in.py:62:0: C0301: Line too long (110/100) (line-too-long)
+tests\core\evaluators\test_not_contained_in.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_not_contained_in.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_not_contained_in.py:41:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_not_contained_in.py:43:11: C0121: Comparison 'result['passed'] == True' should be 'result['passed'] is True' if checking for the singleton value True, or 'result['passed']' if testing for truthiness (singleton-comparison)
+tests\core\evaluators\test_not_contained_in.py:50:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_not_contained_in.py:52:11: C0121: Comparison 'result['passed'] == False' should be 'result['passed'] is False' if checking for the singleton value False, or 'not result['passed']' if testing for falsiness (singleton-comparison)
+tests\core\evaluators\test_not_contained_in.py:59:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_not_contained_in.py:61:11: C0121: Comparison 'result['passed'] == False' should be 'result['passed'] is False' if checking for the singleton value False, or 'not result['passed']' if testing for falsiness (singleton-comparison)
+tests\core\evaluators\test_not_contained_in.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.NotContainedIn"  (wrong-import-order)
+************* Module tests.core.evaluators.test_not_contains
+tests\core\evaluators\test_not_contains.py:39:0: C0301: Line too long (118/100) (line-too-long)
+tests\core\evaluators\test_not_contains.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_not_contains.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_not_contains.py:37:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_not_contains.py:39:11: C0121: Comparison 'result['passed'] == True' should be 'result['passed'] is True' if checking for the singleton value True, or 'result['passed']' if testing for truthiness (singleton-comparison)
+tests\core\evaluators\test_not_contains.py:45:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_not_contains.py:48:8: C0121: Comparison 'result['passed'] == False' should be 'result['passed'] is False' if checking for the singleton value False, or 'not result['passed']' if testing for falsiness (singleton-comparison)
+tests\core\evaluators\test_not_contains.py:55:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_not_contains.py:58:8: C0121: Comparison 'result['passed'] == False' should be 'result['passed'] is False' if checking for the singleton value False, or 'not result['passed']' if testing for falsiness (singleton-comparison)
+tests\core\evaluators\test_not_contains.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.NotContains"  (wrong-import-order)
+************* Module tests.core.evaluators.test_not_equals
+tests\core\evaluators\test_not_equals.py:16:0: C0301: Line too long (103/100) (line-too-long)
+tests\core\evaluators\test_not_equals.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_not_equals.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_not_equals.py:14:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_not_equals.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_not_equals.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.NotEquals"  (wrong-import-order)
+************* Module tests.core.evaluators.test_regex_match
+tests\core\evaluators\test_regex_match.py:17:0: C0301: Line too long (111/100) (line-too-long)
+tests\core\evaluators\test_regex_match.py:24:0: C0301: Line too long (119/100) (line-too-long)
+tests\core\evaluators\test_regex_match.py:84:0: C0301: Line too long (120/100) (line-too-long)
+tests\core\evaluators\test_regex_match.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\core\evaluators\test_regex_match.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\core\evaluators\test_regex_match.py:4:0: C0103: Constant name "evaluator_data1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_regex_match.py:5:0: C0103: Constant name "evaluator_input1" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_regex_match.py:7:0: C0103: Constant name "evaluator_data2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_regex_match.py:8:0: C0103: Constant name "evaluator_input2" doesn't conform to UPPER_CASE naming style (invalid-name)
+tests\core\evaluators\test_regex_match.py:15:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:32:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:33:48: R1735: Consider using '{"a": 2}' instead of a call to 'dict'. (use-dict-literal)
+tests\core\evaluators\test_regex_match.py:37:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:48:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:59:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:70:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:76:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:82:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\core\evaluators\test_regex_match.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.core.evaluators.RegexMatch"  (wrong-import-order)
+************* Module tests.providers.infracost.tests_infracost
+tests\providers\infracost\tests_infracost.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\infracost\tests_infracost.py:3:0: E0401: Unable to import 'pytest' (import-error)
+tests\providers\infracost\tests_infracost.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\infracost\tests_infracost.py:9:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests\providers\infracost\tests_infracost.py:9:83: C0103: Variable name "fp" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+tests\providers\infracost\tests_infracost.py:23:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\infracost\tests_infracost.py:32:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\infracost\tests_infracost.py:34:11: C0121: Comparison 'bool(res[0]['value'] == 0) == False' should be 'bool(res[0]['value'] == 0) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] == 0)' if testing for falsiness (singleton-comparison)
+tests\providers\infracost\tests_infracost.py:46:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\infracost\tests_infracost.py:55:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\infracost\tests_infracost.py:57:11: C0121: Comparison 'bool(res[0]['value'] == 0) == False' should be 'bool(res[0]['value'] == 0) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] == 0)' if testing for falsiness (singleton-comparison)
+tests\providers\infracost\tests_infracost.py:70:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\infracost\tests_infracost.py:76:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\infracost\tests_infracost.py:78:11: C0121: Comparison 'bool(res[0]['value'] == 0) == False' should be 'bool(res[0]['value'] == 0) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] == 0)' if testing for falsiness (singleton-comparison)
+************* Module tests.providers.json.test_get_value
+tests\providers\json\test_get_value.py:7:1: W0511: TODO: Need to split this into multiple tests (fixme)
+tests\providers\json\test_get_value.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\json\test_get_value.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\json\test_get_value.py:10:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests\providers\json\test_get_value.py:10:55: C0103: Variable name "f" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+tests\providers\json\test_get_value.py:12:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests\providers\json\test_get_value.py:12:56: C0103: Variable name "f" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+tests\providers\json\test_get_value.py:16:11: C0121: Comparison 'result['final_result'] == True' should be 'result['final_result'] is True' if checking for the singleton value True, or 'result['final_result']' if testing for truthiness (singleton-comparison)
+************* Module tests.providers.sg_workflow.tests_sg_workflow
+tests\providers\sg_workflow\tests_sg_workflow.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:3:0: E0401: Unable to import 'pytest' (import-error)
+tests\providers\sg_workflow\tests_sg_workflow.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:9:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests\providers\sg_workflow\tests_sg_workflow.py:9:83: C0103: Variable name "fp" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+tests\providers\sg_workflow\tests_sg_workflow.py:14:0: W0404: Reimport 'json' (imported line 1) (reimported)
+tests\providers\sg_workflow\tests_sg_workflow.py:14:0: C0413: Import "import json" should be placed at the top of the module (wrong-import-position)
+tests\providers\sg_workflow\tests_sg_workflow.py:15:0: W0404: Reimport 'os' (imported line 2) (reimported)
+tests\providers\sg_workflow\tests_sg_workflow.py:15:0: C0413: Import "import os" should be placed at the top of the module (wrong-import-position)
+tests\providers\sg_workflow\tests_sg_workflow.py:16:0: W0404: Reimport 'pytest' (imported line 3) (reimported)
+tests\providers\sg_workflow\tests_sg_workflow.py:16:0: E0401: Unable to import 'pytest' (import-error)
+tests\providers\sg_workflow\tests_sg_workflow.py:16:0: C0413: Import "import pytest" should be placed at the top of the module (wrong-import-position)
+tests\providers\sg_workflow\tests_sg_workflow.py:18:0: W0404: Reimport 'handler' (imported line 5) (reimported)
+tests\providers\sg_workflow\tests_sg_workflow.py:18:0: C0413: Import "from tirith.providers.sg_workflow import handler" should be placed at the top of the module (wrong-import-position)
+tests\providers\sg_workflow\tests_sg_workflow.py:21:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:22:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests\providers\sg_workflow\tests_sg_workflow.py:22:83: C0103: Variable name "fp" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+tests\providers\sg_workflow\tests_sg_workflow.py:35:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:37:11: C0121: Comparison 'bool(res[0]['value'] == 'WORKFLOW') == True' should be 'bool(res[0]['value'] == 'WORKFLOW') is True' if checking for the singleton value True, or 'bool(res[0]['value'] == 'WORKFLOW')' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:40:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:42:11: C0121: Comparison 'bool(res[0]['value'] != 'WORKFLOW') == False' should be 'bool(res[0]['value'] != 'WORKFLOW') is False' if checking for the singleton value False, or 'not bool(res[0]['value'] != 'WORKFLOW')' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:52:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:54:11: C0121: Comparison 'bool(res[0]['value'] == 'TERRAFORM') == True' should be 'bool(res[0]['value'] == 'TERRAFORM') is True' if checking for the singleton value True, or 'bool(res[0]['value'] == 'TERRAFORM')' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:57:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:59:11: C0121: Comparison 'bool(res[0]['value'] != 'TERRAFORM') == False' should be 'bool(res[0]['value'] != 'TERRAFORM') is False' if checking for the singleton value False, or 'not bool(res[0]['value'] != 'TERRAFORM')' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:69:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:71:11: C0121: Comparison 'bool(res[0]['value'] == True) == True' should be 'bool(res[0]['value'] == True) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == True)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:71:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:74:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:76:11: C0121: Comparison 'bool(res[0]['value'] != True) == False' should be 'bool(res[0]['value'] != True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] != True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:76:16: C0121: Comparison 'res[0]['value'] != True' should be 'res[0]['value'] is not True' if checking for the singleton value True, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:87:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:89:11: C0121: Comparison 'bool(res[0]['value'] == False) == True' should be 'bool(res[0]['value'] == False) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == False)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:89:16: C0121: Comparison 'res[0]['value'] == False' should be 'res[0]['value'] is False' if checking for the singleton value False, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:92:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:94:11: C0121: Comparison 'bool(res[0]['value'] == True) == False' should be 'bool(res[0]['value'] == True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] == True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:94:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:103:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:105:11: C0121: Comparison 'bool(res[0]['value'] == True) == True' should be 'bool(res[0]['value'] == True) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == True)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:105:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:108:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:110:11: C0121: Comparison 'bool(res[0]['value'] != True) == False' should be 'bool(res[0]['value'] != True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] != True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:110:16: C0121: Comparison 'res[0]['value'] != True' should be 'res[0]['value'] is not True' if checking for the singleton value True, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:120:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:122:11: C0121: Comparison 'bool(res[0]['value'] == 'public-read') == True' should be 'bool(res[0]['value'] == 'public-read') is True' if checking for the singleton value True, or 'bool(res[0]['value'] == 'public-read')' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:125:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:127:11: C0121: Comparison 'bool(res[0]['value'] != 'public-read') == False' should be 'bool(res[0]['value'] != 'public-read') is False' if checking for the singleton value False, or 'not bool(res[0]['value'] != 'public-read')' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:137:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:139:11: C0121: Comparison 'bool(res[0]['value'] == False) == True' should be 'bool(res[0]['value'] == False) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == False)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:139:16: C0121: Comparison 'res[0]['value'] == False' should be 'res[0]['value'] is False' if checking for the singleton value False, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:142:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:144:11: C0121: Comparison 'bool(res[0]['value'] == True) == False' should be 'bool(res[0]['value'] == True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] == True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:144:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:154:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:156:11: C0121: Comparison 'bool(res[0]['value'] == False) == True' should be 'bool(res[0]['value'] == False) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == False)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:156:16: C0121: Comparison 'res[0]['value'] == False' should be 'res[0]['value'] is False' if checking for the singleton value False, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:159:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:161:11: C0121: Comparison 'bool(res[0]['value'] == True) == False' should be 'bool(res[0]['value'] == True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] == True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:161:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:171:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:173:11: C0121: Comparison 'bool(res[0]['value'] == True) == True' should be 'bool(res[0]['value'] == True) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == True)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:173:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:176:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:178:11: C0121: Comparison 'bool(res[0]['value'] != True) == False' should be 'bool(res[0]['value'] != True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] != True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:178:16: C0121: Comparison 'res[0]['value'] != True' should be 'res[0]['value'] is not True' if checking for the singleton value True, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:188:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:190:11: C0121: Comparison 'bool(res[0]['value'] == False) == True' should be 'bool(res[0]['value'] == False) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == False)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:190:16: C0121: Comparison 'res[0]['value'] == False' should be 'res[0]['value'] is False' if checking for the singleton value False, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:193:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:195:11: C0121: Comparison 'bool(res[0]['value'] == True) == False' should be 'bool(res[0]['value'] == True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] == True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:195:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:205:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:207:11: C0121: Comparison 'bool(res[0]['value'] == False) == True' should be 'bool(res[0]['value'] == False) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == False)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:207:16: C0121: Comparison 'res[0]['value'] == False' should be 'res[0]['value'] is False' if checking for the singleton value False, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:210:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:212:11: C0121: Comparison 'bool(res[0]['value'] == True) == False' should be 'bool(res[0]['value'] == True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] == True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:212:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:221:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:223:11: C0121: Comparison 'bool(res[0]['value'] == True) == True' should be 'bool(res[0]['value'] == True) is True' if checking for the singleton value True, or 'bool(res[0]['value'] == True)' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:223:16: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:226:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\sg_workflow\tests_sg_workflow.py:228:11: C0121: Comparison 'bool(res[0]['value'] != True) == False' should be 'bool(res[0]['value'] != True) is False' if checking for the singleton value False, or 'not bool(res[0]['value'] != True)' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:228:16: C0121: Comparison 'res[0]['value'] != True' should be 'res[0]['value'] is not True' if checking for the singleton value True, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\sg_workflow\tests_sg_workflow.py:14:0: C0411: standard import "json" should be placed before third party import "pytest" and first party import "tirith.providers.sg_workflow.handler"  (wrong-import-order)
+tests\providers\sg_workflow\tests_sg_workflow.py:15:0: C0411: standard import "os" should be placed before third party import "pytest" and first party import "tirith.providers.sg_workflow.handler"  (wrong-import-order)
+tests\providers\sg_workflow\tests_sg_workflow.py:16:0: C0411: third party import "pytest" should be placed before first party import "tirith.providers.sg_workflow.handler"  (wrong-import-order)
+tests\providers\sg_workflow\tests_sg_workflow.py:14:0: C0412: Imports from package json are not grouped (ungrouped-imports)
+tests\providers\sg_workflow\tests_sg_workflow.py:15:0: C0412: Imports from package os are not grouped (ungrouped-imports)
+tests\providers\sg_workflow\tests_sg_workflow.py:16:0: C0412: Imports from package pytest are not grouped (ungrouped-imports)
+tests\providers\sg_workflow\tests_sg_workflow.py:18:0: C0412: Imports from package tirith are not grouped (ungrouped-imports)
+tests\providers\sg_workflow\tests_sg_workflow.py:3:0: W0611: Unused import pytest (unused-import)
+************* Module tests.providers.terraform_plan.test_action
+tests\providers\terraform_plan\test_action.py:7:0: C0301: Line too long (110/100) (line-too-long)
+tests\providers\terraform_plan\test_action.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\terraform_plan\test_action.py:5:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_action.py:2:0: C0411: third party import "utils.load_terraform_plan_json" should be placed before first party import "tirith.providers.terraform_plan.handler"  (wrong-import-order)
+************* Module tests.providers.terraform_plan.test_direct_references
+tests\providers\terraform_plan\test_direct_references.py:148:0: C0301: Line too long (111/100) (line-too-long)
+tests\providers\terraform_plan\test_direct_references.py:190:0: C0301: Line too long (109/100) (line-too-long)
+tests\providers\terraform_plan\test_direct_references.py:204:0: C0301: Line too long (109/100) (line-too-long)
+tests\providers\terraform_plan\test_direct_references.py:212:0: C0301: Line too long (110/100) (line-too-long)
+tests\providers\terraform_plan\test_direct_references.py:230:0: C0301: Line too long (107/100) (line-too-long)
+tests\providers\terraform_plan\test_direct_references.py:12:1: W0511: TODO: Move these helper functions to a utils file (fixme)
+tests\providers\terraform_plan\test_direct_references.py:62:5: W0511: TODO: Use this tearDown() (fixme)
+tests\providers\terraform_plan\test_direct_references.py:237:1: W0511: TODO: Add tests for using the resources inside a recursive tf modules (fixme)
+tests\providers\terraform_plan\test_direct_references.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\terraform_plan\test_direct_references.py:3:0: E0401: Unable to import 'pytest' (import-error)
+tests\providers\terraform_plan\test_direct_references.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_direct_references.py:24:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests\providers\terraform_plan\test_direct_references.py:24:68: C0103: Variable name "f" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+tests\providers\terraform_plan\test_direct_references.py:28:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_direct_references.py:29:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests\providers\terraform_plan\test_direct_references.py:29:28: C0103: Variable name "f" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+tests\providers\terraform_plan\test_direct_references.py:45:4: R1732: Consider using 'with' for resource-allocating operations (consider-using-with)
+tests\providers\terraform_plan\test_direct_references.py:46:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+tests\providers\terraform_plan\test_direct_references.py:55:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_direct_references.py:61:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_direct_references.py:61:0: C0103: Function name "tearDown" doesn't conform to snake_case naming style (invalid-name)
+tests\providers\terraform_plan\test_direct_references.py:77:11: C0121: Comparison 'result['final_result'] == False' should be 'result['final_result'] is False' if checking for the singleton value False, or 'not result['final_result']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:96:11: C0121: Comparison 'result['final_result'] == False' should be 'result['final_result'] is False' if checking for the singleton value False, or 'not result['final_result']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:97:11: C0121: Comparison 'result['evaluators'][0]['passed'] == False' should be 'result['evaluators'][0]['passed'] is False' if checking for the singleton value False, or 'not result['evaluators'][0]['passed']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:110:11: C0121: Comparison 'result['final_result'] == True' should be 'result['final_result'] is True' if checking for the singleton value True, or 'result['final_result']' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:111:11: C0121: Comparison 'result['evaluators'][0]['passed'] == True' should be 'result['evaluators'][0]['passed'] is True' if checking for the singleton value True, or 'result['evaluators'][0]['passed']' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:124:11: C0121: Comparison 'result['final_result'] == False' should be 'result['final_result'] is False' if checking for the singleton value False, or 'not result['final_result']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:125:11: C0121: Comparison 'result['evaluators'][0]['passed'] == False' should be 'result['evaluators'][0]['passed'] is False' if checking for the singleton value False, or 'not result['evaluators'][0]['passed']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:138:11: C0121: Comparison 'result['final_result'] == False' should be 'result['final_result'] is False' if checking for the singleton value False, or 'not result['final_result']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:139:11: C0121: Comparison 'result['evaluators'][0]['passed'] == False' should be 'result['evaluators'][0]['passed'] is False' if checking for the singleton value False, or 'not result['evaluators'][0]['passed']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:152:11: C0121: Comparison 'result['final_result'] == None' should be 'result['final_result'] is None' (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:153:11: C0121: Comparison 'result['evaluators'][0]['passed'] == None' should be 'result['evaluators'][0]['passed'] is None' (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:166:11: C0121: Comparison 'result['final_result'] == False' should be 'result['final_result'] is False' if checking for the singleton value False, or 'not result['final_result']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:167:11: C0121: Comparison 'result['evaluators'][0]['passed'] == False' should be 'result['evaluators'][0]['passed'] is False' if checking for the singleton value False, or 'not result['evaluators'][0]['passed']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:180:11: C0121: Comparison 'result['final_result'] == True' should be 'result['final_result'] is True' if checking for the singleton value True, or 'result['final_result']' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:181:11: C0121: Comparison 'result['evaluators'][0]['passed'] == True' should be 'result['evaluators'][0]['passed'] is True' if checking for the singleton value True, or 'result['evaluators'][0]['passed']' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:194:11: C0121: Comparison 'result['final_result'] == True' should be 'result['final_result'] is True' if checking for the singleton value True, or 'result['final_result']' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:195:11: C0121: Comparison 'result['evaluators'][0]['passed'] == True' should be 'result['evaluators'][0]['passed'] is True' if checking for the singleton value True, or 'result['evaluators'][0]['passed']' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:208:11: C0121: Comparison 'result['final_result'] == False' should be 'result['final_result'] is False' if checking for the singleton value False, or 'not result['final_result']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:209:11: C0121: Comparison 'result['evaluators'][0]['passed'] == False' should be 'result['evaluators'][0]['passed'] is False' if checking for the singleton value False, or 'not result['evaluators'][0]['passed']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_direct_references.py:4:0: C0411: standard import "shutil" should be placed before third party import "pytest" (wrong-import-order)
+tests\providers\terraform_plan\test_direct_references.py:6:0: C0411: standard import "subprocess.Popen" should be placed before third party import "pytest" (wrong-import-order)
+tests\providers\terraform_plan\test_direct_references.py:9:0: C0411: third party import "utils.load_terraform_plan_json" should be placed before first party imports "tirith.core.core.start_policy_evaluation_from_dict", "tirith.providers.terraform_plan.handler"  (wrong-import-order)
+************* Module tests.providers.terraform_plan.test_dot_star_attr
+tests\providers\terraform_plan\test_dot_star_attr.py:47:0: C0301: Line too long (110/100) (line-too-long)
+tests\providers\terraform_plan\test_dot_star_attr.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\terraform_plan\test_dot_star_attr.py:2:0: E0401: Unable to import 'pytest' (import-error)
+tests\providers\terraform_plan\test_dot_star_attr.py:55:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_dot_star_attr.py:56:13: W0212: Access to a protected member _wrapper_get_exp_attribute of a client class (protected-access)
+tests\providers\terraform_plan\test_dot_star_attr.py:2:0: C0411: third party import "pytest.mark" should be placed before first party import "tirith.providers.terraform_plan.handler"  (wrong-import-order)
+************* Module tests.providers.terraform_plan.test_provider_config
+tests\providers\terraform_plan\test_provider_config.py:12:0: C0301: Line too long (105/100) (line-too-long)
+tests\providers\terraform_plan\test_provider_config.py:24:0: C0301: Line too long (115/100) (line-too-long)
+tests\providers\terraform_plan\test_provider_config.py:38:0: C0301: Line too long (105/100) (line-too-long)
+tests\providers\terraform_plan\test_provider_config.py:43:0: C0301: Line too long (109/100) (line-too-long)
+tests\providers\terraform_plan\test_provider_config.py:52:0: C0301: Line too long (105/100) (line-too-long)
+tests\providers\terraform_plan\test_provider_config.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\terraform_plan\test_provider_config.py:6:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_provider_config.py:18:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_provider_config.py:32:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_provider_config.py:46:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_provider_config.py:3:0: C0411: third party import "utils.load_terraform_plan_json" should be placed before first party imports "tirith.providers.common.ProviderError", "tirith.providers.terraform_plan.handler"  (wrong-import-order)
+************* Module tests.providers.terraform_plan.test_terraform_plan
+tests\providers\terraform_plan\test_terraform_plan.py:38:0: C0301: Line too long (129/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:51:0: C0301: Line too long (169/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:64:0: C0301: Line too long (160/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:77:0: C0301: Line too long (157/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:95:0: C0301: Line too long (109/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:96:0: C0301: Line too long (105/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:103:0: C0301: Line too long (102/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:104:0: C0301: Line too long (110/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:114:0: C0301: Line too long (105/100) (line-too-long)
+tests\providers\terraform_plan\test_terraform_plan.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:1:0: E0401: Unable to import 'pytest' (import-error)
+tests\providers\terraform_plan\test_terraform_plan.py:40:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:42:11: C0121: Comparison 'res[0]['value'] == False' should be 'res[0]['value'] is False' if checking for the singleton value False, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_terraform_plan.py:45:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:47:11: C0121: Comparison 'res[0]['value'] != True' should be 'res[0]['value'] is not True' if checking for the singleton value True, or 'not res[0]['value']' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_terraform_plan.py:53:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:53:0: E0102: function already defined line 40 (function-redefined)
+tests\providers\terraform_plan\test_terraform_plan.py:55:11: C0121: Comparison 'res[0]['value'] == True' should be 'res[0]['value'] is True' if checking for the singleton value True, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_terraform_plan.py:59:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:59:0: E0102: function already defined line 45 (function-redefined)
+tests\providers\terraform_plan\test_terraform_plan.py:61:11: C0121: Comparison 'bool(res[0]['value'] != False) == True' should be 'bool(res[0]['value'] != False) is True' if checking for the singleton value True, or 'bool(res[0]['value'] != False)' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_terraform_plan.py:61:16: C0121: Comparison 'res[0]['value'] != False' should be 'res[0]['value'] is not False' if checking for the singleton value False, or 'res[0]['value']' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_terraform_plan.py:66:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:68:11: C0121: Comparison 'bool(res[0]['value'] == 'create') == True' should be 'bool(res[0]['value'] == 'create') is True' if checking for the singleton value True, or 'bool(res[0]['value'] == 'create')' if testing for truthiness (singleton-comparison)
+tests\providers\terraform_plan\test_terraform_plan.py:72:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:74:11: C0121: Comparison 'bool(res[0]['value'] != 'create') == False' should be 'bool(res[0]['value'] != 'create') is False' if checking for the singleton value False, or 'not bool(res[0]['value'] != 'create')' if testing for falsiness (singleton-comparison)
+tests\providers\terraform_plan\test_terraform_plan.py:79:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:85:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:94:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:102:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:112:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\test_terraform_plan.py:4:0: C0411: third party import "utils.load_terraform_plan_json" should be placed before first party import "tirith.providers.terraform_plan.handler"  (wrong-import-order)
+************* Module tests.providers.terraform_plan.utils
+tests\providers\terraform_plan\utils.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests\providers\terraform_plan\utils.py:5:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests\providers\terraform_plan\utils.py:6:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+tests\providers\terraform_plan\utils.py:6:92: C0103: Variable name "fp" doesn't conform to '[a-z_][a-z0-9_]{2,30}$' pattern (invalid-name)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==tests.core.evaluators.test_contains:[5:17]
+==tests.core.evaluators.test_not_contains:[5:17]
+    (["a", "b", "c", "d"], "a"),
+    ("a", "a"),
+    ("minura", "a"),
+    ({"a": "val1", "b": "val2"}, "a"),
+    ({"b": 6, "a": 2, "c": 16}, {"a": 2, "b": 6}),
+    ({"b": 6, "a": 2, "c": 16}, {"a": 2}),
+    ({"b": 6, "a": ["a", "d"], "c": 16}, {"a": ["a", "d"], "b": 6}),
+    ({"b": 6, "a": [{"a": 2}, "d"], "c": 16}, {"a": [{"a": 2}, "d"], "b": 6}),
+    (["a", "b"], "a"),
+    (["a", "b"], "b"),
+    (["a", ["b"]], ["b"]),
+    (["a"], "a"), (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==tests.core.evaluators.test_contained_in:[5:18]
+==tests.core.evaluators.test_not_contained_in:[5:18]
+    ("a", ["a", "b", "c", "d"]),
+    ("a", "a"),
+    ("a", "minura"),
+    ("a", {"a": "val1", "b": "val2"}),
+    ({"a": 2, "b": 6}, {"b": 6, "a": 2, "c": 16}),
+    ({"a": 2}, {"b": 6, "a": 2, "c": 16}),
+    ({"a": ["a", "d"], "b": 6}, {"b": 6, "a": ["a", "d"], "c": 16}),
+    ({"a": [{"a": 2}, "d"], "b": 6}, {"b": 6, "a": [{"a": 2}, "d"], "c": 16}),
+    ("a", ["a", "b"]),
+    ("b", ["a", "b"]),
+    (["b"], ["a", ["b"]]),
+]
+ (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==tests.core.evaluators.test_contained_in:[22:35]
+==tests.core.evaluators.test_contains:[22:35]
+    (2, "a"),
+    ("3", 3),
+    ("c", ["a", "b"]),
+]
+
+checks_unsupported = [
+    (2, "a"),
+    ("3", 3),
+    (1, 1),
+    (1, 2),
+    (["a"], ["a", "b", "c", "d"]),
+]
+ (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==src.tirith.core.evaluators.not_contained_in:[75:86]
+==src.tirith.core.evaluators.not_contains:[87:98]
+            else:
+                evaluation_result["passed"] = False
+                evaluation_result["message"] = (
+                    "{} is an unsupported data type for evaluating against value in 'condition.value'".format(
+                        evaluator_data
+                    )
+                )
+            return evaluation_result
+        except Exception as e:
+            logger.exception(e)
+            return evaluation_result (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==tests.core.evaluators.test_contained_in:[42:64]
+==tests.core.evaluators.test_contains:[42:64]
+    result = evaluator.evaluate(evaluator_input, evaluator_data)
+    assert result["passed"] == True  # {"passed": True, "message": f"Found {evaluator_input} inside {evaluator_data}"}
+
+
+# # pytest -v -m failing
+@mark.failing
+@mark.parametrize("evaluator_input,evaluator_data", checks_failing)
+def test_evaluate_failing(evaluator_input, evaluator_data):
+    result = evaluator.evaluate(evaluator_input, evaluator_data)
+    assert (
+        result["passed"] == False
+    )  # {"passed": True, "message": f"Failed to find {evaluator_input} inside {evaluator_data}"}
+
+
+# pytest -v -m failing
+@mark.failing
+@mark.parametrize("evaluator_input,evaluator_data", checks_unsupported)
+def test_evaluate_unsupported(evaluator_input, evaluator_data):
+    result = evaluator.evaluate(evaluator_input, evaluator_data)
+    assert (
+        result["passed"] == False
+    )  # {"passed": True, "message": f"Failed to find {evaluator_input} inside {evaluator_data}"} (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==src.tirith.core.evaluators.contained_in:[85:95]
+==src.tirith.core.evaluators.contains:[86:96]
+            else:
+                evaluation_result["message"] = (
+                    "{} is an unsupported data type for evaluating against value in 'condition.value'".format(
+                        evaluator_data
+                    )
+                )
+            return evaluation_result
+        except Exception as e:
+            logger.exception(e)
+            return evaluation_result (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==src.tirith.core.evaluators.contains:[87:96]
+==src.tirith.core.evaluators.not_contains:[89:98]
+                evaluation_result["message"] = (
+                    "{} is an unsupported data type for evaluating against value in 'condition.value'".format(
+                        evaluator_data
+                    )
+                )
+            return evaluation_result
+        except Exception as e:
+            logger.exception(e)
+            return evaluation_result (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==src.tirith.core.evaluators.contained_in:[86:95]
+==src.tirith.core.evaluators.not_contained_in:[77:86]
+                evaluation_result["message"] = (
+                    "{} is an unsupported data type for evaluating against value in 'condition.value'".format(
+                        evaluator_data
+                    )
+                )
+            return evaluation_result
+        except Exception as e:
+            logger.exception(e)
+            return evaluation_result (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==src.tirith.providers.json.handler:[20:32]
+==src.tirith.providers.kubernetes.handler:[24:36]
+            final_data.append(intermediate_val)
+        elif ".*" in expression:
+            intermediate_exp = expression.split(".*")
+            intermediate_data = pydash.get(input_dict, intermediate_exp[0], default=PydashPathNotFound)
+            if intermediate_data is not PydashPathNotFound and isinstance(intermediate_data, list):
+                for val in intermediate_data:
+                    final_data.append(val)
+    return final_data
+
+
+def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
+    # Must be validated first whether the provider args are valid for this op type (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==src.tirith.core.evaluators.equals:[32:40]
+==src.tirith.core.evaluators.not_equals:[32:40]
+        evaluation_result = {"passed": False, "message": "Not evaluated"}
+        try:
+            value1 = evaluator_input
+            value2 = evaluator_data
+            if isinstance(value1, dict) or isinstance(value1, list):
+                value1 = sort_collections(value1)
+            if isinstance(value2, dict) or isinstance(value2, list):
+                value2 = sort_collections(value2) (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==tests.core.evaluators.test_contained_in:[25:32]
+==tests.core.evaluators.test_not_contained_in:[24:31]
+]
+
+checks_unsupported = [
+    (2, "a"),
+    ("3", 3),
+    (1, 1),
+    (1, 2), (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==src.tirith.core.evaluators.contains:[40:46]
+==src.tirith.core.evaluators.not_contains:[42:48]
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_data, evaluator_input)
+            # if evaluator_input is a list
+            elif isinstance(evaluator_input, list):
+                evaluator_input = sort_collections(evaluator_input)
+                if isinstance(evaluator_data, list):
+                    evaluator_data = sort_collections(evaluator_data) (duplicate-code)
+tests\providers\terraform_plan\utils.py:1:0: R0801: Similar lines in 2 files
+==src.tirith.core.evaluators.contained_in:[39:45]
+==src.tirith.core.evaluators.not_contained_in:[31:37]
+                    evaluation_result["message"] = "Found {} inside {}".format(evaluator_input, evaluator_data)
+            # if evaluator_input is a list
+            elif isinstance(evaluator_data, list):
+                evaluator_data = sort_collections(evaluator_data)
+                if isinstance(evaluator_input, list):
+                    evaluator_input = sort_collections(evaluator_input) (duplicate-code)
+
+------------------------------------------------------------------
+Your code has been rated at 5.15/10 (previous run: 5.13/10, +0.03)
+
