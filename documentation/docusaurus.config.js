@@ -48,11 +48,13 @@ const config = {
         logo: {
           alt: 'Tirith Logo',
           src: 'img/tirith.png',
+          href: 'https://tirith-policy-builder.vercel.app/',
+          target:'_blank',
         },
         items: [
           {
             type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            sidebarId: 'TirithSidebar',
             position: 'left',
             label: 'Docs',
           },
