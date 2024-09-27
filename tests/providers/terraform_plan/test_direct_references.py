@@ -58,7 +58,7 @@ def load_tf_plan_dict_from_fixtures(tf_plan_fixture_path):
     return process_terraform_file_into_plan_dict(tf_path)
 
 
-def tearDown():
+def tearDown() -> None:
     # TODO: Use this tearDown()
     current_path = os.path.dirname(os.path.abspath(__file__))
     test_tmp_dirpath = os.path.join(current_path, "test_tmp")
@@ -66,7 +66,7 @@ def tearDown():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_direct_references_to_and_by_should_raise_error():
+def test_direct_references_to_and_by_should_raise_error() -> None:
     """
     Test that a policy with both `references_to` and `referenced_by` raises an error
     """
@@ -84,7 +84,7 @@ def test_direct_references_to_and_by_should_raise_error():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_direct_references_to_should_fail():
+def test_direct_references_to_should_fail() -> None:
     """
     Test that a policy with `references_to` fails when not all of the
     `terraform_resource_type` references to `references_to`
@@ -98,7 +98,7 @@ def test_direct_references_to_should_fail():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_direct_references_to_should_pass():
+def test_direct_references_to_should_pass() -> None:
     """
     Test that a policy with `references_to` should pass when all of the
     `terraform_resource_type` references to `references_to`
@@ -112,7 +112,7 @@ def test_direct_references_to_should_pass():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_direct_references_to_should_fail_when_no_resources_found():
+def test_direct_references_to_should_fail_when_no_resources_found() -> None:
     """
     Test that a policy with `references_to` should fail when
     `terraform_resource_type` isn't found
@@ -126,7 +126,7 @@ def test_direct_references_to_should_fail_when_no_resources_found():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_direct_referenced_by_should_fail_when_the_resource_isnt_found():
+def test_direct_referenced_by_should_fail_when_the_resource_isnt_found() -> None:
     """
     Test that a policy with `references_by` should fail when
     `terraform_resource_type` is not found
@@ -140,7 +140,7 @@ def test_direct_referenced_by_should_fail_when_the_resource_isnt_found():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_direct_referenced_by_should_skip_when_the_resource_isnt_found_err_tolerance():
+def test_direct_referenced_by_should_skip_when_the_resource_isnt_found_err_tolerance() -> None:
     """
     Test that a policy with `references_by` should fail when
     `terraform_resource_type` is not found with `error_tolerance` set to 1
@@ -154,7 +154,7 @@ def test_direct_referenced_by_should_skip_when_the_resource_isnt_found_err_toler
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_direct_referenced_by_should_fail():
+def test_direct_referenced_by_should_fail() -> None:
     """
     Test that a policy with `references_by` should fail when one of the
     `terraform_resource_type` is not referenced by `referenced_by` res type
@@ -168,7 +168,7 @@ def test_direct_referenced_by_should_fail():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_direct_referenced_by_should_pass():
+def test_direct_referenced_by_should_pass() -> None:
     """
     Test that a policy with `references_by` should pass when all of the
     `terraform_resource_type` are referenced by `referenced_by` res type
@@ -182,7 +182,7 @@ def test_direct_referenced_by_should_pass():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_old_direct_references_should_pass():
+def test_old_direct_references_should_pass() -> None:
     """
     Test that the old way of specifying direct references still works
     (without any `references_to` and `referenced_by`)
@@ -196,7 +196,7 @@ def test_old_direct_references_should_pass():
 
 
 @pytest.mark.skipif(is_on_github_actions(), reason="Can't test using tf file on Github Actions")
-def test_old_direct_references_should_fail_when_no_resource_type_is_found():
+def test_old_direct_references_should_fail_when_no_resource_type_is_found() -> None:
     """
     Test that the old way of specifying direct references still works
     (without any `references_to` and `referenced_by`)
@@ -213,7 +213,7 @@ def test_old_direct_references_should_fail_when_no_resource_type_is_found():
     )
 
 
-def test_direct_referenced_by_should_fail_when_the_resource_isnt_found_in_resource_changes():
+def test_direct_referenced_by_should_fail_when_the_resource_isnt_found_in_resource_changes() -> None:
     """
     Test that `direct_references` `referenced_by` should read resource changes as
     its main point.

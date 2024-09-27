@@ -5,7 +5,7 @@ from tirith.core.core import start_policy_evaluation_from_dict
 
 
 # TODO: Need to split this into multiple tests
-def test_get_value():
+def test_get_value() -> None:
     test_dir = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(test_dir, "input.json")) as f:
         input_data = json.load(f)

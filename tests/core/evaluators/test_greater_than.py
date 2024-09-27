@@ -12,13 +12,13 @@ evaluator = GreaterThan()
 
 # pytest -v -m passing
 @mark.passing
-def test_evaluate_passing():
+def test_evaluate_passing() -> None:
     result = evaluator.evaluate(evaluator_input1, evaluator_data1)
     assert result == {"passed": True, "message": f"{evaluator_input1} is greater than {evaluator_data1}"}
 
 
 # pytest -v -m failing
 @mark.failing
-def test_evaluate_failing():
+def test_evaluate_failing() -> None:
     result = evaluator.evaluate(evaluator_input2, evaluator_data2)
     assert result == {"passed": False, "message": f"{evaluator_input2} is not greater than {evaluator_data2}"}

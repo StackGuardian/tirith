@@ -5,7 +5,7 @@ from tirith.core.core import final_evaluator
 
 
 @mark.passing
-def test_final_evaluator_skipped_check_should_be_removed():
+def test_final_evaluator_skipped_check_should_be_removed() -> None:
     actual_result = final_evaluator("!skipped_check && passing_check", dict(skipped_check=None, passing_check=True))
     assert actual_result == (True, [])
 
@@ -14,7 +14,7 @@ def test_final_evaluator_skipped_check_should_be_removed():
 
 
 @mark.passing
-def test_final_evaluator_undef_var_should_be_removed_from_exp():
+def test_final_evaluator_undef_var_should_be_removed_from_exp() -> None:
     actual_result = final_evaluator(
         "!skipped_check && passing_check || undefined_check", dict(skipped_check=None, passing_check=True)
     )
@@ -33,7 +33,7 @@ def test_final_evaluator_undef_var_should_be_removed_from_exp():
 
 
 @mark.passing
-def test_final_evaluator_malicious_eval_should_err():
+def test_final_evaluator_malicious_eval_should_err() -> None:
     actual_result = final_evaluator(
         "!skipped_check && passing_check || [].__class__.__base__", dict(skipped_check=None, passing_check=True)
     )

@@ -20,7 +20,7 @@ provider_inputs_1 = {
 
 # Considered test cases based on totalMonthlyCost and totalHourlyCost of the services deployed
 @pytest.mark.passing
-def test_get_monthly_cost_pass():
+def test_get_monthly_cost_pass() -> None:
     res = handler.provide(provider_inputs_1, input_data)
     assert res[0]["value"] != 0
 
@@ -29,7 +29,7 @@ def test_get_monthly_cost_pass():
 
 
 @pytest.mark.failing
-def test_get_monthly_cost_fail():
+def test_get_monthly_cost_fail() -> None:
     res = handler.provide(provider_inputs_1, input_data)
     assert bool(res[0]["value"] == 0) == False
 
@@ -43,7 +43,7 @@ provider_inputs_2 = {
 
 
 @pytest.mark.passing
-def test_get_hourly_cost_pass():
+def test_get_hourly_cost_pass() -> None:
     res = handler.provide(provider_inputs_2, input_data)
     assert res[0]["value"] != 0
 
@@ -52,7 +52,7 @@ def test_get_hourly_cost_pass():
 
 
 @pytest.mark.failing
-def test_get_hourly_cost_fail():
+def test_get_hourly_cost_fail() -> None:
     res = handler.provide(provider_inputs_2, input_data)
     assert bool(res[0]["value"] == 0) == False
 
@@ -67,13 +67,13 @@ provider_inputs_3 = {
 
 
 @pytest.mark.passing
-def test_cost_s3_bucket_module_pass():
+def test_cost_s3_bucket_module_pass() -> None:
     res = handler.provide(provider_inputs_3, input_data)
     assert res[0]["value"] != 0
 
 
 @pytest.mark.failing
-def test_cost_s3_bucket_module_fail():
+def test_cost_s3_bucket_module_fail() -> None:
     res = handler.provide(provider_inputs_3, input_data)
     assert bool(res[0]["value"] == 0) == False
 

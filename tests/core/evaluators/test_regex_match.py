@@ -12,29 +12,29 @@ evaluator = RegexMatch()
 
 # pytest -v -m passing
 @mark.passing
-def test_regex_passing():
+def test_regex_passing() -> None:
     result = evaluator.evaluate(evaluator_input1, evaluator_data1)
     assert result == {"passed": True, "message": f"{evaluator_input1} matches regex pattern {evaluator_data1}"}
 
 
 # pytest -v -m failing
 @mark.failing
-def test_regex_failing():
+def test_regex_failing() -> None:
     result = evaluator.evaluate(evaluator_input2, evaluator_data2)
     assert result == {"passed": False, "message": f"{evaluator_input2} does not match regex pattern {evaluator_data2}"}
 
 
-def test_regex_list():
+def test_regex_list() -> None:
     result = evaluator.evaluate(evaluator_input=["something"], evaluator_data=r"\['something'\]")
     assert result["passed"] is True
 
 
-def test_regex_dict():
+def test_regex_dict() -> None:
     result = evaluator.evaluate(evaluator_input=dict(a=2), evaluator_data=r"{'a': 2}")
     assert result["passed"] is True
 
 
-def test_multiline_string_match_with_simple_regex():
+def test_multiline_string_match_with_simple_regex() -> None:
     evaluator_input = """
     {
       "costcenter":"123",
@@ -45,7 +45,7 @@ def test_multiline_string_match_with_simple_regex():
     assert result["passed"] is True
 
 
-def test_multiline_string_match_with_full_regex():
+def test_multiline_string_match_with_full_regex() -> None:
     evaluator_input = """
     {
       "costcenter":"123",
@@ -56,7 +56,7 @@ def test_multiline_string_match_with_full_regex():
     assert result["passed"] is True
 
 
-def test_multiline_string_match_with_full_regex_should_fail():
+def test_multiline_string_match_with_full_regex_should_fail() -> None:
     evaluator_input = """
     {
       "costcenter":"123",
@@ -67,19 +67,19 @@ def test_multiline_string_match_with_full_regex_should_fail():
     assert result["passed"] is False
 
 
-def test_singleline_string_match_with_simple_regex():
+def test_singleline_string_match_with_simple_regex() -> None:
     evaluator_input = '{ "costcenter":"123", "test":123 }'
     result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r"costcenter")
     assert result["passed"] is True
 
 
-def test_singleline_string_match_with_full_regex():
+def test_singleline_string_match_with_full_regex() -> None:
     evaluator_input = '{ "costcenter":"123", "test":123 }'
     result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r".*costcenter.*")
     assert result["passed"] is True
 
 
-def test_singleline_string_match_with_fullmatch_regex():
+def test_singleline_string_match_with_fullmatch_regex() -> None:
     evaluator_input = '{ "costcenter":"123", "test":123 }'
     result = evaluator.evaluate(evaluator_input=evaluator_input, evaluator_data=r'^{ "costcenter":"123", "test":123 }$')
     assert result["passed"] is True

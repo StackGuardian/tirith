@@ -32,12 +32,12 @@ provider_args_1 = {
 }
 
 
-def test_resource_type_pass():
+def test_resource_type_pass() -> None:
     res = handler.provide(provider_args_1, input_data)
     assert bool(res[0]["value"] == "WORKFLOW") == True
 
 
-def test_resource_type_fail():
+def test_resource_type_fail() -> None:
     res = handler.provide(provider_args_1, input_data)
     assert bool(res[0]["value"] != "WORKFLOW") == False
 
@@ -49,12 +49,12 @@ provider_args_2 = {
 }
 
 
-def test_wftype_pass():
+def test_wftype_pass() -> None:
     res = handler.provide(provider_args_2, input_data)
     assert bool(res[0]["value"] == "TERRAFORM") == True
 
 
-def test_wftype_fail():
+def test_wftype_fail() -> None:
     res = handler.provide(provider_args_2, input_data)
     assert bool(res[0]["value"] != "TERRAFORM") == False
 
@@ -66,12 +66,12 @@ provider_args_3 = {
 }
 
 
-def test_approval_pre_apply_pass():
+def test_approval_pre_apply_pass() -> None:
     res = handler.provide(provider_args_3, input_data)
     assert bool(res[0]["value"] == True) == True
 
 
-def test_approval_pre_apply_fail():
+def test_approval_pre_apply_fail() -> None:
     res = handler.provide(provider_args_3, input_data)
     assert bool(res[0]["value"] != True) == False
 
@@ -84,12 +84,12 @@ provider_args_4 = {
 }
 
 
-def test_drift_check_pass():
+def test_drift_check_pass() -> None:
     res = handler.provide(provider_args_4, input_data)
     assert bool(res[0]["value"] == False) == True
 
 
-def test_drift_check_fail():
+def test_drift_check_fail() -> None:
     res = handler.provide(provider_args_4, input_data)
     assert bool(res[0]["value"] == True) == False
 
@@ -100,12 +100,12 @@ provider_args_5 = {
 }
 
 
-def test_managed_terraform_state_pass():
+def test_managed_terraform_state_pass() -> None:
     res = handler.provide(provider_args_5, input_data)
     assert bool(res[0]["value"] == True) == True
 
 
-def test_managed_terraform_state_fail():
+def test_managed_terraform_state_fail() -> None:
     res = handler.provide(provider_args_5, input_data)
     assert bool(res[0]["value"] != True) == False
 
@@ -117,12 +117,12 @@ provider_args_8 = {
 }
 
 
-def test_s3_bucket_acl_pass():
+def test_s3_bucket_acl_pass() -> None:
     res = handler.provide(provider_args_8, input_data)
     assert bool(res[0]["value"] == "public-read") == True
 
 
-def test_s3_bucket_acl_fail():
+def test_s3_bucket_acl_fail() -> None:
     res = handler.provide(provider_args_8, input_data)
     assert bool(res[0]["value"] != "public-read") == False
 
@@ -134,12 +134,12 @@ provider_args_9 = {
 }
 
 
-def test_s3_bucket_block_public_acl_pass():
+def test_s3_bucket_block_public_acl_pass() -> None:
     res = handler.provide(provider_args_9, input_data)
     assert bool(res[0]["value"] == False) == True
 
 
-def test_s3_bucket_block_public_acl_fail():
+def test_s3_bucket_block_public_acl_fail() -> None:
     res = handler.provide(provider_args_9, input_data)
     assert bool(res[0]["value"] == True) == False
 
@@ -151,12 +151,12 @@ provider_args_10 = {
 }
 
 
-def test_s3_bucket_block_public_policy_pass():
+def test_s3_bucket_block_public_policy_pass() -> None:
     res = handler.provide(provider_args_10, input_data)
     assert bool(res[0]["value"] == False) == True
 
 
-def test_s3_bucket_block_public_policy_fail():
+def test_s3_bucket_block_public_policy_fail() -> None:
     res = handler.provide(provider_args_10, input_data)
     assert bool(res[0]["value"] == True) == False
 
@@ -168,12 +168,12 @@ provider_args_11 = {
 }
 
 
-def test_s3_bucket_force_destroy_pass():
+def test_s3_bucket_force_destroy_pass() -> None:
     res = handler.provide(provider_args_11, input_data)
     assert bool(res[0]["value"] == True) == True
 
 
-def test_s3_bucket_force_destroy_fail():
+def test_s3_bucket_force_destroy_fail() -> None:
     res = handler.provide(provider_args_11, input_data)
     assert bool(res[0]["value"] != True) == False
 
@@ -185,12 +185,12 @@ provider_args_12 = {
 }
 
 
-def test_s3_bucket_ignore_pass():
+def test_s3_bucket_ignore_pass() -> None:
     res = handler.provide(provider_args_12, input_data)
     assert bool(res[0]["value"] == False) == True
 
 
-def test_s3_bucket_ignore_fail():
+def test_s3_bucket_ignore_fail() -> None:
     res = handler.provide(provider_args_12, input_data)
     assert bool(res[0]["value"] == True) == False
 
@@ -202,12 +202,12 @@ provider_args_13 = {
 }
 
 
-def test_s3_bucket_restrict_passing():
+def test_s3_bucket_restrict_passing() -> None:
     res = handler.provide(provider_args_13, input_data)
     assert bool(res[0]["value"] == False) == True
 
 
-def test_s3_bucket_restrict_failing():
+def test_s3_bucket_restrict_failing() -> None:
     res = handler.provide(provider_args_13, input_data)
     assert bool(res[0]["value"] == True) == False
 
@@ -218,11 +218,11 @@ provider_args_14 = {
 }
 
 
-def test_use_marketplace_template_passing():
+def test_use_marketplace_template_passing() -> None:
     res = handler.provide(provider_args_14, input_data)
     assert bool(res[0]["value"] == True) == True
 
 
-def test_use_marketplace_template_failing():
+def test_use_marketplace_template_failing() -> None:
     res = handler.provide(provider_args_14, input_data)
     assert bool(res[0]["value"] != True) == False

@@ -3,7 +3,7 @@ from tirith.providers.terraform_plan import handler
 from utils import load_terraform_plan_json
 
 
-def test_get_terraform_provider_get_region():
+def test_get_terraform_provider_get_region() -> None:
     provider_args_dict = {
         "operation_type": "provider_config",
         "terraform_provider_full_name": "registry.terraform.io/hashicorp/aws",
@@ -15,7 +15,7 @@ def test_get_terraform_provider_get_region():
     assert result[0]["value"] == "eu-central-1"
 
 
-def test_get_terraform_provider_get_region_not_found():
+def test_get_terraform_provider_get_region_not_found() -> None:
     provider_args_dict = {
         "operation_type": "provider_config",
         "terraform_provider_full_name": "registry.terraform.io/hashicorp/aws",
@@ -29,7 +29,7 @@ def test_get_terraform_provider_get_region_not_found():
     assert result[0]["err"] == "`region` is not found in the provider_config (severity_value: 2)"
 
 
-def test_get_terraform_provider_get_version_constraint_not_found():
+def test_get_terraform_provider_get_version_constraint_not_found() -> None:
     provider_args_dict = {
         "operation_type": "provider_config",
         "terraform_provider_full_name": "registry.terraform.io/hashicorp/aws",
@@ -43,7 +43,7 @@ def test_get_terraform_provider_get_version_constraint_not_found():
     assert result[0]["err"] == "`version_constraint` is not found in the provider_config (severity_value: 2)"
 
 
-def test_get_terraform_provider_get_version_constraint():
+def test_get_terraform_provider_get_version_constraint() -> None:
     provider_args_dict = {
         "operation_type": "provider_config",
         "terraform_provider_full_name": "registry.terraform.io/hashicorp/azurerm",

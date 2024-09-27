@@ -5,7 +5,7 @@ Entrypoint module when invoked like `python -m tirith`.
 import sys
 
 
-def main():
+def main() -> None:
     try:
         from .cli import main
 
