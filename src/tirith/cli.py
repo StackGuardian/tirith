@@ -8,7 +8,6 @@ import logging
 import sys
 import textwrap
 
-import tirith.providers.terraform_plan.handler as python_tf_plan_handler
 from tirith.logging import setup_logging
 from tirith.prettyprinter import pretty_print_result_dict
 from tirith.status import ExitStatus
@@ -74,6 +73,24 @@ def main(args=None) -> ExitStatus:
             help="Input file path",
         )
         parser.add_argument(
+            "-var-path",
+            metavar="PATH",
+            type=str,
+            default=[],
+            action="append",
+            dest="varPaths",
+            help="Variable file path(s)",
+        )
+        parser.add_argument(
+            "-var",
+            metavar="PATH",
+            type=str,
+            default=[],
+            action="append",
+            dest="inlineVars",
+            help="Inline variable(s)",
+        )
+        parser.add_argument(
             "--json",
             dest="json",
             action="store_true",
@@ -111,7 +128,7 @@ def main(args=None) -> ExitStatus:
             setup_logging(verbose=args.verbose)
 
         try:
-            result = start_policy_evaluation(args.policyPath, args.inputPath)
+            result = start_policy_evaluation(args.policyPath, args.inputPath, args.varPaths, args.inlineVars)
 
             if args.json:
                 formatted_result = json.dumps(result, indent=3)

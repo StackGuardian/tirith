@@ -9,7 +9,7 @@ def __get_all_costs(operation_type, input_data):
         "total_monthly_cost": ["totalMonthlyCost", "monthlyCost"],
         "total_hourly_cost": ["totalHourlyCost", "hourlyCost"],
     }
-    totalSum = 0
+    total_sum = 0
     if "projects" in input_data:
         for project in input_data["projects"]:
             if "breakdown" in project and "resources" in project["breakdown"]:
@@ -19,19 +19,19 @@ def __get_all_costs(operation_type, input_data):
                         and resource[pointer[operation_type][0]]
                         and resource[pointer[operation_type][0]] != "null"
                     ):
-                        totalSum += float(resource[pointer[operation_type][0]])
+                        total_sum += float(resource[pointer[operation_type][0]])
                     elif (
                         pointer[operation_type][1] in resource
                         and resource[pointer[operation_type][1]]
                         and resource[pointer[operation_type][1]] != "null"
                     ):
                         # Support new schema for Infracost
-                        totalSum += float(resource[pointer[operation_type][1]])
+                        total_sum += float(resource[pointer[operation_type][1]])
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
-                logger.debug(f"Total sum of {operation_type} of all resources :  {totalSum}")
-                return totalSum
+                logger.debug(f"Total sum of {operation_type} of all resources :  {total_sum}")
+                return total_sum
             else:
                 raise KeyError("breakdown/resources not found in one of the project")
     else:
@@ -45,7 +45,7 @@ def __get_resources_costs(resource_type, operation_type, input_data):
         "total_monthly_cost": ["totalMonthlyCost", "monthlyCost"],
         "total_hourly_cost": ["totalHourlyCost", "hourlyCost"],
     }
-    totalSum = 0
+    total_sum = 0
     if "projects" in input_data:
         for project in input_data["projects"]:
             if "breakdown" in project and "resources" in project["breakdown"]:
@@ -57,7 +57,7 @@ def __get_resources_costs(resource_type, operation_type, input_data):
                         and resource[pointer[operation_type][0]]
                         and resource[pointer[operation_type][0]] != "null"
                     ):
-                        totalSum += float(resource[pointer[operation_type][0]])
+                        total_sum += float(resource[pointer[operation_type][0]])
                     elif (
                         pointer[operation_type][1] in resource
                         and "name" in resource
@@ -65,12 +65,12 @@ def __get_resources_costs(resource_type, operation_type, input_data):
                         and resource[pointer[operation_type][1]]
                         and resource[pointer[operation_type][1]] != "null"
                     ):
-                        totalSum += float(resource[pointer[operation_type][1]])
+                        total_sum += float(resource[pointer[operation_type][1]])
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
-                logger.debug(f"Total sum of {operation_type} of specific resources :  {totalSum}")
-                return totalSum
+                logger.debug(f"Total sum of {operation_type} of specific resources :  {total_sum}")
+                return total_sum
             else:
                 raise KeyError("breakdown/resources not found in one of the project")
     else:

@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 def sort_collections(inputs):
     try:
-        if isinstance(inputs, str) or isinstance(inputs, float) or isinstance(inputs, int) or isinstance(inputs, bool):
+        if isinstance(inputs, (str, float, int, bool)):
             return inputs
         elif isinstance(inputs, list):
             if len(inputs) == 0:
