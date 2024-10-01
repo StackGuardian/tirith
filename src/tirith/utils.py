@@ -10,12 +10,7 @@ def sort_collections(inputs):
         elif isinstance(inputs, list):
             if len(inputs) == 0:
                 return inputs
-            if (
-                isinstance(inputs[0], str)
-                or isinstance(inputs[0], float)
-                or isinstance(inputs[0], int)
-                or isinstance(inputs[0], bool)
-            ):
+            if isinstance(inputs[0], (str, float, int, bool)):
                 inputs = sorted(inputs)
                 return inputs
             else:
