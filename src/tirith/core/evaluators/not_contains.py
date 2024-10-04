@@ -3,8 +3,8 @@ import logging
 from .base_evaluator import BaseEvaluator
 from tirith.utils import sort_collections
 
-# TODO: At least add __name__ as the name for the logger
-logger = logging.getLogger()
+
+logger = logging.getLogger(__name__)
 
 # Checks if :attr: `evaluator_input` does not contain :attr:`evaluator_data`.
 

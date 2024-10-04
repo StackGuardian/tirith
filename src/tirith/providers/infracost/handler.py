@@ -1,7 +1,6 @@
 import logging
 
-# TODO: Add at least __name__ as the name of the logger
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def __get_all_costs(operation_type, input_data):

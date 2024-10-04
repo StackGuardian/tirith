@@ -12,11 +12,12 @@ import tirith.providers.terraform_plan.handler as python_tf_plan_handler
 from tirith.logging import setup_logging
 from tirith.prettyprinter import pretty_print_result_dict
 from tirith.status import ExitStatus
+from tirith import __version__
 
 from .core import start_policy_evaluation
 
-# TODO: Use at least __name__ for the logger name
-logger = logging.getLogger()
+
+logger = logging.getLogger(__name__)
 
 
 def eprint(*args, **kwargs):
@@ -73,6 +74,24 @@ def main(args=None) -> ExitStatus:
             help="Input file path",
         )
         parser.add_argument(
+            "-var-path",
+            metavar="PATH",
+            type=str,
+            default=[],
+            action="append",
+            dest="varPaths",
+            help="Variable file path(s)",
+        )
+        parser.add_argument(
+            "-var",
+            metavar="PATH",
+            type=str,
+            default=[],
+            action="append",
+            dest="inlineVars",
+            help="Inline variable(s)",
+        )
+        parser.add_argument(
             "--json",
             dest="json",
             action="store_true",
@@ -84,7 +103,7 @@ def main(args=None) -> ExitStatus:
             action="store_true",
             help="Show detailed logs of from the run",
         )
-        parser.add_argument("--version", action="version", version="1.0.0-beta.12")
+        parser.add_argument("--version", action="version", version=__version__)
 
         args = parser.parse_args()
 
@@ -110,7 +129,7 @@ def main(args=None) -> ExitStatus:
             setup_logging(verbose=args.verbose)
 
         try:
-            result = start_policy_evaluation(args.policyPath, args.inputPath)
+            result = start_policy_evaluation(args.policyPath, args.inputPath, args.varPaths, args.inlineVars)
 
             if args.json:
                 formatted_result = json.dumps(result, indent=3)
