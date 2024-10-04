@@ -8,7 +8,6 @@ import logging
 import sys
 import textwrap
 
-import tirith.providers.terraform_plan.handler as python_tf_plan_handler
 from tirith.logging import setup_logging
 from tirith.prettyprinter import pretty_print_result_dict
 from tirith.status import ExitStatus
