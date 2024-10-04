@@ -1,0 +1,7 @@
+{
+    "name": "John Doe",
+    "age": 30,
+    "city": {
+        "name": "New York"
+    }
+}

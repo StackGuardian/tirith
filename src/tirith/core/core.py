@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Tuple, Optional
 from tirith.providers.common import ProviderError
 from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
+from .policy_parameterization import get_policy_with_vars_replaced
 
 
 logger = logging.getLogger(__name__)
@@ -204,7 +205,17 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]])
     return final_eval_result, []
 
 
-def start_policy_evaluation(policy_path: str, input_path: str) -> Dict:
+def start_policy_evaluation(
+    policy_path: str, input_path: str, var_paths: List[str] = [], inline_vars: List[str] = []
+) -> Dict:
+    """
+    Start Tirith policy evaluation from policy file, input file, and optional variable files.
+
+    :param policy_path: Path to the policy file
+    :param input_path: Path to the input file
+    :param var_paths: List of paths to the variable files
+    :return: Policy evaluation result
+    """
     with open(policy_path) as f:
         policy_data = json.load(f)
     # TODO: validate policy_data against schema
@@ -218,12 +229,50 @@ def start_policy_evaluation(policy_path: str, input_path: str) -> Dict:
             input_data = json.load(f)
     # TODO: validate input_data using the optionally available validate function in provider
 
-    return start_policy_evaluation_from_dict(policy_data, input_data)
+    # TODO: Move this logic into another module
+    # Merge policy variables into one dictionary
+    var_dicts = []
+    for var_path in var_paths:
+        with open(var_path, encoding="utf-8") as f:
+            var_dicts.append(json.load(f))
+
+    merged_var_dict = _merge_var_dicts(var_dicts)
+
+    variable_pattern = re.compile(r"(?P<var_name>\w+)=(?P<var_json>.+)")
+    for inline_var in inline_vars:
+        match = re.fullmatch(variable_pattern, inline_var)
+        if match:
+            try:
+                merged_var_dict[match.group("var_name")] = json.loads(match.group("var_json"))
+            except json.JSONDecodeError:
+                logger.error(f"Failed to parse inline variable: {inline_var}")
+        else:
+            logger.error(f"Invalid inline variable: {inline_var}")
+
+    return start_policy_evaluation_from_dict(policy_data, input_data, merged_var_dict)
 
 
-def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict) -> Dict:
+def _merge_var_dicts(var_dicts: List[dict]) -> dict:
+    """
+    Utility to merge var_dicts
+
+    :param var_dicts:  List of var dictionaries
+    :return:           A merged dictionary
+    """
+    merged_var_dict = {}
+    for var_dict in var_dicts:
+        merged_var_dict.update(var_dict)
+    return merged_var_dict
+
+
+def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict, var_dict: Dict = {}) -> Dict:
+    policy_dict, not_found_vars = get_policy_with_vars_replaced(policy_dict, var_dict)
+    if not_found_vars:
+        return {"errors": [f"Variables not found: {', '.join(not_found_vars)}"]}
+
     policy_meta = policy_dict.get("meta")
     eval_objects = policy_dict.get("evaluators")
+
     final_evaluation_policy_string = policy_dict.get("eval_expression")
     
     provider_module = policy_meta.get("provider", policy_meta.get("required_provider", "core"))

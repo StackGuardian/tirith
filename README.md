@@ -6,6 +6,11 @@
 
 # Tirith (StackGuardian Policy Framework)
 
+## Maintainers
+
+This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
+
+
 ## A call for contributors
 
 We are calling for contributors to help build out new features, review pull requests, fix bugs, and maintain overall code quality. If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
@@ -77,6 +82,34 @@ pip install git+https://github.com/StackGuardian/tirith.git
 ```
 
 ### For developers
+
+#### Running the Dev Container
+
+- Clone the repository to your local machine:
+
+```bash
+   git clone <repository-url>
+   cd <repository-folder>
+```
+
+- Start the Docker Engine using docker desktop or CLI.
+
+- Open the project folder in Visual Studio Code
+
+- Once inside VS Code, open the Command Palette `(Ctrl+Shift+P or Cmd+Shift+P on macOS)` and search for **Dev Containers: Rebuild and Reopen in Container**. Select this option.
+
+- VS Code will build the dev container based on the devcontainer.json file or Docker configuration provided in the project. This may take a few minutes.
+
+- Once the container is up, you will have a fully configured development environment running inside Docker.
+
+Reference Links: 
+
+https://code.visualstudio.com/docs/devcontainers/create-dev-container#_create-a-devcontainerjson-file
+
+https://code.visualstudio.com/docs/devcontainers/containers#_managing-containers
+
+
+#### Manual Installation
 Here we are going to install Tirith in a Python virtual environment.
 
 1. Clone the Tirith repository to your system
