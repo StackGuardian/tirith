@@ -1,12 +1,13 @@
 import logging
+from typing import Any, Dict, List, Union
 
 
 logger = logging.getLogger(__name__)
 
 
-def __getValue(key, data):
+def __getValue(key: str, data: Dict[str, any]) -> Union[str, List[str]]:
     logger.debug(f"Searching {key} in input data")
-    result = ""
+    result: Union[str, List[str]] = ""
     if key == "integrationId":
         temp = []
         if "DeploymentPlatformConfig" in data:
@@ -70,7 +71,7 @@ def __getValue(key, data):
     return result
 
 
-def provide(provider_args, input_data):
+def provide(provider_args: Dict[str, Any], input_data: Dict[st, Any]) -> List[Dict[str, Any]]:
     logger.debug("sg_workflow provider")
     logger.debug(f"sg_workflow provider inputs : {provider_args}")
     try:
