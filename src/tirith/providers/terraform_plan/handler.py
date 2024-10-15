@@ -204,7 +204,7 @@ def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: l
         outputs.append(
             {
                 "value": ProviderError(severity_value=99),
-                "err": "`terraform_provider_full_name` must be provided in the provider input (severity_value: 99))",
+                "err": "`terraform_provider_full_name` must be provided in the provider input (severity_value: 99)",
             }
         )
         return
@@ -274,7 +274,7 @@ def direct_dependencies_operator(input_data: dict, provider_inputs: dict, output
         outputs.append(
             {
                 "value": ProviderError(severity_value=99),
-                "err": "`terraform_resource_type` must be provided in the provider input (severity_value: 99))",
+                "err": "`terraform_resource_type` must be provided in the provider input (severity_value: 99)",
             }
         )
         return
@@ -453,7 +453,7 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
         outputs.append(
             {
                 "value": ProviderError(severity_value=99),
-                "err": "Only one of `referenced_by` or `references_to` must be provided in the provider input (severity_value: 99))",
+                "err": "Only one of `referenced_by` or `references_to` must be provided in the provider input (severity_value: 99)",
             }
         )
         return
@@ -471,7 +471,7 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
         outputs.append(
             {
                 "value": ProviderError(severity_value=99),
-                "err": "`terraform_resource_type` must be provided in the provider input (severity_value: 99))",
+                "err": "`terraform_resource_type` must be provided in the provider input (severity_value: 99)",
             }
         )
         return
