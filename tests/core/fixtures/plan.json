@@ -1,0 +1,135 @@
+{
+  "format_version": "1.1",
+  "terraform_version": "1.2.9",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_api_gateway_stage.test",
+          "mode": "managed",
+          "type": "aws_api_gateway_stage",
+          "name": "test",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "cache_cluster_enabled": null,
+            "cache_cluster_size": null,
+            "canary_settings": [],
+            "client_certificate_id": null,
+            "deployment_id": "dummy deployment_id",
+            "description": null,
+            "documentation_version": null,
+            "rest_api_id": "dummy rest_api_id",
+            "stage_name": "prod",
+            "tags": null,
+            "variables": null,
+            "xray_tracing_enabled": null
+          },
+          "sensitive_values": {
+            "access_log_settings": [
+              {}
+            ],
+            "canary_settings": [],
+            "tags_all": {}
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_api_gateway_stage.test",
+      "mode": "managed",
+      "type": "aws_api_gateway_stage",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "cache_cluster_enabled": null,
+          "cache_cluster_size": null,
+          "canary_settings": [],
+          "client_certificate_id": null,
+          "deployment_id": "dummy deployment_id",
+          "description": null,
+          "documentation_version": null,
+          "rest_api_id": "dummy rest_api_id",
+          "stage_name": "prod",
+          "tags": null,
+          "variables": null,
+          "xray_tracing_enabled": null
+        },
+        "after_unknown": {
+          "access_log_settings": [
+            {}
+          ],
+          "arn": true,
+          "canary_settings": [],
+          "execution_arn": true,
+          "id": true,
+          "invoke_url": true,
+          "tags_all": true,
+          "web_acl_arn": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "access_log_settings": [
+            {}
+          ],
+          "canary_settings": [],
+          "tags_all": {}
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 4.16",
+        "expressions": {
+          "region": {
+            "constant_value": "us-west-2"
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_api_gateway_stage.test",
+          "mode": "managed",
+          "type": "aws_api_gateway_stage",
+          "name": "test",
+          "provider_config_key": "aws",
+          "expressions": {
+            "access_log_settings": [
+              {
+                "destination_arn": {
+                  "constant_value": "arn:aws:service:us-west-2:aws:resource-id"
+                },
+                "format": {
+                  "constant_value": "text"
+                }
+              }
+            ],
+            "deployment_id": {
+              "constant_value": "dummy deployment_id"
+            },
+            "rest_api_id": {
+              "constant_value": "dummy rest_api_id"
+            },
+            "stage_name": {
+              "constant_value": "prod"
+            }
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  }
+}

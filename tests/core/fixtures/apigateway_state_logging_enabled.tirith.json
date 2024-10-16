@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "required_provider": "stackguardian/terraform_plan",
+    "version": "v1"
+  },
+  "evaluators": [
+    {
+      "id": "destination_arn_exist",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_api_gateway_stage",
+        "terraform_resource_attribute": "access_log_settings.0.destination_arn"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "destination_arn_exist"
+}
