@@ -79,7 +79,7 @@ def test_direct_references_to_and_by_should_raise_error():
         "Only one of `referenced_by` or "
         "`references_to` must be provided in "
         "the provider input (severity_value: "
-        "99))"
+        "99)"
     )
 
 
