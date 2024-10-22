@@ -71,7 +71,7 @@ def __getValue(key: str, data: Dict[str, any]) -> Union[str, List[str]]:
     return result
 
 
-def provide(provider_args: Dict[str, Any], input_data: Dict[st, Any]) -> List[Dict[str, Any]]:
+def provide(provider_args: Dict[str, Any], input_data: Dict[str, Any]) -> List[Dict[str, Any]]:
     logger.debug("sg_workflow provider")
     logger.debug(f"sg_workflow provider inputs : {provider_args}")
     try:
