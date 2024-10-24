@@ -2,7 +2,7 @@
 id: tirith-policy-error-tolerance
 title: Error Tolerance
 sidebar_label: Error Tolerance
-description: This documentation overviews you about the introduction of the tirith software.
+description: This documentation overviews you about the introduction of the Tirith software.
 keywords:
   - tirith
   - stack-guardian

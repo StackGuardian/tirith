@@ -2,7 +2,7 @@
 id: tirith-policy-structure
 title: Policy Structure
 sidebar_label: Policy Structure
-description: This documentation overviews you about the introduction of the tirith software.
+description: This documentation overviews you about the introduction of the Tirith software.
 keywords:
   - tirith
   - stack-guardian

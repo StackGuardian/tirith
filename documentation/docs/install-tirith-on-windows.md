@@ -2,7 +2,7 @@
 id: install-tirith-on-windows
 title: Install Tirith on Windows
 sidebar_label: Windows
-description: This documentation overviews you about the introduction of the tirith software.
+description: This documentation overviews you about the introduction of the Tirith software.
 keywords:
   - tirith
   - stack-guardian

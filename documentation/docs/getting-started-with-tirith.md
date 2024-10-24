@@ -2,7 +2,7 @@
 id: getting-started-with-tirith
 title: Getting started with Tirith
 sidebar_label: Getting Started 
-description: This documentation overviews you about the introduction of the tirith software.
+description: This documentation provides an introduction to the Tirith software.
 keywords:
   - tirith
   - stack-guardian
@@ -40,7 +40,7 @@ Tirith is a robust policy framework designed to automate and enforce security, g
 
 ## Key Benefits of Tirith
 
-- **Centralized Policy Management :** Tirith offers a unified platform for centralized policy management, reducing duplication and streamlining governance across multiple infrastructures and environments. This ensures consistent application of policies, regardless of the platform being used.
+- **Centralized Policy Management:** Tirith offers a unified platform for centralized policy management, reducing duplication and streamlining governance across multiple infrastructures and environments. This ensures consistent application of policies, regardless of the platform being used.
 
 - **Simplified Policy Creation :** Tirith’s [intuitive, no-code interface](https://tirith-policy-builder.vercel.app/) and declarative language simplify policy authoring, enabling users to define and manage policies effortlessly. This removes the need for deep technical expertise, allowing teams to quickly align with evolving regulatory requirements.
 
