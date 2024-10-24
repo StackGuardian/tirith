@@ -1,8 +1,8 @@
 ---
 id: install-tirith-on-linux
-title: Install Tirith on linux
+title: Install Tirith on Linux
 sidebar_label: Linux
-description: This documentation overviews you about the introduction of the tirith software.
+description: This documentation provides an introduction to the Tirith software.
 keywords:
   - tirith
   - stack-guardian

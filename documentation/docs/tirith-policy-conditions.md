@@ -2,7 +2,7 @@
 id: tirith-policy-conditions
 title: Policy Conditions
 sidebar_label: Policy Conditions
-description: This documentation overviews you about the introduction of the tirith software.
+description: This documentation overviews you about the introduction of the Tirith software.
 keywords:
   - tirith
   - stack-guardian
