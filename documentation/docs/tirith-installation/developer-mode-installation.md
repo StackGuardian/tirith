@@ -36,9 +36,8 @@ slug: developer-mode-installation/
 For developers who want to contribute to Tirith, setting up a [Dev Container in Visual Studio Code (VS Code)](https://code.visualstudio.com/docs/devcontainers/create-dev-container#_create-a-devcontainerjson-file) offers a robust development environment. This approach ensures that all dependencies and configurations are consistent across different setups.
 
 ## Prerequisite
-
-- Ensure [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) are installed on your machine.
-- Install [Git](https://git-scm.com/downloads) in your machine.
+- Make sure your machine has [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) installed.
+- Install [Git](https://git-scm.com/downloads) on your machine.
 - Basic knowledge on [Docker](https://docs.docker.com/engine/install/) is required.
 
 ## Steps to Install Tirith
@@ -52,7 +51,7 @@ cd tirith
 ```
 
 ### Step 2: Set Up Docker
-Ensure [Docker](https://docs.docker.com/engine/install/) is installed and running on your machine. You can manage Docker using Docker Desktop or the command line interface (CLI). Docker allows you to run Tirith within isolated containers, preventing any dependency conflicts with your local system.
+Ensure [Docker](https://docs.docker.com/engine/install/) is installed and running on your machine. You can manage Docker using Docker Desktop or the command-line interface (CLI). Docker allows you to run Tirith within isolated containers, preventing any dependency conflicts with your local system.
 
 ### Step 3: Open the Project in VS Code
 - Launch Visual Studio Code and open the cloned repository folder.

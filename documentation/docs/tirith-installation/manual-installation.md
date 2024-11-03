@@ -36,9 +36,8 @@ slug: manual-installation/
 If you prefer a manual setup, especially if you want to modify Tirith’s codebase directly, follow these steps to install Tirith in a virtual Python environment.
 
 ## Prerequisite
-
-- Ensure [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) are installed on your machine.
-- Install [Git](https://git-scm.com/downloads) in your machine.
+- Make sure your machine has [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) installed.
+- Install [Git](https://git-scm.com/downloads) on your machine.
 
 ## Steps to Install Tirith
 
