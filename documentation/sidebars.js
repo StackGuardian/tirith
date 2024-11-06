@@ -8,11 +8,12 @@ module.exports = {
     {
       type: "category",
       collapsed: true,
-      label: "Installation",
+      label: "Setup Tirith",
+
       items: [
-        "install-tirith-on-linux",
-        "install-tirith-on-windows",
-        "install-tirith-on-mac"
+        'tirith-installation/quick-installation',
+        'tirith-installation/developer-mode-installation',
+        'tirith-installation/manual-installation'
       ]
     },
     {
@@ -20,11 +21,11 @@ module.exports = {
       collapsed: true,
       label: "Tirith Policies",
       items: [
-        "tirith-policy-structure",
-        "tirith-policy-error-tolerance",
-        "tirith-policy-conditions",
-        "tirith-policy-variables",
-        "tirith-policy-examples"
+        "tirith-policies/tirith-policy-structure",
+        "tirith-policies/tirith-policy-error-tolerance",
+        "tirith-policies/tirith-policy-conditions",
+        "tirith-policies/tirith-policy-variables",
+        "tirith-policies/tirith-policy-examples"
       ]
     },
   ],
