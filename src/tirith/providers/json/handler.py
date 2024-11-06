@@ -47,9 +47,9 @@ def get_value(provider_args: Dict[str, Any], input_data: Dict[str, Any]) -> List
 
     return outputs
 
-
-SUPPORTED_OPS:  Dict[str, Callable[[Dict[str, Any], Dict[str, Any]], List[Dict[str, Any]]]] 
-
+SUPPORTED_OPS: Dict[str, OperationHandlerType] = {
+    "get_value": get_value 
+}
 
 def provide(provider_args: Dict[str, Any], input_data: Dict[str, Any]) -> List[Dict[str, Any]]:
 
