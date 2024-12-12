@@ -34,7 +34,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     condition = evaluator_obj.get("condition")
     evaluator_name: str = condition.get("type")
     if evaluator_name is "VersionCompare":
-        evaluator_data = { "value": condition.get("value"), "operation": condition.get("operation") }
+        evaluator_data = {"value": condition.get("value"), "operation": condition.get("operation")}
     else:
         evaluator_data = condition.get("value")
     evaluator_error_tolerance: int = condition.get("error_tolerance", DEFAULT_ERROR_TOLERANCE)

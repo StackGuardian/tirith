@@ -22,16 +22,15 @@ checks_failing = [
 
 evaluator = VersionCompare()
 
+
 # pytest -v -m passing
 @mark.passing
 @mark.parametrize("evaluator_input,evaluator_data", checks_passing)
 def test_evaluate_passing(evaluator_input, evaluator_data):
     result = evaluator.evaluate(evaluator_input, evaluator_data)
     operation = evaluator_data["operation"]
-    assert result == {
-        "passed": True,
-        "message": f"{evaluator_input} is {operation} {evaluator_data}"
-    }
+    assert result == {"passed": True, "message": f"{evaluator_input} is {operation} {evaluator_data}"}
+
 
 # pytest -v -m failing
 @mark.failing
@@ -39,7 +38,4 @@ def test_evaluate_passing(evaluator_input, evaluator_data):
 def test_evaluate_failing(evaluator_input, evaluator_data):
     result = evaluator.evaluate(evaluator_input, evaluator_data)
     operation = evaluator_data["operation"]
-    assert result == {
-        "passed": False,
-        "message": f"{evaluator_input} is not {operation} {evaluator_data}"
-    }
+    assert result == {"passed": False, "message": f"{evaluator_input} is not {operation} {evaluator_data}"}
