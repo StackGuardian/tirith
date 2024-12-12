@@ -30,7 +30,7 @@ def test_evaluate_passing(evaluator_input, evaluator_data):
     operation = evaluator_data["operation"]
     assert result == {
         "passed": True,
-        "message": f"{evaluator_input} is {operation} {evaluator_data['value']}"
+        "message": f"{evaluator_input} is {operation} {evaluator_data}"
     }
 
 # pytest -v -m failing
@@ -41,5 +41,5 @@ def test_evaluate_failing(evaluator_input, evaluator_data):
     operation = evaluator_data["operation"]
     assert result == {
         "passed": False,
-        "message": f"{evaluator_input} is not {operation} {evaluator_data['value']}"
+        "message": f"{evaluator_input} is not {operation} {evaluator_data}"
     }
