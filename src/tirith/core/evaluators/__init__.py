@@ -30,5 +30,5 @@ EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
     "NotEquals": NotEquals,
     "NotContainedIn": NotContainedIn,
     "NotContains": NotContains,
-    "VersionCompare": VersionCompare
+    "VersionCompare": VersionCompare,
 }
