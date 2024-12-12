@@ -14,6 +14,7 @@ from .regex_match import RegexMatch
 from .not_equals import NotEquals
 from .not_contained_in import NotContainedIn
 from .not_contains import NotContains
+from .version_compare import VersionCompare
 
 EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
     "ContainedIn": ContainedIn,
@@ -29,4 +30,5 @@ EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
     "NotEquals": NotEquals,
     "NotContainedIn": NotContainedIn,
     "NotContains": NotContains,
+    "VersionCompare": VersionCompare
 }
