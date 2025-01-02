@@ -1,9 +1,0 @@
-[tool.black]
-line-length = 120
-target-version = ['py38']
-
-[tool.pytest.ini_options]
-markers = [
-    "failing: Evaluations should fail for these tests",
-    "passing: Evaluations should pass for these tests",
-]
