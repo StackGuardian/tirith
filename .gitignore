@@ -133,4 +133,3 @@ dmypy.json
 .DS_Store
 .local
 .test_tmp
-node_modules
