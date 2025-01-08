@@ -13,12 +13,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov
-          pip install -e .
+          pip install .
       - name: Run tests with coverage
         run: |
-          pytest --cov=tirith tests/
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+          pytest --cov-branch --cov-report=xml --cov=tirith tests/
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          name: coverage-report
-          path: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
