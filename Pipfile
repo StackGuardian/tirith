@@ -5,15 +5,16 @@ name = "pypi"
 
 [packages]
 simplejson = "==3.17.2"
-pydash = "==6.0.0"
+pydash = "*"
 PyYAML = "==6.0.1"
 
 [dev-packages]
 black = "*"
 pytest = "*"
+exceptiongroup = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.11"
 
 [pipenv]
 allow_prereleases = true
