@@ -69,7 +69,8 @@ def provide(provider_inputs, input_data):
         is_attribute_found = False
 
         for resource_change in resource_changes:
-            if resource_change["type"] == resource_type:
+
+            if resource_type == "*" or resource_change["type"] == resource_type:
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
                 if input_resource_change_attrs:
@@ -120,7 +121,8 @@ def provide(provider_inputs, input_data):
         resource_type = provider_inputs["terraform_resource_type"]
         is_resource_type_found = False
         for resource_change in resource_changes:
-            if resource_type in (resource_change["type"], "*"):
+
+            if resource_type == "*" or resource_change["type"] == resource_type:
                 is_resource_type_found = True
                 for action in resource_change["change"]["actions"]:
                     outputs.append(
@@ -146,11 +148,12 @@ def provide(provider_inputs, input_data):
         resource_meta = {}
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
-            if resource_change["type"] == resource_type:
+
+            if resource_type == "*" or resource_change["type"] == resource_type:
                 # No need to check if the resource is not found
                 # because the count of a resource can be zero
                 resource_meta = resource_change
-                count = +1
+                count += 1
 
         outputs.append(
             {
@@ -282,7 +285,8 @@ def direct_dependencies_operator(input_data: dict, provider_inputs: dict, output
     is_resource_found = False
 
     for resource in config_resources:
-        if resource.get("type") != resource_type:
+
+        if resource_type != "*" and resource.get("type") != resource_type:
             continue
         is_resource_found = True
         deps_resource_type = {resource_id.split(".")[0] for resource_id in resource.get("depends_on", [])}
@@ -317,9 +321,10 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
 
     # Loop for adding reference_target
     for resource_change in resource_changes:
-        if resource_change.get("type") != resource_type or resource_change.get("change", {}).get("actions") == [
-            "destroy"
-        ]:
+
+        if (resource_type != "*" and resource_change.get("type") != resource_type) or resource_change.get(
+            "change", {}
+        ).get("actions") == ["destroy"]:
             continue
         reference_target_addresses.add(resource_change.get("address"))
         is_resource_found = True
@@ -406,9 +411,10 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
     is_resource_found = False
 
     for resource_change in resource_changes:
-        if resource_change.get("type") != resource_type or resource_change.get("change", {}).get("actions") == [
-            "destroy"
-        ]:
+
+        if (resource_type != "*" and resource_change.get("type") != resource_type) or resource_change.get(
+            "change", {}
+        ).get("actions") == ["destroy"]:
             continue
         is_resource_found = True
         resource_type_count += 1
@@ -479,7 +485,8 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
     is_resource_found = False
 
     for resource in config_resources:
-        if resource.get("type") != resource_type:
+
+        if resource_type != "*" and resource.get("type") != resource_type:
             continue
         is_resource_found = True
         resource_references = set()
