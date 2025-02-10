@@ -318,7 +318,9 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
 
     # Loop for adding reference_target
     for resource_change in resource_changes:
-        if (not resource_type in (resource_change["type"], "*")) or resource_change.get("change", {}).get("actions") == ["destroy"]:
+        if (not resource_type in (resource_change["type"], "*")) or resource_change.get("change", {}).get(
+            "actions"
+        ) == ["destroy"]:
             continue
         reference_target_addresses.add(resource_change.get("address"))
         is_resource_found = True
