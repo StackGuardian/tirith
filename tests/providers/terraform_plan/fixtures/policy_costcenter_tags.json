@@ -1,7 +1,7 @@
 {
     "evaluators": [
         {
-            "description": "VPC needs to have one tag with key:'costcenter' and any value ",
+            "description": "All resources must have a 'costcenter' tag with a non-empty value",
             "condition": {
                 "type": "IsNotEmpty",
                 "value": "",
@@ -12,22 +12,6 @@
                 "operation_type": "attribute",
                 "terraform_resource_attribute": "tags.costcenter",
                 "terraform_resource_type": "*"
-            }
-        },
-        {
-            "id": "eval-id-2",
-            "description": "",
-            "provider_args": {
-                "operation_type": "action",
-                "terraform_resource_type": [
-                    "aws_vpc",
-                    "aws_ec2"
-                ]
-            },
-            "condition": {
-                "type": "Equals",
-                "value": "create",
-                "error_tolerance": 1
             }
         }
     ],
