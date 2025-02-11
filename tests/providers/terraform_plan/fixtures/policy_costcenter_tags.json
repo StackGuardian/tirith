@@ -19,5 +19,5 @@
         "required_provider": "stackguardian/terraform_plan",
         "version": "v1"
     },
-    "eval_expression": "eval-id-1 || eval-id-2"
+    "eval_expression": "eval-id-1 "
 }
