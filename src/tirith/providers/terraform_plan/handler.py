@@ -283,7 +283,7 @@ def direct_dependencies_operator(input_data: dict, provider_inputs: dict, output
 
     for resource in config_resources:
 
-        if  resource.get("type") != resource_type:
+        if resource.get("type") != resource_type:
             continue
         is_resource_found = True
         deps_resource_type = {resource_id.split(".")[0] for resource_id in resource.get("depends_on", [])}
@@ -318,9 +318,9 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
 
     # Loop for adding reference_target
     for resource_change in resource_changes:
-        if (not resource_type in (resource_change["type"])) or resource_change.get("change", {}).get(
-            "actions"
-        ) == ["destroy"]:
+        if (not resource_type in (resource_change["type"])) or resource_change.get("change", {}).get("actions") == [
+            "destroy"
+        ]:
             continue
         reference_target_addresses.add(resource_change.get("address"))
         is_resource_found = True
@@ -408,9 +408,9 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
 
     for resource_change in resource_changes:
 
-        if ( resource_change.get("type") != resource_type) or resource_change.get(
-            "change", {}
-        ).get("actions") == ["destroy"]:
+        if (resource_change.get("type") != resource_type) or resource_change.get("change", {}).get("actions") == [
+            "destroy"
+        ]:
             continue
         is_resource_found = True
         resource_type_count += 1
