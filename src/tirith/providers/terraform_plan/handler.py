@@ -318,7 +318,7 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
 
     # Loop for adding reference_target
     for resource_change in resource_changes:
-        if (not resource_type in (resource_change["type"])) or resource_change.get("change", {}).get("actions") == [
+        if resource_change.get("type") != resource_type or resource_change.get("change", {}).get("actions") == [
             "destroy"
         ]:
             continue
@@ -408,7 +408,7 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
 
     for resource_change in resource_changes:
 
-        if (resource_change.get("type") != resource_type) or resource_change.get("change", {}).get("actions") == [
+        if resource_change.get("type") != resource_type or resource_change.get("change", {}).get("actions") == [
             "destroy"
         ]:
             continue
@@ -482,7 +482,7 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
 
     for resource in config_resources:
 
-        if not resource_type in (resource.get("type")):
+        if resource.get("type") != resource_type:
             continue
         is_resource_found = True
         resource_references = set()
