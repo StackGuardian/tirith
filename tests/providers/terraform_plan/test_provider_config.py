@@ -53,3 +53,17 @@ def test_get_terraform_provider_get_version_constraint():
 
     assert len(result) == 1
     assert result[0]["value"] == ">= 3.11.0, < 4.0.0"
+
+
+def test_get_terraform_resource_attribute_with_wildcard():
+    provider_args_dict = {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "tags.costcenter",
+    }
+    result = handler.provide(provider_args_dict, load_terraform_plan_json("input_costcenter_tags.json"))
+
+    assert len(result) == 3
+    assert result[0]["value"] == "product-456"  # EC2 instance
+    assert result[1]["value"] == "product-789"  # S3 bucket
+    assert result[2]["value"] == "product-123"  # VPC

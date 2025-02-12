@@ -1,0 +1,23 @@
+{
+    "evaluators": [
+        {
+            "description": "All resources must have a 'costcenter' tag with a non-empty value",
+            "condition": {
+                "type": "IsNotEmpty",
+                "value": "",
+                "error_tolerance": 1
+            },
+            "id": "eval-id-1",
+            "provider_args": {
+                "operation_type": "attribute",
+                "terraform_resource_attribute": "tags.costcenter",
+                "terraform_resource_type": "*"
+            }
+        }
+    ],
+    "meta": {
+        "required_provider": "stackguardian/terraform_plan",
+        "version": "v1"
+    },
+    "eval_expression": "eval-id-1 "
+}
