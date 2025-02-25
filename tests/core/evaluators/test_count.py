@@ -1,7 +1,6 @@
 from tirith.providers.terraform_plan import handler
 
 
-
 def test_count_with_indexed_resources():
     plan = {
         "resource_changes": [
@@ -12,7 +11,7 @@ def test_count_with_indexed_resources():
     }
     provider_args = {"operation_type": "count", "terraform_resource_type": "aws_s3_bucket"}
     result = handler.provide(provider_args, plan)
-    
+
     assert len(result) == 1
     assert result[0]["value"] == 3
 
@@ -26,7 +25,7 @@ def test_count_with_non_indexed_resources():
     }
     provider_args = {"operation_type": "count", "terraform_resource_type": "aws_s3_bucket"}
     result = handler.provide(provider_args, plan)
-    
+
     assert len(result) == 1
     assert result[0]["value"] == 2
 
@@ -41,7 +40,7 @@ def test_count_with_mixed_resources():
     }
     provider_args = {"operation_type": "count", "terraform_resource_type": "aws_s3_bucket"}
     result = handler.provide(provider_args, plan)
-    
+
     assert len(result) == 1
     assert result[0]["value"] == 3
 
@@ -56,7 +55,7 @@ def test_count_with_star_resource_type():
     }
     provider_args = {"operation_type": "count", "terraform_resource_type": "*"}
     result = handler.provide(provider_args, plan)
-    
+
     assert len(result) == 1
     assert result[0]["value"] == 3
 
@@ -70,6 +69,6 @@ def test_count_with_non_existent_resource():
     }
     provider_args = {"operation_type": "count", "terraform_resource_type": "aws_vpc"}
     result = handler.provide(provider_args, plan)
-    
+
     assert len(result) == 1
     assert result[0]["value"] == 0
