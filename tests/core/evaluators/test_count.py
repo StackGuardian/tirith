@@ -1,5 +1,5 @@
 from tirith.providers.terraform_plan import handler
-from utils import load_terraform_plan_json
+
 
 
 def test_count_with_indexed_resources():
