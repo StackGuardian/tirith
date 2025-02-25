@@ -1,0 +1,22 @@
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/terraform_plan"
+    },
+    "evaluators": [
+        {
+            "id": "aws_db_instance_count",
+            "description": "Make sure that there are less than 2 RDS instances",
+            "provider_args": {
+                "operation_type": "count",
+                "terraform_resource_type": "aws_db_instance"
+            },
+            "condition": {
+                "type": "LessThan",
+                "value": 2,
+                "error_tolerance": 2
+            }
+        }
+    ],
+    "eval_expression": "aws_db_instance_count"
+}

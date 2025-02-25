@@ -147,10 +147,13 @@ def provide(provider_inputs, input_data):
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
             if resource_type in (resource_change["type"], "*"):
-                # No need to check if the resource is not found
-                # because the count of a resource can be zero
                 resource_meta = resource_change
-                count += 1
+
+                # Check if the resource has an "index" key
+                if "index" in resource_change:
+                    count += 1  # Add 1 for each indexed instance
+                else:
+                    count += 1  # Standard single instance counting
 
         outputs.append(
             {
