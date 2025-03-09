@@ -9,7 +9,6 @@ module.exports = {
       type: "category",
       collapsed: true,
       label: "Setup Tirith",
-
       items: [
         'tirith-installation/quick-installation',
         'tirith-installation/developer-mode-installation',
@@ -19,12 +18,8 @@ module.exports = {
     {
       type: "category",
       collapsed: true,
-      label: "Tirith Policies",
-      link: {
-        type: "doc",
-        id: "tirith-policies/tirith-create-first-policy",
-      },
       items: [
+        "tirith-policies/tirith-create-first-policy",
         "tirith-policies/tirith-policy-structure",
         "tirith-policies/tirith-policy-error-tolerance",
         "tirith-policies/tirith-policy-conditions",

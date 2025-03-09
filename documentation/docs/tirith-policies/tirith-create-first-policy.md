@@ -42,7 +42,6 @@ This guide provides a hands-on approach to creating and evaluating a Tirith poli
 
 - Use the Tirith CLI to validate policies against JSON inputs
 - Leverage the Tirith JSON provider for extracting and validating data
-- Implement error tolerance mechanisms to handle missing or unexpected fields gracefully
 
 ## Prerequisites
 
