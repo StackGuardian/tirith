@@ -18,6 +18,7 @@ module.exports = {
     {
       type: "category",
       collapsed: true,
+      label: "Tirith Policies",
       items: [
         "tirith-policies/tirith-create-first-policy",
         "tirith-policies/tirith-policy-structure",
