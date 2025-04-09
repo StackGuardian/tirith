@@ -1,9 +1,10 @@
 import logging
+from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
 
 
-def __get_all_costs(operation_type, input_data):
+def __get_all_costs(operation_type: str, input_data: dict) -> float:
     logger.debug(f"costType :  {operation_type}")
     pointer = {
         "total_monthly_cost": ["totalMonthlyCost", "monthlyCost"],
@@ -38,7 +39,7 @@ def __get_all_costs(operation_type, input_data):
         raise KeyError("projects not found in input_data")
 
 
-def __get_resources_costs(resource_type, operation_type, input_data):
+def __get_resources_costs(resource_type: str, operation_type: str, input_data: dict) -> float:
     logger.debug(f"costType :  {operation_type}")
     pointer = {"total_monthly_cost": "totalMonthlyCost", "total_hourly_cost": "totalHourlyCost"}
     pointer = {
@@ -77,7 +78,7 @@ def __get_resources_costs(resource_type, operation_type, input_data):
         raise KeyError("projects not found in input_data")
 
 
-def provide(provider_args, input_data):
+def provide(provider_args: dict, input_data: dict) -> List[Dict[str, Any]]:
     logger.debug("infracost provider")
     logger.debug(f"infracost provider inputs : {provider_args}")
     try:
