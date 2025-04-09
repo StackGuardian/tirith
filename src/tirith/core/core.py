@@ -274,14 +274,14 @@ def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict, var_d
     eval_objects = policy_dict.get("evaluators")
 
     final_evaluation_policy_string = policy_dict.get("eval_expression")
-    provider_module = policy_meta.get("required_provider", "core")
-    # TODO: Write functionality for dynamically importing evaluators from other modules.
+    
+    provider_module = policy_meta.get("provider", policy_meta.get("required_provider", "core"))
+    
     eval_results = []
     eval_results_obj = {}
     for eval_obj in eval_objects:
         eval_id = eval_obj.get("id")
         eval_description = eval_obj.get("description")
-        logger.debug(f"Processing evaluator '{eval_id}'")
         eval_result = generate_evaluator_result(eval_obj, input_dict, provider_module)
         eval_result["id"] = eval_id
         eval_result["description"] = eval_description
@@ -290,10 +290,11 @@ def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict, var_d
     final_evaluation_result, errors = final_evaluator(final_evaluation_policy_string, eval_results_obj)
 
     final_output = {
-        "meta": {"version": policy_meta.get("version"), "required_provider": provider_module},
+        "meta": {"version": policy_meta.get("version"), "provider": provider_module},
         "final_result": final_evaluation_result,
         "evaluators": eval_results,
         "errors": errors,
         "eval_expression": final_evaluation_policy_string,
     }
     return final_output
+
