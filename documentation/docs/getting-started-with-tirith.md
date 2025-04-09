@@ -1,12 +1,10 @@
 ---
 id: getting-started-with-tirith
 title: Getting started with Tirith
-sidebar_label: Getting Started 
-description: This documentation overviews you about the introduction of the tirith software.
+sidebar_label: Getting Started
+description: Learn how Tirith simplifies security, governance, and compliance for infrastructure-as-code platforms.
 keywords:
   - tirith
-  - stack-guardian
-# url: https://www.lambdatest.com/support/docs/getting-started-with-tirith
 site_name: Tirith
 slug: getting-started-with-tirith/
 ---
@@ -14,28 +12,6 @@ slug: getting-started-with-tirith/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<script type="application/ld+json"
-  dangerouslySetInnerHTML={{ __html: JSON.stringify({
-   "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [{
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://www.lambdatest.com"
-    },{
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Support",
-      "item": "https://www.lambdatest.com/support/docs/"
-    },{
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Getting Started With Tirith",
-      "item": "https://www.lambdatest.com/support/docs/getting-started-with-tirith/"
-    }]
-  })
-}}></script>
 Tirith is a robust policy framework designed to automate and enforce security, governance, and compliance across infrastructure-as-code (IaC) platforms like Terraform, CloudFormation, and Kubernetes. It simplifies policy creation and management, ensuring infrastructure adheres to industry regulations and best practices.
 
 ## Key Benefits of Tirith
