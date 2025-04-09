@@ -2,11 +2,9 @@
 id: tirith-policy-conditions
 title: Policy Conditions
 sidebar_label: Policy Conditions
-description: This documentation overviews you about the introduction of the tirith software.
+description: Discover the various condition types supported by Tirith for evaluating input JSON.
 keywords:
   - tirith
-  - stack-guardian
-# url: https://www.lambdatest.com/support/docs/getting-started-with-tirith
 site_name: Tirith
 slug: tirith-policy-conditions/
 ---
@@ -14,36 +12,15 @@ slug: tirith-policy-conditions/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<script type="application/ld+json"
-  dangerouslySetInnerHTML={{ __html: JSON.stringify({
-   "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [{
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://www.lambdatest.com"
-    },{
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Support",
-      "item": "https://www.lambdatest.com/support/docs/"
-    },{
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Tirith Policies",
-      "item": "https://www.lambdatest.com/support/docs/tirith-policy-conditions/"
-    }]
-  })
-}}></script>
 Conditions define how values from input JSON are evaluated. Tirith supports various condition types:
 
 - **Equals :** Checks if a value matches a specified value.
 - **RegexMatch :** Validates if a string matches a regex pattern.
 - **LessThan / GreaterThan :** Compares numeric values.
 
-```javascript title="policy.json"
+```jsonc title="policy.json"
 {
+  // ...
   "id": "epoch_check",
   "provider_args": {
     "operation_type": "get_value",
@@ -53,6 +30,7 @@ Conditions define how values from input JSON are evaluated. Tirith supports vari
     "type": "LessThan",
     "value": 1720415598
   }
+  // ...
 }
 ```
 

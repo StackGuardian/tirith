@@ -2,11 +2,9 @@
 id: tirith-create-first-policy
 title: Creating Your First Tirith Policy
 sidebar_label: Policy
-description: This documentation overviews you about the introduction of the tirith software.
+description: A step-by-step guide to creating and evaluating your first Tirith policy.
 keywords:
   - tirith
-  - stack-guardian
-# url: https://www.lambdatest.com/support/docs/getting-started-with-tirith
 site_name: Tirith
 slug: tirith-create-first-policy/
 ---
@@ -14,28 +12,6 @@ slug: tirith-create-first-policy/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<script type="application/ld+json"
-  dangerouslySetInnerHTML={{ __html: JSON.stringify({
-   "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [{
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://www.lambdatest.com"
-    },{
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Support",
-      "item": "https://www.lambdatest.com/support/docs/"
-    },{
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Tirith Policies",
-      "item": "https://www.lambdatest.com/support/docs/tirith-create-first-policy/"
-    }]
-  })
-}}></script>
 In modern cloud-native environments, security and compliance are paramount. Tirith, a powerful policy-as-code framework by StackGuardian, enables you to enforce robust validation and guardrails over JSON-based inputs. By defining policies in JSON format, you can automate security and operational controls efficiently within your cloud and DevOps workflows.
 
 This guide provides a hands-on approach to creating and evaluating a Tirith policy against a JSON input file. You will learn how to:
@@ -47,7 +23,7 @@ This guide provides a hands-on approach to creating and evaluating a Tirith poli
 
 Before starting, ensure you have the Tirith CLI installed and create the following two JSON files: `input.json` and `policy.json`:
 
-```javascript title="input.json"
+```json title="input.json"
 {
   "path": "/stackguardian/wfgrps/test",
   "verb": "POST",
@@ -63,7 +39,7 @@ Before starting, ensure you have the Tirith CLI installed and create the followi
 
 Here is the `policy.json` file:
 
-```javascript title="policy.json"
+```json title="policy.json"
 {
     "meta": {
         "version": "v1",
