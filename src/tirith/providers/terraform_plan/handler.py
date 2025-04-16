@@ -50,6 +50,7 @@ def provide(provider_inputs, input_data):
     input_resource_change_attrs = {}
     input_type = provider_inputs["operation_type"]
     resource_changes = input_data.get("resource_changes")
+    
     if not resource_changes:
         outputs.append(
             {
@@ -64,20 +65,24 @@ def provide(provider_inputs, input_data):
     if input_type == "attribute":
         attribute = provider_inputs["terraform_resource_attribute"]
         resource_type = provider_inputs["terraform_resource_type"]
-
+        
         is_resource_found = False
         is_attribute_found = False
 
-        for resource_change in resource_changes:
+        for i, resource_change in enumerate(resource_changes):
             if resource_type in (resource_change["type"], "*"):
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
+                
                 if input_resource_change_attrs:
+                    found_attribute = False
                     if attribute in input_resource_change_attrs:
                         is_attribute_found = True
+                        found_attribute = True
+                        attribute_value = input_resource_change_attrs[attribute]
                         outputs.append(
                             {
-                                "value": input_resource_change_attrs[attribute],
+                                "value": attribute_value,
                                 "meta": resource_change,
                                 "err": None,
                             }
@@ -86,15 +91,24 @@ def provide(provider_inputs, input_data):
                         evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
                         if evaluated_outputs:
                             is_attribute_found = True
-                        for evaluated_output in evaluated_outputs:
-                            outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
+                            found_attribute = True
+                            for evaluated_output in evaluated_outputs:
+                                outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
+                    
+                    # If we didn't find the attribute in this resource, add a None value so it still gets evaluated
+                    if not found_attribute:
+                        outputs.append({
+                            "value": None,
+                            "meta": resource_change,
+                            "err": None
+                        })
                 else:
-                    outputs.append(
-                        {
-                            "value": ProviderError(severity_value=0),
-                            "err": f"No Terraform changes found for resource type: '{resource_type}'",
-                        }
-                    )
+                    outputs.append({
+                        "value": None,
+                        "meta": resource_change,
+                        "err": None
+                    })
+        
         if not outputs:
             if not is_resource_found:
                 outputs.append(
