@@ -69,7 +69,7 @@ def provide(provider_inputs, input_data):
         is_resource_found = False
         is_attribute_found = False
 
-        for _, resource_change in enumerate(resource_changes):
+        for resource_change in resource_changes:
             if resource_type in (resource_change["type"], "*"):
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
