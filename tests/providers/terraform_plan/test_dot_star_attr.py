@@ -75,10 +75,10 @@ def test_multiple_resource_tag_check():
     were being omitted from evaluation.
     """
     # Load the input fixture with multiple resources (some with tags, some without)
-    input_data = load_json_from_fixtures("input_multiple_rescource_tag_check.json")
+    input_data = load_json_from_fixtures("input_multiple_resource_tag_check.json")
 
     # Load the policy that should check for a specific tag across all resources
-    policy = load_json_from_fixtures("policy_multiple_rescource_tag_check.json")
+    policy = load_json_from_fixtures("policy_multiple_resource_tag_check.json")
 
     # Run the policy evaluation
     result = start_policy_evaluation_from_dict(policy, input_data)
@@ -103,7 +103,7 @@ def test_multiple_resource_tag_check_all_resources_have_tag():
     This validates the fix ensures correct passing behavior too.
     """
     # Load the input fixture with multiple resources
-    input_data = load_json_from_fixtures("input_multiple_rescource_tag_check.json")
+    input_data = load_json_from_fixtures("input_multiple_resource_tag_check.json")
 
     # Modify all resources to have the required tag
     for resource in input_data.get("resource_changes", []):
@@ -111,7 +111,7 @@ def test_multiple_resource_tag_check_all_resources_have_tag():
             resource["change"]["after"]["tags"] = {"a": "true"}
 
     # Load the policy that checks for a specific tag across all resources
-    policy = load_json_from_fixtures("policy_multiple_rescource_tag_check.json")
+    policy = load_json_from_fixtures("policy_multiple_resource_tag_check.json")
 
     # Run the policy evaluation
     result = start_policy_evaluation_from_dict(policy, input_data)

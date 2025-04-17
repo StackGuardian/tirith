@@ -69,7 +69,7 @@ def provide(provider_inputs, input_data):
         is_resource_found = False
         is_attribute_found = False
 
-        for i, resource_change in enumerate(resource_changes):
+        for _, resource_change in enumerate(resource_changes):
             if resource_type in (resource_change["type"], "*"):
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
@@ -99,7 +99,12 @@ def provide(provider_inputs, input_data):
                     if not found_attribute:
                         outputs.append({"value": None, "meta": resource_change, "err": None})
                 else:
-                    outputs.append({"value": None, "meta": resource_change, "err": None})
+                    outputs.append(
+                        {
+                            "value": ProviderError(severity_value=0),
+                            "err": f"No Terraform changes found for resource type: '{resource_type}'",
+                        }
+                    )
 
         if not outputs:
             if not is_resource_found:
