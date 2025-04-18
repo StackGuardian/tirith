@@ -93,9 +93,6 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         if not has_valid_evaluation and has_evaluation_passed is None:
             has_evaluation_passed = None
 
-    if not evaluation_results:
-        has_evaluation_passed = False
-        evaluation_results = [{"passed": False, "message": "Could not find input value"}]
 
     result["result"] = evaluation_results
     result["passed"] = has_evaluation_passed

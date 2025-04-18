@@ -73,12 +73,13 @@ def provide(provider_inputs, input_data):
             if resource_type in (resource_change["type"], "*"):
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
-
+                # [local_is_found_attribute] (local scope) 
+                # Used to decide whether to append a None value for each specific resource that's missing the attribute
                 if input_resource_change_attrs:
-                    found_attribute = False
+                    local_is_found_attribute = False
                     if attribute in input_resource_change_attrs:
                         is_attribute_found = True
-                        found_attribute = True
+                        local_is_found_attribute = True
                         attribute_value = input_resource_change_attrs[attribute]
                         outputs.append(
                             {
@@ -91,12 +92,12 @@ def provide(provider_inputs, input_data):
                         evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
                         if evaluated_outputs:
                             is_attribute_found = True
-                            found_attribute = True
+                            local_is_found_attribute = True
                             for evaluated_output in evaluated_outputs:
                                 outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
 
                     # If we didn't find the attribute in this resource, add a None value so it still gets evaluated
-                    if not found_attribute:
+                    if not local_is_found_attribute:
                         outputs.append({"value": None, "meta": resource_change, "err": None})
                 else:
                     outputs.append(
