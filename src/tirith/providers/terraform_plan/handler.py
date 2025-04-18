@@ -73,7 +73,7 @@ def provide(provider_inputs, input_data):
             if resource_type in (resource_change["type"], "*"):
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
-                # [local_is_found_attribute] (local scope) 
+                # [local_is_found_attribute] (local scope)
                 # Used to decide whether to append a None value for each specific resource that's missing the attribute
                 if input_resource_change_attrs:
                     local_is_found_attribute = False

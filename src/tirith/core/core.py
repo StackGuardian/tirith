@@ -93,7 +93,6 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         if not has_valid_evaluation and has_evaluation_passed is None:
             has_evaluation_passed = None
 
-
     result["result"] = evaluation_results
     result["passed"] = has_evaluation_passed
     return result
