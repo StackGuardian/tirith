@@ -56,30 +56,43 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     evaluation_results = []
     has_evaluation_passed = True
 
-    for evaluator_input in evaluator_inputs:
-        if isinstance(evaluator_input["value"], ProviderError) and evaluator_input.get("err", None):
-            severity_value = evaluator_input["value"].severity_value
-            err_result = dict(message=evaluator_input["err"])
-
-            if severity_value > evaluator_error_tolerance:
-                err_result.update(dict(passed=False))
-                evaluation_results.append(err_result)
-                has_evaluation_passed = False
-                continue
-            # Mark as skipped evaluation
-            err_result.update(dict(passed=None))
-            evaluation_results.append(err_result)
-            has_evaluation_passed = None
-            continue
-
-        evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
-        evaluation_result["meta"] = evaluator_input.get("meta")
-        evaluation_results.append(evaluation_result)
-        if not evaluation_result["passed"]:
-            has_evaluation_passed = False
-    if not evaluation_results:
+    # If there are no evaluator inputs, it means the provider didn't find any resources
+    # In this case, the evaluation should fail
+    if not evaluator_inputs:
         has_evaluation_passed = False
         evaluation_results = [{"passed": False, "message": "Could not find input value"}]
+    else:
+        # Track if we've had at least one valid evaluation (not skipped)
+        has_valid_evaluation = False
+
+        for evaluator_input in evaluator_inputs:
+            if isinstance(evaluator_input["value"], ProviderError) and evaluator_input.get("err", None):
+                severity_value = evaluator_input["value"].severity_value
+                err_result = dict(message=evaluator_input["err"])
+
+                if severity_value > evaluator_error_tolerance:
+                    err_result.update(dict(passed=False))
+                    evaluation_results.append(err_result)
+                    has_evaluation_passed = False
+                    continue
+                # Mark as skipped evaluation
+                err_result.update(dict(passed=None))
+                evaluation_results.append(err_result)
+                has_evaluation_passed = None
+                continue
+
+            evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
+            evaluation_result["meta"] = evaluator_input.get("meta")
+            evaluation_results.append(evaluation_result)
+            has_valid_evaluation = True
+
+            if not evaluation_result["passed"]:
+                has_evaluation_passed = False
+
+        # If all evaluations were skipped, we need to make sure the overall result is 'None'
+        if not has_valid_evaluation and has_evaluation_passed is None:
+            has_evaluation_passed = None
+
     result["result"] = evaluation_results
     result["passed"] = has_evaluation_passed
     return result

@@ -1,0 +1,22 @@
+{
+    "evaluators": [
+      {
+        "description": "",
+        "condition": {
+          "type": "IsNotEmpty",
+          "error_tolerance": 0
+        },
+        "id": "eval-id-1",
+        "provider_args": {
+          "operation_type": "attribute",
+          "terraform_resource_attribute": "tags.a",
+          "terraform_resource_type": "*"
+        }
+      }
+    ],
+    "meta": {
+      "required_provider": "stackguardian/terraform_plan",
+      "version": "v1"
+    },
+    "eval_expression": "eval-id-1"
+  }
