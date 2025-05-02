@@ -1,5 +1,7 @@
 name: Coverage
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   coverage:
     runs-on: ubuntu-latest
