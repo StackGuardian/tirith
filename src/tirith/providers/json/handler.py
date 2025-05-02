@@ -1,6 +1,6 @@
 import pydash
 
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Any
 from ..common import create_result_dict, ProviderError, get_path_value_from_dict
 
 
@@ -8,8 +8,8 @@ class PydashPathNotFound:
     pass
 
 
-def _get_path_value_from_dict(splitted_paths, input_dict):
-    final_data = []
+def _get_path_value_from_dict(splitted_paths: List[str], input_dict: Dict[str, Any]) -> List[Any]:
+    final_data: List[Any] = []
     for i, expression in enumerate(splitted_paths):
         intermediate_val = pydash.get(input_dict, expression, default=PydashPathNotFound)
         if isinstance(intermediate_val, list) and i < len(splitted_paths) - 1:
@@ -28,7 +28,7 @@ def _get_path_value_from_dict(splitted_paths, input_dict):
     return final_data
 
 
-def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
+def get_value(provider_args: Dict[str, Any], input_data: Dict[str, Any]) -> List[Dict[str, Any]]:
     # Must be validated first whether the provider args are valid for this op type
     key_path: str = provider_args["key_path"]
 
@@ -47,11 +47,12 @@ def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
 
     return outputs
 
+SUPPORTED_OPS: Dict[str, OperationHandlerType] = {
+    "get_value": get_value 
+}
 
-SUPPORTED_OPS: Dict[str, Callable] = {"get_value": get_value}
+def provide(provider_args: Dict[str, Any], input_data: Dict[str, Any]) -> List[Dict[str, Any]]:
 
-
-def provide(provider_args: Dict, input_data: Dict) -> List[Dict]:
     operation_type = provider_args["operation_type"]
 
     op_handler = SUPPORTED_OPS.get(operation_type)
