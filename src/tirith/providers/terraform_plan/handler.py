@@ -20,19 +20,26 @@ class PydashPathNotFound:
 
 def _wrapper_get_exp_attribute(attribute, input_resource_change_attrs):
     splitted_attribute = attribute.split(".*.")
-    return _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
+    final_data, missing_attributes = _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
+    # If any attributes are missing, return an empty list to indicate a failure
+    if missing_attributes:
+        return []
+    return final_data
 
 
 def _get_exp_attribute(split_expressions, input_data):
     # split_expressions=expression.split('*')
     final_data = []
+    missing_attributes = []
+    
     for i, expression in enumerate(split_expressions):
         intermediate_val = pydash.get(input_data, expression, default=PydashPathNotFound)
         if isinstance(intermediate_val, list) and i < len(split_expressions) - 1:
             for val in intermediate_val:
-                final_attributes = _get_exp_attribute(split_expressions[1:], val)
-                for final_attribute in final_attributes:
+                child_final_attributes, child_missing = _get_exp_attribute(split_expressions[1:], val)
+                for final_attribute in child_final_attributes:
                     final_data.append(final_attribute)
+                missing_attributes.extend(child_missing)
         elif i == len(split_expressions) - 1 and intermediate_val is not PydashPathNotFound:
             final_data.append(intermediate_val)
         elif ".*" in expression:
@@ -40,8 +47,20 @@ def _get_exp_attribute(split_expressions, input_data):
             intermediate_data = pydash.get(input_data, intermediate_exp[0], default=PydashPathNotFound)
             if intermediate_data is not PydashPathNotFound and isinstance(intermediate_data, list):
                 for val in intermediate_data:
-                    final_data.append(val)
-    return final_data
+                    # When looking for nested paths like tags.application_acronym
+                    if len(intermediate_exp) > 1 and intermediate_exp[1]:
+                        nested_val = pydash.get(val, intermediate_exp[1][1:], default=PydashPathNotFound)
+                        if nested_val is not PydashPathNotFound:
+                            final_data.append(nested_val)
+                        else:
+                            missing_attributes.append(f"{intermediate_exp[0]}.*.{intermediate_exp[1][1:]}")
+                    else:
+                        final_data.append(val)
+        else:
+            # This is a path not found case
+            missing_attributes.append(expression)
+    
+    return final_data, missing_attributes
 
 
 def provide(provider_inputs, input_data):
