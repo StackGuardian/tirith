@@ -17,7 +17,7 @@ checks_passing = [
                 {"b": {"f": ["val11", "val7"]}},
             ]
         },
-        ["val1", "val3", "val8", "val4", "val9", "val5"],
+        ["val1", "val3", "val8", "val4", "val9", "val5",None,None],
     ),
     (
         "a.*.b.c",
@@ -30,7 +30,7 @@ checks_passing = [
                 {"b": {"f": ["val11", "val7"]}},
             ]
         },
-        [["val1", "val3"], ["val8", "val4"], ["val9", "val5"]],
+        [["val1", "val3"], ["val8", "val4"], ["val9", "val5"],None, None],
     ),
     (
         "a.b.c",
@@ -48,7 +48,7 @@ checks_passing = [
                 {"b": {"f": ["val11", "val7"]}},
             ]
         },
-        [{"c": ["val1", "val3"]}, {"c": ["val8", "val4"]}, {"c": ["val9", "val5"]}, {"f": ["val11", "val7"]}],
+        [{"c": ["val1", "val3"]}, {"c": ["val8", "val4"]}, {"c": ["val9", "val5"]}, None,{"f": ["val11", "val7"]}],
     ),
 ]
 
