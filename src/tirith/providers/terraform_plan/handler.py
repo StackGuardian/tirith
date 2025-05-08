@@ -33,7 +33,7 @@ def _get_exp_attribute(split_expressions, input_data):
             # Track if at least one item had the attribute
             found_any = False
             for val in intermediate_val:
-                final_attributes = _get_exp_attribute(split_expressions[i+1:], val)
+                final_attributes = _get_exp_attribute(split_expressions[i + 1 :], val)
                 if final_attributes:
                     found_any = True
                     for final_attribute in final_attributes:
@@ -42,7 +42,7 @@ def _get_exp_attribute(split_expressions, input_data):
                     # If no attributes found for this list item, append None
                     # This ensures list items without the attribute are still evaluated
                     final_data.append(None)
-            
+
             # We've already processed all remaining expressions for this list
             # so we can return early
             return final_data
@@ -57,7 +57,7 @@ def _get_exp_attribute(split_expressions, input_data):
                     # If there are more expressions after this one
                     if i < len(split_expressions) - 1 and intermediate_exp[1]:
                         # Get the result of applying the rest of the expression to this item
-                        next_val = pydash.get(val, intermediate_exp[1].lstrip('.'), default=PydashPathNotFound)
+                        next_val = pydash.get(val, intermediate_exp[1].lstrip("."), default=PydashPathNotFound)
                         if next_val is not PydashPathNotFound:
                             final_data.append(next_val)
                         else:
