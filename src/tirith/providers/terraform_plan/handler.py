@@ -31,11 +31,9 @@ def _get_exp_attribute(split_expressions, input_data):
         if isinstance(intermediate_val, list) and i < len(split_expressions) - 1:
             # For each item in the list, recursively get attributes
             # Track if at least one item had the attribute
-            found_any = False
             for val in intermediate_val:
                 final_attributes = _get_exp_attribute(split_expressions[i + 1 :], val)
                 if final_attributes:
-                    found_any = True
                     for final_attribute in final_attributes:
                         final_data.append(final_attribute)
                 else:
