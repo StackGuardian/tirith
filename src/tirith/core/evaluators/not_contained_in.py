@@ -27,9 +27,13 @@ class NotContainedIn(BaseEvaluator):
                 result = evaluator_input not in evaluator_data
                 evaluation_result["passed"] = result
                 if result:
-                    evaluation_result["message"] = "Did not find {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                    evaluation_result["message"] = "Did not find {} inside {}".format(
+                        json_format_value(evaluator_input), json_format_value(evaluator_data)
+                    )
                 else:
-                    evaluation_result["message"] = "Found {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                    evaluation_result["message"] = "Found {} inside {}".format(
+                        json_format_value(evaluator_input), json_format_value(evaluator_data)
+                    )
             # if evaluator_input is a list
             elif isinstance(evaluator_data, list):
                 evaluator_data = sort_collections(evaluator_data)
@@ -38,35 +42,51 @@ class NotContainedIn(BaseEvaluator):
                     result = evaluator_input not in evaluator_data
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Did not find {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                        evaluation_result["message"] = "Did not find {} inside {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        )
                     else:
-                        evaluation_result["message"] = "Found {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                        evaluation_result["message"] = "Found {} inside {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        )
                 else:
                     result = evaluator_input not in evaluator_data
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Did not find {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                        evaluation_result["message"] = "Did not find {} inside {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        )
                     else:
-                        evaluation_result["message"] = "Found {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                        evaluation_result["message"] = "Found {} inside {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        )
             elif isinstance(evaluator_data, dict):
                 if isinstance(evaluator_input, dict):
                     evaluation_result["passed"] = True
-                    evaluation_result["message"] = "Did not find {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                    evaluation_result["message"] = "Did not find {} inside {}".format(
+                        json_format_value(evaluator_input), json_format_value(evaluator_data)
+                    )
                     for key in evaluator_input:
                         if key not in evaluator_data:
                             continue
 
                         if evaluator_data[key] == evaluator_input[key]:
                             evaluation_result["passed"] = False
-                            evaluation_result["message"] = "Found {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                            evaluation_result["message"] = "Found {} inside {}".format(
+                                json_format_value(evaluator_input), json_format_value(evaluator_data)
+                            )
                             break
                 else:
                     result = evaluator_input not in evaluator_data
                     evaluation_result["passed"] = result
                     if result:
-                        evaluation_result["message"] = "Did not find {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                        evaluation_result["message"] = "Did not find {} inside {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        )
                     else:
-                        evaluation_result["message"] = "Found {} inside {}".format(json_format_value(evaluator_input),json_format_value( evaluator_data))
+                        evaluation_result["message"] = "Found {} inside {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        )
             else:
                 evaluation_result["passed"] = False
                 evaluation_result["message"] = (

@@ -1,6 +1,7 @@
 from tirith.core.evaluators import IsEmpty
 from pytest import mark
 from tirith.utils import json_format_value
+
 checks_passing = ("", None, [], dict())
 checks_failing = ("stackguardian", 1, [None], dict(a=1))
 

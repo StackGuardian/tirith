@@ -1,6 +1,7 @@
 from tirith.core.evaluators import IsNotEmpty
 from pytest import mark
 from tirith.utils import json_format_value
+
 evaluator_input1 = "abc"
 evaluator_input2 = ""
 

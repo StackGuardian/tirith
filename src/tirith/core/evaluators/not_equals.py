@@ -2,7 +2,7 @@ import logging
 from typing import Dict, Any
 
 from .base_evaluator import BaseEvaluator
-from tirith.utils import sort_collections,json_format_value
+from tirith.utils import sort_collections, json_format_value
 
 logger = logging.getLogger(__name__)
 

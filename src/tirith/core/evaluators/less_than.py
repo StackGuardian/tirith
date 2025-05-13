@@ -3,6 +3,7 @@ from typing import Dict, Any
 
 from .base_evaluator import BaseEvaluator
 from tirith.utils import json_format_value
+
 # Checks if :attr:`value` is less then :attr:`other`. Automatically casts values to the same type if possible.
 
 # Args:

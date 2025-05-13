@@ -1,5 +1,6 @@
 from .base_evaluator import BaseEvaluator
 from tirith.utils import json_format_value
+
 # Checks if input is not empty
 
 # Args:

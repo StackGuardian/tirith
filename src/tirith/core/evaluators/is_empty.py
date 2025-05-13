@@ -3,6 +3,7 @@ from typing import Dict, Any
 
 from .base_evaluator import BaseEvaluator
 from tirith.utils import json_format_value
+
 # Checks if input is empty (null, empty list [], empty dict {}, empty str '')
 
 # Args:
