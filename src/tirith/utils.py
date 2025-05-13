@@ -8,21 +8,18 @@ from typing import Any
 def json_format_value(value: Any) -> str:
     """
     Format a Python value as a JSON string representation.
+
     This produces a more language-agnostic representation of values that's
     suitable for displaying in evaluation messages.
 
-    Args:
-        value: Any Python value
+    :param value: Any Python value
+    :type value: Any
 
-    Returns:
-        A JSON-formatted string representation of the value, enclosed in backticks
-
+    :returns: A JSON-formatted string representation of the value, enclosed in backticks
+    :rtype: str
     """
-    try:
-        # Special case for None as JSON's null isn't as recognizable
-        if value is None:
-            return "`None`"
 
+    try:
         # For basic types, use JSON representation
         json_str = json.dumps(value)
         return f"`{json_str}`"
