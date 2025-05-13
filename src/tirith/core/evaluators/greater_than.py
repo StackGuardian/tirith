@@ -1,4 +1,11 @@
+import logging
+from typing import Dict, Any
+
 from .base_evaluator import BaseEvaluator
+from tirith.utils import json_format_value
+
+
+logger = logging.getLogger(__name__)
 
 
 # Checks if :attr:`value` is more then :attr:`other`. Automatically casts values to the same type if possible.
@@ -30,9 +37,13 @@ class GreaterThan(BaseEvaluator):
             value2 = evaluator_data
             evaluation_result["passed"] = value1 > value2
             if evaluation_result["passed"]:
-                evaluation_result["message"] = "{} is greater than {}".format(value1, value2)
+                evaluation_result["message"] = "{} is greater than {}".format(
+                    json_format_value(value1), json_format_value(value2)
+                )
             else:
-                evaluation_result["message"] = "{} is not greater than {}".format(value1, value2)
+                evaluation_result["message"] = "{} is not greater than {}".format(
+                    json_format_value(value1), json_format_value(value2)
+                )
             return evaluation_result
         except Exception as e:
             evaluation_result["message"] = str(e)

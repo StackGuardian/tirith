@@ -1,6 +1,30 @@
 import logging
+import json
 
 logger = logging.getLogger(__name__)
+from typing import Any
+
+
+def json_format_value(value: Any) -> str:
+    """
+    Format a Python value as a JSON string representation.
+
+    This produces a more language-agnostic representation of values that's
+    suitable for displaying in evaluation messages.
+
+    :param value: Any Python value
+    :type value: Any
+
+    :returns: A JSON-formatted string representation of the value, enclosed in backticks
+    :rtype: str
+    """
+    try:
+        # For basic types, use JSON representation
+        json_str = json.dumps(value)
+        return f"`{json_str}`"
+    except (TypeError, ValueError):
+        # Fall back to string representation for non-JSON-serializable values
+        return f"`{str(value)}`"
 
 
 def sort_collections(inputs):

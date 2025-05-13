@@ -1,5 +1,7 @@
-from .base_evaluator import BaseEvaluator
 import re
+
+from .base_evaluator import BaseEvaluator
+from tirith.utils import json_format_value
 
 
 class RegexMatch(BaseEvaluator):
@@ -13,17 +15,23 @@ class RegexMatch(BaseEvaluator):
                 if match is None:
                     evaluation_result = {
                         "passed": False,
-                        "message": "{} does not match regex pattern {}".format(evaluator_input, evaluator_data),
+                        "message": "{} does not match regex pattern {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        ),
                     }
                 else:
                     evaluation_result = {
                         "passed": True,
-                        "message": "{} matches regex pattern {}".format(evaluator_input, evaluator_data),
+                        "message": "{} matches regex pattern {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        ),
                     }
             else:
                 evaluation_result = {
                     "passed": False,
-                    "message": "{} does not match regex pattern {}".format(evaluator_input, evaluator_data),
+                    "message": "{} does not match regex pattern {}".format(
+                        json_format_value(evaluator_input), json_format_value(evaluator_data)
+                    ),
                 }
             return evaluation_result
         except Exception as e:

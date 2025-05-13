@@ -1,5 +1,6 @@
 from tirith.core.evaluators import RegexMatch
 from pytest import mark
+from tirith.utils import json_format_value
 
 evaluator_data1 = "^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
 evaluator_input1 = "amitrakshar01"
@@ -14,14 +15,20 @@ evaluator = RegexMatch()
 @mark.passing
 def test_regex_passing():
     result = evaluator.evaluate(evaluator_input1, evaluator_data1)
-    assert result == {"passed": True, "message": f"{evaluator_input1} matches regex pattern {evaluator_data1}"}
+    assert result == {
+        "passed": True,
+        "message": f"{json_format_value(evaluator_input1)} matches regex pattern {json_format_value(evaluator_data1)}",
+    }
 
 
 # pytest -v -m failing
 @mark.failing
 def test_regex_failing():
     result = evaluator.evaluate(evaluator_input2, evaluator_data2)
-    assert result == {"passed": False, "message": f"{evaluator_input2} does not match regex pattern {evaluator_data2}"}
+    assert result == {
+        "passed": False,
+        "message": f"{json_format_value(evaluator_input2)} does not match regex pattern {json_format_value(evaluator_data2)}",
+    }
 
 
 def test_regex_list():

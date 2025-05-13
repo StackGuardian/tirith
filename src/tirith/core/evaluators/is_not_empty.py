@@ -1,4 +1,5 @@
 from .base_evaluator import BaseEvaluator
+from tirith.utils import json_format_value
 
 # Checks if input is not empty
 
@@ -30,9 +31,9 @@ class IsNotEmpty(BaseEvaluator):
                 or isinstance(evaluator_input, dict)
             ) and evaluator_input:
                 evaluation_result["passed"] = True
-                evaluation_result["message"] = "{} is not empty".format(evaluator_input)
+                evaluation_result["message"] = "{} is not empty".format(json_format_value(evaluator_input))
             if not evaluation_result["passed"]:
-                evaluation_result["message"] = "{} is empty".format(evaluator_input)
+                evaluation_result["message"] = "{} is empty".format(json_format_value(evaluator_input))
             return evaluation_result
         except Exception as e:
             evaluation_result["message"] = str(e)
