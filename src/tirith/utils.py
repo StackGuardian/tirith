@@ -18,7 +18,6 @@ def json_format_value(value: Any) -> str:
     :returns: A JSON-formatted string representation of the value, enclosed in backticks
     :rtype: str
     """
-
     try:
         # For basic types, use JSON representation
         json_str = json.dumps(value)
