@@ -1,7 +1,8 @@
 import logging
+from typing import Dict, Any
 
 from .base_evaluator import BaseEvaluator
-from tirith.utils import sort_collections
+from tirith.utils import sort_collections,json_format_value
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +42,13 @@ class NotEquals(BaseEvaluator):
             result = value1 != value2
             evaluation_result["passed"] = result
             if result:
-                evaluation_result["message"] = "{} is not equal to {}".format(evaluator_input, evaluator_data)
+                evaluation_result["message"] = "{} is not equal to {}".format(
+                    json_format_value(evaluator_input), json_format_value(evaluator_data)
+                )
             else:
-                evaluation_result["message"] = "{} is equal to {}".format(evaluator_input, evaluator_data)
+                evaluation_result["message"] = "{} is equal to {}".format(
+                    json_format_value(evaluator_input), json_format_value(evaluator_data)
+                )
             return evaluation_result
         except Exception as e:
             evaluation_result["message"] = str(e)
