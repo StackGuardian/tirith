@@ -46,22 +46,13 @@ def _get_exp_attribute(split_expressions, input_data):
             return final_data
         elif i == len(split_expressions) - 1 and intermediate_val is not PydashPathNotFound:
             final_data.append(intermediate_val)
-        elif ".*" in expression:
+        elif expression.endswith(".*"):
             intermediate_exp = expression.split(".*")
             intermediate_data = pydash.get(input_data, intermediate_exp[0], default=PydashPathNotFound)
             if intermediate_data is not PydashPathNotFound and isinstance(intermediate_data, list):
                 # For each item in the list, check if it has attributes or append None
                 for val in intermediate_data:
-                    # If there are more expressions after this one
-                    if i < len(split_expressions) - 1 and intermediate_exp[1]:
-                        # Get the result of applying the rest of the expression to this item
-                        next_val = pydash.get(val, intermediate_exp[1].lstrip("."), default=PydashPathNotFound)
-                        if next_val is not PydashPathNotFound:
-                            final_data.append(next_val)
-                        else:
-                            final_data.append(None)
-                    else:
-                        final_data.append(val)
+                    final_data.append(val)
     return final_data
 
 
