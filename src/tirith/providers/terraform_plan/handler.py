@@ -29,16 +29,28 @@ def _get_exp_attribute(split_expressions, input_data):
     for i, expression in enumerate(split_expressions):
         intermediate_val = pydash.get(input_data, expression, default=PydashPathNotFound)
         if isinstance(intermediate_val, list) and i < len(split_expressions) - 1:
+            # For each item in the list, recursively get attributes
+            # Track if at least one item had the attribute
             for val in intermediate_val:
-                final_attributes = _get_exp_attribute(split_expressions[1:], val)
-                for final_attribute in final_attributes:
-                    final_data.append(final_attribute)
+                final_attributes = _get_exp_attribute(split_expressions[i + 1 :], val)
+                if final_attributes:
+                    for final_attribute in final_attributes:
+                        final_data.append(final_attribute)
+                else:
+                    # If no attributes found for this list item, append None
+                    # This ensures list items without the attribute are still evaluated
+                    final_data.append(None)
+
+            # We've already processed all remaining expressions for this list
+            # so we can return early
+            return final_data
         elif i == len(split_expressions) - 1 and intermediate_val is not PydashPathNotFound:
             final_data.append(intermediate_val)
-        elif ".*" in expression:
+        elif expression.endswith(".*"):
             intermediate_exp = expression.split(".*")
             intermediate_data = pydash.get(input_data, intermediate_exp[0], default=PydashPathNotFound)
             if intermediate_data is not PydashPathNotFound and isinstance(intermediate_data, list):
+                # For each item in the list, check if it has attributes or append None
                 for val in intermediate_data:
                     final_data.append(val)
     return final_data
