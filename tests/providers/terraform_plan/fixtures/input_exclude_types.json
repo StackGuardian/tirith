@@ -1,0 +1,591 @@
+{
+    "format_version": "1.2",
+    "terraform_version": "1.11.4",
+    "planned_values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "aws_iam_role.ecs_task_execution_role",
+            "mode": "managed",
+            "type": "aws_iam_role",
+            "name": "ecs_task_execution_role",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "values": {
+              "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+              "description": null,
+              "force_detach_policies": false,
+              "max_session_duration": 3600,
+              "name": "ecsTaskExecutionRole",
+              "path": "/",
+              "permissions_boundary": null,
+              "tags": {
+                "application_acronym": "TTO"
+              },
+              "tags_all": {
+                "application_acronym": "TTO"
+              }
+            },
+            "sensitive_values": {
+              "inline_policy": [],
+              "managed_policy_arns": [],
+              "tags": {},
+              "tags_all": {}
+            }
+          },
+          {
+            "address": "aws_iam_role_policy_attachment.ecs_task_execution_policy",
+            "mode": "managed",
+            "type": "aws_iam_role_policy_attachment",
+            "name": "ecs_task_execution_policy",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "values": {
+              "policy_arn": "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+              "role": "ecsTaskExecutionRole"
+            },
+            "sensitive_values": {}
+          },
+          {
+            "address": "aws_instance.example",
+            "mode": "managed",
+            "type": "aws_instance",
+            "name": "example",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 1,
+            "values": {
+              "ami": "ami-099a8245f5daa82bf",
+              "availability_zone": "eu-west-1a",
+              "credit_specification": [],
+              "ebs_block_device": [
+                {
+                  "delete_on_termination": true,
+                  "device_name": "/dev/sdf",
+                  "tags": {
+                    "Name": "EC2-with-3-EBS"
+                  },
+                  "volume_size": 10
+                },
+                {
+                  "delete_on_termination": true,
+                  "device_name": "/dev/sdg",
+                  "tags": {
+                    "Name": "EC2-with-3-EBS"
+                  },
+                  "volume_size": 10
+                },
+                {
+                  "delete_on_termination": true,
+                  "device_name": "/dev/sdh",
+                  "tags": {
+                    "Name": "EC2-with-3-EBS",
+                    "application_acronym": "TTO"
+                  },
+                  "volume_size": 10
+                }
+              ],
+              "get_password_data": false,
+              "hibernation": null,
+              "instance_type": "m5.4xlarge",
+              "launch_template": [],
+              "root_block_device": [
+                {
+                  "delete_on_termination": false,
+                  "tags": {
+                    "Name": "EC2-with-3-EBS",
+                    "application_acronym": "TTO"
+                  },
+                  "volume_size": 8
+                }
+              ],
+              "source_dest_check": true,
+              "tags": {
+                "Name": "EC2-with-3-EBS",
+                "application_acronym": "TTO"
+              },
+              "tags_all": {
+                "Name": "EC2-with-3-EBS",
+                "application_acronym": "TTO"
+              },
+              "timeouts": null,
+              "user_data_replace_on_change": false,
+              "volume_tags": null
+            },
+            "sensitive_values": {
+              "capacity_reservation_specification": [],
+              "cpu_options": [],
+              "credit_specification": [],
+              "ebs_block_device": [
+                {
+                  "tags": {},
+                  "tags_all": {}
+                },
+                {
+                  "tags": {},
+                  "tags_all": {}
+                },
+                {
+                  "tags": {},
+                  "tags_all": {}
+                }
+              ],
+              "enclave_options": [],
+              "ephemeral_block_device": [],
+              "instance_market_options": [],
+              "ipv6_addresses": [],
+              "launch_template": [],
+              "maintenance_options": [],
+              "metadata_options": [],
+              "network_interface": [],
+              "private_dns_name_options": [],
+              "root_block_device": [
+                {
+                  "tags": {},
+                  "tags_all": {}
+                }
+              ],
+              "secondary_private_ips": [],
+              "security_groups": [],
+              "tags": {},
+              "tags_all": {},
+              "vpc_security_group_ids": []
+            }
+          }
+        ]
+      }
+    },
+    "resource_changes": [
+      {
+        "address": "aws_iam_role.ecs_task_execution_role",
+        "mode": "managed",
+        "type": "aws_iam_role",
+        "name": "ecs_task_execution_role",
+        "provider_name": "registry.terraform.io/hashicorp/aws",
+        "change": {
+          "actions": [
+            "create"
+          ],
+          "before": null,
+          "after": {
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+            "description": null,
+            "force_detach_policies": false,
+            "max_session_duration": 3600,
+            "name": "ecsTaskExecutionRole",
+            "path": "/",
+            "permissions_boundary": null,
+            "tags": {
+              "application_acronym": "TTO"
+            },
+            "tags_all": {
+              "application_acronym": "TTO"
+            }
+          },
+          "after_unknown": {
+            "arn": true,
+            "create_date": true,
+            "id": true,
+            "inline_policy": true,
+            "managed_policy_arns": true,
+            "name_prefix": true,
+            "tags": {},
+            "tags_all": {},
+            "unique_id": true
+          },
+          "before_sensitive": false,
+          "after_sensitive": {
+            "inline_policy": [],
+            "managed_policy_arns": [],
+            "tags": {},
+            "tags_all": {}
+          }
+        }
+      },
+      {
+        "address": "aws_iam_role_policy_attachment.ecs_task_execution_policy",
+        "mode": "managed",
+        "type": "aws_iam_role_policy_attachment",
+        "name": "ecs_task_execution_policy",
+        "provider_name": "registry.terraform.io/hashicorp/aws",
+        "change": {
+          "actions": [
+            "create"
+          ],
+          "before": null,
+          "after": {
+            "policy_arn": "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+            "role": "ecsTaskExecutionRole"
+          },
+          "after_unknown": {
+            "id": true
+          },
+          "before_sensitive": false,
+          "after_sensitive": {}
+        }
+      },
+      {
+        "address": "aws_instance.example",
+        "mode": "managed",
+        "type": "aws_instance",
+        "name": "example",
+        "provider_name": "registry.terraform.io/hashicorp/aws",
+        "change": {
+          "actions": [
+            "create"
+          ],
+          "before": null,
+          "after": {
+            "ami": "ami-099a8245f5daa82bf",
+            "availability_zone": "eu-west-1a",
+            "credit_specification": [],
+            "ebs_block_device": [
+              {
+                "delete_on_termination": true,
+                "device_name": "/dev/sdf",
+                "tags": {
+                  "Name": "EC2-with-3-EBS"
+                },
+                "volume_size": 10
+              },
+              {
+                "delete_on_termination": true,
+                "device_name": "/dev/sdg",
+                "tags": {
+                  "Name": "EC2-with-3-EBS"
+                },
+                "volume_size": 10
+              },
+              {
+                "delete_on_termination": true,
+                "device_name": "/dev/sdh",
+                "tags": {
+                  "Name": "EC2-with-3-EBS",
+                  "application_acronym": "TTO"
+                },
+                "volume_size": 10
+              }
+            ],
+            "get_password_data": false,
+            "hibernation": null,
+            "instance_type": "m5.4xlarge",
+            "launch_template": [],
+            "root_block_device": [
+              {
+                "delete_on_termination": false,
+                "tags": {
+                  "Name": "EC2-with-3-EBS",
+                  "application_acronym": "TTO"
+                },
+                "volume_size": 8
+              }
+            ],
+            "source_dest_check": true,
+            "tags": {
+              "Name": "EC2-with-3-EBS",
+              "application_acronym": "TTO"
+            },
+            "tags_all": {
+              "Name": "EC2-with-3-EBS",
+              "application_acronym": "TTO"
+            },
+            "timeouts": null,
+            "user_data_replace_on_change": false,
+            "volume_tags": null
+          },
+          "after_unknown": {
+            "arn": true,
+            "associate_public_ip_address": true,
+            "capacity_reservation_specification": true,
+            "cpu_core_count": true,
+            "cpu_options": true,
+            "cpu_threads_per_core": true,
+            "credit_specification": [],
+            "disable_api_stop": true,
+            "disable_api_termination": true,
+            "ebs_block_device": [
+              {
+                "encrypted": true,
+                "iops": true,
+                "kms_key_id": true,
+                "snapshot_id": true,
+                "tags": {},
+                "tags_all": true,
+                "throughput": true,
+                "volume_id": true,
+                "volume_type": true
+              },
+              {
+                "encrypted": true,
+                "iops": true,
+                "kms_key_id": true,
+                "snapshot_id": true,
+                "tags": {},
+                "tags_all": true,
+                "throughput": true,
+                "volume_id": true,
+                "volume_type": true
+              },
+              {
+                "encrypted": true,
+                "iops": true,
+                "kms_key_id": true,
+                "snapshot_id": true,
+                "tags": {},
+                "tags_all": true,
+                "throughput": true,
+                "volume_id": true,
+                "volume_type": true
+              }
+            ],
+            "ebs_optimized": true,
+            "enable_primary_ipv6": true,
+            "enclave_options": true,
+            "ephemeral_block_device": true,
+            "host_id": true,
+            "host_resource_group_arn": true,
+            "iam_instance_profile": true,
+            "id": true,
+            "instance_initiated_shutdown_behavior": true,
+            "instance_lifecycle": true,
+            "instance_market_options": true,
+            "instance_state": true,
+            "ipv6_address_count": true,
+            "ipv6_addresses": true,
+            "key_name": true,
+            "launch_template": [],
+            "maintenance_options": true,
+            "metadata_options": true,
+            "monitoring": true,
+            "network_interface": true,
+            "outpost_arn": true,
+            "password_data": true,
+            "placement_group": true,
+            "placement_partition_number": true,
+            "primary_network_interface_id": true,
+            "private_dns": true,
+            "private_dns_name_options": true,
+            "private_ip": true,
+            "public_dns": true,
+            "public_ip": true,
+            "root_block_device": [
+              {
+                "device_name": true,
+                "encrypted": true,
+                "iops": true,
+                "kms_key_id": true,
+                "tags": {},
+                "tags_all": true,
+                "throughput": true,
+                "volume_id": true,
+                "volume_type": true
+              }
+            ],
+            "secondary_private_ips": true,
+            "security_groups": true,
+            "spot_instance_request_id": true,
+            "subnet_id": true,
+            "tags": {},
+            "tags_all": {},
+            "tenancy": true,
+            "user_data": true,
+            "user_data_base64": true,
+            "vpc_security_group_ids": true
+          },
+          "before_sensitive": false,
+          "after_sensitive": {
+            "capacity_reservation_specification": [],
+            "cpu_options": [],
+            "credit_specification": [],
+            "ebs_block_device": [
+              {
+                "tags": {},
+                "tags_all": {}
+              },
+              {
+                "tags": {},
+                "tags_all": {}
+              },
+              {
+                "tags": {},
+                "tags_all": {}
+              }
+            ],
+            "enclave_options": [],
+            "ephemeral_block_device": [],
+            "instance_market_options": [],
+            "ipv6_addresses": [],
+            "launch_template": [],
+            "maintenance_options": [],
+            "metadata_options": [],
+            "network_interface": [],
+            "private_dns_name_options": [],
+            "root_block_device": [
+              {
+                "tags": {},
+                "tags_all": {}
+              }
+            ],
+            "secondary_private_ips": [],
+            "security_groups": [],
+            "tags": {},
+            "tags_all": {},
+            "vpc_security_group_ids": []
+          }
+        }
+      }
+    ],
+    "configuration": {
+      "provider_config": {
+        "aws": {
+          "name": "aws",
+          "full_name": "registry.terraform.io/hashicorp/aws",
+          "expressions": {
+            "region": {
+              "constant_value": "eu-west-1"
+            }
+          }
+        }
+      },
+      "root_module": {
+        "resources": [
+          {
+            "address": "aws_iam_role.ecs_task_execution_role",
+            "mode": "managed",
+            "type": "aws_iam_role",
+            "name": "ecs_task_execution_role",
+            "provider_config_key": "aws",
+            "expressions": {
+              "assume_role_policy": {},
+              "name": {
+                "constant_value": "ecsTaskExecutionRole"
+              },
+              "tags": {
+                "constant_value": {
+                  "application_acronym": "TTO"
+                }
+              }
+            },
+            "schema_version": 0
+          },
+          {
+            "address": "aws_iam_role_policy_attachment.ecs_task_execution_policy",
+            "mode": "managed",
+            "type": "aws_iam_role_policy_attachment",
+            "name": "ecs_task_execution_policy",
+            "provider_config_key": "aws",
+            "expressions": {
+              "policy_arn": {
+                "constant_value": "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+              },
+              "role": {
+                "references": [
+                  "aws_iam_role.ecs_task_execution_role.name",
+                  "aws_iam_role.ecs_task_execution_role"
+                ]
+              }
+            },
+            "schema_version": 0
+          },
+          {
+            "address": "aws_instance.example",
+            "mode": "managed",
+            "type": "aws_instance",
+            "name": "example",
+            "provider_config_key": "aws",
+            "expressions": {
+              "ami": {
+                "constant_value": "ami-099a8245f5daa82bf"
+              },
+              "availability_zone": {
+                "constant_value": "eu-west-1a"
+              },
+              "ebs_block_device": [
+                {
+                  "device_name": {
+                    "constant_value": "/dev/sdf"
+                  },
+                  "tags": {
+                    "constant_value": {
+                      "Name": "EC2-with-3-EBS"
+                    }
+                  },
+                  "volume_size": {
+                    "constant_value": 10
+                  }
+                },
+                {
+                  "delete_on_termination": {
+                    "constant_value": true
+                  },
+                  "device_name": {
+                    "constant_value": "/dev/sdg"
+                  },
+                  "tags": {
+                    "constant_value": {
+                      "Name": "EC2-with-3-EBS"
+                    }
+                  },
+                  "volume_size": {
+                    "constant_value": 10
+                  }
+                },
+                {
+                  "device_name": {
+                    "constant_value": "/dev/sdh"
+                  },
+                  "tags": {
+                    "constant_value": {
+                      "Name": "EC2-with-3-EBS",
+                      "application_acronym": "TTO"
+                    }
+                  },
+                  "volume_size": {
+                    "constant_value": 10
+                  }
+                }
+              ],
+              "instance_type": {
+                "constant_value": "m5.4xlarge"
+              },
+              "root_block_device": [
+                {
+                  "delete_on_termination": {
+                    "constant_value": false
+                  },
+                  "tags": {
+                    "constant_value": {
+                      "Name": "EC2-with-3-EBS",
+                      "application_acronym": "TTO"
+                    }
+                  },
+                  "volume_size": {
+                    "constant_value": 8
+                  }
+                }
+              ],
+              "tags": {
+                "constant_value": {
+                  "Name": "EC2-with-3-EBS",
+                  "application_acronym": "TTO"
+                }
+              }
+            },
+            "schema_version": 1
+          }
+        ]
+      }
+    },
+    "relevant_attributes": [
+      {
+        "resource": "aws_iam_role.ecs_task_execution_role",
+        "attribute": [
+          "name"
+        ]
+      }
+    ],
+    "timestamp": "2025-05-26T06:46:40Z",
+    "applyable": true,
+    "complete": true,
+    "errored": false
+  }
+  
