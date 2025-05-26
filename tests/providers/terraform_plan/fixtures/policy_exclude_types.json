@@ -12,7 +12,7 @@
           "operation_type": "attribute",
           "terraform_resource_attribute": "tags",
           "terraform_resource_type": "*",
-          "exclude_types": [
+          "exclude_resource_types": [
             "aws_iam_role_policy_attachment"
           ]
         }
