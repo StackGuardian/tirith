@@ -1,0 +1,27 @@
+{
+    "evaluators": [
+      {
+        "description": "",
+        "condition": {
+          "type": "IsNotEmpty",
+          "value": "",
+          "error_tolerance": 0
+        },
+        "id": "eval-id-1",
+        "provider_args": {
+          "operation_type": "attribute",
+          "terraform_resource_attribute": "tags",
+          "terraform_resource_type": "*",
+          "exclude_types": [
+            "aws_iam_role_policy_attachment"
+          ]
+        }
+      }
+
+    ],
+    "meta": {
+      "required_provider": "stackguardian/terraform_plan",
+      "version": "v1"
+    },
+    "eval_expression": "eval-id-1"
+  }
