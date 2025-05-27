@@ -62,6 +62,7 @@ def provide(provider_inputs, input_data):
     input_resource_change_attrs = {}
     input_type = provider_inputs["operation_type"]
     resource_changes = input_data.get("resource_changes")
+    exclude_resource_types = provider_inputs.get("exclude_resource_types", [])
 
     if not resource_changes:
         outputs.append(
@@ -82,6 +83,9 @@ def provide(provider_inputs, input_data):
         is_attribute_found = False
 
         for resource_change in resource_changes:
+            # Skip if resource type is in exclude_resource_types when using wildcard
+            if resource_type == "*" and resource_change["type"] in exclude_resource_types:
+                continue
             if resource_type in (resource_change["type"], "*"):
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
@@ -144,6 +148,9 @@ def provide(provider_inputs, input_data):
         resource_type = provider_inputs["terraform_resource_type"]
         is_resource_type_found = False
         for resource_change in resource_changes:
+            # Skip if resource type is in exclude_resource_types when using wildcard
+            if resource_type == "*" and resource_change["type"] in exclude_resource_types:
+                continue
             if resource_type in (resource_change["type"], "*"):
                 is_resource_type_found = True
                 for action in resource_change["change"]["actions"]:
@@ -170,6 +177,9 @@ def provide(provider_inputs, input_data):
         resource_meta = {}
         resource_type = provider_inputs["terraform_resource_type"]
         for resource_change in resource_changes:
+            # Skip if resource type is in exclude_resource_types when using wildcard
+            if resource_type == "*" and resource_change["type"] in exclude_resource_types:
+                continue
             if resource_type in (resource_change["type"], "*"):
                 # No need to check if the resource is not found
                 # because the count of a resource can be zero
