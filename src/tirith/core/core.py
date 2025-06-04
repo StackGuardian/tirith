@@ -83,7 +83,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
             evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
             meta = evaluator_input.get("meta")
-            
+
             # Include meta if it exists and isn't None
             if meta:
                 evaluation_result["meta"] = meta
