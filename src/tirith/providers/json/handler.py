@@ -43,7 +43,12 @@ def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
             )
         ]
 
-    outputs = [create_result_dict(value=value, meta=None, err=None) for value in values]
+    # Create result dict with address as a separate property, not in meta
+    outputs = []
+    for value in values:
+        result = create_result_dict(value=value, meta=None, err=None)
+        result["address"] = key_path
+        outputs.append(result)
 
     return outputs
 
