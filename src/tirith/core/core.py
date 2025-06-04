@@ -82,7 +82,24 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
                 continue
 
             evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
-            evaluation_result["meta"] = evaluator_input.get("meta")
+            meta = evaluator_input.get("meta")
+            
+            # Include meta if it exists and isn't None
+            if meta:
+                evaluation_result["meta"] = meta
+
+            # Handle address - provider may have already set it
+            address = evaluator_input.get("address")
+            if address:
+                # Use the address directly from the provider result and add it to the evaluation result
+                evaluation_result["address"] = address
+                evaluation_result["message"] = f"{evaluation_result['message']} - (Address: `{address}`)"
+            # Check if address is in meta as a fallback for backward compatibility
+            elif meta and isinstance(meta, dict) and "address" in meta:
+                address = meta["address"]
+                evaluation_result["address"] = address
+                evaluation_result["message"] = f"{evaluation_result['message']} - (Address: `{address}`)"
+
             evaluation_results.append(evaluation_result)
             has_valid_evaluation = True
 
