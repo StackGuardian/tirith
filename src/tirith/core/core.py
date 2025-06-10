@@ -85,8 +85,8 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
             meta = evaluator_input.get("meta")
 
             # Include meta if it exists and isn't None
-            if meta:
-                evaluation_result["meta"] = meta
+            
+            evaluation_result["meta"] = meta
 
             # Handle address - provider may have already set it
             address = evaluator_input.get("address")
