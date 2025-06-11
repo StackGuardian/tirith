@@ -149,7 +149,7 @@ def provide(provider_inputs, input_data):
                         "err": f"attribute: '{attribute}' is not found",
                     }
                 )
-        
+
         return outputs
     # CASE 2
     # - Get actions performed on a resource
@@ -230,6 +230,7 @@ def provide(provider_inputs, input_data):
         )
     return outputs
 
+
 def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: list):
     """
     Operation type handler to get the provider config from terraform plan
@@ -287,7 +288,7 @@ def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: l
                 }
             )
             return
-        
+
         result = {
             "value": attribute_value,
             "meta": provider_config_dict,
@@ -575,5 +576,3 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
                 "meta": config_resources,
             }
         )
-
-

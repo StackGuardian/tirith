@@ -83,16 +83,18 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
             # Run evaluation on the provider's input value
             evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
-            
+
             # Copy metadata and address if provided by the provider
             if "meta" in evaluator_input:
                 evaluation_result["meta"] = evaluator_input["meta"]
-                
+
             # Copy address directly if provided
             if "address" in evaluator_input:
                 evaluation_result["address"] = evaluator_input["address"]
                 # Update the message to include the address
-                evaluation_result["message"] = f"{evaluation_result['message']} - (Address: `{evaluator_input['address']}`)"
+                evaluation_result["message"] = (
+                    f"{evaluation_result['message']} - (Address: `{evaluator_input['address']}`)"
+                )
 
             evaluation_results.append(evaluation_result)
             has_valid_evaluation = True
