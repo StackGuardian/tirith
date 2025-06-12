@@ -101,7 +101,7 @@ def provide(provider_inputs, input_data):
                             "value": attribute_value,
                             "meta": resource_change,
                             "err": None,
-                            "addresses": resource_change.get("address")
+                            "addresses": resource_change.get("address"),
                         }
                         outputs.append(result)
                     elif "." in attribute or "*" in attribute:
@@ -111,20 +111,20 @@ def provide(provider_inputs, input_data):
                             local_is_found_attribute = True
                             for evaluated_output in evaluated_outputs:
                                 result = {
-                                    "value": evaluated_output, 
-                                    "meta": resource_change, 
+                                    "value": evaluated_output,
+                                    "meta": resource_change,
                                     "err": None,
-                                    "addresses": resource_change.get("address")
+                                    "addresses": resource_change.get("address"),
                                 }
                                 outputs.append(result)
 
                     # If we didn't find the attribute in this resource, add a None value so it still gets evaluated
                     if not local_is_found_attribute:
                         result = {
-                            "value": None, 
-                            "meta": resource_change, 
+                            "value": None,
+                            "meta": resource_change,
                             "err": None,
-                            "addresses": resource_change.get("address")
+                            "addresses": resource_change.get("address"),
                         }
                         outputs.append(result)
                 else:
@@ -170,7 +170,7 @@ def provide(provider_inputs, input_data):
                         "value": action,
                         "meta": resource_change,
                         "err": None,
-                        "addresses": resource_change.get("address")
+                        "addresses": resource_change.get("address"),
                     }
                     outputs.append(result)
         if not is_resource_type_found:
@@ -202,12 +202,7 @@ def provide(provider_inputs, input_data):
                     addresses = resource_change["address"]
                 count += 1
 
-        result = {
-            "value": count,
-            "meta": resource_meta,
-            "err": None,
-            "addresses": addresses
-        }
+        result = {"value": count, "meta": resource_meta, "err": None, "addresses": addresses}
         outputs.append(result)
         return outputs
     # CASE 4
@@ -287,11 +282,7 @@ def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: l
             )
             return
 
-        result = {
-            "value": attribute_value,
-            "meta": provider_config_dict,
-            "addresses": terraform_provider_full_name
-        }
+        result = {"value": attribute_value, "meta": provider_config_dict, "addresses": terraform_provider_full_name}
         outputs.append(result)
 
     if not is_provider_full_name_found:
