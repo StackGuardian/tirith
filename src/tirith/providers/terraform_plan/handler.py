@@ -294,7 +294,11 @@ def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: l
             )
             return
 
-        result = {"value": attribute_value, "meta": provider_config_dict, "addresses": _ensure_list_of_strings(terraform_provider_full_name)}
+        result = {
+            "value": attribute_value,
+            "meta": provider_config_dict,
+            "addresses": _ensure_list_of_strings(terraform_provider_full_name),
+        }
         outputs.append(result)
 
     if not is_provider_full_name_found:
@@ -317,7 +321,9 @@ def terraform_version_operator(input_data: dict, provider_inputs: dict, outputs:
     :param outputs:         The outputs
     """
     # For terraform_version, there's no specific address as it applies to the entire plan
-    outputs.append({"value": input_data.get("terraform_version"), "meta": input_data, "addresses": ["terraform_version"]})
+    outputs.append(
+        {"value": input_data.get("terraform_version"), "meta": input_data, "addresses": ["terraform_version"]}
+    )
 
 
 def direct_dependencies_operator(input_data: dict, provider_inputs: dict, outputs: list):

@@ -102,7 +102,7 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
 
             # Include addresses in the message if it exists in the result_dict
             if "addresses" in result_dict:
-                addresses = result_dict['addresses']
+                addresses = result_dict["addresses"]
                 # Convert to string representation for display
                 if isinstance(addresses, list):
                     addresses_str = ", ".join(addresses)
