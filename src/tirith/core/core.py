@@ -16,18 +16,6 @@ from .policy_parameterization import get_policy_with_vars_replaced
 logger = logging.getLogger(__name__)
 
 
-def _ensure_list_of_strings(value: Union[str, List[str], None]) -> List[str]:
-    """Convert a string or None value to a list of strings"""
-    if value is None:
-        return []
-    elif isinstance(value, str):
-        return [value]
-    elif isinstance(value, list):
-        return [str(item) for item in value]
-    else:
-        return [str(value)]
-
-
 def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, input_data):
     # TODO: Get the inputs from given providers
     provider_func = PROVIDERS_DICT.get(provider_module)
@@ -100,9 +88,18 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
             if "meta" in evaluator_input:
                 evaluation_result["meta"] = evaluator_input["meta"]
 
-            # Copy addresses directly if provided, ensuring it's a list of strings
+            # Copy addresses directly if provided
             if "addresses" in evaluator_input:
-                evaluation_result["addresses"] = _ensure_list_of_strings(evaluator_input["addresses"])
+                # Ensure addresses is a list of strings
+                addresses = evaluator_input["addresses"]
+                if addresses is None:
+                    evaluation_result["addresses"] = []
+                elif isinstance(addresses, str):
+                    evaluation_result["addresses"] = [addresses]
+                elif isinstance(addresses, list):
+                    evaluation_result["addresses"] = [str(item) for item in addresses]
+                else:
+                    evaluation_result["addresses"] = [str(addresses)]
 
             evaluation_results.append(evaluation_result)
             has_valid_evaluation = True
