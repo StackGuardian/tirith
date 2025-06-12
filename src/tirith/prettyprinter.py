@@ -99,6 +99,11 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
 
         for result_num, result_dict in enumerate(check_dict["result"]):
             result_message = result_dict["message"]
+            
+            # Include address in the message if it exists in the result_dict
+            if "address" in result_dict:
+                result_message = f"{result_message} - (Address: `{result_dict['address']}`)"
+                
             if result_dict["passed"]:
                 print(TermStyle.green(f"    {result_num+1}. PASSED: {result_message}"))
             elif check_dict["passed"] is None:

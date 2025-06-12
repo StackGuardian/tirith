@@ -91,10 +91,6 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
             # Copy address directly if provided
             if "address" in evaluator_input:
                 evaluation_result["address"] = evaluator_input["address"]
-                # Update the message to include the address
-                evaluation_result["message"] = (
-                    f"{evaluation_result['message']} - (Address: `{evaluator_input['address']}`)"
-                )
 
             evaluation_results.append(evaluation_result)
             has_valid_evaluation = True
