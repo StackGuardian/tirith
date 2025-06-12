@@ -43,11 +43,11 @@ def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
             )
         ]
 
-    # Create result dict with address as a separate property, not in meta
+    # Create result dict with addresses as a separate property, not in meta
     outputs = []
     for value in values:
         result = create_result_dict(value=value, meta=None, err=None)
-        result["address"] = key_path
+        result["addresses"] = key_path
         outputs.append(result)
 
     return outputs

@@ -101,7 +101,7 @@ def provide(provider_inputs, input_data):
                             "value": attribute_value,
                             "meta": resource_change,
                             "err": None,
-                            "addresses": resource_change.get("addresses")
+                            "addresses": resource_change.get("address")
                         }
                         outputs.append(result)
                     elif "." in attribute or "*" in attribute:
@@ -114,7 +114,7 @@ def provide(provider_inputs, input_data):
                                     "value": evaluated_output, 
                                     "meta": resource_change, 
                                     "err": None,
-                                    "addresses": resource_change.get("addresses")
+                                    "addresses": resource_change.get("address")
                                 }
                                 outputs.append(result)
 
@@ -124,7 +124,7 @@ def provide(provider_inputs, input_data):
                             "value": None, 
                             "meta": resource_change, 
                             "err": None,
-                            "addresses": resource_change.get("addresses")
+                            "addresses": resource_change.get("address")
                         }
                         outputs.append(result)
                 else:
@@ -170,7 +170,7 @@ def provide(provider_inputs, input_data):
                         "value": action,
                         "meta": resource_change,
                         "err": None,
-                        "addresses": resource_change.get("addresses")
+                        "addresses": resource_change.get("address")
                     }
                     outputs.append(result)
         if not is_resource_type_found:
@@ -197,9 +197,9 @@ def provide(provider_inputs, input_data):
                 # No need to check if the resource is not found
                 # because the count of a resource can be zero
                 resource_meta = resource_change
-                # Use the last encountered addresses (this is just for count, which is an aggregate result)
-                if "addresses" in resource_change:
-                    addresses = resource_change["addresses"]
+                # Use the last encountered address (this is just for count, which is an aggregate result)
+                if "address" in resource_change:
+                    addresses = resource_change["address"]
                 count += 1
 
         result = {
@@ -313,7 +313,7 @@ def terraform_version_operator(input_data: dict, provider_inputs: dict, outputs:
     :param provider_inputs: The provider inputs
     :param outputs:         The outputs
     """
-    # For terraform_version, there's no specific addresses as it applies to the entire plan
+    # For terraform_version, there's no specific address as it applies to the entire plan
     outputs.append({"value": input_data.get("terraform_version"), "meta": input_data, "addresses": "terraform_version"})
 
 
@@ -339,9 +339,9 @@ def direct_dependencies_operator(input_data: dict, provider_inputs: dict, output
         deps_resource_type = {resource_id.split(".")[0] for resource_id in resource.get("depends_on", [])}
         result = {"value": list(deps_resource_type), "meta": config_resources}
         # Add addresses if available
-        addresses = resource.get("addresses")
-        if addresses:
-            result["addresses"] = addresses
+        address = resource.get("address")
+        if address:
+            result["addresses"] = address
         outputs.append(result)
 
     if not is_resource_found:
@@ -368,7 +368,7 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
     resource_changes = input_data.get("resource_changes", [])
     referenced_by = provider_inputs.get("referenced_by")
 
-    reference_target_addresseses = set()
+    reference_target_address = set()
     is_resource_found = False
 
     # Loop for adding reference_target
@@ -377,7 +377,7 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
             "destroy"
         ]:
             continue
-        reference_target_addresseses.add(resource_change.get("addresses"))
+        reference_target_address.add(resource_change.get("address"))
         is_resource_found = True
 
     if not is_resource_found:
@@ -400,23 +400,23 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
             for expression_val_dict in resource_config.get("expressions", {}).values():
                 if not isinstance(expression_val_dict, dict):
                     continue
-                for relative_reference_addresses in expression_val_dict.get("references", []):
+                for relative_reference_address in expression_val_dict.get("references", []):
                     if module_path == "":
-                        reference_addresses = relative_reference_addresses
+                        reference_address = relative_reference_address
                     else:
-                        reference_addresses = f"{module_path}.{relative_reference_addresses}"
-                    if reference_addresses in reference_target_addresseses:
-                        reference_target_addresseses.remove(reference_addresses)
+                        reference_address = f"{module_path}.{relative_reference_address}"
+                    if reference_address in reference_target_address:
+                        reference_target_address.remove(reference_address)
                         result = {"value": True, "meta": {"referenced_by": resource_config}}
                         # Add addresses to the output
-                        result["addresses"] = reference_addresses
+                        result["addresses"] = reference_address
                         outputs.append(result)
 
-    # For all of the reference_target_addresseses that don't have a reference
-    for reference_target_addresses in reference_target_addresseses:
+    # For all of the reference_target_address that don't have a reference
+    for reference_target_address in reference_target_address:
         result = {"value": False, "meta": {"referenced_by": {}}}
         # Add addresses to the output
-        result["addresses"] = reference_target_addresses
+        result["addresses"] = reference_target_address
         outputs.append(result)
 
 
@@ -473,12 +473,12 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
             continue
         is_resource_found = True
         resource_type_count += 1
-        resource_change_addresses = resource_change.get("addresses")
+        resource_change_address = resource_change.get("address")
 
         # Look to the resource_config to get the references
         # TODO: Use the module_path
         for resource_config, module_path in get_resource_config_by_type(input_data, resource_type):
-            if resource_config.get("addresses") != resource_change_addresses:
+            if resource_config.get("address") != resource_change_address:
                 continue
             for expression_val_dict in resource_config.get("expressions", {}).values():
                 if not isinstance(expression_val_dict, dict):
@@ -504,7 +504,7 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
 
     is_all_resource_type_references_to = resource_type_count == reference_count
     result = {"value": is_all_resource_type_references_to, "meta": config_resources}
-    # While we don't have a specific addresses for the entire result, we can include the resource type
+    # While we don't have a specific address for the entire result, we can include the resource type
     result["addresses"] = resource_type
     outputs.append(result)
 
@@ -560,9 +560,9 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
 
         result = {"value": list(resource_references), "meta": resource}
         # Add addresses if available
-        addresses = resource.get("addresses")
-        if addresses:
-            result["addresses"] = addresses
+        address = resource.get("address")
+        if address:
+            result["addresses"] = address
         outputs.append(result)
 
     if not is_resource_found:
