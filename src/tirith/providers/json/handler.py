@@ -47,7 +47,8 @@ def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
     outputs = []
     for value in values:
         result = create_result_dict(value=value, meta=None, err=None)
-        result["addresses"] = key_path
+        # Ensure addresses is a list of strings
+        result["addresses"] = [key_path]
         outputs.append(result)
 
     return outputs

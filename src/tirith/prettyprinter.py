@@ -102,7 +102,13 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
 
             # Include addresses in the message if it exists in the result_dict
             if "addresses" in result_dict:
-                result_message = f"{result_message} - (Addresses: `{result_dict['addresses']}`)"
+                addresses = result_dict['addresses']
+                # Convert to string representation for display
+                if isinstance(addresses, list):
+                    addresses_str = ", ".join(addresses)
+                else:
+                    addresses_str = str(addresses)
+                result_message = f"{result_message} - (Addresses: `{addresses_str}`)"
 
             if result_dict["passed"]:
                 print(TermStyle.green(f"    {result_num+1}. PASSED: {result_message}"))
