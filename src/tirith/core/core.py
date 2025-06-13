@@ -88,18 +88,10 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
             if "meta" in evaluator_input:
                 evaluation_result["meta"] = evaluator_input["meta"]
 
-            # Copy addresses directly if provided
             if "addresses" in evaluator_input:
-                # Ensure addresses is a list of strings
-                addresses = evaluator_input["addresses"]
-                if addresses is None:
-                    evaluation_result["addresses"] = []
-                elif isinstance(addresses, str):
-                    evaluation_result["addresses"] = [addresses]
-                elif isinstance(addresses, list):
-                    evaluation_result["addresses"] = [str(item) for item in addresses]
-                else:
-                    evaluation_result["addresses"] = [str(addresses)]
+                # Add addresses directly
+                # TODO: We need to make a model class for the `evaluator_input` and move this validation there
+                evaluation_result["addresses"] = evaluator_input["addresses"]
 
             evaluation_results.append(evaluation_result)
             has_valid_evaluation = True

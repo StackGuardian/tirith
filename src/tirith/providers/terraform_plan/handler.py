@@ -56,18 +56,6 @@ def _get_exp_attribute(split_expressions, input_data):
     return final_data
 
 
-def _ensure_list_of_strings(value: Union[str, List[str], None]) -> List[str]:
-    """Convert a string or None value to a list of strings"""
-    if value is None:
-        return []
-    elif isinstance(value, str):
-        return [value]
-    elif isinstance(value, list):
-        return [str(item) for item in value]
-    else:
-        return [str(value)]
-
-
 def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
     outputs = []
@@ -101,6 +89,10 @@ def provide(provider_inputs, input_data):
             if resource_type in (resource_change["type"], "*"):
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
+                # Extract address once for reuse
+                address = resource_change.get("address")
+                addresses = [address] if address is not None else []
+
                 # [local_is_found_attribute] (local scope)
                 # Used to decide whether to append a None value for each specific resource that's missing the attribute
                 if input_resource_change_attrs:
@@ -109,12 +101,11 @@ def provide(provider_inputs, input_data):
                         is_attribute_found = True
                         local_is_found_attribute = True
                         attribute_value = input_resource_change_attrs[attribute]
-                        address = resource_change.get("address")
                         result = {
                             "value": attribute_value,
                             "meta": resource_change,
                             "err": None,
-                            "addresses": [address] if address is not None else [],
+                            "addresses": addresses,
                         }
                         outputs.append(result)
                     elif "." in attribute or "*" in attribute:
@@ -123,23 +114,21 @@ def provide(provider_inputs, input_data):
                             is_attribute_found = True
                             local_is_found_attribute = True
                             for evaluated_output in evaluated_outputs:
-                                address = resource_change.get("address")
                                 result = {
                                     "value": evaluated_output,
                                     "meta": resource_change,
                                     "err": None,
-                                    "addresses": [address] if address is not None else [],
+                                    "addresses": addresses,
                                 }
                                 outputs.append(result)
 
                     # If we didn't find the attribute in this resource, add a None value so it still gets evaluated
                     if not local_is_found_attribute:
-                        address = resource_change.get("address")
                         result = {
                             "value": None,
                             "meta": resource_change,
                             "err": None,
-                            "addresses": [address] if address is not None else [],
+                            "addresses": addresses,
                         }
                         outputs.append(result)
                 else:
@@ -180,13 +169,15 @@ def provide(provider_inputs, input_data):
                 continue
             if resource_type in (resource_change["type"], "*"):
                 is_resource_type_found = True
+                # Extract address once for reuse
+                address = resource_change.get("address")
+                addresses = [address] if address is not None else []
                 for action in resource_change["change"]["actions"]:
-                    address = resource_change.get("address")
                     result = {
                         "value": action,
                         "meta": resource_change,
                         "err": None,
-                        "addresses": [address] if address is not None else [],
+                        "addresses": addresses,
                     }
                     outputs.append(result)
         if not is_resource_type_found:
@@ -377,7 +368,7 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
     resource_changes = input_data.get("resource_changes", [])
     referenced_by = provider_inputs.get("referenced_by")
 
-    reference_target_address = set()
+    reference_target_addresses = set()
     is_resource_found = False
 
     # Loop for adding reference_target
@@ -386,7 +377,7 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
             "destroy"
         ]:
             continue
-        reference_target_address.add(resource_change.get("address"))
+        reference_target_addresses.add(resource_change.get("address"))
         is_resource_found = True
 
     if not is_resource_found:
@@ -414,18 +405,21 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
                         reference_address = relative_reference_address
                     else:
                         reference_address = f"{module_path}.{relative_reference_address}"
-                    if reference_address in reference_target_address:
-                        reference_target_address.remove(reference_address)
-                        result = {"value": True, "meta": {"referenced_by": resource_config}}
-                        # Add addresses to the output as a simple list
-                        result["addresses"] = [reference_address]
+                    if reference_address in reference_target_addresses:
+                        reference_target_addresses.remove(reference_address)
+                        result = {
+                            "value": True,
+                            "meta": {"referenced_by": resource_config},
+                            "addresses": [reference_address],
+                        }
+
                         outputs.append(result)
 
-    # For all of the reference_target_address that don't have a reference
-    for reference_target_address_item in reference_target_address:
+    # For all of the reference_target_addresses that don't have a reference
+    for reference_target_addresses_item in reference_target_addresses:
         result = {"value": False, "meta": {"referenced_by": {}}}
         # Add addresses as a simple list
-        result["addresses"] = [reference_target_address_item]
+        result["addresses"] = [reference_target_addresses_item]
         outputs.append(result)
 
 
@@ -514,6 +508,7 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
     is_all_resource_type_references_to = resource_type_count == reference_count
     result = {"value": is_all_resource_type_references_to, "meta": config_resources}
     # Simple list with resource type
+    # TODO: Use the real specific addresses
     result["addresses"] = [resource_type]
     outputs.append(result)
 
