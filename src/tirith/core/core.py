@@ -90,8 +90,11 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
             if "addresses" in evaluator_input:
                 # Add addresses directly
+                addresses = evaluator_input["addresses"]
+                if not isinstance(addresses, list):
+                    raise Exception("`addresses` should be a list")
                 # TODO: We need to make a model class for the `evaluator_input` and move this validation there
-                evaluation_result["addresses"] = evaluator_input["addresses"]
+                evaluation_result["addresses"] = addresses
 
             evaluation_results.append(evaluation_result)
             has_valid_evaluation = True

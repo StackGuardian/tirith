@@ -563,10 +563,10 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
                 resource_references.add(reference.split(".")[0])
 
         result = {"value": list(resource_references), "meta": resource}
-        # Add addresses if available as a simple list
-        address = resource.get("address")
-        if address:
-            result["addresses"] = [address]
+        # Add references as addresses instead of just the resource address
+        addresses = expressions_val.get("references", [])
+        if addresses:
+            result["addresses"] = addresses
         outputs.append(result)
 
     if not is_resource_found:
