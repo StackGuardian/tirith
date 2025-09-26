@@ -56,6 +56,20 @@ def _get_exp_attribute(split_expressions, input_data):
     return final_data
 
 
+def _get_addresses_from_resource_change(resource_change: dict) -> List[str]:
+    """
+    Helper function to extract addresses from a resource change.
+
+    :param resource_change: A dictionary containing resource change information from Terraform plan
+    :type resource_change: dict
+    :return: A list containing the resource address if found, otherwise an empty list
+    :rtype: List[str]
+
+    """
+    address = resource_change.get("address")
+    return [address] if address is not None else []
+
+
 def provide(provider_inputs, input_data):
     # """Provides the value of the attribute from the input_data"""
     outputs = []
@@ -89,9 +103,7 @@ def provide(provider_inputs, input_data):
             if resource_type in (resource_change["type"], "*"):
                 is_resource_found = True
                 input_resource_change_attrs = resource_change["change"]["after"]
-                # Extract address once for reuse
-                address = resource_change.get("address")
-                addresses = [address] if address is not None else []
+                addresses = _get_addresses_from_resource_change(resource_change)
 
                 # [local_is_found_attribute] (local scope)
                 # Used to decide whether to append a None value for each specific resource that's missing the attribute
@@ -169,9 +181,7 @@ def provide(provider_inputs, input_data):
                 continue
             if resource_type in (resource_change["type"], "*"):
                 is_resource_type_found = True
-                # Extract address once for reuse
-                address = resource_change.get("address")
-                addresses = [address] if address is not None else []
+                addresses = _get_addresses_from_resource_change(resource_change)
                 for action in resource_change["change"]["actions"]:
                     result = {
                         "value": action,
@@ -545,7 +555,7 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
         return
 
     is_resource_found = False
-
+    addresses = []
     for resource in config_resources:
 
         if resource.get("type") != resource_type:
@@ -561,10 +571,10 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
             for reference in expressions_val.get("references", []):
                 # Only get the resource type
                 resource_references.add(reference.split(".")[0])
+                addresses.append(reference)
 
         result = {"value": list(resource_references), "meta": resource}
-        # Add references as addresses instead of just the resource address
-        addresses = expressions_val.get("references", [])
+
         if addresses:
             result["addresses"] = addresses
         outputs.append(result)
