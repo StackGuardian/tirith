@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from .base_evaluator import BaseEvaluator
 from tirith.utils import sort_collections, json_format_value
@@ -30,8 +31,20 @@ logger = logging.getLogger(__name__)
 
 
 class Contains(BaseEvaluator):
-    def _format_message(self, found, evaluator_data, evaluator_input):
-        """Helper method to format evaluation messages consistently."""
+    def _format_message(self, found: bool, evaluator_data: Any, evaluator_input: Any):
+        """
+        Helper method to format evaluation messages consistently.
+
+        :param found: Whether the search was successful
+        :type found: bool
+        :param evaluator_data: The value that was searched for
+        :type evaluator_data: Any
+        :param evaluator_input: The container that was searched within
+        :type evaluator_input: Any
+
+        :returns: Formatted message string
+        :rtype: str
+        """
         action = "Found" if found else "Failed to find"
         return "{} {} inside {}".format(action, json_format_value(evaluator_data), json_format_value(evaluator_input))
 

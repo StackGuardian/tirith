@@ -64,7 +64,6 @@ def test_evaluate_failing(evaluator_input, evaluator_data):
 
 
 # pytest -v -m unsupported
-@mark.unsupported
 @mark.parametrize("evaluator_input,evaluator_data", checks_unsupported)
 def test_evaluate_unsupported(evaluator_input, evaluator_data):
     result = evaluator.evaluate(evaluator_input, evaluator_data)
