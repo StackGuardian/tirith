@@ -5,7 +5,7 @@ import re
 import yaml
 from types import CodeType
 
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional, Union
 
 from tirith.providers.common import ProviderError
 from ..providers import PROVIDERS_DICT
@@ -81,8 +81,21 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
                 has_evaluation_passed = None
                 continue
 
+            # Run evaluation on the provider's input value
             evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
-            evaluation_result["meta"] = evaluator_input.get("meta")
+
+            # Copy metadata and addresses if provided by the provider
+            if "meta" in evaluator_input:
+                evaluation_result["meta"] = evaluator_input["meta"]
+
+            if "addresses" in evaluator_input:
+                # Add addresses directly
+                addresses = evaluator_input["addresses"]
+                # TODO: We need to make a model class for the `evaluator_input` and move this validation there
+                if not isinstance(addresses, list):
+                    raise Exception("`addresses` should be a list")
+                evaluation_result["addresses"] = addresses
+
             evaluation_results.append(evaluation_result)
             has_valid_evaluation = True
 
