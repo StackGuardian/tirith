@@ -116,3 +116,24 @@ def test_multiple_resource_tag_check_all_resources_have_tag():
     assert result["final_result"] is True
     all_passed = all(item.get("passed") is True for item in result["evaluators"][0]["result"])
     assert all_passed, "All resource evaluations should pass when all have the required tag"
+
+
+def test_star_with_not_found_attribute_should_raise_providererror():
+    input_data = load_json_from_fixtures("input_costcenter_tags.json")
+    policy = load_json_from_fixtures("policy_star_restype_should_skip.json")
+
+    result = start_policy_evaluation_from_dict(policy, input_data)
+
+    # The policy tries to access 'shouldnt_exist' attribute on all resources (*)
+    # Since this attribute doesn't exist, it should return ProviderError
+    # With error_tolerance=2, errors with severity <= 2 should be skipped
+
+    # Check that we have results for multiple resources
+    assert len(result["evaluators"][0]["result"]) == 3
+
+    # All results should have ProviderError values (skipped due to error tolerance)
+    for item in result["evaluators"][0]["result"]:
+        # With error_tolerance=2, provider errors should be skipped (passed=None)
+        assert item.get("passed") is None
+        # The message should indicate the attribute was not found
+        assert "shouldnt_exist" in item.get("message", "")

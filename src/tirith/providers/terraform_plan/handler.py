@@ -112,9 +112,15 @@ def provide(provider_inputs, input_data):
                             for evaluated_output in evaluated_outputs:
                                 outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
 
-                    # If we didn't find the attribute in this resource, add a None value so it still gets evaluated
+                    # If we didn't find the attribute in this resource, raise the ProviderError so that the value
+                    # still gets evaluated
                     if not local_is_found_attribute:
-                        outputs.append({"value": None, "meta": resource_change, "err": None})
+                        outputs.append(
+                            {
+                                "value": ProviderError(severity_value=2),
+                                "err": f"attribute: '{attribute}' is not found",
+                            }
+                        )
                 else:
                     outputs.append(
                         {
