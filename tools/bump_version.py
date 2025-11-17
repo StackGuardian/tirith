@@ -40,7 +40,7 @@ class VersionBumper:
 
     def validate_version(self, version):
         """Validate version format (semantic versioning)"""
-        pattern = r'^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$'
+        pattern = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$"
         if not re.match(pattern, version):
             raise ValueError(f"Invalid version format: {version}. Expected format: X.Y.Z or X.Y.Z-beta.N")
         return True
@@ -48,22 +48,14 @@ class VersionBumper:
     def update_setup_py(self, new_version):
         """Update version in setup.py"""
         content = self.setup_py.read_text()
-        updated = re.sub(
-            r'version="[^"]+"',
-            f'version="{new_version}"',
-            content
-        )
+        updated = re.sub(r'version="[^"]+"', f'version="{new_version}"', content)
         self.setup_py.write_text(updated)
         print(f"✓ Updated {self.setup_py.relative_to(self.root_dir)}")
 
     def update_init_py(self, new_version):
         """Update version in src/tirith/__init__.py"""
         content = self.init_py.read_text()
-        updated = re.sub(
-            r'__version__ = "[^"]+"',
-            f'__version__ = "{new_version}"',
-            content
-        )
+        updated = re.sub(r'__version__ = "[^"]+"', f'__version__ = "{new_version}"', content)
         self.init_py.write_text(updated)
         print(f"✓ Updated {self.init_py.relative_to(self.root_dir)}")
 
@@ -126,26 +118,19 @@ Examples:
 
 Change types:
   Added, Changed, Deprecated, Removed, Fixed, Security
-        """
+        """,
     )
 
-    parser.add_argument(
-        "version",
-        help="New version number (e.g., 1.0.5, 1.1.0, 2.0.0-beta.1)"
-    )
+    parser.add_argument("version", help="New version number (e.g., 1.0.5, 1.1.0, 2.0.0-beta.1)")
 
     parser.add_argument(
         "--change-type",
         "-t",
         choices=["Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"],
-        help="Type of change (for CHANGELOG.md)"
+        help="Type of change (for CHANGELOG.md)",
     )
 
-    parser.add_argument(
-        "--description",
-        "-d",
-        help="Description of changes (for CHANGELOG.md)"
-    )
+    parser.add_argument("--description", "-d", help="Description of changes (for CHANGELOG.md)")
 
     args = parser.parse_args()
 
