@@ -13,6 +13,7 @@ Usage:
 Examples:
     python bump_version.py 1.0.5 --change-type Fixed --description "Bug fix for provider"
     python bump_version.py 1.1.0 --change-type Added --description "New feature"
+
 """
 
 import re
