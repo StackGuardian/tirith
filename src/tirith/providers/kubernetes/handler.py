@@ -1,5 +1,3 @@
-import pydash
-
 from typing import Callable, Dict, List, Union
 from ..common import create_result_dict, ProviderError, get_path_value_from_input
 
