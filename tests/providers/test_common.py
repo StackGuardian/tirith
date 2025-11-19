@@ -172,3 +172,21 @@ def test_empty_containers_with_flag():
     # Empty containers don't trigger the flag since they exist but are empty
     assert get_path_value_from_dict("users.*.name", {"users": []}, place_none_if_not_found=True) == []
     assert get_path_value_from_dict("users.*.name", {"users": {}}, place_none_if_not_found=True) == []
+
+
+def test_wildcard_with_no_remaining_paths():
+    """Test wildcard at the end of path with no remaining paths - covers line 31-32"""
+    # Test with list at root level - wildcard with no further paths should return all items
+    data = [1, 2, 3, 4, 5]
+    result = get_path_value_from_dict("*", data)
+    assert result == [1, 2, 3, 4, 5]
+    
+    # Test with list of dicts - wildcard with no further paths should return all dict items
+    data2 = [{"name": "Alice"}, {"name": "Bob"}, {"name": "Charlie"}]
+    result2 = get_path_value_from_dict("*", data2)
+    assert result2 == [{"name": "Alice"}, {"name": "Bob"}, {"name": "Charlie"}]
+    
+    # Test with nested list - get list then apply wildcard with no remaining paths
+    data3 = {"items": [10, 20, 30]}
+    result3 = get_path_value_from_dict("items.*", data3)
+    assert result3 == [10, 20, 30]
