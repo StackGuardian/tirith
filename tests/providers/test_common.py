@@ -147,46 +147,98 @@ def test_complex_nested_structure(data, path, expected):
     assert result == expected
 
 
-def test_nested_wildcard_with_missing_intermediate():
-    """Test nested wildcard when intermediate path is missing"""
-    data = {"groups": [{"users": [{"name": "Alice"}]}, {"other": "data"}]}
-    result = get_path_value_from_dict("groups.*.users.*.name", data)
-    assert result == ["Alice"]
+# Test data for edge cases with wildcards
+edge_case_wildcard_cases = [
+    # Nested wildcard when intermediate path is missing
+    ({"groups": [{"users": [{"name": "Alice"}]}, {"other": "data"}]}, "groups.*.users.*.name", ["Alice"]),
+    # Partial match with wildcard - some list items have the key and others don't
+    ({"items": [{"name": "Alice"}, {"other": "value"}, {"name": "Bob"}]}, "items.*.name", ["Alice", "Bob"]),
+]
+
+# Test data for empty containers
+empty_container_cases = [
+    ({"users": []}, "users.*.name", False, []),
+    ({"users": {}}, "users.*.name", False, []),
+]
+
+# Test data for empty containers with flag
+empty_container_with_flag_cases = [
+    ({"users": []}, "users.*.name", True, []),
+    ({"users": {}}, "users.*.name", True, []),
+]
 
 
-def test_partial_match_with_wildcard():
-    """Test when some list items have the key and others don't"""
-    data = {"items": [{"name": "Alice"}, {"other": "value"}, {"name": "Bob"}]}
-    result = get_path_value_from_dict("items.*.name", data)
-    assert result == ["Alice", "Bob"]
+@pytest.mark.parametrize("data,path,expected", edge_case_wildcard_cases)
+def test_edge_case_wildcards(data, path, expected):
+    """Test edge cases with wildcards like missing intermediate paths and partial matches"""
+    result = get_path_value_from_dict(path, data)
+    assert result == expected
 
 
-def test_empty_containers_default():
+@pytest.mark.parametrize("data,path,flag,expected", empty_container_cases)
+def test_empty_containers(data, path, flag, expected):
     """Test empty containers return empty list"""
-    assert get_path_value_from_dict("users.*.name", {"users": []}) == []
-    assert get_path_value_from_dict("users.*.name", {"users": {}}) == []
+    result = get_path_value_from_dict(path, data, place_none_if_not_found=flag)
+    assert result == expected
 
 
-def test_empty_containers_with_flag():
+@pytest.mark.parametrize("data,path,flag,expected", empty_container_with_flag_cases)
+def test_empty_containers_with_flag(data, path, flag, expected):
     """Test empty containers with place_none_if_not_found flag"""
     # Empty containers don't trigger the flag since they exist but are empty
-    assert get_path_value_from_dict("users.*.name", {"users": []}, place_none_if_not_found=True) == []
-    assert get_path_value_from_dict("users.*.name", {"users": {}}, place_none_if_not_found=True) == []
+    result = get_path_value_from_dict(path, data, place_none_if_not_found=flag)
+    assert result == expected
 
 
-def test_wildcard_with_no_remaining_paths():
-    """Test wildcard at the end of path with no remaining paths - covers line 31-32"""
-    # Test with list at root level - wildcard with no further paths should return all items
-    data = [1, 2, 3, 4, 5]
-    result = get_path_value_from_dict("*", data)
-    assert result == [1, 2, 3, 4, 5]
-    
-    # Test with list of dicts - wildcard with no further paths should return all dict items
-    data2 = [{"name": "Alice"}, {"name": "Bob"}, {"name": "Charlie"}]
-    result2 = get_path_value_from_dict("*", data2)
-    assert result2 == [{"name": "Alice"}, {"name": "Bob"}, {"name": "Charlie"}]
-    
-    # Test with nested list - get list then apply wildcard with no remaining paths
-    data3 = {"items": [10, 20, 30]}
-    result3 = get_path_value_from_dict("items.*", data3)
-    assert result3 == [10, 20, 30]
+# Test data for wildcard with no remaining paths
+wildcard_list_no_remaining_cases = [
+    ([1, 2, 3, 4, 5], "*", [1, 2, 3, 4, 5]),
+    (
+        [{"name": "Alice"}, {"name": "Bob"}, {"name": "Charlie"}],
+        "*",
+        [{"name": "Alice"}, {"name": "Bob"}, {"name": "Charlie"}],
+    ),
+    ({"items": [10, 20, 30]}, "items.*", [10, 20, 30]),
+]
+
+# Test data for wildcard dict with no remaining paths
+wildcard_dict_no_remaining_cases = [
+    ({"a": 1, "b": 2, "c": 3}, "*", {1, 2, 3}),
+    ({"config": {"x": 10, "y": 20, "z": 30}}, "config.*", {10, 20, 30}),
+    (
+        {"config": {"setting1": "value1", "setting2": "value2", "setting3": "value3"}},
+        "config.*",
+        {"value1", "value2", "value3"},
+    ),
+    ({"settings": {"enabled": True, "count": 42, "name": "test"}}, "settings.*", {True, 42, "test"}),
+    ({"items": {"x": 100, "y": "text", "z": True}}, "items.*", {100, "text", True}),
+]
+
+# Test data for wildcard with primitive values
+wildcard_primitive_cases = [
+    (42, "*", [42]),
+    ("hello", "*", ["hello"]),
+    (True, "*", [True]),
+    (None, "*", [None]),
+]
+
+
+@pytest.mark.parametrize("data,path,expected", wildcard_list_no_remaining_cases)
+def test_wildcard_list_no_remaining_paths(data, path, expected):
+    """Test wildcard at the end of path with list and no remaining paths - covers lines 31-32"""
+    result = get_path_value_from_dict(path, data)
+    assert result == expected
+
+
+@pytest.mark.parametrize("data,path,expected_set", wildcard_dict_no_remaining_cases)
+def test_wildcard_dict_no_remaining_paths(data, path, expected_set):
+    """Test wildcard at the end of path with dict and no remaining paths - covers lines 38-39"""
+    result = get_path_value_from_dict(path, data)
+    assert set(result) == expected_set
+
+
+@pytest.mark.parametrize("data,path,expected", wildcard_primitive_cases)
+def test_wildcard_primitive_no_remaining_paths(data, path, expected):
+    """Test wildcard applied to primitive value with no remaining paths - covers lines 42-43"""
+    result = get_path_value_from_dict(path, data)
+    assert result == expected
