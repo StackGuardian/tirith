@@ -1,10 +1,10 @@
 import pydash
 
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Union
 from ..common import create_result_dict, ProviderError, get_path_value_from_input
 
 
-def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
+def get_value(provider_args: Dict, input_data: Union[Dict|List], outputs: list) -> Dict:
     # Must be validated first whether the provider args are valid for this op type
     target_kind: str = provider_args.get("kubernetes_kind")
     attribute_path: str = provider_args.get("attribute_path", "")
@@ -22,7 +22,7 @@ def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
             continue
         is_kind_found = True
         values = get_path_value_from_input(attribute_path, resource, place_none_if_not_found=True)
-        if ".*." not in attribute_path:
+        if "*" not in attribute_path:
             # If there's no * in the attribute path, the values always have 1 member
             values = values[0]
         outputs.append(create_result_dict(value=values))
