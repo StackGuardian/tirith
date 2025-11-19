@@ -42,7 +42,7 @@ def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
     if attribute_path == "":
         return create_result_dict(value=ProviderError(severity_value=99), err="attribute_path must be provided")
 
-    kubernetes_resources = input_data["yamls"]
+    kubernetes_resources = input_data
     is_kind_found = False
 
     for resource in kubernetes_resources:
