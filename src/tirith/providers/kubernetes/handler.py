@@ -4,34 +4,6 @@ from typing import Callable, Dict, List
 from ..common import create_result_dict, ProviderError, get_path_value_from_dict
 
 
-class PydashPathNotFound:
-    pass
-
-
-def _get_path_value_from_dict(splitted_paths, input_dict):
-    final_data = []
-    expression = splitted_paths[0]
-    is_the_last_expression = len(splitted_paths) == 1
-
-    intermediate_val = pydash.get(input_dict, expression, default=PydashPathNotFound)
-    if isinstance(intermediate_val, list) and not is_the_last_expression:
-        for val in intermediate_val:
-            final_attributes = _get_path_value_from_dict(splitted_paths[1:], val)
-            for final_attribute in final_attributes:
-                final_data.append(final_attribute)
-    elif intermediate_val is PydashPathNotFound:
-        final_data.append(None)
-    elif is_the_last_expression:
-        final_data.append(intermediate_val)
-    elif ".*" in expression:
-        intermediate_exp = expression.split(".*")
-        intermediate_data = pydash.get(input_dict, intermediate_exp[0], default=PydashPathNotFound)
-        if intermediate_data is not PydashPathNotFound and isinstance(intermediate_data, list):
-            for val in intermediate_data:
-                final_data.append(val)
-    return final_data
-
-
 def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
     # Must be validated first whether the provider args are valid for this op type
     target_kind: str = provider_args.get("kubernetes_kind")
@@ -49,7 +21,7 @@ def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
         if resource["kind"] != target_kind:
             continue
         is_kind_found = True
-        values = get_path_value_from_dict(attribute_path, resource, _get_path_value_from_dict)
+        values = get_path_value_from_dict(attribute_path, resource, place_none_if_not_found=True)
         if ".*." not in attribute_path:
             # If there's no * in the attribute path, the values always have 1 member
             values = values[0]
