@@ -1,0 +1,20 @@
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json"
+    },
+    "evaluators": [
+        {
+            "id": "check0",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "*.vars.region"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "your_aws_region"
+            }
+        }
+    ],
+    "eval_expression": "check0"
+}
