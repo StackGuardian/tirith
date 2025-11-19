@@ -1,12 +1,12 @@
 from typing import Callable, Dict, List
-from ..common import create_result_dict, ProviderError, get_path_value_from_dict
+from ..common import create_result_dict, ProviderError, get_path_value_from_input
 
 
 def get_value(provider_args: Dict, input_data: Dict) -> List[dict]:
     # Must be validated first whether the provider args are valid for this op type
     key_path: str = provider_args["key_path"]
 
-    values = get_path_value_from_dict(key_path, input_data)
+    values = get_path_value_from_input(key_path, input_data)
 
     if len(values) == 0:
         severity_value = 2

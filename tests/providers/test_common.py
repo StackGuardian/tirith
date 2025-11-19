@@ -1,5 +1,5 @@
 import pytest
-from tirith.providers.common import get_path_value_from_dict
+from tirith.providers.common import get_path_value_from_input
 
 
 # Test data for simple path access
@@ -91,28 +91,28 @@ complex_structure_cases = [
 @pytest.mark.parametrize("data,path,expected", simple_path_cases)
 def test_simple_path_access(data, path, expected):
     """Test basic path traversal without wildcards"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert result == expected
 
 
 @pytest.mark.parametrize("data,path,expected", wildcard_list_cases)
 def test_wildcard_with_list(data, path, expected):
     """Test wildcard with list of dictionaries"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert result == expected
 
 
 @pytest.mark.parametrize("data,path,expected_set", wildcard_dict_cases)
 def test_wildcard_with_dict(data, path, expected_set):
     """Test wildcard with dictionary values (order-independent)"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert set(result) == expected_set
 
 
 @pytest.mark.parametrize("data,path,expected", multiple_wildcard_cases)
 def test_multiple_wildcards(data, path, expected):
     """Test multiple wildcards in the path"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     if isinstance(expected, set):
         assert set(result) == expected
     else:
@@ -122,28 +122,28 @@ def test_multiple_wildcards(data, path, expected):
 @pytest.mark.parametrize("data,path,expected", path_not_found_cases)
 def test_path_not_found_default(data, path, expected):
     """Test that non-existent path returns empty list by default"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert result == expected
 
 
 @pytest.mark.parametrize("data,path,flag,expected", path_not_found_with_flag_cases)
 def test_path_not_found_with_flag(data, path, flag, expected):
     """Test that non-existent path returns [None] when flag is True"""
-    result = get_path_value_from_dict(path, data, place_none_if_not_found=flag)
+    result = get_path_value_from_input(path, data, place_none_if_not_found=flag)
     assert result == expected
 
 
 @pytest.mark.parametrize("data,path,expected", special_value_cases)
 def test_special_values(data, path, expected):
     """Test handling of special values like None and empty paths"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert result == expected
 
 
 @pytest.mark.parametrize("data,path,expected", complex_structure_cases)
 def test_complex_nested_structure(data, path, expected):
     """Test complex real-world-like nested structures"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert result == expected
 
 
@@ -171,14 +171,14 @@ empty_container_with_flag_cases = [
 @pytest.mark.parametrize("data,path,expected", edge_case_wildcard_cases)
 def test_edge_case_wildcards(data, path, expected):
     """Test edge cases with wildcards like missing intermediate paths and partial matches"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert result == expected
 
 
 @pytest.mark.parametrize("data,path,flag,expected", empty_container_cases)
 def test_empty_containers(data, path, flag, expected):
     """Test empty containers return empty list"""
-    result = get_path_value_from_dict(path, data, place_none_if_not_found=flag)
+    result = get_path_value_from_input(path, data, place_none_if_not_found=flag)
     assert result == expected
 
 
@@ -186,7 +186,7 @@ def test_empty_containers(data, path, flag, expected):
 def test_empty_containers_with_flag(data, path, flag, expected):
     """Test empty containers with place_none_if_not_found flag"""
     # Empty containers don't trigger the flag since they exist but are empty
-    result = get_path_value_from_dict(path, data, place_none_if_not_found=flag)
+    result = get_path_value_from_input(path, data, place_none_if_not_found=flag)
     assert result == expected
 
 
@@ -226,19 +226,19 @@ wildcard_primitive_cases = [
 @pytest.mark.parametrize("data,path,expected", wildcard_list_no_remaining_cases)
 def test_wildcard_list_no_remaining_paths(data, path, expected):
     """Test wildcard at the end of path with list and no remaining paths - covers lines 31-32"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert result == expected
 
 
 @pytest.mark.parametrize("data,path,expected_set", wildcard_dict_no_remaining_cases)
 def test_wildcard_dict_no_remaining_paths(data, path, expected_set):
     """Test wildcard at the end of path with dict and no remaining paths - covers lines 38-39"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert set(result) == expected_set
 
 
 @pytest.mark.parametrize("data,path,expected", wildcard_primitive_cases)
 def test_wildcard_primitive_no_remaining_paths(data, path, expected):
     """Test wildcard applied to primitive value with no remaining paths - covers lines 42-43"""
-    result = get_path_value_from_dict(path, data)
+    result = get_path_value_from_input(path, data)
     assert result == expected

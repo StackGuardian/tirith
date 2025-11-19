@@ -1,7 +1,7 @@
 import pydash
 
 from typing import Callable, Dict, List
-from ..common import create_result_dict, ProviderError, get_path_value_from_dict
+from ..common import create_result_dict, ProviderError, get_path_value_from_input
 
 
 def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
@@ -21,7 +21,7 @@ def get_value(provider_args: Dict, input_data: Dict, outputs: list) -> Dict:
         if resource["kind"] != target_kind:
             continue
         is_kind_found = True
-        values = get_path_value_from_dict(attribute_path, resource, place_none_if_not_found=True)
+        values = get_path_value_from_input(attribute_path, resource, place_none_if_not_found=True)
         if ".*." not in attribute_path:
             # If there's no * in the attribute path, the values always have 1 member
             values = values[0]
