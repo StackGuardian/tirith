@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Union
 from ..common import create_result_dict, ProviderError, get_path_value_from_input
 
 
-def get_value(provider_args: Dict, input_data: Union[Dict|List], outputs: list) -> Dict:
+def get_value(provider_args: Dict, input_data: Union[Dict, List], outputs: list) -> Dict:
     # Must be validated first whether the provider args are valid for this op type
     target_kind: str = provider_args.get("kubernetes_kind")
     attribute_path: str = provider_args.get("attribute_path", "")
