@@ -235,11 +235,8 @@ def start_policy_evaluation(
 
     with open(input_path) as f:
         if input_path.endswith(".yaml") or input_path.endswith(".yml"):
-            # safe_load_all returns a generator, we need to convert it into a
-            # dictionary because start_policy_evaluation_from_dict expects a dictionary
             input_data = list(yaml.safe_load_all(f))
-            # TODO: Handle zero length
-            if len(input_data) <= 1:
+            if len(input_data) == 1:
                 input_data = input_data[0]
         else:
             input_data = json.load(f)
