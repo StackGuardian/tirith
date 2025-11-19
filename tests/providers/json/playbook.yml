@@ -1,0 +1,44 @@
+- name: Provision EC2 instance and set up MySQL
+  hosts: localhost
+  gather_facts: false
+  become: True
+  vars:
+    region: "your_aws_region"
+    instance_type: "t2.micro"
+    ami_id: "your_ami_id"
+    key_name: "your_key_name"
+    security_group: "your_security_group_id"
+    subnet_id: "your_subnet_id"
+    mysql_root_password: "your_mysql_root_password"
+    package_list:
+    - unauthorized-app
+  tasks:
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        region: "{{ region }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        security_group: "{{ security_group }}"
+        subnet_id: "{{ subnet_id }}"
+        assign_public_ip: true
+        wait: yes
+        count: 1
+        instance_tags:
+          Name: "MySQLInstance"
+      register: ec2
+
+    - name: Install Unauthorized App
+      become: true
+      ansible.builtin.package:
+        name: "{{ package_list }}"
+        state: present
+
+    - name: Set MySQL root password [using unauthorized collection]
+      community.mysql.mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        host: "{{ item }}"
+        login_unix_socket: yes
+      with_items: ["localhost", "127.0.0.1", "::1"]
+
