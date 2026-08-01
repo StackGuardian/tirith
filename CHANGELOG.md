@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+
+## [1.1.0] - 2026-08-01
+
+### Added
+- `core`: Policy metadata passthrough — `meta.id`, `meta.name`, `meta.description`,
+  `meta.severity`, `meta.enforcement`, `meta.tags` and `meta.remediation` now reach the result
+  document when a policy declares them. Keys that are absent are omitted, so the output of a
+  policy declaring none of them is unchanged. `{{ var.x }}` substitution works in all of them.
+
+### Fixed
+- `core`: Variable substitution no longer mutates the caller's policy dictionary. Evaluating the
+  same parsed policy more than once (a policy set, or a retry) previously leaked substituted
+  values from one evaluation into the next.
+- `core`: An unsupported `condition.type` now populates `result` instead of returning without it,
+  which raised `KeyError` in the pretty printer far from the real cause.
+- `core`: Provider errors reported without a `ProviderError` severity are now surfaced instead of
+  being discarded and `None` evaluated against the condition — a typo'd `operation_type` read as
+  a genuine policy violation. These are treated as malformed provider calls and are deliberately
+  not subject to `error_tolerance`.
+
 ## [1.0.5] - 2025-11-19
 
 ### Fixed

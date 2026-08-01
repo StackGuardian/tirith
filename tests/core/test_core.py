@@ -151,3 +151,67 @@ def test_generate_evaluator_result_multiple_resources_one_failing():
             assert len(result["result"]) == 2
             assert result["result"][0]["passed"] is True
             assert result["result"][1]["passed"] is False
+
+
+@mark.passing
+def test_generate_evaluator_result_unsupported_evaluator_populates_result():
+    """
+    An unsupported condition.type must still produce a "result" list. Consumers index into
+    it unconditionally, so an early return without it used to raise KeyError far from the cause.
+    """
+    evaluator_obj = {
+        "id": "test_evaluator",
+        "provider_args": {"operation_type": "attribute", "key": "value"},
+        "condition": {"type": "NotAnEvaluator", "value": True},
+    }
+
+    with patch("tirith.core.core.get_evaluator_inputs_from_provider_inputs", return_value=[{"value": "x"}]):
+        result = generate_evaluator_result(evaluator_obj, {}, "test_provider")
+
+    assert result["passed"] is False
+    assert result["result"] == [{"passed": False, "message": "`NotAnEvaluator` is not a supported evaluator"}]
+
+
+@mark.passing
+def test_generate_evaluator_result_bare_provider_err_is_surfaced():
+    """
+    A provider that reports "err" without a ProviderError is a malformed provider call (bad
+    operation_type, missing arg), not a policy violation. The message must reach the output
+    instead of being dropped and None evaluated against the condition.
+    """
+    evaluator_obj = {
+        "id": "test_evaluator",
+        "provider_args": {"operation_type": "gt_value", "key": "value"},
+        "condition": {"type": "Equals", "value": "us-east-1"},
+    }
+
+    bare_err = {"value": None, "meta": None, "err": "operation_type: gt_value is not supported"}
+
+    with patch("tirith.core.core.get_evaluator_inputs_from_provider_inputs", return_value=[bare_err]):
+        with patch("tirith.core.core.EVALUATORS_DICT", {"Equals": MockEvaluator}):
+            result = generate_evaluator_result(evaluator_obj, {}, "test_provider")
+
+    assert result["passed"] is False
+    assert len(result["result"]) == 1
+    assert result["result"][0]["passed"] is False
+    assert result["result"][0]["message"] == "operation_type: gt_value is not supported"
+
+
+@mark.passing
+def test_generate_evaluator_result_bare_provider_err_ignores_error_tolerance():
+    """error_tolerance tolerates missing data; it must never mask a malformed provider call."""
+    evaluator_obj = {
+        "id": "test_evaluator",
+        "provider_args": {"operation_type": "gt_value", "key": "value"},
+        # A tolerance high enough to swallow every documented severity, including 99.
+        "condition": {"type": "Equals", "value": "us-east-1", "error_tolerance": 100},
+    }
+
+    bare_err = {"value": None, "meta": None, "err": "operation_type: gt_value is not supported"}
+
+    with patch("tirith.core.core.get_evaluator_inputs_from_provider_inputs", return_value=[bare_err]):
+        with patch("tirith.core.core.EVALUATORS_DICT", {"Equals": MockEvaluator}):
+            result = generate_evaluator_result(evaluator_obj, {}, "test_provider")
+
+    assert result["passed"] is False, "a malformed provider call must not be skipped"
+    assert result["result"][0]["passed"] is False

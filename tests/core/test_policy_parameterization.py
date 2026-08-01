@@ -48,6 +48,56 @@ def test_not_found_variable(processed_policy):
     assert processed_policy[1] == ["key_path"]
 
 
+def test_caller_policy_is_not_mutated():
+    """Substitution must not write through to the caller's dict."""
+    policy = {
+        "meta": {"version": "", "required_provider": "{{var.provider}}"},
+        "evaluators": [
+            {
+                "id": "check0",
+                "provider_args": {"operation_type": "get_value", "key_path": "a.b"},
+                "condition": {"type": "Equals", "value": "{{var.expected}}"},
+            }
+        ],
+        "eval_expression": "check0",
+    }
+
+    replaced, not_found = get_policy_with_vars_replaced(policy, {"provider": "stackguardian/json", "expected": "yes"})
+
+    assert not_found == []
+    # The copy carries the substituted values ...
+    assert replaced["meta"]["required_provider"] == "stackguardian/json"
+    assert replaced["evaluators"][0]["condition"]["value"] == "yes"
+    # ... while the original still carries the placeholders.
+    assert policy["meta"]["required_provider"] == "{{var.provider}}"
+    assert policy["evaluators"][0]["condition"]["value"] == "{{var.expected}}"
+
+
+def test_same_policy_reused_with_different_vars():
+    """
+    A policy dict evaluated twice with different vars must not leak values between runs.
+    This is the multi-policy / retry case: without a deep copy the second call sees the
+    first call's substitutions already baked in and reports nothing to substitute.
+    """
+    policy = {
+        "meta": {"version": "", "required_provider": "stackguardian/json"},
+        "evaluators": [
+            {
+                "id": "check0",
+                "provider_args": {"operation_type": "get_value", "key_path": "{{var.path}}"},
+                "condition": {"type": "Equals", "value": True},
+            }
+        ],
+        "eval_expression": "check0",
+    }
+
+    first, _ = get_policy_with_vars_replaced(policy, {"path": "first.path"})
+    second, _ = get_policy_with_vars_replaced(policy, {"path": "second.path"})
+
+    assert first["evaluators"][0]["provider_args"]["key_path"] == "first.path"
+    assert second["evaluators"][0]["provider_args"]["key_path"] == "second.path"
+
+
 # TODO: Create testcases for:
 # - test inline vars precendece over var files
 # - test undefined vars
