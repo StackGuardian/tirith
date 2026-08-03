@@ -5,7 +5,7 @@ The archive is what the run controller unpacks in place of a VCS checkout, so it
 terraform source and the documents to evaluate, at the fixed names the step looks for:
 
     plan.json       terraform plan JSON     -- the primary policy input
-    state.json      terraform state JSON
+    tfstate.json      terraform state JSON
     infracost.json  cost breakdown
 
 Two things here are easy to get wrong and expensive to get wrong.
@@ -29,11 +29,11 @@ import tarfile
 
 # Fixed names the policy-only step looks for at the archive root.
 PLAN_DOCUMENT = "plan.json"
-STATE_DOCUMENT = "state.json"
+STATE_DOCUMENT = "tfstate.json"
 INFRACOST_DOCUMENT = "infracost.json"
 
 # These names are ALWAYS written by pack(), never copied from the source tree -- whether or not a
-# masked document was supplied for them. A file called state.json in the working directory is raw,
+# masked document was supplied for them. A file called tfstate.json in the working directory is raw,
 # unmasked state; see the note in pack().
 RESERVED_DOCUMENTS = frozenset((PLAN_DOCUMENT, STATE_DOCUMENT, INFRACOST_DOCUMENT))
 
@@ -127,7 +127,7 @@ def pack(source_dir, plan=None, state=None, infracost=None, extra_excludes=(), r
 
     with tarfile.open(fileobj=buffer, mode="w:gz") as tar:
         if source_dir:
-            # RESERVED_DOCUMENTS, not just the ones being written. A file named state.json in the
+            # RESERVED_DOCUMENTS, not just the ones being written. A file named tfstate.json in the
             # working directory is unmasked by definition -- `terraform state pull > state.json` is
             # the documented way to produce one -- so packing it would ship every attribute in
             # plaintext beside the masked copy. If the caller wants it evaluated they pass

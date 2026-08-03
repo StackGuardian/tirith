@@ -381,16 +381,26 @@ def test_redact_state_masks_sensitive_outputs():
 
 
 def test_redact_state_masks_sensitive_attributes():
-    """`sensitive_attributes` names the keys to mask, in the get_attr shape terraform writes."""
+    """
+    The shape `terraform state pull` actually writes: each entry is a PATH -- a list of steps --
+    not a single key.
+
+    Captured verbatim from a real `local_sensitive_file`. The previous fixture here invented the
+    flat form, so this passed while real state was not masked at all: a list is neither a dict nor
+    a string, so every entry was skipped.
+    """
     state = {
         "resources": [
             {
-                "type": "aws_db_instance",
-                "name": "main",
+                "type": "local_sensitive_file",
+                "name": "s",
                 "instances": [
                     {
-                        "attributes": {"id": "db-1", "password": SECRET},
-                        "sensitive_attributes": [{"type": "get_attr", "value": "password"}],
+                        "attributes": {"id": "e590ef", "content": SECRET, "content_base64": SECRET},
+                        "sensitive_attributes": [
+                            [{"type": "get_attr", "value": "content_base64"}],
+                            [{"type": "get_attr", "value": "content"}],
+                        ],
                     }
                 ],
             }
@@ -400,9 +410,78 @@ def test_redact_state_masks_sensitive_attributes():
     redacted = redact.redact_state(state)
     attributes = redacted["resources"][0]["instances"][0]["attributes"]
 
-    assert attributes["password"] == redact.SENTINEL
-    assert attributes["id"] == "db-1"
+    assert attributes["content"] == redact.SENTINEL
+    assert attributes["content_base64"] == redact.SENTINEL
+    assert attributes["id"] == "e590ef", "non-sensitive attributes must survive"
     assert SECRET not in json.dumps(redacted)
+
+
+def test_redact_state_masks_a_nested_attribute_path():
+    """A path can descend through objects and list indices, not just name a top-level key."""
+    state = {
+        "resources": [
+            {
+                "instances": [
+                    {
+                        "attributes": {"config": [{"token": SECRET, "url": "https://ok"}]},
+                        "sensitive_attributes": [
+                            [
+                                {"type": "get_attr", "value": "config"},
+                                {"type": "index", "value": 0},
+                                {"type": "get_attr", "value": "token"},
+                            ]
+                        ],
+                    }
+                ]
+            }
+        ]
+    }
+
+    redacted = redact.redact_state(state)
+    config = redacted["resources"][0]["instances"][0]["attributes"]["config"][0]
+
+    assert config["token"] == redact.SENTINEL
+    assert config["url"] == "https://ok"
+
+
+def test_redact_state_does_not_mutate_the_input():
+    """The caller still holds the original; masking must not reach back into it."""
+    state = {
+        "resources": [
+            {
+                "instances": [
+                    {
+                        "attributes": {"password": SECRET},
+                        "sensitive_attributes": [[{"type": "get_attr", "value": "password"}]],
+                    }
+                ]
+            }
+        ]
+    }
+
+    redact.redact_state(state)
+
+    assert state["resources"][0]["instances"][0]["attributes"]["password"] == SECRET
+
+
+def test_redact_state_accepts_the_flat_get_attr_form():
+    """Some providers and older state versions emit a single step rather than a path."""
+    state = {
+        "resources": [
+            {
+                "instances": [
+                    {
+                        "attributes": {"password": SECRET},
+                        "sensitive_attributes": [{"type": "get_attr", "value": "password"}],
+                    }
+                ]
+            }
+        ]
+    }
+
+    redacted = redact.redact_state(state)
+
+    assert redacted["resources"][0]["instances"][0]["attributes"]["password"] == redact.SENTINEL
 
 
 def test_redact_state_accepts_bare_string_sensitive_attributes():

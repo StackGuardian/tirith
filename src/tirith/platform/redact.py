@@ -11,6 +11,8 @@ its schema, arrives marked `false` and will not be masked by marker-driven redac
 the `variables` drop below exist partly to limit that blast radius.
 """
 
+import copy
+
 SENTINEL = "__SG_REDACTED__"
 
 # Top-level plan sections tirith's terraform_plan provider never reads, verified against
@@ -302,18 +304,74 @@ def _redact_state_resource(resource):
         sensitive_attributes = masked.get("sensitive_attributes") or []
 
         if isinstance(attributes, dict) and sensitive_attributes:
-            masked_attributes = dict(attributes)
+            masked_attributes = copy.deepcopy(attributes)
             for sensitive_attribute in sensitive_attributes:
-                # Terraform writes these either as {"type": "get_attr", "value": "<key>"} or,
-                # in older state versions, as a bare string.
-                key = sensitive_attribute.get("value") if isinstance(sensitive_attribute, dict) else sensitive_attribute
-                if isinstance(key, str) and key in masked_attributes:
-                    masked_attributes[key] = SENTINEL
+                _mask_attribute_path(masked_attributes, _attribute_steps(sensitive_attribute))
             masked["attributes"] = masked_attributes
 
         masked_instances.append(masked)
 
     return {**resource, "instances": masked_instances}
+
+
+def _attribute_steps(sensitive_attribute):
+    """
+    Normalise one `sensitive_attributes` entry into a list of path steps.
+
+    Terraform writes each entry as a PATH -- a list of steps -- not a single key:
+
+        [[{"type": "get_attr", "value": "content_base64"}],
+         [{"type": "get_attr", "value": "content"}]]
+
+    Reading only the flat forms silently masked nothing at all on real state, because a list is
+    neither a dict nor a string. Verified against `terraform state pull` output for a
+    `local_sensitive_file`; the earlier unit tests passed only because their fixture invented the
+    flat shape.
+
+    The two flat forms are still accepted: some providers and older state versions emit them.
+    """
+    if isinstance(sensitive_attribute, list):
+        entries = sensitive_attribute
+    else:
+        entries = [sensitive_attribute]
+
+    steps = []
+    for entry in entries:
+        if isinstance(entry, dict):
+            steps.append(entry.get("value"))
+        elif isinstance(entry, (str, int)):
+            steps.append(entry)
+        else:
+            # An unrecognised step means the path cannot be trusted; masking a guessed location
+            # would be worse than reporting nothing.
+            return []
+    return steps
+
+
+def _mask_attribute_path(container, steps):
+    """
+    Replace the value at `steps` within `container` with the sentinel.
+
+    A path may descend through nested objects and list indices -- `[{"get_attr": "config"},
+    {"index": 0}, {"get_attr": "token"}]` -- so this walks rather than assuming one level.
+    """
+    if not steps:
+        return
+
+    *parents, leaf = steps
+    node = container
+    for step in parents:
+        if isinstance(node, dict) and step in node:
+            node = node[step]
+        elif isinstance(node, list) and isinstance(step, int) and 0 <= step < len(node):
+            node = node[step]
+        else:
+            return
+
+    if isinstance(node, dict) and leaf in node:
+        node[leaf] = SENTINEL
+    elif isinstance(node, list) and isinstance(leaf, int) and 0 <= leaf < len(node):
+        node[leaf] = SENTINEL
 
 
 def count_redactions(document):

@@ -46,14 +46,14 @@ def raw_bytes(archive_bytes):
 def test_documents_land_at_the_fixed_names_the_step_looks_for(tmp_path):
     body, _manifest = archive.pack(source_dir=None, plan={"a": 1}, state={"b": 2}, infracost={"c": 3})
 
-    assert members(body) == ["infracost.json", "plan.json", "state.json"]
+    assert members(body) == ["infracost.json", "plan.json", "tfstate.json"]
     assert json.loads(read_member(body, "plan.json")) == {"a": 1}
 
 
 def test_absent_documents_are_simply_not_written():
     body, _manifest = archive.pack(source_dir=None, state={"version": 4})
 
-    assert members(body) == ["state.json"]
+    assert members(body) == ["tfstate.json"]
 
 
 def test_masked_document_wins_over_a_stale_file_on_disk(tmp_path):
@@ -69,7 +69,7 @@ def test_masked_document_wins_over_a_stale_file_on_disk(tmp_path):
     assert SECRET.encode() not in raw_bytes(body)
 
 
-@pytest.mark.parametrize("name", ["plan.json", "state.json", "infracost.json"])
+@pytest.mark.parametrize("name", ["plan.json", "tfstate.json", "infracost.json"])
 def test_reserved_names_on_disk_are_never_packed(tmp_path, name):
     """
     The leak this closes: `terraform state pull > state.json` is the documented way to produce a
@@ -90,11 +90,11 @@ def test_reserved_names_on_disk_are_never_packed(tmp_path, name):
 
 def test_masked_document_is_what_gets_written(tmp_path):
     """The counterpart: a supplied document really does reach the archive."""
-    (tmp_path / "state.json").write_text(json.dumps({"secret": SECRET}))
+    (tmp_path / "tfstate.json").write_text(json.dumps({"secret": SECRET}))
 
     body, _manifest = archive.pack(source_dir=str(tmp_path), state={"masked": True})
 
-    assert json.loads(read_member(body, "state.json")) == {"masked": True}
+    assert json.loads(read_member(body, "tfstate.json")) == {"masked": True}
     assert SECRET.encode() not in raw_bytes(body)
 
 
