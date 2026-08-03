@@ -15,7 +15,6 @@ from tirith import __version__
 
 from .core import start_policy_evaluation
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -27,6 +26,13 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
+# Subcommands are dispatched before the flat parser sees anything. argparse cannot express an
+# optional subcommand alongside options like `-policy-path` (a single dash and a long name), and the
+# local-evaluation surface is a contract: tests/core/test_output_compatibility.py asserts its --json
+# output is byte-identical to a golden file. An explicit pre-dispatch leaves that untouched.
+SUBCOMMANDS = {"platform"}
+
+
 def main(args=None) -> ExitStatus:
     """
     The main function.
@@ -36,6 +42,13 @@ def main(args=None) -> ExitStatus:
 
     Return exit status code.
     """
+    argv = list(sys.argv[1:] if args is None else args)
+
+    if argv and argv[0] in SUBCOMMANDS:
+        from tirith.platform import cli as platform_cli
+
+        return platform_cli.main(argv)
+
     try:
 
         class _WidthFormatter(argparse.RawTextHelpFormatter):
@@ -45,8 +58,7 @@ def main(args=None) -> ExitStatus:
         parser = argparse.ArgumentParser(
             description="Tirith (StackGuardian Policy Framework)",
             formatter_class=_WidthFormatter,
-            epilog=textwrap.dedent(
-                """\
+            epilog=textwrap.dedent("""\
          About Tirith:
          
             * Abstract away the implementation complexity of policy engine underneath.
@@ -55,8 +67,7 @@ def main(args=None) -> ExitStatus:
             * Provide modularity to enable easy extensibility
             * Github - https://github.com/StackGuardian/tirith
             * Docs - https://docs.stackguardian.io/docs/tirith/overview
-        """
-            ),
+        """),
         )
         parser.add_argument(
             "-policy-path",
@@ -104,9 +115,9 @@ def main(args=None) -> ExitStatus:
         )
         parser.add_argument("--version", action="version", version=__version__)
 
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
 
-        if len(sys.argv) == 1:
+        if not argv:
             parser.print_help()
             sys.exit(0)
 

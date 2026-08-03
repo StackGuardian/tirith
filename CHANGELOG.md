@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+
+## [1.2.0] - 2026-08-03
+
+### Added
+- `tirith platform check`: run an organization's policies against a plan, state or arbitrary JSON
+  document from CI or a laptop. Masks the document locally, packs it with the terraform source into
+  an archive, uploads it, creates a StackGuardian run, polls it and reports the verdict as JSON
+  and/or markdown.
+- `ExitStatus.ERROR_POLICY_FAILED` (3), so a caller can tell "a policy said no" from "tirith could
+  not reach the platform". Exit 1 stays reserved for the latter, and applies even without
+  `--fail-on-error`: a run that produced no verdict must never look like a pass.
+
+### Changed
+- `cli.main(args=...)` is now honoured. It previously called `parse_args()` with no argument, so
+  the parameter was ignored and the CLI could only ever read `sys.argv`.
+
+### Notes
+- The local evaluation surface is unchanged, including its single-dash long options. Subcommands
+  are dispatched before the flat parser sees anything, so `--json` output stays byte-identical.
+- No new runtime dependencies: the platform integration is stdlib-only.
+
 ## [1.1.0] - 2026-08-01
 
 ### Added
