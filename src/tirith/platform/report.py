@@ -97,6 +97,16 @@ def verdict(counts, run_status):
 
     `approval-required` is a resting state, not a failure: the evaluation finished and a human now
     has to act. Reporting it as `errored` would blame the tool for a working evaluation.
+
+    It is reached two ways, and both matter. The run status is APPROVAL_REQUIRED when the platform
+    itself gated the run. A *rule* result of APPROVAL_REQUIRED means a policy author wrote
+    `onFail: APPROVAL_REQUIRED`, which the policy-only step records without pausing the run -- so
+    the run comes back COMPLETED and only the counts carry the intent.
+
+    Folding that into `warned` was wrong: `warned` maps to a `neutral` check, which SATISFIES a
+    required status check, so a policy demanding human sign-off silently did not block. Ranking it
+    above `warned` keeps the author's intent without implementing the approval workflow, which is
+    out of scope here.
     """
     if run_status == "APPROVAL_REQUIRED":
         return "approval-required"
@@ -104,7 +114,9 @@ def verdict(counts, run_status):
         return "errored"
     if counts.get(FAIL):
         return "failed"
-    if counts.get(WARN) or counts.get(APPROVAL_REQUIRED):
+    if counts.get(APPROVAL_REQUIRED):
+        return "approval-required"
+    if counts.get(WARN):
         return "warned"
     if counts.get(PASS) or counts.get("SKIPPED"):
         return "passed"

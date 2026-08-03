@@ -100,10 +100,31 @@ def test_verdict_failed_when_any_policy_fails():
     assert render.verdict(counts, "COMPLETED") == "failed"
 
 
-def test_verdict_warned_for_warn_and_approval_required():
-    for result in ("WARN", "APPROVAL_REQUIRED"):
-        counts, _ = render.summarize(_results(result))
-        assert render.verdict(counts, "COMPLETED") == "warned", result
+def test_verdict_warned_for_a_warning():
+    counts, _ = render.summarize(_results("WARN"))
+    assert render.verdict(counts, "COMPLETED") == "warned"
+
+
+def test_verdict_approval_required_outranks_warned():
+    """
+    A rule result of APPROVAL_REQUIRED means its author wrote `onFail: APPROVAL_REQUIRED`. The
+    policy-only step records that without pausing the run, so the run comes back COMPLETED and only
+    the counts carry the intent.
+
+    Folding it into `warned` was wrong: `warned` maps to a `neutral` check, which SATISFIES a
+    required status check, so a policy demanding human sign-off silently did not block. Caught by a
+    live run against a real APPROVAL_REQUIRED policy.
+    """
+    counts, _ = render.summarize(_results("APPROVAL_REQUIRED"))
+
+    assert render.verdict(counts, "COMPLETED") == "approval-required"
+
+
+def test_verdict_failed_outranks_approval_required():
+    """A hard failure is the more urgent signal when a run has both."""
+    counts = {"FAIL": 1, "APPROVAL_REQUIRED": 1}
+
+    assert render.verdict(counts, "COMPLETED") == "failed"
 
 
 def test_verdict_passed_only_when_a_policy_actually_passed():
