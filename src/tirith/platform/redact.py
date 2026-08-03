@@ -52,30 +52,110 @@ def slim_plan(plan):
 
 def _scrub_configuration(configuration):
     """
-    Strip credential-bearing provider expressions while keeping what tirith reads.
+    Strip credential-bearing expressions from `configuration` while keeping what tirith reads.
 
-    `provider_config_operator` reads only `version_constraint` and
-    `expressions.region.constant_value`, so everything else under `expressions` -- access keys,
-    tokens, assume-role blocks -- can go without affecting any policy.
+    Two places hold literals, and both have to be scrubbed:
+
+    `provider_config[].expressions` -- `provider_config_operator` reads only `version_constraint`
+    and `expressions.region.constant_value`, so access keys, tokens and assume-role blocks can go.
+
+    `root_module.resources[].expressions[].constant_value` -- every literal written in the HCL,
+    including a hardcoded password. This is a third instance of the `planned_values` pattern: a
+    place values live that carries no sensitivity markers, so marker-driven masking of
+    `resource_changes` never touches it. Caught in QA -- a `local_sensitive_file` body was masked
+    in `resource_changes` and sat in plaintext here in the same document.
+
+    Dropping `constant_value` is lossless: `direct_references_operator` reads only `references`
+    from these expressions, and `direct_dependencies_operator` reads only `depends_on`
+    (providers/terraform_plan/handler.py:329, :385-388).
     """
     scrubbed = dict(configuration)
+
     provider_config = scrubbed.get("provider_config")
-    if not isinstance(provider_config, dict):
-        return scrubbed
+    if isinstance(provider_config, dict):
+        cleaned = {}
+        for name, block in provider_config.items():
+            if not isinstance(block, dict):
+                cleaned[name] = block
+                continue
+            kept = {k: v for k, v in block.items() if k in _PROVIDER_CONFIG_KEEP}
+            region = (block.get("expressions") or {}).get("region")
+            if region is not None:
+                kept["expressions"] = {"region": region}
+            cleaned[name] = kept
+        scrubbed["provider_config"] = cleaned
 
-    cleaned = {}
-    for name, block in provider_config.items():
-        if not isinstance(block, dict):
-            cleaned[name] = block
-            continue
-        kept = {k: v for k, v in block.items() if k in _PROVIDER_CONFIG_KEEP}
-        region = (block.get("expressions") or {}).get("region")
-        if region is not None:
-            kept["expressions"] = {"region": region}
-        cleaned[name] = kept
+    root_module = scrubbed.get("root_module")
+    if isinstance(root_module, dict):
+        scrubbed["root_module"] = _scrub_config_module(root_module)
 
-    scrubbed["provider_config"] = cleaned
     return scrubbed
+
+
+def _scrub_config_module(module):
+    """Recursively drop literal values from a configuration module, keeping the reference graph."""
+    scrubbed = dict(module)
+
+    resources = scrubbed.get("resources")
+    if isinstance(resources, list):
+        scrubbed["resources"] = [_scrub_config_resource(r) for r in resources]
+
+    # Child modules nest the same shape under module_calls[].module.
+    module_calls = scrubbed.get("module_calls")
+    if isinstance(module_calls, dict):
+        calls = {}
+        for name, call in module_calls.items():
+            if isinstance(call, dict) and isinstance(call.get("module"), dict):
+                call = {**call, "module": _scrub_config_module(call["module"])}
+                # A module's own arguments are literals too.
+                call.pop("expressions", None)
+            calls[name] = call
+        scrubbed["module_calls"] = calls
+
+    # Variable defaults and output values are literals with no operation reading them.
+    for section in ("variables", "outputs"):
+        if isinstance(scrubbed.get(section), dict):
+            scrubbed[section] = _scrub_config_section(scrubbed[section])
+
+    return scrubbed
+
+
+def _scrub_config_resource(resource):
+    if not isinstance(resource, dict):
+        return resource
+
+    expressions = resource.get("expressions")
+    if not isinstance(expressions, dict):
+        return resource
+
+    return {**resource, "expressions": {k: _keep_references(v) for k, v in expressions.items()}}
+
+
+def _keep_references(expression):
+    """
+    Reduce one expression to just its `references`, dropping every literal.
+
+    Terraform nests expressions arbitrarily: a block argument is a dict of expressions, and a
+    repeated block is a list of them, so this recurses rather than looking one level deep.
+    """
+    if isinstance(expression, list):
+        return [_keep_references(item) for item in expression]
+    if not isinstance(expression, dict):
+        return expression
+    if "references" in expression or "constant_value" in expression:
+        # A leaf: keep only the reference graph.
+        return {"references": expression["references"]} if "references" in expression else {}
+    return {k: _keep_references(v) for k, v in expression.items()}
+
+
+def _scrub_config_section(section):
+    """Drop `default` / `expression` literals from variables and outputs."""
+    cleaned = {}
+    for name, entry in section.items():
+        if isinstance(entry, dict):
+            entry = {k: v for k, v in entry.items() if k not in ("default", "expression", "value")}
+        cleaned[name] = entry
+    return cleaned
 
 
 def _mask_by_marker(value, marker):

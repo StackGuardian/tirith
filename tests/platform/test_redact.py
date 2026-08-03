@@ -98,6 +98,126 @@ def test_configuration_is_kept_because_three_operations_read_it():
     assert SECRET not in json.dumps(slimmed)
 
 
+def test_hcl_literals_are_scrubbed_from_resource_expressions():
+    """
+    The third instance of the `planned_values` pattern, caught in QA: a hardcoded value is masked
+    in `resource_changes` and sits in plaintext under
+    `configuration.root_module.resources[].expressions[].constant_value`, which carries no
+    sensitivity markers at all.
+
+    Dropping it is lossless -- direct_references reads only `references`, direct_dependencies only
+    `depends_on`.
+    """
+    plan = {
+        "resource_changes": [
+            {
+                "type": "local_sensitive_file",
+                "change": {"after": {"content": SECRET}, "after_sensitive": {"content": True}},
+            }
+        ],
+        "configuration": {
+            "root_module": {
+                "resources": [
+                    {
+                        "address": "local_sensitive_file.creds",
+                        "depends_on": ["null_resource.a"],
+                        "expressions": {
+                            "content": {"constant_value": SECRET},
+                            "filename": {"references": ["path.module"]},
+                        },
+                    }
+                ]
+            }
+        },
+    }
+
+    redacted = redact.redact_plan(plan)
+    expressions = redacted["configuration"]["root_module"]["resources"][0]["expressions"]
+
+    assert SECRET not in json.dumps(redacted)
+    # The reference graph the operations walk survives ...
+    assert expressions["filename"]["references"] == ["path.module"]
+    assert redacted["configuration"]["root_module"]["resources"][0]["depends_on"] == ["null_resource.a"]
+    # ... the literal does not.
+    assert "constant_value" not in expressions["content"]
+
+
+def test_nested_and_repeated_block_literals_are_scrubbed():
+    """A block argument is a dict of expressions and a repeated block is a list of them."""
+    plan = {
+        "resource_changes": [],
+        "configuration": {
+            "root_module": {
+                "resources": [
+                    {
+                        "address": "aws_instance.web",
+                        "expressions": {
+                            "root_block_device": {"kms_key_id": {"constant_value": SECRET}},
+                            "ebs_block_device": [
+                                {"snapshot_id": {"constant_value": SECRET}},
+                                {"volume_id": {"references": ["aws_ebs_volume.a.id"]}},
+                            ],
+                        },
+                    }
+                ]
+            }
+        },
+    }
+
+    redacted = redact.redact_plan(plan)
+
+    assert SECRET not in json.dumps(redacted)
+    ebs = redacted["configuration"]["root_module"]["resources"][0]["expressions"]["ebs_block_device"]
+    assert ebs[1]["volume_id"]["references"] == ["aws_ebs_volume.a.id"]
+
+
+def test_child_module_literals_are_scrubbed():
+    plan = {
+        "resource_changes": [],
+        "configuration": {
+            "root_module": {
+                "module_calls": {
+                    "db": {
+                        "source": "./modules/db",
+                        "expressions": {"password": {"constant_value": SECRET}},
+                        "module": {
+                            "resources": [
+                                {
+                                    "address": "aws_db_instance.main",
+                                    "expressions": {"password": {"constant_value": SECRET}},
+                                }
+                            ]
+                        },
+                    }
+                }
+            }
+        },
+    }
+
+    redacted = redact.redact_plan(plan)
+
+    assert SECRET not in json.dumps(redacted)
+
+
+def test_variable_defaults_and_outputs_are_scrubbed():
+    """A `default` on a sensitive variable is a literal in the configuration too."""
+    plan = {
+        "resource_changes": [],
+        "configuration": {
+            "root_module": {
+                "variables": {"db_password": {"default": SECRET, "sensitive": True}},
+                "outputs": {"conn": {"expression": {"constant_value": SECRET}}},
+            }
+        },
+    }
+
+    redacted = redact.redact_plan(plan)
+
+    assert SECRET not in json.dumps(redacted)
+    # The declaration itself survives; only the value goes.
+    assert redacted["configuration"]["root_module"]["variables"]["db_password"]["sensitive"] is True
+
+
 def test_scrub_tolerates_a_provider_config_without_expressions():
     plan = {"resource_changes": [], "configuration": {"provider_config": {"null": {"name": "null"}}}}
 
