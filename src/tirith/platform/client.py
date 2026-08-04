@@ -6,7 +6,7 @@ three, and a CI runner needs nothing installed beyond tirith itself.
 
   POST /orgs/<org>/wfgrps/                                       create the workflow group
   POST /orgs/<org>/wfgrps/<grp>/wfs/                              create the workflow
-  GET  /orgs/<org>/wfgrps/<grp>/wfs/<wf>/configuration_upload_url/  presigned PUT (5 min) + key
+  GET  /orgs/<org>/wfgrps/<grp>/wfs/<wf>/file_upload_url/          presigned PUT (5 min) + key
   POST /orgs/<org>/wfgrps/<grp>/wfs/<wf>/wfruns/                  create the run
   GET  /orgs/<org>/wfgrps/<grp>/wfs/<wf>/wfruns/<run>/            poll
   GET  /orgs/<org>/wfgrps/<grp>/wfs/<wf>/artifacts/<path>/        fetch the results artifact
@@ -20,7 +20,10 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-DEFAULT_API_URL = "https://api.app.stackguardian.io/api/v1"
+from . import regions
+
+# Signed into the upload URL by the platform, so the PUT must send the same value.
+ARCHIVE_CONTENT_TYPE = "application/gzip"
 
 # Terminal run states. QUEUED/PENDING/RUNNING are transient; a run can sit in QUEUED for a long
 # while behind the per-workflow concurrency gate, which is why the caller logs each poll.
@@ -63,7 +66,10 @@ def _extract_signed_url(payload):
 
 class SGClient:
     def __init__(self, api_url, org, api_key, user_agent="tirith-action", timeout=60):
-        self.api_url = (api_url or DEFAULT_API_URL).rstrip("/")
+        # Accepts a base with or without /api/v1, so a SG_BASE_URL exported for sg-cli works here.
+        self.api_url = regions.normalize_api_url(api_url) or regions.normalize_api_url(
+            regions.by_id(regions.DEFAULT_REGION_ID).api_base
+        )
         self.org = org
         self.api_key = api_key
         self.user_agent = user_agent
@@ -172,27 +178,35 @@ class SGClient:
         `folder` must be a flat token -- the endpoint rejects `/`, `\\` and `..` to prevent path
         traversal.
         """
-        query = urllib.parse.urlencode({"filename": filename, "folder": folder})
+        query = urllib.parse.urlencode(
+            {
+                "filename": filename,
+                "folder": folder,
+                # Signed into the URL, so the PUT below must send the same value.
+                "contentType": ARCHIVE_CONTENT_TYPE,
+            }
+        )
         status, payload = self._request(
-            "GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/configuration_upload_url/?{query}"
+            "GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/file_upload_url/?{query}"
         )
         if status != 200:
             raise SGError(f"Could not get an upload URL for {filename} (HTTP {status}): {payload.get('msg')}")
 
-        msg = payload.get("msg")
-        if not isinstance(msg, dict) or not msg.get("key"):
+        key = (payload.get("data") or {}).get("key")
+        if not key:
             raise SGError(
-                f"The upload response for {filename} carried no storage key. The platform may "
-                f"predate the configuration_upload_url endpoint. Response: {payload}"
+                f"The upload response for {filename} carried no storage key (data.key). The "
+                f"platform may predate the key being returned from file_upload_url. "
+                f"Response: {payload}"
             )
-        signed_url = _extract_signed_url({"msg": msg.get("signedUrl")})
+        signed_url = _extract_signed_url(payload)
         if not signed_url:
             raise SGError(f"No signed URL in the upload response for {filename}: {payload}")
 
         # Must match the content type the URL was signed with, or S3 rejects it as a signature
         # mismatch.
         put = urllib.request.Request(signed_url, data=archive_bytes, method="PUT")
-        put.add_header("Content-Type", "application/gzip")
+        put.add_header("Content-Type", ARCHIVE_CONTENT_TYPE)
         try:
             with urllib.request.urlopen(put, timeout=self.timeout) as response:
                 if response.status not in (200, 204):
@@ -203,7 +217,7 @@ class SGClient:
         except (urllib.error.URLError, TimeoutError) as e:
             raise SGError(f"Upload of {filename} failed: {e}")
 
-        return msg["key"]
+        return key
 
     def create_run(self, wfgrp, workflow_id, project_zip_key, trigger_details, action="policy-only"):
         """

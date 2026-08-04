@@ -90,8 +90,8 @@ def test_extract_signed_url_returns_none_when_absent():
 
 def test_upload_archive_requires_a_storage_key(monkeypatch):
     """
-    The key is what the caller passes back as terraformProjectZip. A platform that predates the
-    endpoint returns a bare URL, and silently continuing would create a run pointing at nothing.
+    The key is what the caller passes back as terraformProjectZip. A platform that predates the key
+    being returned answers with the URL alone, and continuing would create a run pointing at nothing.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
     monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"msg": "https://s3.example/put"}))
@@ -100,17 +100,18 @@ def test_upload_archive_requires_a_storage_key(monkeypatch):
         sg.upload_archive("default", "wf", "a.tar.gz", "abc1234", b"x")
 
 
+def _upload_response():
+    """What file_upload_url returns: the URL as a bare string in msg, the key alongside in data."""
+    return (200, {"msg": "https://s3.example/put", "data": {"key": "orgs/acme/wfs/K/artifacts/abc1234/a.tar.gz"}})
+
+
 def test_upload_archive_returns_the_key_from_the_response(monkeypatch):
     """
-    Never rebuilt client-side: the layout is runner-aware, so a guess is wrong for exactly the
-    customers whose runs are hardest to debug.
+    Never rebuilt client-side: the layout depends on ArtifactsUnderKSUID, ResourceKSUID and
+    OriginalArtifactPath, so a guess is wrong for exactly the customers hardest to debug.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
-    monkeypatch.setattr(
-        sg,
-        "_request",
-        lambda *a, **k: (200, {"msg": {"signedUrl": "https://s3.example/put", "key": "orgs/acme/…/a.tar.gz"}}),
-    )
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: _upload_response())
     uploaded = {}
 
     def fake_urlopen(request, timeout=None):
@@ -132,10 +133,52 @@ def test_upload_archive_returns_the_key_from_the_response(monkeypatch):
 
     key = sg.upload_archive("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
 
-    assert key == "orgs/acme/…/a.tar.gz"
+    assert key == "orgs/acme/wfs/K/artifacts/abc1234/a.tar.gz"
     assert uploaded["body"] == b"tarbytes"
     # Must match what the URL was signed with, or S3 rejects it as a signature mismatch.
     assert uploaded["content_type"] == "application/gzip"
+
+
+def test_upload_archive_uses_the_shared_artifact_endpoint(monkeypatch):
+    """
+    Not a bespoke endpoint. The archive is unpacked into the same workflow whose artifacts live
+    under this prefix, so it uploads through the same route -- and the contentType it asks to be
+    signed with has to match the header the PUT sends.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    seen = {}
+
+    def fake_request(method, path, *a, **k):
+        seen["method"] = method
+        seen["path"] = path
+        return _upload_response()
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+    monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
+
+    sg.upload_archive("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
+
+    assert seen["method"] == "GET"
+    assert "/file_upload_url/" in seen["path"]
+    assert "configuration_upload_url" not in seen["path"]
+    assert "contentType=application%2Fgzip" in seen["path"]
+    assert "filename=a.tar.gz" in seen["path"]
+
+
+def _ok_urlopen():
+    def fake_urlopen(request, timeout=None):
+        class _R:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return _R()
+
+    return fake_urlopen
 
 
 # --- run creation ------------------------------------------------------------------------------

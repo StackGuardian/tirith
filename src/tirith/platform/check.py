@@ -23,6 +23,19 @@ DEFAULT_TERRAFORM_VERSION = "1.5.7"
 # routes it to the json provider.
 INPUT_KINDS = ("terraform_plan", "terraform_state", "kubernetes", "json")
 
+# The `__sg.` prefix is load-bearing, not decoration.
+#
+# The archive uploads to the workflow's artifact prefix, which every run of that workflow syncs down
+# into its working directory and then re-uploads with no --delete. Without an excluded name the
+# archive is pulled into every subsequent run, forever, growing without bound.
+#
+# `sg.` is NOT enough. The awscli --exclude patterns match the key relative to the sync source, and
+# the archive is uploaded under a per-commit folder, so the relative key is `<sha7>/<name>` -- which
+# a bare `sg.*` pattern does not match. `*__sg.*` and `*/__sg.*` are the patterns present in both
+# runner modes and both match at any depth. It also keeps the input archive out of the dashboard's
+# artifact listing, which hides `__sg.*`.
+ARCHIVE_NAME_TEMPLATE = "__sg.{tag}.tar.gz"
+
 
 class CheckError(Exception):
     """The check could not be completed. Always fails closed."""
@@ -45,19 +58,23 @@ def read_json(path, label):
         raise CheckError(f"Could not read {label} ({path}): {e}")
 
 
-def prepare_documents(input_path, input_kind, state_path, infracost_path):
+def prepare_documents(input_path, input_kind, state_path, infracost_path, input_document=None):
     """
     Read and mask everything that will go into the archive.
 
     Returns (plan, state, infracost, redaction_count). The returned objects are the *masked* ones;
     nothing downstream should ever touch the originals again.
+
+    `input_document` is an already-parsed document, used by --plan-file so `terraform show -json`
+    output goes straight from the pipe into the masker without an unmasked plan ever being written
+    to disk.
     """
     plan = None
     state = None
     redactions = 0
 
-    if input_path:
-        document = read_json(input_path, "input document")
+    if input_document is not None or input_path:
+        document = input_document if input_document is not None else read_json(input_path, "input document")
         if input_kind == "terraform_plan":
             plan = redact.redact_plan(document)
             redactions += redact.count_redactions(plan)
@@ -127,7 +144,11 @@ def run_check(opts):
     client = SGClient(opts.api_url, opts.org, opts.api_key, timeout=60)
 
     plan, state, infracost, redactions = prepare_documents(
-        opts.input_path, opts.input_kind, opts.state_path, opts.infracost_path
+        opts.input_path,
+        opts.input_kind,
+        opts.state_path,
+        opts.infracost_path,
+        input_document=getattr(opts, "input_document", None),
     )
     if redactions:
         log(f"Masked {redactions} sensitive value(s) before upload")
@@ -155,7 +176,7 @@ def run_check(opts):
         key = client.upload_archive(
             opts.workflow_group,
             opts.workflow_id,
-            f"{opts.artifact_tag}.tar.gz",
+            ARCHIVE_NAME_TEMPLATE.format(tag=opts.artifact_tag),
             opts.sha[:7] if opts.sha else "latest",
             archive_bytes,
         )

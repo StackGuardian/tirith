@@ -2,19 +2,22 @@
 `tirith platform ...` -- run policy checks against a StackGuardian organization.
 
 Flag and environment names follow sg-cli (SG_API_TOKEN, SG_BASE_URL, SG_ORG, SG_DASHBOARD_URL) so
-someone who knows one tool knows the other.
+someone who knows one tool knows the other. `--region` names both URLs at once; see regions.py for
+the precedence between it, the explicit flags and the environment.
 """
 
 import argparse
 import json
 import os
+import re
 import sys
 
 from ..status import ExitStatus
+from . import discover, regions
 from .check import DEFAULT_WORKFLOW_GROUP, INPUT_KINDS, CheckError, log, run_check
 
-DEFAULT_API_URL = "https://api.app.stackguardian.io/api/v1"
-DEFAULT_DASHBOARD_URL = "https://app.stackguardian.io"
+# `Id` is a DRF SlugField on the platform, and the value is interpolated into every API path.
+WORKFLOW_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,100}$")
 
 
 def _resolve_api_key(value):
@@ -73,11 +76,35 @@ def build_parser():
         "--api-key", default=None, help="API key, or '-' to read it from stdin. Default: $SG_API_TOKEN"
     )
     identity.add_argument("--org", default=None, help="Organization name. Default: $SG_ORG")
-    identity.add_argument("--api-url", default=None, help=f"API base URL. Default: $SG_BASE_URL or {DEFAULT_API_URL}")
-    identity.add_argument("--dashboard-url", default=None, help="Dashboard base URL, used to build run links.")
+    identity.add_argument(
+        "--region",
+        default=None,
+        choices=regions.REGION_IDS,
+        help=(
+            f"StackGuardian region, setting both URLs at once. "
+            f"Default: $SG_REGION or {regions.DEFAULT_REGION_ID}."
+        ),
+    )
+    identity.add_argument(
+        "--api-url",
+        default=None,
+        help=(
+            "API base URL, with or without /api/v1. Overrides --region; needed only for a "
+            "self-hosted install or a dedicated host. Default: $SG_BASE_URL"
+        ),
+    )
+    identity.add_argument(
+        "--dashboard-url",
+        default=None,
+        help="Dashboard base URL, used to build run links. Inferred from --api-url when it names a known region.",
+    )
 
     workflow = check.add_argument_group("workflow")
-    workflow.add_argument("--workflow-id", required=True, help="Slug identifying the workflow. Created if absent.")
+    workflow.add_argument(
+        "--workflow-id",
+        required=True,
+        help="Slug identifying the workflow. Created if absent. Letters, digits, '-' and '_' only.",
+    )
     workflow.add_argument("--workflow-group", default=DEFAULT_WORKFLOW_GROUP, help="Workflow group. Created if absent.")
     workflow.add_argument("--terraform-version", default=None, help="Stored on the workflow at creation.")
     workflow.add_argument(
@@ -87,7 +114,27 @@ def build_parser():
     )
 
     inputs = check.add_argument_group("inputs")
-    inputs.add_argument("--input-path", default=None, help="Document to evaluate, e.g. `terraform show -json tfplan`.")
+    inputs.add_argument(
+        "--input-path",
+        default=None,
+        help=(
+            "Document to evaluate. Defaults to whichever of "
+            f"{' or '.join(discover.PLAN_FILENAMES)} is in --source-dir."
+        ),
+    )
+    inputs.add_argument(
+        "--plan-file",
+        default=None,
+        help=(
+            "Binary terraform plan. Rendered with `show -json` in memory, so no unmasked plan JSON "
+            "is written to disk."
+        ),
+    )
+    inputs.add_argument(
+        "--terraform-bin",
+        default=None,
+        help="terraform/tofu binary for --plan-file. Auto-detected, preferring the real binary over a CI wrapper.",
+    )
     inputs.add_argument("--input-kind", default="terraform_plan", choices=INPUT_KINDS)
     inputs.add_argument("--state-path", default=None, help="Optional terraform state, masked before upload.")
     inputs.add_argument("--infracost-path", default=None, help="Optional `infracost breakdown --format json`.")
@@ -128,8 +175,18 @@ def main(argv):
 
     opts.api_key = _resolve_api_key(opts.api_key)
     opts.org = opts.org or os.environ.get("SG_ORG", "")
-    opts.api_url = opts.api_url or os.environ.get("SG_BASE_URL") or DEFAULT_API_URL
-    opts.dashboard_url = opts.dashboard_url or os.environ.get("SG_DASHBOARD_URL") or DEFAULT_DASHBOARD_URL
+    try:
+        opts.api_url, opts.dashboard_url, url_warnings = regions.resolve(
+            region_id=opts.region,
+            api_url=opts.api_url,
+            dashboard_url=opts.dashboard_url,
+            env=os.environ,
+        )
+    except ValueError as e:
+        log(f"ERROR: {e}")
+        return ExitStatus.ERROR
+    for warning in url_warnings:
+        log(f"WARNING: {warning}")
     opts.source_dir = None if opts.no_source else opts.source_dir
 
     missing = [name for name, value in (("--api-key", opts.api_key), ("--org", opts.org)) if not value]
@@ -137,9 +194,35 @@ def main(argv):
         log(f"ERROR: missing required {' and '.join(missing)}")
         return ExitStatus.ERROR
 
-    if not opts.input_path and not opts.state_path:
-        log("ERROR: at least one of --input-path or --state-path is required")
+    if not WORKFLOW_ID_PATTERN.match(opts.workflow_id):
+        # Checked before any HTTP call: the value goes straight into every API path, and the
+        # platform's own field is a slug, so a `/` yields a malformed URL rather than a clear error.
+        suggestion = re.sub(r"[^A-Za-z0-9_-]+", "-", opts.workflow_id).strip("-").lower()[:100]
+        log(f"ERROR: --workflow-id '{opts.workflow_id}' is not a valid slug. Try '{suggestion}'.")
         return ExitStatus.ERROR
+
+    opts.input_document = None
+    if opts.plan_file:
+        if opts.input_path:
+            log("ERROR: --plan-file and --input-path cannot be combined; they name the same document")
+            return ExitStatus.ERROR
+        try:
+            opts.input_document = discover.terraform_show_json(
+                opts.plan_file, workdir=opts.source_dir, binary=opts.terraform_bin
+            )
+        except discover.DiscoveryError as e:
+            log(f"ERROR: {e}")
+            return ExitStatus.ERROR
+        log(f"Rendered {opts.plan_file} with `terraform show -json`")
+    elif not opts.input_path and not opts.state_path:
+        # Nothing was named, so look in the conventional place. This is what lets a caller run with
+        # no configuration at all.
+        try:
+            opts.input_path = discover.discover_input(opts.source_dir)
+        except discover.DiscoveryError as e:
+            log(f"ERROR: {e}")
+            return ExitStatus.ERROR
+        log(f"Using {opts.input_path}")
 
     if opts.api_key.startswith("sgu_"):
         log(
