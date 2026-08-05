@@ -233,11 +233,17 @@ def run_check(opts):
         if legacy is not None:
             policy_results = legacy
 
-    # The archive was unpacked at run start and is dead weight from here on. Nothing prunes the
-    # artifact prefix -- there is no lifecycle rule and neither sync passes --delete -- so leaving it
-    # would mean one permanent object per commit, per workflow, forever.
-    if not client.delete_artifact(opts.workflow_group, opts.workflow_id, archive_name):
-        log(f"WARNING: could not delete the project archive {archive_name}; it will persist in the artifact store")
+    # The archive is deliberately retained. It is the source that produced these findings, and the
+    # autofix system reads it to generate fixes -- so deleting it here would remove the only copy of
+    # what was actually evaluated.
+    #
+    # Retaining it is safe for the *runs*: the `__sg.` prefix keeps it out of the per-run artifact
+    # sync, so it never lands in a later run's working directory, which was the problem worth
+    # solving. It is not free, though: nothing prunes this prefix -- no lifecycle rule, and neither
+    # sync passes --delete -- so this is one object per commit and tag, kept indefinitely.
+    #
+    # `client.delete_artifact` is kept for a retention sweep to use later.
+    log(f"Retained the project archive for autofix: {key}")
 
     counts, _findings = report.summarize(policy_results)
     verdict_value = report.verdict(counts, status)
@@ -258,6 +264,10 @@ def run_check(opts):
         "policy_results": policy_results or {},
         # Surfaced for a caller aggregating several units into one comment of their own.
         "monthly_cost": (cost_breakdown or {}).get("totalMonthlyCost"),
+        # Where the evaluated source lives. The autofix system reads this to fetch what produced
+        # the findings; it is also recorded on the run itself as SGCustomWorkflowRunFacts, so a
+        # consumer holding only a run id can find it without seeing this document.
+        "archive_key": key,
     }
 
     write_output_json(opts.output_json, result)
