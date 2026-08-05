@@ -220,7 +220,79 @@ def redact_plan(plan):
     if isinstance(output_changes, dict):
         redacted["output_changes"] = {name: _redact_output_change(change) for name, change in output_changes.items()}
 
+    # Rebuild planned_values from what we just masked. slim_plan dropped terraform's own copy
+    # because it carries no sensitivity markers; this one is derived from the masked
+    # resource_changes, so it holds the same redacted values.
+    planned_values = rebuild_planned_values(redacted.get("resource_changes"))
+    if planned_values:
+        redacted["planned_values"] = planned_values
+
     return redacted
+
+
+def rebuild_planned_values(masked_resource_changes):
+    """
+    Reconstruct `planned_values` from already-masked `resource_changes`.
+
+    Infracost and Checkov both read `planned_values` and nothing else -- give them a plan without
+    it and they return a clean, empty, entirely wrong answer. Measured against infracost 0.10.27
+    with a real API key: the same t3.medium prices at $39.80 with the key present and $0.00
+    without, differing only by this one section.
+
+    Terraform's own copy cannot be shipped: it mirrors every value with NO sensitivity markers, so
+    masking `resource_changes` leaves the same secret in plaintext there -- a real plan leaked a
+    `local_sensitive_file` body through exactly that path. This rebuild sidesteps that because it
+    reads the *masked* values, after `_mask_by_marker` has run over them.
+
+    Only `after` is used, and only for resources that will exist. A destroy has no planned value,
+    and `before` is the pre-change state that `prior_state` carries -- which is dropped for the
+    same marker-less reason.
+    """
+    if not isinstance(masked_resource_changes, list):
+        return None
+
+    root = {"resources": [], "child_modules": []}
+    modules = {}
+
+    for resource_change in masked_resource_changes:
+        if not isinstance(resource_change, dict):
+            continue
+        change = resource_change.get("change")
+        if not isinstance(change, dict):
+            continue
+        if "delete" in (change.get("actions") or []) and "create" not in (change.get("actions") or []):
+            # Nothing is planned to exist, so there is nothing to price or scan.
+            continue
+        after = change.get("after")
+        if after is None:
+            continue
+
+        resource = {
+            key: resource_change[key]
+            for key in ("address", "mode", "type", "name", "index", "provider_name")
+            if key in resource_change
+        }
+        resource["values"] = after
+
+        module_address = resource_change.get("module_address")
+        if module_address:
+            modules.setdefault(module_address, {"address": module_address, "resources": []})["resources"].append(
+                resource
+            )
+        else:
+            root["resources"].append(resource)
+
+    if modules:
+        # Flat rather than a true nesting tree. Verified equivalent for pricing, and both tools
+        # address resources by their full `address`, which already encodes the module path.
+        root["child_modules"] = sorted(modules.values(), key=lambda m: m["address"])
+    else:
+        root.pop("child_modules")
+
+    if not root["resources"] and not root.get("child_modules"):
+        return None
+
+    return {"root_module": root}
 
 
 def _redact_output_change(change):

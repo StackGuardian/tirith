@@ -248,3 +248,79 @@ def test_headline_reports_each_nonzero_bucket():
     counts = {"FAIL": 2, "WARN": 1, "APPROVAL_REQUIRED": 3, "PASS": 9, "SKIPPED": 1}
 
     assert render.headline(counts, "failed") == "Tirith — 2 failed, 3 need approval, 1 warned, 9 passed, 1 skipped"
+
+
+# --- cost line ----------------------------------------------------------------------------------
+
+
+def test_cost_line_shows_the_monthly_total():
+    assert "39.80 USD" in "\n".join(render.render_cost({"totalMonthlyCost": "39.8", "currency": "USD"}))
+
+
+def test_cost_line_shows_the_delta_from_this_change():
+    """Infracost fills the diff from the plan's prior state -- the number a reviewer wants."""
+    line = "\n".join(render.render_cost({"totalMonthlyCost": "120.5", "diffTotalMonthlyCost": "39.8"}))
+
+    assert "120.50" in line
+    assert "+39.80 from this change" in line
+
+
+def test_a_cost_decrease_reads_as_a_decrease():
+    line = "\n".join(render.render_cost({"totalMonthlyCost": "10", "diffTotalMonthlyCost": "-5.25"}))
+
+    assert "−5.25 from this change" in line
+
+
+def test_a_zero_delta_is_omitted_rather_than_shown_as_plus_zero():
+    line = "\n".join(render.render_cost({"totalMonthlyCost": "10", "diffTotalMonthlyCost": "0"}))
+
+    assert "from this change" not in line
+
+
+def test_a_zero_cost_is_still_reported():
+    """Silence would be indistinguishable from 'this change costs nothing'."""
+    assert "0.00" in "\n".join(render.render_cost({"totalMonthlyCost": "0"}))
+
+
+def test_a_failed_estimate_says_so():
+    line = "\n".join(render.render_cost({"error": "failed to perform infrastructure cost estimation"}))
+
+    assert "unavailable" in line
+
+
+def test_no_estimate_renders_nothing():
+    assert render.render_cost(None) == []
+    assert render.render_cost({}) == []
+
+
+def test_the_cost_appears_in_the_comment_body():
+    body = render.render_markdown(
+        {"p": [{"rule_name": "r", "result": "PASS"}]},
+        "COMPLETED",
+        "https://dash.example/run",
+        cost_breakdown={"totalMonthlyCost": "39.8", "currency": "USD"},
+    )
+
+    assert "39.80 USD" in body
+
+
+def test_the_cost_survives_truncation_of_a_long_findings_list():
+    """A wall of findings must not push the cost line out of the comment."""
+    results = {
+        f"policy-{i}": [
+            {
+                "rule_name": f"rule-{i}",
+                "result": "FAIL",
+                "evaluations": {"fails": [{"result": [{"message": "x" * 400}]}]},
+            }
+        ]
+        for i in range(60)
+    }
+
+    body = render.render_markdown(
+        results, "COMPLETED", "https://dash.example/run",
+        limit=3000, cost_breakdown={"totalMonthlyCost": "39.8"},
+    )
+
+    assert len(body) <= 3000
+    assert "39.80" in body

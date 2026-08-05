@@ -215,10 +215,17 @@ def run_check(opts):
     except SGError as e:
         raise CheckError(f"{e} (run: {run_url})")
 
-    # The run facts are the source of truth -- they are what the dashboard renders. The results
-    # artifact is only consulted when the facts come back empty, which means an older step image
-    # that still writes it.
-    policy_results = client.get_policy_results(opts.workflow_group, opts.workflow_id, run_id)
+    # The run facts are the source of truth -- they are what the dashboard renders. Fetched once:
+    # the document carries the verdict and the cost estimate, and it embeds the whole plan, so it
+    # is large enough that fetching it twice is worth avoiding.
+    facts = client.get_run_facts(opts.workflow_group, opts.workflow_id, run_id)
+    policy_results = facts.get("PolicyEvalResults") or {}
+    # PreApply is what the step writes for a check run; the bare key is the fallback for an older
+    # step image that only set that one.
+    cost_breakdown = facts.get("InfracostBreakdownPreApply") or facts.get("InfracostBreakdown")
+
+    # The results artifact is only consulted when the facts come back empty, which means an older
+    # step image that still writes it.
     if not policy_results:
         legacy = client.get_results_artifact(
             opts.workflow_group, opts.workflow_id, f"{run_id}/tirith-results.json"
@@ -249,13 +256,20 @@ def run_check(opts):
         "wfrun_id": run_id,
         "wfrun_url": run_url,
         "policy_results": policy_results or {},
+        # Surfaced for a caller aggregating several units into one comment of their own.
+        "monthly_cost": (cost_breakdown or {}).get("totalMonthlyCost"),
     }
 
     write_output_json(opts.output_json, result)
 
     if opts.output_markdown:
         body = report.render_markdown(
-            policy_results, status, run_url, marker=opts.comment_marker, limit=opts.markdown_limit
+            policy_results,
+            status,
+            run_url,
+            marker=opts.comment_marker,
+            limit=opts.markdown_limit,
+            cost_breakdown=cost_breakdown,
         )
         try:
             with open(opts.output_markdown, "w") as f:

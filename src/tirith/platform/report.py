@@ -142,7 +142,49 @@ def headline(counts, verdict_value):
     return "Tirith — " + (", ".join(parts) if parts else "nothing evaluated")
 
 
-def render_markdown(policy_results, run_status, run_url, marker=None, limit=COMMENT_LIMIT):
+def render_cost(breakdown):
+    """
+    One line of cost, for the pull-request comment.
+
+    Rendered even when the estimate is zero or failed -- silence would be indistinguishable from
+    "this change costs nothing", and those are very different things to tell a reviewer.
+    Returns [] only when no estimate was attempted at all.
+    """
+    if not isinstance(breakdown, dict) or not breakdown:
+        return []
+
+    if breakdown.get("error"):
+        return ["", "<sub>💵 Cost estimate unavailable for this plan.</sub>"]
+
+    currency = breakdown.get("currency") or "USD"
+    monthly = breakdown.get("totalMonthlyCost")
+    diff = breakdown.get("diffTotalMonthlyCost")
+
+    if monthly is None:
+        return []
+
+    try:
+        monthly_text = f"{float(monthly):,.2f}"
+    except (TypeError, ValueError):
+        monthly_text = str(monthly)
+
+    line = f"💵 Estimated monthly cost: **{monthly_text} {currency}**"
+
+    # Infracost fills the diff from the plan's prior state, so it is the number a reviewer of a
+    # change actually wants. Only shown when it is non-zero and distinguishable from the total.
+    try:
+        delta = float(diff)
+    except (TypeError, ValueError):
+        delta = None
+    if delta:
+        line += f" ({'+' if delta > 0 else '−'}{abs(delta):,.2f} from this change)"
+
+    return ["", f"<sub>{line}</sub>"]
+
+
+def render_markdown(
+    policy_results, run_status, run_url, marker=None, limit=COMMENT_LIMIT, cost_breakdown=None
+):
     """
     Render the results as markdown, truncating detail before the summary table.
 
@@ -166,7 +208,10 @@ def render_markdown(policy_results, run_status, run_url, marker=None, limit=COMM
         ]
 
     table = _render_table(findings)
-    footer = _render_footer(counts, run_url)
+    # Ahead of the footer so the cost sits directly under the findings, and outside the truncation
+    # path below -- a long findings list must not push the cost line out of the comment.
+    cost = render_cost(cost_breakdown)
+    footer = cost + _render_footer(counts, run_url)
 
     detail_sections = [_render_detail(f) for f in findings if f["result"] in (FAIL, APPROVAL_REQUIRED, WARN)]
 

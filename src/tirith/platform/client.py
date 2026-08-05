@@ -332,12 +332,15 @@ class SGClient:
             return payload.get("PolicyEvalResults") or {}
         return None
 
-    def get_policy_results(self, wfgrp, workflow_id, run_id):
+    def get_run_facts(self, wfgrp, workflow_id, run_id):
         """
-        Fetch PolicyEvalResults from the run facts. This is the primary source.
+        Fetch the whole run-facts document. Returns {} when it cannot be read.
 
-        The endpoint hands back a presigned GET rather than the payload inline, because the facts
-        document embeds the whole plan and can be large.
+        One call, because the document carries everything the caller reports on --
+        PolicyEvalResults, the cost breakdown, the plan -- and it embeds the full plan, so it is
+        large enough that fetching it twice is worth avoiding.
+
+        The endpoint hands back a presigned GET rather than the payload inline, for the same reason.
         """
         status, payload = self._request(
             "GET",
@@ -348,7 +351,7 @@ class SGClient:
 
         body = payload.get("msg") or payload.get("data") or {}
         if isinstance(body, dict) and body.get("PolicyEvalResults"):
-            return body["PolicyEvalResults"]
+            return body
 
         # Via the shared helper: this endpoint returns `signed_url`, not `signedUrl`. Reading only
         # the camelCase spelling meant this always fell through to {} -- which went unnoticed for as
@@ -362,9 +365,13 @@ class SGClient:
                 raw = response.read()
             if response.info().get("Content-Encoding") == "gzip" or raw[:2] == b"\x1f\x8b":
                 raw = gzip.decompress(raw)
-            return (json.loads(raw) or {}).get("PolicyEvalResults") or {}
+            return json.loads(raw) or {}
         except Exception:
             return {}
+
+    def get_policy_results(self, wfgrp, workflow_id, run_id):
+        """PolicyEvalResults from the run facts. This is the primary source of the verdict."""
+        return self.get_run_facts(wfgrp, workflow_id, run_id).get("PolicyEvalResults") or {}
 
     def delete_artifact(self, wfgrp, workflow_id, artifact_name):
         """

@@ -633,3 +633,128 @@ def test_known_sensitive_value_at_plan_time_is_masked():
     assert redacted["resource_changes"][0]["change"]["after"]["content"] == redact.SENTINEL
     assert redacted["resource_changes"][0]["change"]["after"]["filename"] == "out.txt"
     assert SECRET not in json.dumps(redacted)
+
+
+# --- planned_values reconstruction ----------------------------------------------------------
+
+
+def _plan_with(resource_changes, **extra):
+    plan = {"format_version": "1.2", "terraform_version": "1.5.7", "resource_changes": resource_changes}
+    plan.update(extra)
+    return plan
+
+
+def test_planned_values_is_rebuilt_so_infracost_and_checkov_have_something_to_read():
+    """
+    Both tools read planned_values and nothing else. Measured against infracost 0.10.27 with a
+    real key: the same t3.medium prices at $39.80 with this section and $0.00 without.
+    """
+    out = redact.redact_plan(
+        _plan_with([
+            {"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
+             "provider_name": "registry.terraform.io/hashicorp/aws",
+             "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}}}
+        ])
+    )
+
+    resources = out["planned_values"]["root_module"]["resources"]
+    assert [r["address"] for r in resources] == ["aws_instance.app"]
+    assert resources[0]["values"]["instance_type"] == "t3.medium"
+    assert resources[0]["provider_name"] == "registry.terraform.io/hashicorp/aws"
+
+
+def test_the_rebuilt_planned_values_carries_masked_values_not_raw_ones():
+    """
+    The whole reason terraform's own copy is dropped: it mirrors every value with no sensitivity
+    markers, so masking resource_changes leaves the secret in plaintext there. A real plan leaked
+    a local_sensitive_file body through exactly that path. This copy is derived post-masking.
+    """
+    out = redact.redact_plan(
+        _plan_with(
+            [
+                {"address": "local_sensitive_file.creds", "mode": "managed",
+                 "type": "local_sensitive_file", "name": "creds",
+                 "change": {"actions": ["create"],
+                            "after": {"content": "hunter2", "filename": "/tmp/c"},
+                            "after_sensitive": {"content": True}}}
+            ],
+            planned_values={"root_module": {"resources": [
+                {"address": "local_sensitive_file.creds", "values": {"content": "hunter2"}}]}},
+        )
+    )
+
+    assert "hunter2" not in json.dumps(out)
+    values = out["planned_values"]["root_module"]["resources"][0]["values"]
+    assert values["content"] == redact.SENTINEL
+    assert values["filename"] == "/tmp/c", "non-sensitive attributes must survive"
+
+
+def test_terraform_own_planned_values_is_never_passed_through():
+    """It is replaced, not merged -- otherwise the unmarked original would leak straight through."""
+    out = redact.redact_plan(
+        _plan_with(
+            [{"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
+              "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}}}],
+            planned_values={"root_module": {"resources": [
+                {"address": "ghost.resource", "values": {"secret": "leaked-from-original"}}]}},
+        )
+    )
+
+    assert "leaked-from-original" not in json.dumps(out)
+    assert [r["address"] for r in out["planned_values"]["root_module"]["resources"]] == ["aws_instance.app"]
+
+
+def test_a_destroyed_resource_has_no_planned_value():
+    """Nothing is planned to exist, so there is nothing to price or scan."""
+    out = redact.redact_plan(
+        _plan_with([
+            {"address": "aws_instance.gone", "mode": "managed", "type": "aws_instance", "name": "gone",
+             "change": {"actions": ["delete"], "before": {"instance_type": "m5.large"}, "after": None}}
+        ])
+    )
+
+    assert "planned_values" not in out
+    assert out["resource_changes"], "the destroy is still a change policies evaluate"
+
+
+def test_a_replacement_is_planned_because_it_ends_up_existing():
+    out = redact.redact_plan(
+        _plan_with([
+            {"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
+             "change": {"actions": ["delete", "create"], "after": {"instance_type": "t3.large"}}}
+        ])
+    )
+
+    assert out["planned_values"]["root_module"]["resources"][0]["values"]["instance_type"] == "t3.large"
+
+
+def test_module_resources_are_grouped_under_child_modules():
+    out = redact.redact_plan(
+        _plan_with([
+            {"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
+             "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}}},
+            {"address": "module.db.aws_instance.replica", "module_address": "module.db",
+             "mode": "managed", "type": "aws_instance", "name": "replica",
+             "change": {"actions": ["create"], "after": {"instance_type": "m5.large"}}},
+        ])
+    )
+
+    root = out["planned_values"]["root_module"]
+    assert [r["address"] for r in root["resources"]] == ["aws_instance.app"]
+    assert [m["address"] for m in root["child_modules"]] == ["module.db"]
+    assert root["child_modules"][0]["resources"][0]["address"] == "module.db.aws_instance.replica"
+
+
+def test_child_modules_is_absent_when_there_are_none():
+    out = redact.redact_plan(
+        _plan_with([
+            {"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
+             "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}}}
+        ])
+    )
+
+    assert "child_modules" not in out["planned_values"]["root_module"]
+
+
+def test_an_empty_plan_gets_no_planned_values():
+    assert "planned_values" not in redact.redact_plan(_plan_with([]))
