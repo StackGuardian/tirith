@@ -145,6 +145,41 @@ def write_output_json(path, payload):
         log(f"WARNING: could not write {path}: {e}")
 
 
+def pack_documents(source_dir, plan, state, infracost):
+    """
+    Build the archive, dropping the source tree rather than failing if it is too large.
+
+    Returns (bytes, manifest, source_skipped_reason) where the reason is None on the normal path.
+
+    The source is packed by default, so an exclusion that does not fire -- a committed vendor
+    directory, a build output tree -- would otherwise turn a working policy check into a failed run.
+    That trade is the wrong way round: the verdict is what gates the merge, and the source is there
+    for the autofix system's benefit. So an oversized archive degrades to documents-only and says so,
+    loudly, rather than taking the gate down with it.
+
+    Only when a source tree was actually requested. If we are already documents-only and still over
+    the limit, the *documents* are too big and there is nothing left to drop, so that stays fatal.
+    """
+    try:
+        archive_bytes, manifest = archive.pack(
+            source_dir=source_dir, plan=plan, state=state, infracost=infracost
+        )
+        return archive_bytes, manifest, None
+    except archive.ArchiveError as e:
+        if not source_dir:
+            raise
+
+        reason = str(e)
+        log(
+            f"WARNING: {reason} Uploading the masked documents only, without the source. The policy "
+            f"check still runs, but the archive carries no code -- so anything reading it to generate "
+            f"fixes has nothing to work from. Point --source-dir at your terraform directory, or add "
+            f"the large paths to .gitignore."
+        )
+        archive_bytes, manifest = archive.pack(source_dir=None, plan=plan, state=state, infracost=infracost)
+        return archive_bytes, manifest, reason
+
+
 def upload_state_document(client, opts, state):
     """
     Also publish the masked state as the workflow's `artifacts/tfstate.json`.
@@ -207,12 +242,7 @@ def run_check(opts):
     if redactions:
         log(f"Masked {redactions} sensitive value(s) before upload")
 
-    archive_bytes, manifest = archive.pack(
-        source_dir=opts.source_dir,
-        plan=plan,
-        state=state,
-        infracost=infracost,
-    )
+    archive_bytes, manifest, source_skipped = pack_documents(opts.source_dir, plan, state, infracost)
     log(
         f"Packed {manifest['files']} file(s) and {len(manifest['documents'])} document(s) "
         f"into {manifest['bytes'] // 1024} KB"
@@ -320,6 +350,11 @@ def run_check(opts):
         # the findings; it is also recorded on the run itself as SGCustomWorkflowRunFacts, so a
         # consumer holding only a run id can find it without seeing this document.
         "archive_key": key,
+        # Whether that archive actually contains the source. Normally true, and false when the tree
+        # was too large and got dropped so the check could still run. A consumer must not assume:
+        # "no code in the bundle" and "no code was wanted" need to be distinguishable.
+        "source_packed": bool(opts.source_dir) and source_skipped is None,
+        "source_skipped_reason": source_skipped,
     }
 
     write_output_json(opts.output_json, result)

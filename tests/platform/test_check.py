@@ -108,3 +108,73 @@ def test_the_state_document_name_matches_the_one_inside_the_archive():
     from tirith.platform import archive
 
     assert check.STATE_DOCUMENT_NAME == archive.STATE_DOCUMENT
+
+
+# --- packing: the source is uploaded, but never at the cost of the gate --------------------------
+#
+# The source tree is packed by default, so an exclusion that does not fire -- a committed vendor
+# directory, a build output tree -- would otherwise turn a working policy check into a failed run.
+# That trade is the wrong way round: the verdict gates the merge, the source is a convenience for
+# whatever reads the bundle afterwards.
+
+
+def _tree(tmp_path, extra_bytes=0):
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "main.tf").write_text('resource "null_resource" "a" {}\n')
+    if extra_bytes:
+        # Random, so gzip cannot make it disappear.
+        (source / "vendor.bin").write_bytes(os.urandom(extra_bytes))
+    return str(source)
+
+
+def test_the_source_is_packed_on_the_normal_path(tmp_path):
+    archive_bytes, manifest, skipped = check.pack_documents(
+        _tree(tmp_path), {"masked": True}, None, None
+    )
+
+    assert manifest["files"] == 1
+    assert manifest["documents"] == ["plan.json"]
+    assert skipped is None
+    assert archive_bytes
+
+
+def test_an_oversized_source_tree_degrades_to_documents_only(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(check.archive, "MAX_ARCHIVE_BYTES", 50 * 1024)
+
+    archive_bytes, manifest, skipped = check.pack_documents(
+        _tree(tmp_path, extra_bytes=200_000), {"masked": True}, None, None
+    )
+
+    # The documents still go, so the policies still run.
+    assert manifest["documents"] == ["plan.json"]
+    assert manifest["files"] == 0
+    # And the caller can tell that the bundle has no code in it.
+    assert skipped and "over the" in skipped
+
+    warning = capsys.readouterr().err
+    assert "carries no code" in warning
+    assert "--source-dir" in warning
+
+
+def test_an_oversized_documents_only_archive_still_fails(tmp_path, monkeypatch):
+    """
+    Nothing left to drop. Degrading further would mean uploading an archive with no documents, which
+    is not a check at all -- so this stays fatal rather than becoming a silent pass.
+    """
+    monkeypatch.setattr(check.archive, "MAX_ARCHIVE_BYTES", 50 * 1024)
+
+    with pytest.raises(check.archive.ArchiveError):
+        check.pack_documents(None, {"blob": os.urandom(200_000).hex()}, None, None)
+
+
+def test_the_size_message_is_readable_below_a_megabyte(monkeypatch):
+    """
+    Integer MB division reported everything small as "0 MB over the 0 MB limit". That message is now
+    surfaced on a pull request, where it has to mean something.
+    """
+    from tirith.platform.archive import _human_bytes
+
+    assert _human_bytes(137 * 1024 * 1024) == "137.0 MB"
+    assert _human_bytes(300 * 1024) == "300.0 KB"
+    assert _human_bytes(512) == "512 bytes"

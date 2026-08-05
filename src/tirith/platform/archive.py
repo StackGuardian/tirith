@@ -57,11 +57,38 @@ DEFAULT_EXCLUDES = (
 
 # Refuse to build anything larger than this. A runaway archive is nearly always an exclusion that
 # did not fire, and failing loudly beats a five-minute upload that times out the run.
+#
+# Overridable, because the source tree is packed by default and the only other lever is dropping it
+# entirely: a large monorepo that genuinely needs to ship its code has nowhere else to go. Raising it
+# trades a clear error for a slow upload and more memory on the runner -- the whole archive is built
+# in memory before this is checked -- so it is deliberately not a documented headline.
 MAX_ARCHIVE_BYTES = 100 * 1024 * 1024
+
+_override = os.environ.get("TIRITH_MAX_ARCHIVE_BYTES", "").strip()
+if _override:
+    try:
+        MAX_ARCHIVE_BYTES = int(_override)
+    except ValueError:
+        # Not worth failing a run over; the default is a safe answer.
+        pass
 
 
 class ArchiveError(Exception):
     """The archive could not be built."""
+
+
+def _human_bytes(count):
+    """
+    A size a person can read.
+
+    Integer MB division reported anything under a megabyte as "0 MB", which is what the size limit
+    message used to say -- and that message is now surfaced on a pull request, where "0 MB over the
+    0 MB limit" tells the reader nothing.
+    """
+    for unit, size in (("MB", 1024 * 1024), ("KB", 1024)):
+        if count >= size:
+            return f"{count / size:.1f} {unit}"
+    return f"{count} bytes"
 
 
 def _load_gitignore_patterns(source_dir):
@@ -139,7 +166,7 @@ def pack(source_dir, plan=None, state=None, infracost=None, extra_excludes=(), r
     archive = buffer.getvalue()
     if len(archive) > MAX_ARCHIVE_BYTES:
         raise ArchiveError(
-            f"Archive is {len(archive) // (1024 * 1024)} MB, over the {MAX_ARCHIVE_BYTES // (1024 * 1024)} MB "
+            f"Archive is {_human_bytes(len(archive))}, over the {_human_bytes(MAX_ARCHIVE_BYTES)} "
             "limit. This usually means a large directory was not excluded -- check for provider "
             "caches or build output, and pass extra excludes if needed."
         )
