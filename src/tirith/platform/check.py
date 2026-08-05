@@ -41,6 +41,13 @@ INPUT_KINDS = ("terraform_plan", "terraform_state", "kubernetes", "json")
 # start.
 ARCHIVE_NAME_TEMPLATE = "__sg.{sha}-{tag}.tar.gz"
 
+# Deliberately NOT `__sg.`-prefixed, unlike the archive. This one is meant to be seen: it is the name
+# the platform already treats as a workflow's state document, so it lands in the State and artifacts
+# views rather than being hidden from them. The name is shared with the copy inside the archive
+# (`archive.STATE_DOCUMENT`).
+STATE_DOCUMENT_NAME = "tfstate.json"
+STATE_CONTENT_TYPE = "application/json"
+
 
 class CheckError(Exception):
     """The check could not be completed. Always fails closed."""
@@ -138,6 +145,48 @@ def write_output_json(path, payload):
         log(f"WARNING: could not write {path}: {e}")
 
 
+def upload_state_document(client, opts, state):
+    """
+    Also publish the masked state as the workflow's `artifacts/tfstate.json`.
+
+    That name is canonical rather than decorative: the managed-state backend writes it, state locking
+    keys on the literal basename, and the state-backends listing special-cases it. Putting the state
+    there is what makes it visible and downloadable in the platform's own State and artifacts views,
+    instead of being reachable only by unpacking the run's archive.
+
+    It goes *in addition to* the copy inside the archive -- the step reads that one to publish
+    `TfStateCleaned`, and the two must not diverge.
+
+    Best-effort: the check's verdict does not depend on it, so a failure warns rather than failing a
+    run whose policies evaluated perfectly well.
+    """
+    if client.manages_terraform_state(opts.workflow_group, opts.workflow_id):
+        log(
+            "WARNING: not writing tfstate.json -- this workflow manages its own terraform state, and "
+            "that object is the live state. Overwriting it with a masked document would be data loss. "
+            "The state is still evaluated, and still in the run's archive."
+        )
+        return
+
+    try:
+        key = client.upload_file(
+            opts.workflow_group,
+            opts.workflow_id,
+            STATE_DOCUMENT_NAME,
+            None,
+            json.dumps(state).encode("utf-8"),
+            content_type=STATE_CONTENT_TYPE,
+        )
+    except SGError as e:
+        log(f"WARNING: could not publish {STATE_DOCUMENT_NAME}: {e}")
+        return
+
+    log(
+        f"Published the state document: {key} -- masked, so it reflects what was evaluated and "
+        f"cannot be used to run terraform."
+    )
+
+
 def run_check(opts):
     """
     Execute the check. Returns the result document.
@@ -182,7 +231,7 @@ def run_check(opts):
         archive_name = ARCHIVE_NAME_TEMPLATE.format(
             sha=opts.sha[:7] if opts.sha else "latest", tag=opts.artifact_tag
         )
-        key = client.upload_archive(
+        key = client.upload_file(
             opts.workflow_group,
             opts.workflow_id,
             archive_name,
@@ -190,6 +239,9 @@ def run_check(opts):
             archive_bytes,
         )
         log(f"Uploaded the project archive: {key}")
+
+        if state is not None:
+            upload_state_document(client, opts, state)
 
         run_id, _data = client.create_run(opts.workflow_group, opts.workflow_id, key, opts.trigger_details)
     except SGError as e:

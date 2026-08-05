@@ -195,20 +195,48 @@ class SGClient:
             return status
         raise SGError(f"Could not create workflow '{workflow_id}' (HTTP {status}): {payload.get('msg')}")
 
-    def upload_archive(self, wfgrp, workflow_id, filename, folder, archive_bytes):
+    def manages_terraform_state(self, wfgrp, workflow_id):
         """
-        Upload the project archive via a presigned PUT, returning its storage key.
+        Whether the workflow keeps its terraform state on the platform.
 
-        The key is what the caller passes back as `terraformProjectZip` when creating the run. It
-        comes from the response rather than being rebuilt here: the layout is runner-aware (a
-        private runner's own S3 bucket or Azure container rather than the shared bucket), so a
-        client-side guess would be wrong for exactly the customers who are hardest to debug.
+        Consulted before writing `artifacts/tfstate.json`, because for a managed-state workflow that
+        object *is* the live state: the step's backend writes it, state locking keys on the literal
+        name, and the state-backends view lists it. Overwriting it with a masked document would be
+        data loss, so this is a hard gate rather than a warning.
+
+        Unreadable answers as True -- the safe direction. Not being able to tell whether an object is
+        live state is not a reason to overwrite it.
+        """
+        status, payload = self._request(
+            "GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/"
+        )
+        if status != 200:
+            return True
+        body = payload.get("msg") or payload.get("data") or {}
+        if not isinstance(body, dict) or "TerraformConfig" not in body:
+            # A 200 that carries no TerraformConfig is still an answer we cannot read. Absent is not
+            # the same as false.
+            return True
+        return bool((body.get("TerraformConfig") or {}).get("managedTerraformState"))
+
+    # `content` rather than `payload`: the response variable below is already called payload, and
+    # shadowing it sent the JSON response body to S3 in place of the file.
+    def upload_file(self, wfgrp, workflow_id, filename, folder, content, content_type=ARCHIVE_CONTENT_TYPE):
+        """
+        Upload one object into the workflow's artifact prefix via a presigned PUT, returning its key.
+
+        For the project archive the key is what the caller passes back as `terraformProjectZip` when
+        creating the run. It comes from the response rather than being rebuilt here: the layout is
+        runner-aware (a private runner's own S3 bucket or Azure container rather than the shared
+        bucket), so a client-side guess would be wrong for exactly the customers who are hardest to
+        debug.
 
         `folder` is optional and must be a flat token -- the endpoint rejects `/`, `\\` and `..` to
-        prevent path traversal. Omitting it puts the object at the artifacts root, which is what the
-        archive wants: it is deleted after the run, and a nested key cannot be deleted correctly.
+        prevent path traversal. Omitting it puts the object at the artifacts root, which is what both
+        callers want: the archive because a nested key cannot be deleted correctly, and the state
+        document because `artifacts/tfstate.json` is the canonical location the platform reads.
         """
-        params = {"filename": filename, "contentType": ARCHIVE_CONTENT_TYPE}
+        params = {"filename": filename, "contentType": content_type}
         if folder:
             # Only when set. urlencode stringifies None to the literal "None", and the endpoint
             # treats any non-empty value as a subfolder -- so passing it unconditionally produced a
@@ -235,8 +263,8 @@ class SGClient:
 
         # Must match the content type the URL was signed with, or S3 rejects it as a signature
         # mismatch.
-        put = urllib.request.Request(signed_url, data=archive_bytes, method="PUT")
-        put.add_header("Content-Type", ARCHIVE_CONTENT_TYPE)
+        put = urllib.request.Request(signed_url, data=content, method="PUT")
+        put.add_header("Content-Type", content_type)
         try:
             with urllib.request.urlopen(put, timeout=self.timeout) as response:
                 if response.status not in (200, 204):

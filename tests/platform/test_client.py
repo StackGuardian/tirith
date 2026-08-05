@@ -97,7 +97,7 @@ def test_upload_archive_requires_a_storage_key(monkeypatch):
     monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"msg": "https://s3.example/put"}))
 
     with pytest.raises(SGError, match="storage key"):
-        sg.upload_archive("default", "wf", "a.tar.gz", "abc1234", b"x")
+        sg.upload_file("default", "wf", "a.tar.gz", "abc1234", b"x")
 
 
 def _upload_response():
@@ -131,7 +131,7 @@ def test_upload_archive_returns_the_key_from_the_response(monkeypatch):
 
     monkeypatch.setattr(client.urllib.request, "urlopen", fake_urlopen)
 
-    key = sg.upload_archive("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
+    key = sg.upload_file("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
 
     assert key == "orgs/acme/wfs/K/artifacts/abc1234/a.tar.gz"
     assert uploaded["body"] == b"tarbytes"
@@ -156,7 +156,7 @@ def test_upload_archive_uses_the_shared_artifact_endpoint(monkeypatch):
     monkeypatch.setattr(sg, "_request", fake_request)
     monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
 
-    sg.upload_archive("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
+    sg.upload_file("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
 
     assert seen["method"] == "GET"
     assert "/file_upload_url/" in seen["path"]
@@ -366,7 +366,7 @@ def test_upload_archive_omits_an_unset_folder(monkeypatch, folder):
     monkeypatch.setattr(sg, "_request", lambda m, p, *a, **k: (seen.update(path=p), _upload_response())[1])
     monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
 
-    sg.upload_archive("default", "wf", "__sg.abc1234-default.tar.gz", folder, b"tarbytes")
+    sg.upload_file("default", "wf", "__sg.abc1234-default.tar.gz", folder, b"tarbytes")
 
     assert "folder=" not in seen["path"], seen["path"]
     assert "None" not in seen["path"], seen["path"]
@@ -378,6 +378,83 @@ def test_upload_archive_sends_a_folder_when_one_is_given(monkeypatch):
     monkeypatch.setattr(sg, "_request", lambda m, p, *a, **k: (seen.update(path=p), _upload_response())[1])
     monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
 
-    sg.upload_archive("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
+    sg.upload_file("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
 
     assert "folder=abc1234" in seen["path"]
+
+
+# --- publishing the state document ---------------------------------------------------------------
+
+
+def test_upload_file_honours_a_json_content_type(monkeypatch):
+    """
+    The state document is JSON, not a gzip. S3 signs the content type into the URL, so sending the
+    archive's type with a JSON body is a signature mismatch.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+
+    def fake_request(method, path, **kwargs):
+        captured["path"] = path
+        return _upload_response()
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+    uploaded = {}
+
+    def fake_urlopen(request, timeout=None):
+        uploaded["content_type"] = request.get_header("Content-type")
+        uploaded["body"] = request.data
+
+        class _R:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return _R()
+
+    monkeypatch.setattr(client.urllib.request, "urlopen", fake_urlopen)
+
+    sg.upload_file("default", "wf", "tfstate.json", None, b'{"version": 4}', content_type="application/json")
+
+    assert uploaded["content_type"] == "application/json"
+    assert uploaded["body"] == b'{"version": 4}'
+    # And the same type is what the URL was signed for.
+    assert "contentType=application%2Fjson" in captured["path"]
+
+
+def test_manages_terraform_state_reads_the_workflow_config(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+
+    monkeypatch.setattr(
+        sg, "_request", lambda *a, **k: (200, {"msg": {"TerraformConfig": {"managedTerraformState": True}}})
+    )
+    assert sg.manages_terraform_state("default", "wf") is True
+
+    monkeypatch.setattr(
+        sg, "_request", lambda *a, **k: (200, {"msg": {"TerraformConfig": {"managedTerraformState": False}}})
+    )
+    assert sg.manages_terraform_state("default", "wf") is False
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        (404, {"msg": "not found"}),
+        (500, {"msg": "boom"}),
+        (200, {"msg": "a string, not a dict"}),
+        (200, {}),
+    ],
+)
+def test_an_unreadable_workflow_is_treated_as_managing_its_own_state(monkeypatch, response):
+    """
+    Fails safe. Not being able to tell whether `artifacts/tfstate.json` is live terraform state is
+    not a reason to overwrite it with a masked document.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: response)
+
+    assert sg.manages_terraform_state("default", "wf") is True
