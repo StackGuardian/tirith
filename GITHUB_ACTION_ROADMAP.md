@@ -16,7 +16,7 @@ flowchart LR
     d1["Source code shipped to the wfrun"]
     d2["Plan + state evaluated, masked client-side"]
     d3["5 verdicts → comment, check, outputs"]
-    d4["policy-only step + upload endpoint + authz"]
+    d4["tirith-check step + upload endpoint + authz"]
     d5["tirith platform check — CLI, not GitHub-only"]
   end
 
@@ -59,7 +59,7 @@ flowchart LR
 
   subgraph UP["Upstream — affects what users can see"]
     direction TB
-    u1["TfStateCleaned unreachable via API"]
+    u1["wfrunfacts 404s on shared-ec2"]
     u2["clean_tf_state masking is a no-op"]
   end
 
@@ -86,9 +86,9 @@ flowchart LR
 | ✅ **The terraform source itself** | Packed into a `tar.gz`, uploaded via `configuration_upload_url`, and passed as `RuntimeParameters.terraformProjectZip`. The run controller unpacks it **in place of a VCS checkout**, so it becomes `LOCAL_IAC_SOURCE_CODE_DIR`. No VCS integration and no git credentials are involved. |
 | ⚪ **…but nothing evaluates the HCL yet** | tirith has no HCL provider, so the source currently only serves as the working directory. It is shipped so that HCL policies, autofix and run reproduction have something to work from later. This is the one place "implemented" and "useful" differ. |
 | ✅ **`plan.json`** | Masked client-side, packed at the archive root, evaluated by `stackguardian/terraform_plan`. |
-| ✅ **`tfstate.json`** | Masked client-side, evaluated by `stackguardian/json` (tirith has no state provider), and recorded as the `TfStateCleaned` fact. |
-| ⚪ **`infracost.json`** | Either uploaded by the caller or generated lazily by the step when a cost policy is enforced. The generation path has not been run against a plan with real priced resources. |
-| ✅ **Where it lands** | `orgs/<org>/wfs/<ksuid>/artifacts/<sha7>/<comment-tag>.tar.gz` — namespaced per commit *and* per tag, so two invocations on one commit cannot collide. |
+| ✅ **`tfstate.json`** | Masked client-side, evaluated by `stackguardian/json` (tirith has no state provider), and recorded as `TfStateCleaned` after conversion to the `show -json` shape. |
+| ✅ **`infracost.json`** | Generated on **every** run with a plan, not only when a cost policy is enforced -- a free estimate for callers who are not costing today. An uploaded breakdown still wins. |
+| ✅ **Where it lands** | `orgs/<org>/wfs/<ksuid>/artifacts/__sg.<sha7>-<comment-tag>.tar.gz`, **deleted once the run finishes**. Flat, because a nested key cannot be deleted correctly: the authorizer's greedy `<path:wfGrp>` converter resolves it to the *workflow-group* delete. |
 
 ### Evaluation and reporting
 
@@ -120,7 +120,23 @@ flowchart LR
 |---|---|
 | ✅ **`PolicyEvalResults`** | Read from the run facts (`wfrunfacts/default/`). The per-run `tirith-results.json` artifact is gone -- it duplicated this and accumulated one file per run in a prefix with no retention. |
 | ✅ **`InfracostBreakdown` / `…PreApply`** | Written on every run with a plan, not only when a cost policy asks. Surfaced in the pull-request comment. |
-| ⚠️ **`TfStateCleaned`** | Deliberately not written by tirith-check: it would repoint the *workflow's* resource inventory at a read-only check. |
+| ✅ **`TfStateCleaned`** | Written from an uploaded `tfstate.json`, so a post-apply check updates the workflow's Resources view. Converted from raw `state pull` to the `show -json` shape the dashboard reads -- masking only works on the former, the dashboard only understands the latter. `count`/`for_each` expand to one entry per instance. |
+
+### The two-phase pipeline
+
+Verified end to end: plan gate → `terraform apply` → post-apply state check, two runs from one job.
+
+| phase | input | facts written |
+|---|---|---|
+| plan gate | `plan.json` | `PolicyEvalResults`, `TfPlan`, `InfracostBreakdown` + `…PreApply` |
+| post-apply | `state.json` (`state pull`) | `PolicyEvalResults`, `TfStateCleaned` |
+
+Both phases share one workflow, which is why a policy whose provider has no document on a given pass
+reports `WARN` rather than `FAIL` -- `EnforcedOn` scopes to a *workflow*, not a run, so every policy
+is evaluated on both passes and one of them legitimately has nothing to say.
+
+Use `terraform state pull > state.json`, never `> terraform.tfstate`: with a local backend the shell
+truncates the file terraform is about to read.
 
 ## 1 · Ship v2 — blocking
 
@@ -135,6 +151,7 @@ is the kind of thing that rots silently, so these go first.
 | Bump the `WORKFLOW_STEP` revision | Dashboard schema **and possibly the image tag** — see the note below |
 | Cut `v2`, keep `@v1.0.0-beta` | v1 was an unrelated `sg-cli` passthrough. Do **not** move `@main` |
 | Marketplace listing | `branding` is already set |
+| **Infracost reports `$0` on QA** | The plan is correct -- the same document prices at $35.99 locally. An *invalid* key reproduces QA's output exactly (valid JSON, no error, zero); a *missing* key errors loudly instead. So the image carries a key that is not working. See the note below. |
 
 > **The `WORKFLOW_STEP` revision may be load-bearing, not just cosmetic.** Infracost still reports
 > `$0` on QA after the image was rebuilt with a working key. The same plan prices at $35.99 locally,
@@ -176,11 +193,23 @@ Each for a specific reason, not just deprioritised.
 
 ## Upstream
 
-Neither is caused by this action; both change what a user can see.
+Neither is caused by this action; both change what a user can see. Both were diagnosed here and
+taken out of this batch, with the analysis preserved on the closed PRs.
 
-- **`TfStateCleaned` and `TfPlan` are unreachable.** The step writes them and the run controller
-  forwards them to the report-aggregator, but `wfrunfacts` answers "does not exist" and the facts
-  file is excluded from artifact sync. Only `PolicyEvalResults` survives, via its own artifact.
+- **`wfrunfacts` 404s on `shared-ec2` runners** — [core#1238](https://github.com/StackGuardian/core/pull/1238),
+  [sg-run-controller#295](https://github.com/StackGuardian/sg-run-controller/pull/295) (both closed).
+  `ec2_fargate.py` names the metrics directory after the run's 12-char shortuuid `ResourceName`
+  while core reads it by `ResourceKSUID` — one path segment apart. The read 404s, falls through to a
+  DynamoDB item nothing has written since the facts cache moved to S3, and answers "does not exist",
+  so the dashboard renders every enforced rule UNEVALUATED. sg-run-controller#283 exposed rather
+  than caused it: the KSUID prefix logic already existed but was dead until #283 added the fields to
+  the projection.
+
+  **Scope is narrower than first described:** `external.py` passes `resource_ksuid` explicitly and
+  was never affected. `shared-external` workflows read their facts fine, which is why the E2E kept
+  working after the revert.
+
 - **`clean_tf_state` masking is a no-op** on the terraform step's plan/apply path: it reads top-level
   `outputs`/`resources` from `terraform show -json`, which has neither, and overwrites `resources`
-  with `[]`. Confirmed against real terraform. Unrelated to `policy-only`, which masks client-side.
+  with `[]`. Confirmed against real terraform. The `tirith-check` path is unaffected — it masks
+  client-side, before anything leaves the runner, and converts raw state for storage.
