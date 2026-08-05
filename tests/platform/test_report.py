@@ -9,6 +9,8 @@ required check.
 import os
 import sys
 
+import pytest
+
 
 from tirith.platform import report as render
 
@@ -324,3 +326,79 @@ def test_the_cost_survives_truncation_of_a_long_findings_list():
 
     assert len(body) <= 3000
     assert "39.80" in body
+
+
+# --- checkov findings ---------------------------------------------------------------------------
+
+
+def _checkov_rule(fails):
+    return {"rule_name": "Policy-Rule-1", "source_config_kind": "SG_INTERNAL_P2",
+            "result": "FAIL", "evaluations": {"fails": fails}}
+
+
+def test_checkov_findings_are_rendered():
+    """
+    Checkov entries are {"description", "keys"}, not tirith's list under "result". Reading only the
+    tirith shape rendered a dozen real findings as an empty <details> block -- in the one place a
+    reviewer looks. Taken verbatim from QA run iqkxb26uzi1n.
+    """
+    body = render.render_markdown(
+        {"best-practices": [_checkov_rule([
+            {"description": "Ensure that detailed monitoring is enabled for EC2 instances",
+             "keys": ["aws_instance.app.monitoring"]},
+        ])]},
+        "COMPLETED", "https://dash.example/run",
+    )
+
+    assert "Ensure that detailed monitoring is enabled for EC2 instances" in body
+
+
+def test_a_checkov_key_is_reduced_to_its_resource_address():
+    """The attribute suffix is what the check inspected; the address is what a reviewer navigates by."""
+    _messages, resources = render._extract_detail(_checkov_rule([
+        {"description": "Ensure S3 buckets are encrypted",
+         "keys": ["aws_s3_bucket.data.rule.apply_server_side_encryption_by_default.sse_algorithm"]},
+    ]))
+
+    assert resources == ["aws_s3_bucket.data"]
+
+
+def test_repeated_keys_on_one_resource_are_listed_once():
+    _messages, resources = render._extract_detail(_checkov_rule([
+        {"description": "Ensure S3 buckets are encrypted",
+         "keys": ["aws_s3_bucket.data.rule.sse_algorithm", "aws_s3_bucket.data.resource_type"]},
+    ]))
+
+    assert resources == ["aws_s3_bucket.data"]
+
+
+def test_a_checkov_finding_with_no_keys_still_reports_its_description():
+    messages, resources = render._extract_detail(_checkov_rule([{"description": "Some check", "keys": []}]))
+
+    assert messages == ["Some check"]
+    assert resources == []
+
+
+@pytest.mark.parametrize("key", ["", "single", None, 42])
+def test_a_malformed_key_is_skipped_rather_than_crashing(key):
+    _messages, resources = render._extract_detail(_checkov_rule([{"description": "x", "keys": [key]}]))
+
+    assert resources == []
+
+
+def test_the_tirith_shape_still_renders():
+    """Teaching the renderer Checkov must not cost it the shape it already understood."""
+    messages, resources = render._extract_detail({
+        "evaluations": {"fails": [
+            {"result": [{"message": "`3` is not equal to `0`",
+                         "meta": {"address": "null_resource.untagged"}}]}]}})
+
+    assert messages == ["`3` is not equal to `0`"]
+    assert resources == ["null_resource.untagged"]
+
+
+def test_an_engine_error_is_still_surfaced_verbatim():
+    messages, _resources = render._extract_detail(
+        {"evaluations": {"fails": [{"exec_err": "Checkov policy has no configPolicyIds"}]}})
+
+    assert messages == ["engine: Checkov policy has no configPolicyIds"]
