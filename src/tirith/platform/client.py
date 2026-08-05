@@ -204,17 +204,18 @@ class SGClient:
         private runner's own S3 bucket or Azure container rather than the shared bucket), so a
         client-side guess would be wrong for exactly the customers who are hardest to debug.
 
-        `folder` must be a flat token -- the endpoint rejects `/`, `\\` and `..` to prevent path
-        traversal.
+        `folder` is optional and must be a flat token -- the endpoint rejects `/`, `\\` and `..` to
+        prevent path traversal. Omitting it puts the object at the artifacts root, which is what the
+        archive wants: it is deleted after the run, and a nested key cannot be deleted correctly.
         """
-        query = urllib.parse.urlencode(
-            {
-                "filename": filename,
-                "folder": folder,
-                # Signed into the URL, so the PUT below must send the same value.
-                "contentType": ARCHIVE_CONTENT_TYPE,
-            }
-        )
+        params = {"filename": filename, "contentType": ARCHIVE_CONTENT_TYPE}
+        if folder:
+            # Only when set. urlencode stringifies None to the literal "None", and the endpoint
+            # treats any non-empty value as a subfolder -- so passing it unconditionally produced a
+            # real `None/` directory in S3, and the archive then sat at a nested key that the
+            # post-run delete could not address.
+            params["folder"] = folder
+        query = urllib.parse.urlencode(params)
         status, payload = self._request(
             "GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/file_upload_url/?{query}"
         )

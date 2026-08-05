@@ -352,3 +352,32 @@ def test_delete_artifact_targets_a_single_path_segment(monkeypatch):
     assert seen["method"] == "DELETE"
     tail = seen["path"].split("/artifacts/", 1)[1].rstrip("/")
     assert "/" not in tail, f"artifact name must be one segment, got {tail!r}"
+
+
+@pytest.mark.parametrize("folder", [None, ""])
+def test_upload_archive_omits_an_unset_folder(monkeypatch, folder):
+    """
+    urlencode stringifies None to the literal "None", and the endpoint treats any non-empty value
+    as a subfolder -- so passing it unconditionally created a real `None/` directory in S3 and left
+    the archive at a nested key the post-run delete could not address. Caught in QA.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    seen = {}
+    monkeypatch.setattr(sg, "_request", lambda m, p, *a, **k: (seen.update(path=p), _upload_response())[1])
+    monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
+
+    sg.upload_archive("default", "wf", "__sg.abc1234-default.tar.gz", folder, b"tarbytes")
+
+    assert "folder=" not in seen["path"], seen["path"]
+    assert "None" not in seen["path"], seen["path"]
+
+
+def test_upload_archive_sends_a_folder_when_one_is_given(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    seen = {}
+    monkeypatch.setattr(sg, "_request", lambda m, p, *a, **k: (seen.update(path=p), _upload_response())[1])
+    monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
+
+    sg.upload_archive("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
+
+    assert "folder=abc1234" in seen["path"]
