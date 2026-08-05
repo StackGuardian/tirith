@@ -23,18 +23,23 @@ DEFAULT_TERRAFORM_VERSION = "1.5.7"
 # routes it to the json provider.
 INPUT_KINDS = ("terraform_plan", "terraform_state", "kubernetes", "json")
 
-# The `__sg.` prefix is load-bearing, not decoration.
+# Two properties of this name are load-bearing, and neither is decoration.
 #
-# The archive uploads to the workflow's artifact prefix, which every run of that workflow syncs down
-# into its working directory and then re-uploads with no --delete. Without an excluded name the
-# archive is pulled into every subsequent run, forever, growing without bound.
+# The `__sg.` prefix keeps the archive out of the per-run artifact sync. The workflow's artifact
+# prefix is pulled into every run's working directory and pushed back with no --delete, so an
+# unexcluded name is downloaded by every later run of the workflow, forever. `sg.` alone is not
+# enough -- the awscli patterns match the key relative to the sync source, and only the `__sg.`
+# spelling is excluded in both runner modes. It also hides the input archive from the dashboard's
+# artifact listing.
 #
-# `sg.` is NOT enough. The awscli --exclude patterns match the key relative to the sync source, and
-# the archive is uploaded under a per-commit folder, so the relative key is `<sha7>/<name>` -- which
-# a bare `sg.*` pattern does not match. `*__sg.*` and `*/__sg.*` are the patterns present in both
-# runner modes and both match at any depth. It also keeps the input archive out of the dashboard's
-# artifact listing, which hides `__sg.*`.
-ARCHIVE_NAME_TEMPLATE = "__sg.{tag}.tar.gz"
+# Flat, with the commit in the *filename* rather than a folder, because the archive is deleted once
+# the run finishes and a nested name cannot be deleted correctly: the authorizer's greedy
+# <path:wfGrp> converter swallows it, so `DELETE .../artifacts/<sha7>/<name>/` matches
+# `DELETE .../wfgrps/<wfGrp>/` -- the workflow-group delete -- and is checked against the wrong
+# permission entirely. Keeping the sha and tag in the name preserves uniqueness, so two pull
+# requests uploading concurrently still cannot overwrite each other's archive before their runs
+# start.
+ARCHIVE_NAME_TEMPLATE = "__sg.{sha}-{tag}.tar.gz"
 
 
 class CheckError(Exception):
@@ -171,13 +176,17 @@ def run_check(opts):
             opts.workflow_id,
             f"Policy checks for {opts.workflow_id}",
             terraform_config(opts.terraform_version, opts.input_kind, opts.step_template_id),
+            vcs_config=SGClient.vcs_config(getattr(opts, "repo_url", None), getattr(opts, "repo_ref", None)),
         )
 
+        archive_name = ARCHIVE_NAME_TEMPLATE.format(
+            sha=opts.sha[:7] if opts.sha else "latest", tag=opts.artifact_tag
+        )
         key = client.upload_archive(
             opts.workflow_group,
             opts.workflow_id,
-            ARCHIVE_NAME_TEMPLATE.format(tag=opts.artifact_tag),
-            opts.sha[:7] if opts.sha else "latest",
+            archive_name,
+            None,
             archive_bytes,
         )
         log(f"Uploaded the project archive: {key}")
@@ -206,9 +215,22 @@ def run_check(opts):
     except SGError as e:
         raise CheckError(f"{e} (run: {run_url})")
 
-    policy_results = client.get_results_artifact(opts.workflow_group, opts.workflow_id, f"{run_id}/tirith-results.json")
-    if policy_results is None:
-        policy_results = client.get_policy_results(opts.workflow_group, opts.workflow_id, run_id)
+    # The run facts are the source of truth -- they are what the dashboard renders. The results
+    # artifact is only consulted when the facts come back empty, which means an older step image
+    # that still writes it.
+    policy_results = client.get_policy_results(opts.workflow_group, opts.workflow_id, run_id)
+    if not policy_results:
+        legacy = client.get_results_artifact(
+            opts.workflow_group, opts.workflow_id, f"{run_id}/tirith-results.json"
+        )
+        if legacy is not None:
+            policy_results = legacy
+
+    # The archive was unpacked at run start and is dead weight from here on. Nothing prunes the
+    # artifact prefix -- there is no lifecycle rule and neither sync passes --delete -- so leaving it
+    # would mean one permanent object per commit, per workflow, forever.
+    if not client.delete_artifact(opts.workflow_group, opts.workflow_id, archive_name):
+        log(f"WARNING: could not delete the project archive {archive_name}; it will persist in the artifact store")
 
     counts, _findings = report.summarize(policy_results)
     verdict_value = report.verdict(counts, status)

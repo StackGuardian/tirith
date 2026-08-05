@@ -136,7 +136,33 @@ class SGClient:
             return status
         raise SGError(f"Could not create workflow group '{name}' (HTTP {status}): {payload.get('msg')}")
 
-    def ensure_workflow(self, wfgrp, workflow_id, description, terraform_config):
+    @staticmethod
+    def vcs_config(repo_url, repo_ref=None):
+        """
+        Build the workflow's VCSConfig from a repo URL, recording where the code came from.
+
+        `GIT_OTHER` -- singular, the wire value behind the UI's "Git Others" -- is the
+        connector-less provider. With `isPrivate: false` it needs no auth at all, and it skips the
+        GitHub repo-id extraction that rejects anything it cannot parse as an owner/name pair.
+
+        This is metadata only. Nothing clones it: core pops `iacVCSConfig` from the run's
+        RuntimeParameters whenever `terraformProjectZip` is set, and the runner takes the archive
+        branch of its if/elif regardless. It exists so the workflow shows a repo link instead of a
+        "configure" prompt.
+        """
+        if not repo_url:
+            return None
+        config = {"isPrivate": False, "repo": repo_url}
+        if repo_ref:
+            config["ref"] = repo_ref
+        return {
+            "iacVCSConfig": {
+                "useMarketplaceTemplate": False,
+                "customSource": {"sourceConfigDestKind": "GIT_OTHER", "config": config},
+            }
+        }
+
+    def ensure_workflow(self, wfgrp, workflow_id, description, terraform_config, vcs_config=None):
         """
         Create the workflow if absent, keyed on `Id`.
 
@@ -149,19 +175,22 @@ class SGClient:
         WfStepsConfig in the request -- so the step configuration has to live here, once, rather
         than being sent on every run. It also means the run renders as a real terraform run in the
         dashboard rather than as opaque custom steps.
+
+        `vcs_config` is set on creation only -- a 409 means the workflow already exists and nothing
+        is updated, so a workflow created before this existed keeps its blank repo field.
         """
-        status, payload = self._request(
-            "POST",
-            f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/",
-            {
-                "Id": workflow_id,
-                "ResourceName": workflow_id,
-                "Description": description,
-                "Tags": ["sg-created", "tirith"],
-                "WfType": "TERRAFORM",
-                "TerraformConfig": terraform_config,
-            },
-        )
+        body = {
+            "Id": workflow_id,
+            "ResourceName": workflow_id,
+            "Description": description,
+            "Tags": ["sg-created", "tirith"],
+            "WfType": "TERRAFORM",
+            "TerraformConfig": terraform_config,
+        }
+        if vcs_config:
+            body["VCSConfig"] = vcs_config
+
+        status, payload = self._request("POST", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/", body)
         if status in (200, 201, 409):
             return status
         raise SGError(f"Could not create workflow '{workflow_id}' (HTTP {status}): {payload.get('msg')}")
@@ -280,13 +309,15 @@ class SGClient:
 
     def get_results_artifact(self, wfgrp, workflow_id, artifact_path):
         """
-        Read the results artifact the tirith step publishes next to the inputs.
+        Read the results artifact the tirith step used to publish next to the inputs.
 
-        This is the primary source. The run controller no longer creates a WorkflowRunFacts
-        record -- it forwards the facts to the report-aggregator lambda and leaves only a pointer
-        on the workflow object -- so the wfrunfacts endpoint answers "does not exist" for runs it
-        did produce results for. The artifact is written by our own step, so it is a contract we
-        control end to end.
+        Kept only so a newer CLI still reads results from an older step image. Current step images
+        do not write this file: it carried exactly the PolicyEvalResults that the run facts already
+        hold, and it existed only because the facts endpoint used to answer "does not exist" for
+        every run. That was a key mismatch in the run controller, not a missing record.
+
+        Returns None -- not {} -- when absent, so the caller can tell "no such artifact, go ask the
+        facts endpoint" from "the artifact exists and no policies matched".
         """
         status, payload = self._request(
             "GET",
@@ -302,9 +333,8 @@ class SGClient:
 
     def get_policy_results(self, wfgrp, workflow_id, run_id):
         """
-        Fetch PolicyEvalResults from the run fact.
+        Fetch PolicyEvalResults from the run facts. This is the primary source.
 
-        Retained as a fallback for deployments where the run controller still writes the record.
         The endpoint hands back a presigned GET rather than the payload inline, because the facts
         document embeds the whole plan and can be large.
         """
@@ -319,7 +349,10 @@ class SGClient:
         if isinstance(body, dict) and body.get("PolicyEvalResults"):
             return body["PolicyEvalResults"]
 
-        signed_url = body.get("signedUrl") if isinstance(body, dict) else None
+        # Via the shared helper: this endpoint returns `signed_url`, not `signedUrl`. Reading only
+        # the camelCase spelling meant this always fell through to {} -- which went unnoticed for as
+        # long as the results artifact was covering for it.
+        signed_url = _extract_signed_url(payload)
         if not signed_url:
             return {}
 
@@ -331,3 +364,17 @@ class SGClient:
             return (json.loads(raw) or {}).get("PolicyEvalResults") or {}
         except Exception:
             return {}
+
+    def delete_artifact(self, wfgrp, workflow_id, artifact_name):
+        """
+        Delete one artifact. Best-effort: returns True on success, False otherwise.
+
+        `artifact_name` must be a single path segment. A nested name is swallowed by the greedy
+        <path:wfGrp> converter in the authorizer and matches `DELETE .../wfgrps/<wfGrp>/` -- the
+        workflow-group delete -- so it would be checked against entirely the wrong permission.
+        """
+        status, _payload = self._request(
+            "DELETE",
+            f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/artifacts/{artifact_name}/",
+        )
+        return status in (200, 204, 404)

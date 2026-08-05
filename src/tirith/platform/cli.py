@@ -108,6 +108,12 @@ def build_parser():
     workflow.add_argument("--workflow-group", default=DEFAULT_WORKFLOW_GROUP, help="Workflow group. Created if absent.")
     workflow.add_argument("--terraform-version", default=None, help="Stored on the workflow at creation.")
     workflow.add_argument(
+        "--repo-url",
+        default=None,
+        help="Source repository URL, recorded on the workflow at creation so it links back to the code.",
+    )
+    workflow.add_argument("--repo-ref", default=None, help="Branch, tag or commit, recorded alongside --repo-url.")
+    workflow.add_argument(
         "--step-template-id",
         default=None,
         help="Override the terraform step template. Omit to use the platform's own default.",

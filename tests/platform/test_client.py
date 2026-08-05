@@ -267,3 +267,88 @@ def test_auth_header_uses_the_apikey_scheme(monkeypatch):
     sg._request("GET", "/wfgrps/")
 
     assert captured["auth"] == "apikey sgo_secret"
+
+
+# --- run facts and cleanup ----------------------------------------------------------------------
+
+
+def test_policy_results_follow_the_snake_case_signed_url(monkeypatch):
+    """
+    The facts endpoint returns `signed_url`; this used to read only `signedUrl` and so always
+    returned {}. It went unnoticed for as long as the results artifact was covering for it.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(
+        sg, "_request", lambda *a, **k: (200, {"msg": {"signed_url": "https://s3.example/facts"}})
+    )
+
+    class _R:
+        def read(self):
+            return json.dumps({"PolicyEvalResults": {"p": [{"result": "PASS"}]}}).encode()
+
+        def info(self):
+            return {}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(client.urllib.request, "urlopen", lambda *a, **k: _R())
+
+    assert sg.get_policy_results("default", "wf", "run-1") == {"p": [{"result": "PASS"}]}
+
+
+def test_policy_results_accept_an_inline_payload(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(
+        sg, "_request", lambda *a, **k: (200, {"msg": {"PolicyEvalResults": {"p": [{"result": "FAIL"}]}}})
+    )
+
+    assert sg.get_policy_results("default", "wf", "run-1") == {"p": [{"result": "FAIL"}]}
+
+
+def test_missing_results_artifact_is_none_not_empty(monkeypatch):
+    """
+    The caller distinguishes "no such artifact, the facts are authoritative" from "the artifact
+    exists and no policies matched". Collapsing both to {} would hide a real no-policies verdict.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (404, {"msg": "not found"}))
+
+    assert sg.get_results_artifact("default", "wf", "run-1/tirith-results.json") is None
+
+
+@pytest.mark.parametrize("status", [200, 204, 404])
+def test_delete_artifact_treats_absence_as_success(monkeypatch, status):
+    """404 means someone already removed it, which is the state we wanted."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (status, {}))
+
+    assert sg.delete_artifact("default", "wf", "__sg.abc1234-default.tar.gz") is True
+
+
+def test_delete_artifact_reports_failure_rather_than_raising(monkeypatch):
+    """Cleanup runs after the verdict is known, so a failure must not change the outcome."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (403, {"msg": "denied"}))
+
+    assert sg.delete_artifact("default", "wf", "__sg.abc1234-default.tar.gz") is False
+
+
+def test_delete_artifact_targets_a_single_path_segment(monkeypatch):
+    """
+    A nested name is swallowed by the greedy <path:wfGrp> converter in the authorizer and matches
+    `DELETE .../wfgrps/<wfGrp>/` -- the workflow-group delete -- so it would be checked against
+    entirely the wrong permission.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    seen = {}
+    monkeypatch.setattr(sg, "_request", lambda m, p, *a, **k: (seen.update(method=m, path=p), (200, {}))[1])
+
+    sg.delete_artifact("default", "wf", "__sg.abc1234-default.tar.gz")
+
+    assert seen["method"] == "DELETE"
+    tail = seen["path"].split("/artifacts/", 1)[1].rstrip("/")
+    assert "/" not in tail, f"artifact name must be one segment, got {tail!r}"
