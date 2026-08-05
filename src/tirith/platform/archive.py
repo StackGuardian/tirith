@@ -27,7 +27,7 @@ import io
 import os
 import tarfile
 
-# Fixed names the policy-only step looks for at the archive root.
+# Fixed names the tirith-check step looks for at the archive root.
 PLAN_DOCUMENT = "plan.json"
 STATE_DOCUMENT = "tfstate.json"
 INFRACOST_DOCUMENT = "infracost.json"

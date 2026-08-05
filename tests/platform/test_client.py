@@ -203,7 +203,7 @@ def test_create_run_sends_no_step_config(monkeypatch):
 
     assert run_id == "wfrun-1"
     assert "WfStepsConfig" not in captured["body"]
-    assert captured["body"]["TerraformAction"] == {"action": "policy-only"}
+    assert captured["body"]["TerraformAction"] == {"action": "tirith-check"}
     assert captured["body"]["terraformProjectZip"] == "orgs/acme/…/a.tar.gz"
 
 

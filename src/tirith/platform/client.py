@@ -249,7 +249,7 @@ class SGClient:
 
         return key
 
-    def create_run(self, wfgrp, workflow_id, project_zip_key, trigger_details, action="policy-only"):
+    def create_run(self, wfgrp, workflow_id, project_zip_key, trigger_details, action="tirith-check"):
         """
         Create one workflow run. Every invocation makes a new run.
 

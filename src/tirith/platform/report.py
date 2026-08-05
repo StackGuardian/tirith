@@ -100,7 +100,7 @@ def verdict(counts, run_status):
 
     It is reached two ways, and both matter. The run status is APPROVAL_REQUIRED when the platform
     itself gated the run. A *rule* result of APPROVAL_REQUIRED means a policy author wrote
-    `onFail: APPROVAL_REQUIRED`, which the policy-only step records without pausing the run -- so
+    `onFail: APPROVAL_REQUIRED`, which the tirith-check step records without pausing the run -- so
     the run comes back COMPLETED and only the counts carry the intent.
 
     Folding that into `warned` was wrong: `warned` maps to a `neutral` check, which SATISFIES a

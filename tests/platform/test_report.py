@@ -108,7 +108,7 @@ def test_verdict_warned_for_a_warning():
 def test_verdict_approval_required_outranks_warned():
     """
     A rule result of APPROVAL_REQUIRED means its author wrote `onFail: APPROVAL_REQUIRED`. The
-    policy-only step records that without pausing the run, so the run comes back COMPLETED and only
+    tirith-check step records that without pausing the run, so the run comes back COMPLETED and only
     the counts carry the intent.
 
     Folding it into `warned` was wrong: `warned` maps to a `neutral` check, which SATISFIES a
