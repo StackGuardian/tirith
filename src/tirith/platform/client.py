@@ -25,6 +25,11 @@ from . import regions
 # Signed into the upload URL by the platform, so the PUT must send the same value.
 ARCHIVE_CONTENT_TYPE = "application/gzip"
 
+# The context tag naming the uploaded project archive. core and the run controller both key off this
+# exact string; a mismatch means the archive is silently ignored and the run falls back to a VCS
+# checkout, which for a workflow created by this client is no checkout at all.
+CODE_ZIP_CONTEXT_TAG = "codeZipWfArtifactPath"
+
 # Terminal run states. QUEUED/PENDING/RUNNING are transient; a run can sit in QUEUED for a long
 # while behind the per-workflow concurrency gate, which is why the caller logs each poll.
 #
@@ -146,7 +151,7 @@ class SGClient:
         GitHub repo-id extraction that rejects anything it cannot parse as an owner/name pair.
 
         This is metadata only. Nothing clones it: core pops `iacVCSConfig` from the run's
-        RuntimeParameters whenever `terraformProjectZip` is set, and the runner takes the archive
+        RuntimeParameters whenever an archive is named, and the runner takes the archive
         branch of its if/elif regardless. It exists so the workflow shows a repo link instead of a
         "configure" prompt.
         """
@@ -223,7 +228,7 @@ class SGClient:
         """
         Upload one object into the workflow's artifact prefix via a presigned PUT, returning its key.
 
-        For the project archive the key is what the caller passes back as `terraformProjectZip` when
+        For the project archive the key is what the caller passes back as the codeZipWfArtifactPath tag when
         creating the run. It comes from the response rather than being rebuilt here: the layout is
         runner-aware (a private runner's own S3 bucket or Azure container rather than the shared
         bucket), so a client-side guess would be wrong for exactly the customers who are hardest to
@@ -275,17 +280,23 @@ class SGClient:
 
         return key
 
-    def create_run(self, wfgrp, workflow_id, project_zip_key, trigger_details, action="tirith-check"):
+    def create_run(self, wfgrp, workflow_id, project_zip_key, trigger_details, action="tirith-iac-governance"):
         """
         Create one workflow run. Every invocation makes a new run.
 
         Deliberately carries no WfStepsConfig: core ignores it for TERRAFORM workflows and
         synthesises the steps from the workflow's TerraformConfig and this TerraformAction. The
         only per-run state is the archive key and where the run came from.
+
+        The archive travels as a context tag rather than a run field. `terraformProjectZip` expresses
+        the same thing, but it belongs to the CLI-driven workflow feature; reusing the generic tag
+        mechanism keeps the run schema from growing a second first-class key for one idea. The tag is
+        rendered in the dashboard's run list and is searchable, which is accepted -- see the
+        consumer notes in the roadmap.
         """
         body = {
             "TerraformAction": {"action": action},
-            "terraformProjectZip": project_zip_key,
+            "ContextTags": {CODE_ZIP_CONTEXT_TAG: project_zip_key},
             "TriggerDetails": trigger_details,
         }
         status, payload = self._request("POST", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/", body)

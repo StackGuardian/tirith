@@ -90,7 +90,7 @@ def test_extract_signed_url_returns_none_when_absent():
 
 def test_upload_archive_requires_a_storage_key(monkeypatch):
     """
-    The key is what the caller passes back as terraformProjectZip. A platform that predates the key
+    The key is what the caller passes back as the codeZipWfArtifactPath tag. A platform that predates it
     being returned answers with the URL alone, and continuing would create a run pointing at nothing.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
@@ -203,8 +203,8 @@ def test_create_run_sends_no_step_config(monkeypatch):
 
     assert run_id == "wfrun-1"
     assert "WfStepsConfig" not in captured["body"]
-    assert captured["body"]["TerraformAction"] == {"action": "tirith-check"}
-    assert captured["body"]["terraformProjectZip"] == "orgs/acme/…/a.tar.gz"
+    assert captured["body"]["TerraformAction"] == {"action": "tirith-iac-governance"}
+    assert captured["body"]["ContextTags"] == {"codeZipWfArtifactPath": "orgs/acme/…/a.tar.gz"}
 
 
 def test_ensure_workflow_creates_a_terraform_workflow(monkeypatch):
