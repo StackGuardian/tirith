@@ -253,11 +253,12 @@ def main(argv):
         # health, and a run that produced no verdict must never look like a pass.
         log("The run did not produce a verdict")
         return ExitStatus.ERROR
-    if verdict in ("failed", "approval-required") and opts.fail_on_error:
+    if verdict == "failed" and opts.fail_on_error:
         return ExitStatus.ERROR_POLICY_FAILED
     if verdict == "failed":
         log("Policies failed, but --fail-on-error was not set")
-    if verdict == "approval-required":
-        log("The run is waiting for approval; --fail-on-error was not set")
+    # A policy asking for approval warns rather than gating -- see report.verdict for why.
+    if result.get("counts", {}).get("approval_required"):
+        log("Some policies ask for approval; reported as a warning, which does not block")
 
     return ExitStatus.SUCCESS

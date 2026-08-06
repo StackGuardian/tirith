@@ -90,7 +90,7 @@ def test_extract_signed_url_returns_none_when_absent():
 
 def test_upload_archive_requires_a_storage_key(monkeypatch):
     """
-    The key is what the caller passes back as the codeZipWfArtifactPath tag. A platform that predates it
+    The key is what the caller passes back as CodeZipWfArtifactPath. A platform that predates it
     being returned answers with the URL alone, and continuing would create a run pointing at nothing.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
@@ -199,12 +199,61 @@ def test_create_run_sends_no_step_config(monkeypatch):
 
     monkeypatch.setattr(sg, "_request", fake_request)
 
-    run_id, _data = sg.create_run("default", "wf", "orgs/acme/…/a.tar.gz", {"type": "github_action"})
+    run_id, _data = sg.create_run("default", "wf", "orgs/acme/…/a.tar.gz", {"type": "tirith"})
 
     assert run_id == "wfrun-1"
     assert "WfStepsConfig" not in captured["body"]
     assert captured["body"]["TerraformAction"] == {"action": "tirith-iac-governance"}
-    assert captured["body"]["ContextTags"] == {"codeZipWfArtifactPath": "orgs/acme/…/a.tar.gz"}
+    assert captured["body"]["CodeZipWfArtifactPath"] == "orgs/acme/…/a.tar.gz"
+    # Not a context tag: run context tags are indexed into global search, so an internal storage key
+    # would surface in customers' tag typeaheads and could be enumerated by filtering on it.
+    assert "ContextTags" not in captured["body"]
+
+
+def test_create_run_rejects_a_platform_that_dropped_the_archive_reference(monkeypatch):
+    """
+    An api that predates CodeZipWfArtifactPath drops it during request validation, and the run then
+    evaluates a VCS checkout instead of the uploaded code -- the wrong answer, delivered without
+    complaint. The one failure mode of this design, so it is asserted rather than assumed.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(
+        sg,
+        "_request",
+        lambda *a, **k: (200, {"data": {"ResourceName": "wfrun-1", "RuntimeParameters": {"vcsConfig": {}}}}),
+    )
+
+    with pytest.raises(SGError, match="dropped the code bundle reference"):
+        sg.create_run("default", "wf", "orgs/acme/…/a.tar.gz", {"type": "tirith"})
+
+
+def test_create_run_accepts_a_response_that_carries_no_runtime_parameters(monkeypatch):
+    """
+    A response shape without RuntimeParameters is not evidence the field was dropped, and failing on
+    it would break the client against a platform that is behaving correctly.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"data": {"ResourceName": "wfrun-1"}}))
+
+    run_id, _data = sg.create_run("default", "wf", "orgs/acme/…/a.tar.gz", {"type": "tirith"})
+
+    assert run_id == "wfrun-1"
+
+
+def test_create_run_passes_when_the_platform_stored_the_archive_reference(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(
+        sg,
+        "_request",
+        lambda *a, **k: (
+            200,
+            {"data": {"ResourceName": "wfrun-1", "RuntimeParameters": {"codeZipWfArtifactPath": "orgs/acme/a.tar.gz"}}},
+        ),
+    )
+
+    run_id, _data = sg.create_run("default", "wf", "orgs/acme/a.tar.gz", {"type": "tirith"})
+
+    assert run_id == "wfrun-1"
 
 
 def test_ensure_workflow_creates_a_terraform_workflow(monkeypatch):

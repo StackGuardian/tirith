@@ -121,34 +121,34 @@ def verdict(counts, run_status):
     """
     Reduce counts and run status to one word.
 
-    failed | warned | passed | no-policies | approval-required | errored
+    failed | warned | passed | no-policies | errored
 
     `errored` covers a run that never produced a verdict -- an ERRORED/CANCELLED run, or results
     that came back empty. It is deliberately distinct from `failed` so the caller can tell "a
     policy said no" from "we do not know", and never conflate either with a pass.
 
-    `approval-required` is a resting state, not a failure: the evaluation finished and a human now
-    has to act. Reporting it as `errored` would blame the tool for a working evaluation.
+    A policy carrying `onFail: APPROVAL_REQUIRED` warns; it does not gate. That is a deliberate
+    interim position, because for these runs there is nothing to approve. The step exits 0 (it never
+    uses exit 11), so the run reaches COMPLETED, and the run controller engages an approval only on
+    exit 11 and skips it on the last step anyway -- and a policy-only run has exactly one step. So
+    the approval intent arrives as a count on an already-finished run, with no approval to act on.
+    Blocking on it produced a red check with nothing to click.
 
-    It is reached two ways, and both matter. The run status is APPROVAL_REQUIRED when the platform
-    itself gated the run. A *rule* result of APPROVAL_REQUIRED means a policy author wrote
-    `onFail: APPROVAL_REQUIRED`, which the step records without pausing the run -- so
-    the run comes back COMPLETED and only the counts carry the intent.
+    The count, the icon and the "N need approval" phrase in the headline all survive, so the policy
+    author's intent is still visible in the comment. Gating on it properly needs a run that stays
+    open, an approve action on it, and this client re-polling afterwards -- none of which exist yet.
 
-    Folding that into `warned` was wrong: `warned` maps to a `neutral` check, which SATISFIES a
-    required status check, so a policy demanding human sign-off silently did not block. Ranking it
-    above `warned` keeps the author's intent without implementing the approval workflow, which is
-    out of scope here.
+    Run status APPROVAL_REQUIRED means the platform itself paused the run. Not reachable for a
+    one-step run today, but if it happens the results may be partial: warn when there are results,
+    error when there are none, and never report a pass for a run that evaluated nothing.
     """
     if run_status == "APPROVAL_REQUIRED":
-        return "approval-required"
+        return "warned" if any(counts.get(k) for k in (FAIL, WARN, APPROVAL_REQUIRED, PASS, "SKIPPED")) else "errored"
     if run_status not in ("COMPLETED",):
         return "errored"
     if counts.get(FAIL):
         return "failed"
-    if counts.get(APPROVAL_REQUIRED):
-        return "approval-required"
-    if counts.get(WARN):
+    if counts.get(APPROVAL_REQUIRED) or counts.get(WARN):
         return "warned"
     if counts.get(PASS) or counts.get("SKIPPED"):
         return "passed"

@@ -25,10 +25,12 @@ from . import regions
 # Signed into the upload URL by the platform, so the PUT must send the same value.
 ARCHIVE_CONTENT_TYPE = "application/gzip"
 
-# The context tag naming the uploaded project archive. core and the run controller both key off this
-# exact string; a mismatch means the archive is silently ignored and the run falls back to a VCS
-# checkout, which for a workflow created by this client is no checkout at all.
-CODE_ZIP_CONTEXT_TAG = "codeZipWfArtifactPath"
+# The run-creation field naming the uploaded project archive, and the RuntimeParameters key core
+# stores it under. The run controller keys off the stored one; a mismatch anywhere along that chain
+# means the archive is silently ignored and the run falls back to a VCS checkout, which for a
+# workflow created by this client is no checkout at all. Hence the read-back in create_run.
+CODE_ZIP_FIELD = "CodeZipWfArtifactPath"
+CODE_ZIP_RUNTIME_KEY = "codeZipWfArtifactPath"
 
 # Terminal run states. QUEUED/PENDING/RUNNING are transient; a run can sit in QUEUED for a long
 # while behind the per-workflow concurrency gate, which is why the caller logs each poll.
@@ -228,7 +230,7 @@ class SGClient:
         """
         Upload one object into the workflow's artifact prefix via a presigned PUT, returning its key.
 
-        For the project archive the key is what the caller passes back as the codeZipWfArtifactPath tag when
+        For the project archive the key is what the caller passes back as CodeZipWfArtifactPath when
         creating the run. It comes from the response rather than being rebuilt here: the layout is
         runner-aware (a private runner's own S3 bucket or Azure container rather than the shared
         bucket), so a client-side guess would be wrong for exactly the customers who are hardest to
@@ -288,15 +290,18 @@ class SGClient:
         synthesises the steps from the workflow's TerraformConfig and this TerraformAction. The
         only per-run state is the archive key and where the run came from.
 
-        The archive travels as a context tag rather than a run field. `terraformProjectZip` expresses
-        the same thing, but it belongs to the CLI-driven workflow feature; reusing the generic tag
-        mechanism keeps the run schema from growing a second first-class key for one idea. The tag is
-        rendered in the dashboard's run list and is searchable, which is accepted -- see the
-        consumer notes in the roadmap.
+        The archive travels as `CodeZipWfArtifactPath`, which core stores under RuntimeParameters.
+        `terraformProjectZip` expresses the same thing but belongs to the CLI-driven workflow
+        feature; a separate key keeps the two distinguishable, so a rule that ties an archive to one
+        action can be written without touching the other's path.
+
+        A context tag was the obvious-looking alternative and is the wrong tool: run context tags are
+        indexed into global search, so an internal storage key would surface in customers' tag
+        typeaheads and could be enumerated by filtering on it.
         """
         body = {
             "TerraformAction": {"action": action},
-            "ContextTags": {CODE_ZIP_CONTEXT_TAG: project_zip_key},
+            CODE_ZIP_FIELD: project_zip_key,
             "TriggerDetails": trigger_details,
         }
         status, payload = self._request("POST", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/", body)
@@ -307,6 +312,19 @@ class SGClient:
         run_name = data.get("ResourceName")
         if not run_name:
             raise SGError(f"No ResourceName in the run-creation response: {payload}")
+
+        # A platform that predates the field drops it during request validation and the run then
+        # falls back to a VCS checkout -- the wrong code, evaluated without complaint. Assert it
+        # back rather than let that pass as a result. Only when the response says: an older
+        # response shape that omits RuntimeParameters is not evidence either way.
+        runtime_parameters = data.get("RuntimeParameters")
+        if isinstance(runtime_parameters, dict) and not runtime_parameters.get(CODE_ZIP_RUNTIME_KEY):
+            raise SGError(
+                f"The platform dropped the code bundle reference: run {run_name} came back without "
+                f"RuntimeParameters.{CODE_ZIP_RUNTIME_KEY}. It would evaluate a VCS checkout instead "
+                f"of the uploaded code. The platform may predate {CODE_ZIP_FIELD}."
+            )
+
         return run_name, data
 
     def get_run(self, wfgrp, workflow_id, run_id):

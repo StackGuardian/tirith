@@ -107,19 +107,16 @@ def test_verdict_warned_for_a_warning():
     assert render.verdict(counts, "COMPLETED") == "warned"
 
 
-def test_verdict_approval_required_outranks_warned():
+def test_verdict_approval_required_warns_rather_than_gating():
     """
-    A rule result of APPROVAL_REQUIRED means its author wrote `onFail: APPROVAL_REQUIRED`. The
-    step records that without pausing the run, so the run comes back COMPLETED and only
-    the counts carry the intent.
-
-    Folding it into `warned` was wrong: `warned` maps to a `neutral` check, which SATISFIES a
-    required status check, so a policy demanding human sign-off silently did not block. Caught by a
-    live run against a real APPROVAL_REQUIRED policy.
+    A rule result of APPROVAL_REQUIRED means its author wrote `onFail: APPROVAL_REQUIRED`. For these
+    runs there is nothing to approve: the step exits 0, the run reaches COMPLETED, and an approval
+    is only ever engaged on exit 11 and never on the last step -- of which a policy-only run has
+    exactly one. So it warns, deliberately, until a real gate exists.
     """
     counts, _ = render.summarize(_results("APPROVAL_REQUIRED"))
 
-    assert render.verdict(counts, "COMPLETED") == "approval-required"
+    assert render.verdict(counts, "COMPLETED") == "warned"
 
 
 def test_verdict_failed_outranks_approval_required():
@@ -149,15 +146,23 @@ def test_verdict_distinguishes_no_policies_from_passed():
     assert render.verdict({}, "COMPLETED") == "no-policies"
 
 
-def test_verdict_approval_required_is_not_an_error():
+def test_a_run_paused_by_the_platform_warns_when_it_produced_results():
     """
-    A run resting at APPROVAL_REQUIRED finished its evaluation; a human now has to act. Reporting
-    it as `errored` would blame the tool for a working evaluation -- and the poller now stops
-    there rather than spinning to its timeout.
+    A run resting at APPROVAL_REQUIRED evaluated something before it paused. Reporting it as
+    `errored` would blame the tool for a working evaluation -- and the poller stops there rather
+    than spinning to its timeout.
     """
-    counts, _ = render.summarize(_results("APPROVAL_REQUIRED"))
+    counts, _ = render.summarize(_results("PASS"))
 
-    assert render.verdict(counts, "APPROVAL_REQUIRED") == "approval-required"
+    assert render.verdict(counts, "APPROVAL_REQUIRED") == "warned"
+
+
+def test_a_run_paused_before_it_evaluated_anything_is_an_error():
+    """
+    The one thing that must never happen: green, or even amber, for a run that produced no verdict.
+    A paused run with no results has not evaluated the code.
+    """
+    assert render.verdict({}, "APPROVAL_REQUIRED") == "errored"
 
 
 # --- rendering ---------------------------------------------------------------------------------
