@@ -174,6 +174,19 @@ def headline(counts, verdict_value):
     return "Tirith — " + (", ".join(parts) if parts else "nothing evaluated")
 
 
+def _short_commit(commit):
+    """
+    Seven characters, the length git itself abbreviates to.
+
+    Anything that is not a hex sha is passed through untouched -- a tag or a branch name is more
+    useful whole, and truncating one would produce something that looks like a sha and is not.
+    """
+    text = str(commit).strip()
+    if len(text) > 7 and all(c in "0123456789abcdefABCDEF" for c in text):
+        return text[:7]
+    return text
+
+
 def render_cost(breakdown):
     """
     One line of cost, for the pull-request comment.
@@ -215,7 +228,7 @@ def render_cost(breakdown):
 
 
 def render_markdown(
-    policy_results, run_status, run_url, marker=None, limit=COMMENT_LIMIT, cost_breakdown=None
+    policy_results, run_status, run_url, marker=None, limit=COMMENT_LIMIT, cost_breakdown=None, commit=None
 ):
     """
     Render the results as markdown, truncating detail before the summary table.
@@ -223,6 +236,11 @@ def render_markdown(
     `marker` is an opaque first line the caller can use to find this document again -- GitHub's
     sticky-comment marker, for instance. Kept as a parameter rather than built here so this module
     stays VCS-agnostic.
+
+    `commit` is the revision these findings describe. It matters because the comment is *edited in
+    place* across runs: without it a reader has no way to tell whether the verdict they are looking
+    at is about the head of the branch or about a push from an hour ago. Rendered here rather than
+    appended by the caller so the check-run summary and the job summary carry it too.
     """
     counts, findings = summarize(policy_results)
     verdict_value = verdict(counts, run_status)
@@ -231,6 +249,8 @@ def render_markdown(
         f"## 🛡️ {headline(counts, verdict_value)}",
         "",
     ]
+    if commit:
+        header += [f"<sub>Scanned commit <code>{_short_commit(commit)}</code></sub>", ""]
 
     if verdict_value == "errored":
         header += [

@@ -402,3 +402,45 @@ def test_an_engine_error_is_still_surfaced_verbatim():
         {"evaluations": {"fails": [{"exec_err": "Checkov policy has no configPolicyIds"}]}})
 
     assert messages == ["engine: Checkov policy has no configPolicyIds"]
+
+
+# --- the scanned commit --------------------------------------------------------------------------
+#
+# The comment is edited in place across runs, so without this a reader cannot tell whether the
+# verdict in front of them is about the head of the branch or about a push from an hour ago.
+
+
+def test_the_scanned_commit_is_rendered_under_the_headline():
+    body = render.render_markdown(_results(), "COMPLETED", "https://run", commit="9ea6388f1c2d3e4f5a6b")
+
+    lines = body.split("\n")
+    heading = next(i for i, line in enumerate(lines) if line.startswith("## "))
+    assert lines[heading + 2] == "<sub>Scanned commit <code>9ea6388</code></sub>", lines[: heading + 4]
+
+
+def test_no_commit_line_when_none_is_supplied():
+    body = render.render_markdown(_results(), "COMPLETED", "https://run")
+
+    assert "Scanned commit" not in body
+
+
+def test_the_commit_line_survives_alongside_the_marker():
+    """The marker has to stay line 1 -- it is what finds the comment again."""
+    marker = "[//]: <> (tirith-comment, tag=default)"
+    body = render.render_markdown(_results(), "COMPLETED", "https://run", marker=marker, commit="abc1234def")
+
+    assert body.startswith(marker)
+    assert "<code>abc1234</code>" in body
+
+
+def test_a_non_sha_revision_is_not_truncated():
+    """A tag or branch name is more useful whole; truncating one invents something sha-shaped."""
+    body = render.render_markdown(_results(), "COMPLETED", "https://run", commit="release-2026-08")
+
+    assert "<code>release-2026-08</code>" in body
+
+
+def test_a_short_sha_is_left_alone():
+    body = render.render_markdown(_results(), "COMPLETED", "https://run", commit="abc1234")
+
+    assert "<code>abc1234</code>" in body

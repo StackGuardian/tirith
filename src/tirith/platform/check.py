@@ -367,6 +367,7 @@ def run_check(opts):
             marker=opts.comment_marker,
             limit=opts.markdown_limit,
             cost_breakdown=cost_breakdown,
+            commit=opts.sha,
         )
         try:
             with open(opts.output_markdown, "w") as f:
