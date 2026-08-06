@@ -278,9 +278,7 @@ def test_policy_results_follow_the_snake_case_signed_url(monkeypatch):
     returned {}. It went unnoticed for as long as the results artifact was covering for it.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
-    monkeypatch.setattr(
-        sg, "_request", lambda *a, **k: (200, {"msg": {"signed_url": "https://s3.example/facts"}})
-    )
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"msg": {"signed_url": "https://s3.example/facts"}}))
 
     class _R:
         def read(self):

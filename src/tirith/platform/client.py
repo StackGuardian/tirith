@@ -207,9 +207,7 @@ class SGClient:
         Unreadable answers as True -- the safe direction. Not being able to tell whether an object is
         live state is not a reason to overwrite it.
         """
-        status, payload = self._request(
-            "GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/"
-        )
+        status, payload = self._request("GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/")
         if status != 200:
             return True
         body = payload.get("msg") or payload.get("data") or {}

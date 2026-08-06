@@ -163,9 +163,7 @@ class TestResolveFromEnvironment:
         Not an error: the environment is inherited config the caller may not control, and failing a
         CI run over a contradiction they did not write would be unhelpful.
         """
-        api, _d, warnings = regions.resolve(
-            env={"SG_REGION": "eu", "SG_BASE_URL": "https://api.us.stackguardian.io"}
-        )
+        api, _d, warnings = regions.resolve(env={"SG_REGION": "eu", "SG_BASE_URL": "https://api.us.stackguardian.io"})
         assert api == US_API
         assert len(warnings) == 1
         assert "SG_REGION" in warnings[0]

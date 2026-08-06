@@ -106,9 +106,7 @@ class TestRegionResolution:
         assert seen["api_url"] == "https://api.app.stackguardian.io/api/v1"
         assert seen["dashboard_url"] == "https://app.stackguardian.io"
 
-    def test_region_with_an_explicit_url_fails_before_any_request(
-        self, tmp_path, monkeypatch, no_network, capsys
-    ):
+    def test_region_with_an_explicit_url_fails_before_any_request(self, tmp_path, monkeypatch, no_network, capsys):
         env(monkeypatch, SG_API_TOKEN="sgo_x", SG_ORG="acme")
 
         status = cli.main(
@@ -201,9 +199,7 @@ class TestCredentials:
         """
         env(monkeypatch, SG_API_TOKEN="sgo_fromenv", SG_ORG="acme-from-env")
         seen = {}
-        monkeypatch.setattr(
-            cli, "run_check", lambda opts: seen.update(api_key=opts.api_key, org=opts.org) or PASSED
-        )
+        monkeypatch.setattr(cli, "run_check", lambda opts: seen.update(api_key=opts.api_key, org=opts.org) or PASSED)
 
         cli.main(base_args(tmp_path, "--workflow-id", "wf"))
 

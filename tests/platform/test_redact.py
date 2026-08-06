@@ -650,11 +650,18 @@ def test_planned_values_is_rebuilt_so_infracost_and_checkov_have_something_to_re
     real key: the same t3.medium prices at $39.80 with this section and $0.00 without.
     """
     out = redact.redact_plan(
-        _plan_with([
-            {"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
-             "provider_name": "registry.terraform.io/hashicorp/aws",
-             "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}}}
-        ])
+        _plan_with(
+            [
+                {
+                    "address": "aws_instance.app",
+                    "mode": "managed",
+                    "type": "aws_instance",
+                    "name": "app",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}},
+                }
+            ]
+        )
     )
 
     resources = out["planned_values"]["root_module"]["resources"]
@@ -672,14 +679,23 @@ def test_the_rebuilt_planned_values_carries_masked_values_not_raw_ones():
     out = redact.redact_plan(
         _plan_with(
             [
-                {"address": "local_sensitive_file.creds", "mode": "managed",
-                 "type": "local_sensitive_file", "name": "creds",
-                 "change": {"actions": ["create"],
-                            "after": {"content": "hunter2", "filename": "/tmp/c"},
-                            "after_sensitive": {"content": True}}}
+                {
+                    "address": "local_sensitive_file.creds",
+                    "mode": "managed",
+                    "type": "local_sensitive_file",
+                    "name": "creds",
+                    "change": {
+                        "actions": ["create"],
+                        "after": {"content": "hunter2", "filename": "/tmp/c"},
+                        "after_sensitive": {"content": True},
+                    },
+                }
             ],
-            planned_values={"root_module": {"resources": [
-                {"address": "local_sensitive_file.creds", "values": {"content": "hunter2"}}]}},
+            planned_values={
+                "root_module": {
+                    "resources": [{"address": "local_sensitive_file.creds", "values": {"content": "hunter2"}}]
+                }
+            },
         )
     )
 
@@ -693,10 +709,20 @@ def test_terraform_own_planned_values_is_never_passed_through():
     """It is replaced, not merged -- otherwise the unmarked original would leak straight through."""
     out = redact.redact_plan(
         _plan_with(
-            [{"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
-              "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}}}],
-            planned_values={"root_module": {"resources": [
-                {"address": "ghost.resource", "values": {"secret": "leaked-from-original"}}]}},
+            [
+                {
+                    "address": "aws_instance.app",
+                    "mode": "managed",
+                    "type": "aws_instance",
+                    "name": "app",
+                    "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}},
+                }
+            ],
+            planned_values={
+                "root_module": {
+                    "resources": [{"address": "ghost.resource", "values": {"secret": "leaked-from-original"}}]
+                }
+            },
         )
     )
 
@@ -707,10 +733,17 @@ def test_terraform_own_planned_values_is_never_passed_through():
 def test_a_destroyed_resource_has_no_planned_value():
     """Nothing is planned to exist, so there is nothing to price or scan."""
     out = redact.redact_plan(
-        _plan_with([
-            {"address": "aws_instance.gone", "mode": "managed", "type": "aws_instance", "name": "gone",
-             "change": {"actions": ["delete"], "before": {"instance_type": "m5.large"}, "after": None}}
-        ])
+        _plan_with(
+            [
+                {
+                    "address": "aws_instance.gone",
+                    "mode": "managed",
+                    "type": "aws_instance",
+                    "name": "gone",
+                    "change": {"actions": ["delete"], "before": {"instance_type": "m5.large"}, "after": None},
+                }
+            ]
+        )
     )
 
     assert "planned_values" not in out
@@ -719,10 +752,17 @@ def test_a_destroyed_resource_has_no_planned_value():
 
 def test_a_replacement_is_planned_because_it_ends_up_existing():
     out = redact.redact_plan(
-        _plan_with([
-            {"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
-             "change": {"actions": ["delete", "create"], "after": {"instance_type": "t3.large"}}}
-        ])
+        _plan_with(
+            [
+                {
+                    "address": "aws_instance.app",
+                    "mode": "managed",
+                    "type": "aws_instance",
+                    "name": "app",
+                    "change": {"actions": ["delete", "create"], "after": {"instance_type": "t3.large"}},
+                }
+            ]
+        )
     )
 
     assert out["planned_values"]["root_module"]["resources"][0]["values"]["instance_type"] == "t3.large"
@@ -730,13 +770,25 @@ def test_a_replacement_is_planned_because_it_ends_up_existing():
 
 def test_module_resources_are_grouped_under_child_modules():
     out = redact.redact_plan(
-        _plan_with([
-            {"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
-             "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}}},
-            {"address": "module.db.aws_instance.replica", "module_address": "module.db",
-             "mode": "managed", "type": "aws_instance", "name": "replica",
-             "change": {"actions": ["create"], "after": {"instance_type": "m5.large"}}},
-        ])
+        _plan_with(
+            [
+                {
+                    "address": "aws_instance.app",
+                    "mode": "managed",
+                    "type": "aws_instance",
+                    "name": "app",
+                    "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}},
+                },
+                {
+                    "address": "module.db.aws_instance.replica",
+                    "module_address": "module.db",
+                    "mode": "managed",
+                    "type": "aws_instance",
+                    "name": "replica",
+                    "change": {"actions": ["create"], "after": {"instance_type": "m5.large"}},
+                },
+            ]
+        )
     )
 
     root = out["planned_values"]["root_module"]
@@ -747,10 +799,17 @@ def test_module_resources_are_grouped_under_child_modules():
 
 def test_child_modules_is_absent_when_there_are_none():
     out = redact.redact_plan(
-        _plan_with([
-            {"address": "aws_instance.app", "mode": "managed", "type": "aws_instance", "name": "app",
-             "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}}}
-        ])
+        _plan_with(
+            [
+                {
+                    "address": "aws_instance.app",
+                    "mode": "managed",
+                    "type": "aws_instance",
+                    "name": "app",
+                    "change": {"actions": ["create"], "after": {"instance_type": "t3.medium"}},
+                }
+            ]
+        )
     )
 
     assert "child_modules" not in out["planned_values"]["root_module"]

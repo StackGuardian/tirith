@@ -48,7 +48,10 @@ class Opts:
     workflow_id = "wf"
 
 
-STATE = {"version": 4, "resources": [{"type": "aws_s3_bucket", "instances": [{"attributes": {"b": "__SG_REDACTED__"}}]}]}
+STATE = {
+    "version": 4,
+    "resources": [{"type": "aws_s3_bucket", "instances": [{"attributes": {"b": "__SG_REDACTED__"}}]}],
+}
 
 
 def test_the_state_is_published_as_tfstate_json():
@@ -129,9 +132,7 @@ def _tree(tmp_path, extra_bytes=0):
 
 
 def test_the_source_is_packed_on_the_normal_path(tmp_path):
-    archive_bytes, manifest, skipped = check.pack_documents(
-        _tree(tmp_path), {"masked": True}, None, None
-    )
+    archive_bytes, manifest, skipped = check.pack_documents(_tree(tmp_path), {"masked": True}, None, None)
 
     assert manifest["files"] == 1
     assert manifest["documents"] == ["plan.json"]

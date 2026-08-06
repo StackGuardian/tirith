@@ -81,8 +81,7 @@ def build_parser():
         default=None,
         choices=regions.REGION_IDS,
         help=(
-            f"StackGuardian region, setting both URLs at once. "
-            f"Default: $SG_REGION or {regions.DEFAULT_REGION_ID}."
+            f"StackGuardian region, setting both URLs at once. " f"Default: $SG_REGION or {regions.DEFAULT_REGION_ID}."
         ),
     )
     identity.add_argument(

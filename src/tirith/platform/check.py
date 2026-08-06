@@ -161,9 +161,7 @@ def pack_documents(source_dir, plan, state, infracost):
     the limit, the *documents* are too big and there is nothing left to drop, so that stays fatal.
     """
     try:
-        archive_bytes, manifest = archive.pack(
-            source_dir=source_dir, plan=plan, state=state, infracost=infracost
-        )
+        archive_bytes, manifest = archive.pack(source_dir=source_dir, plan=plan, state=state, infracost=infracost)
         return archive_bytes, manifest, None
     except archive.ArchiveError as e:
         if not source_dir:
@@ -258,9 +256,7 @@ def run_check(opts):
             vcs_config=SGClient.vcs_config(getattr(opts, "repo_url", None), getattr(opts, "repo_ref", None)),
         )
 
-        archive_name = ARCHIVE_NAME_TEMPLATE.format(
-            sha=opts.sha[:7] if opts.sha else "latest", tag=opts.artifact_tag
-        )
+        archive_name = ARCHIVE_NAME_TEMPLATE.format(sha=opts.sha[:7] if opts.sha else "latest", tag=opts.artifact_tag)
         key = client.upload_file(
             opts.workflow_group,
             opts.workflow_id,
@@ -309,9 +305,7 @@ def run_check(opts):
     # The results artifact is only consulted when the facts come back empty, which means an older
     # step image that still writes it.
     if not policy_results:
-        legacy = client.get_results_artifact(
-            opts.workflow_group, opts.workflow_id, f"{run_id}/tirith-results.json"
-        )
+        legacy = client.get_results_artifact(opts.workflow_group, opts.workflow_id, f"{run_id}/tirith-results.json")
         if legacy is not None:
             policy_results = legacy
 
