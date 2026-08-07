@@ -325,12 +325,16 @@ def run_check(opts):
 
     # The results artifact is only consulted when the facts come back empty, which means an older
     # step image that still writes it.
+    legacy = None
     if not policy_results:
         legacy = client.get_results_artifact(opts.workflow_group, opts.workflow_id, f"{run_id}/tirith-results.json")
         if legacy is not None:
             policy_results = legacy
 
-    if not policy_results and facts_error is not None:
+    # Only when NOTHING answered. `legacy is not None` means the artifact was read and was
+    # legitimately empty -- an older step image with no policies in scope -- which is a real
+    # no-policies result, not a failed read.
+    if facts_error is not None and legacy is None:
         raise CheckError(f"The run completed but its results could not be read: {facts_error} (run: {run_url})")
 
     # The archive is deliberately retained. It is the source that produced these findings, and the
