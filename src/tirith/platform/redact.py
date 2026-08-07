@@ -356,13 +356,26 @@ def redact_state(state):
       - `outputs[k].sensitive` is true  -> replace that output's value
       - each key named in an instance's `sensitive_attributes` -> replace that attribute
 
-    Expects the raw state shape (top-level `resources` / `outputs`), not `terraform show -json`
-    output, which nests resources under `values.root_module.resources`.
+    Handles BOTH shapes a caller can plausibly hand us:
+
+      - the raw state (`terraform state pull`): top-level `resources` / `outputs`, with each
+        instance naming its own `sensitive_attributes`;
+      - `terraform show -json <state>`: resources nested under `values.root_module.resources`, with
+        sensitivity carried in a parallel `sensitive_values` tree.
+
+    Handling only the first was a silent leak. The function returned the document unchanged for the
+    second -- no error, no warning -- so a state produced with `show -json`, which is the natural
+    way to get a readable one, shipped every attribute in plaintext. Caught by an end-to-end run,
+    not by a unit test, because the unit tests all used the shape the code already understood.
     """
     if not isinstance(state, dict):
         return state
 
     redacted = dict(state)
+
+    values = redacted.get("values")
+    if isinstance(values, dict):
+        redacted["values"] = _redact_show_json_values(values)
 
     outputs = redacted.get("outputs")
     if isinstance(outputs, dict):
@@ -379,6 +392,57 @@ def redact_state(state):
         redacted["resources"] = [_redact_state_resource(r) for r in resources]
 
     return redacted
+
+
+def _redact_show_json_values(values):
+    """
+    Mask the `values` tree of `terraform show -json <state>` output.
+
+    Same marker convention as a plan: a parallel `sensitive_values` tree whose truthy leaves name
+    the attributes to replace, so _mask_by_marker does the work. Recurses through child_modules,
+    since a module's resources are nested rather than flattened.
+    """
+    if not isinstance(values, dict):
+        return values
+
+    masked = dict(values)
+    root = masked.get("root_module")
+    if isinstance(root, dict):
+        masked["root_module"] = _redact_show_json_module(root)
+
+    outputs = masked.get("outputs")
+    if isinstance(outputs, dict):
+        masked["outputs"] = {
+            name: ({**o, "value": SENTINEL} if isinstance(o, dict) and o.get("sensitive") else o)
+            for name, o in outputs.items()
+        }
+    return masked
+
+
+def _redact_show_json_module(module):
+    if not isinstance(module, dict):
+        return module
+
+    masked = dict(module)
+
+    resources = masked.get("resources")
+    if isinstance(resources, list):
+        out = []
+        for resource in resources:
+            if not isinstance(resource, dict):
+                out.append(resource)
+                continue
+            entry = dict(resource)
+            if "values" in entry:
+                entry["values"] = _mask_by_marker(entry["values"], entry.get("sensitive_values"))
+            out.append(entry)
+        masked["resources"] = out
+
+    children = masked.get("child_modules")
+    if isinstance(children, list):
+        masked["child_modules"] = [_redact_show_json_module(c) for c in children]
+
+    return masked
 
 
 def _redact_state_resource(resource):

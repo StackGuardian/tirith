@@ -909,3 +909,71 @@ def test_module_call_arguments_are_dropped_even_without_an_inlined_module():
     }
 
     assert "s3cr3t-mod" not in json.dumps(redact.redact_plan(plan))
+
+
+def test_a_show_json_state_is_masked_not_passed_through():
+    """
+    The leak an end-to-end run found. `terraform show -json <state>` is the natural way to get a
+    readable state, and its shape nests resources under values.root_module with a parallel
+    sensitive_values tree -- nothing like the raw state this function was written for. It returned
+    the document unchanged: no error, no warning, every attribute in plaintext.
+    """
+    document = {
+        "format_version": "1.0",
+        "values": {
+            "root_module": {
+                "resources": [
+                    {
+                        "address": "aws_db_instance.main",
+                        "type": "aws_db_instance",
+                        "values": {"identifier": "prod-db", "password": "hunter2"},
+                        "sensitive_values": {"password": True},
+                    }
+                ],
+                "child_modules": [
+                    {
+                        "address": "module.net",
+                        "resources": [
+                            {
+                                "address": "module.net.aws_secretsmanager_secret_version.k",
+                                "values": {"secret_string": "hunter3"},
+                                "sensitive_values": {"secret_string": True},
+                            }
+                        ],
+                    }
+                ],
+            },
+            "outputs": {"db_url": {"value": "postgres://hunter4@host", "sensitive": True}},
+        },
+    }
+
+    out = redact.redact_state(document)
+    blob = json.dumps(out)
+
+    assert out["values"]["root_module"]["resources"][0]["values"]["password"] == redact.SENTINEL
+    # A module's resources are nested, not flattened -- masking only the root would miss them.
+    assert (
+        out["values"]["root_module"]["child_modules"][0]["resources"][0]["values"]["secret_string"] == redact.SENTINEL
+    )
+    assert out["values"]["outputs"]["db_url"]["value"] == redact.SENTINEL
+    for secret in ("hunter2", "hunter3", "hunter4"):
+        assert secret not in blob, secret
+
+
+def test_the_raw_state_shape_still_works():
+    """The shape this function was written for must keep working alongside the new one."""
+    document = {
+        "version": 4,
+        "resources": [
+            {
+                "type": "aws_db_instance",
+                "instances": [{"attributes": {"password": "hunter2"}, "sensitive_attributes": ["password"]}],
+            }
+        ],
+        "outputs": {"token": {"value": "hunter5", "sensitive": True}},
+    }
+
+    out = redact.redact_state(document)
+
+    assert out["resources"][0]["instances"][0]["attributes"]["password"] == redact.SENTINEL
+    assert out["outputs"]["token"]["value"] == redact.SENTINEL
