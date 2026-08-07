@@ -118,17 +118,24 @@ def prepare_documents(input_path, input_kind, state_path, infracost_path, input_
     return plan, state, infracost, redactions
 
 
-def terraform_config(terraform_version, policy_input_kind, step_template_id):
+def terraform_config(terraform_version, step_template_id):
     """
     The workflow's stored configuration.
 
     core synthesises the run's steps from this plus the per-run TerraformAction, so anything the
     step needs that does not vary per run belongs here.
+
+    Deliberately carries no "input kind". The step routes on which document is present in the
+    archive -- plan.json is a plan, tfstate.json is JSON -- because a stored kind cannot be trusted:
+    a two-phase pipeline gates the plan and then checks the state against the SAME workflow, whose
+    identity derives from the repository and workflow name. The workflow is created once, by
+    whichever phase ran first, so the stored kind was that phase's and the other phase fed its
+    document to the wrong provider. Every policy came back unevaluated and the phase looked like it
+    had passed with warnings.
     """
     config = {
         "terraformVersion": terraform_version or DEFAULT_TERRAFORM_VERSION,
         "managedTerraformState": False,
-        "policyInputKind": policy_input_kind,
     }
     if step_template_id:
         config["wfStepTemplateRevisionId"] = step_template_id
@@ -269,7 +276,7 @@ def run_check(opts):
             opts.workflow_group,
             opts.workflow_id,
             f"Policy checks for {opts.workflow_id}",
-            terraform_config(opts.terraform_version, opts.input_kind, opts.step_template_id),
+            terraform_config(opts.terraform_version, opts.step_template_id),
             vcs_config=SGClient.vcs_config(getattr(opts, "repo_url", None), getattr(opts, "repo_ref", None)),
         )
 
