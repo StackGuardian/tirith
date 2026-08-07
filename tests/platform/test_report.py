@@ -483,3 +483,43 @@ def test_a_short_sha_is_left_alone():
     body = render.render_markdown(_results(), "COMPLETED", "https://run", commit="abc1234")
 
     assert "<code>abc1234</code>" in body
+
+
+# --- a paused run, and results this module cannot read --------------------------------------------
+
+
+def test_a_fail_is_never_downgraded_by_a_paused_run():
+    """
+    The regression this pins: the APPROVAL_REQUIRED branch returned before the FAIL check, so a
+    paused run carrying a failing policy reported `warned` -- a neutral check, which SATISFIES a
+    required status check -- while the headline on the same counts said "1 failed".
+    """
+    counts = {"FAIL": 1, "PASS": 2}
+
+    assert render.verdict(counts, "APPROVAL_REQUIRED") == "failed"
+
+
+def test_a_rule_with_no_result_is_not_a_pass():
+    """`rule.get("result", PASS)` turned "the step wrote no verdict" into a clean bill of health."""
+    counts, findings = render.summarize({"p": [{"rule_name": "r"}]})
+
+    assert counts[render.UNKNOWN] == 1
+    assert counts[render.PASS] == 0
+    assert render.verdict(counts, "COMPLETED") == "errored"
+    assert findings[0]["result"] == render.UNKNOWN
+
+
+def test_a_result_this_module_does_not_recognise_is_not_silently_dropped():
+    """
+    An unrecognised value used to land in a count key `verdict` never inspects, so it vanished: the
+    run reported `no-policies` and exited 0.
+    """
+    counts, _ = render.summarize({"p": [{"rule_name": "r", "result": "ERROR"}]})
+
+    assert render.verdict(counts, "COMPLETED") == "errored"
+
+
+def test_a_fail_still_outranks_an_unreadable_result():
+    counts, _ = render.summarize({"p": [{"rule_name": "a", "result": "FAIL"}, {"rule_name": "b", "result": "?"}]})
+
+    assert render.verdict(counts, "COMPLETED") == "failed"

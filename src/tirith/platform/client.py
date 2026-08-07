@@ -389,20 +389,25 @@ class SGClient:
 
     def get_run_facts(self, wfgrp, workflow_id, run_id):
         """
-        Fetch the whole run-facts document. Returns {} when it cannot be read.
+        Fetch the whole run-facts document.
 
         One call, because the document carries everything the caller reports on --
         PolicyEvalResults, the cost breakdown, the plan -- and it embeds the full plan, so it is
         large enough that fetching it twice is worth avoiding.
 
         The endpoint hands back a presigned GET rather than the payload inline, for the same reason.
+
+        Raises SGError when the facts could not be *read*, and returns {} only when they were read
+        and were empty. Collapsing both into {} made an unreadable run -- a 403 on the endpoint, a
+        failed presigned GET -- indistinguishable from a run with no policies in scope, so a run
+        whose policies had actually failed reported "no policies in scope" and exited 0.
         """
         status, payload = self._request(
             "GET",
             f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/{run_id}/wfrunfacts/default/",
         )
         if status != 200:
-            return {}
+            raise SGError(f"Could not read the run facts for {run_id} (HTTP {status}): {payload.get('msg')}")
 
         body = payload.get("msg") or payload.get("data") or {}
         if isinstance(body, dict) and body.get("PolicyEvalResults"):
@@ -413,6 +418,8 @@ class SGClient:
         # long as the results artifact was covering for it.
         signed_url = _extract_signed_url(payload)
         if not signed_url:
+            # A 200 carrying neither the facts inline nor a URL to them: the run genuinely has no
+            # facts document, which is what an empty result set looks like.
             return {}
 
         try:
@@ -421,8 +428,8 @@ class SGClient:
             if response.info().get("Content-Encoding") == "gzip" or raw[:2] == b"\x1f\x8b":
                 raw = gzip.decompress(raw)
             return json.loads(raw) or {}
-        except Exception:
-            return {}
+        except Exception as e:
+            raise SGError(f"Could not fetch the run facts document for {run_id}: {e}")
 
     def get_policy_results(self, wfgrp, workflow_id, run_id):
         """Read PolicyEvalResults from the run facts. This is the primary source of the verdict."""

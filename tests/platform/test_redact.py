@@ -817,3 +817,95 @@ def test_child_modules_is_absent_when_there_are_none():
 
 def test_an_empty_plan_gets_no_planned_values():
     assert "planned_values" not in redact.redact_plan(_plan_with([]))
+
+
+# --- resource_drift and configuration literals ---------------------------------------------------
+
+
+def test_resource_drift_is_masked_like_resource_changes():
+    """
+    resource_drift has the identical shape and the identical sensitivity markers, and terraform
+    emits it whenever a refresh finds drift. Masking resource_changes and leaving this alone shipped
+    the same secret one key away -- the planned_values failure a third time.
+    """
+    plan = {
+        "format_version": "1.2",
+        "resource_drift": [
+            {
+                "address": "aws_secretsmanager_secret_version.db",
+                "type": "aws_secretsmanager_secret_version",
+                "change": {
+                    "actions": ["update"],
+                    "before": {"secret_string": "hunter2-before"},
+                    "after": {"secret_string": "hunter2-after"},
+                    "before_sensitive": {"secret_string": True},
+                    "after_sensitive": {"secret_string": True},
+                },
+            }
+        ],
+    }
+
+    out = redact.redact_plan(plan)
+    drift = out["resource_drift"][0]["change"]
+
+    assert drift["before"]["secret_string"] == redact.SENTINEL
+    assert drift["after"]["secret_string"] == redact.SENTINEL
+    assert "hunter2-before" not in json.dumps(out)
+    assert "hunter2-after" not in json.dumps(out)
+
+
+def test_provisioner_literals_are_scrubbed_from_configuration():
+    """
+    A provisioner carries its own expressions one level below the resource's, and a connection block
+    is exactly where a password gets written literally. Scrubbing only the resource's own
+    expressions left these verbatim -- and configuration ships even with `source-dir: ""`.
+    """
+    plan = {
+        "format_version": "1.2",
+        "configuration": {
+            "root_module": {
+                "resources": [
+                    {
+                        "address": "aws_instance.app",
+                        "expressions": {"ami": {"constant_value": "ami-123"}},
+                        "provisioners": [
+                            {
+                                "type": "remote-exec",
+                                "expressions": {
+                                    "inline": {"constant_value": ["echo s3cr3t-inline"]},
+                                    "connection": {"password": {"constant_value": "s3cr3t-conn"}},
+                                },
+                            }
+                        ],
+                    }
+                ]
+            }
+        },
+    }
+
+    out = json.dumps(redact.redact_plan(plan))
+
+    assert "s3cr3t-conn" not in out
+    assert "s3cr3t-inline" not in out
+
+
+def test_module_call_arguments_are_dropped_even_without_an_inlined_module():
+    """
+    A module sourced from a registry or a git ref carries no inlined `module` body, which is the
+    common case -- and its arguments are literals either way.
+    """
+    plan = {
+        "format_version": "1.2",
+        "configuration": {
+            "root_module": {
+                "module_calls": {
+                    "db": {
+                        "source": "terraform-aws-modules/rds/aws",
+                        "expressions": {"password": {"constant_value": "s3cr3t-mod"}},
+                    }
+                }
+            }
+        },
+    }
+
+    assert "s3cr3t-mod" not in json.dumps(redact.redact_plan(plan))

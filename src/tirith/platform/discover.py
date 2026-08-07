@@ -93,14 +93,19 @@ def terraform_show_json(plan_file, workdir=None, binary=None):
     and handed to the masker. stdout is never logged, for the same reason.
     """
     executable = _resolve_binary(binary)
-    if not binary and os.environ.get("TERRAFORM_CLI_PATH") and os.path.basename(executable) == "terraform":
-        # Only reachable if the -bin names were all absent, which means the wrapper was installed
-        # without its usual layout. Say so rather than silently leaking the plan into $GITHUB_OUTPUT.
-        raise DiscoveryError(
-            "TERRAFORM_CLI_PATH is set but no terraform-bin was found beside it, so the only "
-            "terraform on PATH is the setup-terraform wrapper. Running it would copy the whole plan "
-            "into $GITHUB_OUTPUT. Pass --terraform-bin with the real binary."
-        )
+    if not binary:
+        # setup-terraform and setup-opentofu both install a wrapper that echoes stdout into
+        # $GITHUB_OUTPUT, and both advertise it the same way. Guarding only the terraform spelling
+        # left the opentofu one to copy the whole unmasked plan into the step output.
+        for env_var, wrapper in (("TERRAFORM_CLI_PATH", "terraform"), ("TOFU_CLI_PATH", "tofu")):
+            if os.environ.get(env_var) and os.path.basename(executable) == wrapper:
+                # Only reachable if the -bin names were all absent, which means the wrapper was
+                # installed without its usual layout. Say so rather than silently leaking the plan.
+                raise DiscoveryError(
+                    f"{env_var} is set but no {wrapper}-bin was found beside it, so the only "
+                    f"{wrapper} on PATH is the setup wrapper. Running it would copy the whole plan "
+                    f"into $GITHUB_OUTPUT. Pass --terraform-bin with the real binary."
+                )
 
     directory = workdir or os.path.dirname(os.path.abspath(plan_file)) or "."
     plan_arg = os.path.abspath(plan_file)

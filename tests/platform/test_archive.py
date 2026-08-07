@@ -88,6 +88,65 @@ def test_reserved_names_on_disk_are_never_packed(tmp_path, name):
     assert members(body) == ["main.tf", "plan.json"]
 
 
+@pytest.mark.parametrize("name", ["tfplan.json", "state.json", "terraform.plan.json"])
+def test_the_file_a_document_was_read_from_is_never_packed(tmp_path, name):
+    """
+    Reserving only the three names pack() writes was not enough. The input is routinely called
+    something else -- `tfplan.json` is the second name discovery accepts, and
+    `terraform state pull > state.json` is the documented way to produce state -- so the source walk
+    shipped the unmasked original one filename away from the masked copy.
+    """
+    (tmp_path / name).write_text(json.dumps({"outputs": {"db": {"value": SECRET}}}))
+    (tmp_path / "main.tf").write_text("")
+
+    body, _manifest = archive.pack(
+        source_dir=str(tmp_path),
+        plan={"masked": True},
+        document_sources=(str(tmp_path / name),),
+    )
+
+    assert SECRET.encode() not in raw_bytes(body)
+    assert members(body) == ["main.tf", "plan.json"]
+
+
+def test_the_binary_plan_is_never_packed(tmp_path):
+    """
+    A binary plan embeds the prior state, so it carries every attribute of every existing resource
+    in plaintext -- worse than a raw state file, and it matches none of the *.tfstate patterns.
+    --plan-file converts and masks it in memory, which the source walk then undid.
+    """
+    (tmp_path / "tfplan").write_bytes(b"\x1f\x8b binary plan " + SECRET.encode())
+    (tmp_path / "prod.tfplan").write_bytes(SECRET.encode())
+    (tmp_path / "main.tf").write_text("")
+
+    body, _manifest = archive.pack(source_dir=str(tmp_path), plan={"masked": True})
+
+    assert SECRET.encode() not in raw_bytes(body)
+    assert members(body) == ["main.tf", "plan.json"]
+
+
+def test_a_document_source_outside_the_tree_excludes_nothing(tmp_path):
+    """
+    An out-of-tree path cannot collide with a member name, so it must not be reduced to a bare
+    basename -- doing so would silently drop an unrelated same-named file from the archive.
+    """
+    outside = tmp_path / "elsewhere"
+    outside.mkdir()
+    (outside / "main.tf").write_text("")
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "main.tf").write_text("resource {}")
+
+    body, _manifest = archive.pack(
+        source_dir=str(source),
+        plan={"masked": True},
+        document_sources=(str(outside / "main.tf"),),
+    )
+
+    assert members(body) == ["main.tf", "plan.json"]
+    assert read_member(body, "main.tf") == b"resource {}"
+
+
 def test_masked_document_is_what_gets_written(tmp_path):
     """The counterpart: a supplied document really does reach the archive."""
     (tmp_path / "tfstate.json").write_text(json.dumps({"secret": SECRET}))

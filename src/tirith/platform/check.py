@@ -145,7 +145,7 @@ def write_output_json(path, payload):
         log(f"WARNING: could not write {path}: {e}")
 
 
-def pack_documents(source_dir, plan, state, infracost):
+def pack_documents(source_dir, plan, state, infracost, document_sources=()):
     """
     Build the archive, dropping the source tree rather than failing if it is too large.
 
@@ -161,7 +161,9 @@ def pack_documents(source_dir, plan, state, infracost):
     the limit, the *documents* are too big and there is nothing left to drop, so that stays fatal.
     """
     try:
-        archive_bytes, manifest = archive.pack(source_dir=source_dir, plan=plan, state=state, infracost=infracost)
+        archive_bytes, manifest = archive.pack(
+            source_dir=source_dir, plan=plan, state=state, infracost=infracost, document_sources=document_sources
+        )
         return archive_bytes, manifest, None
     except archive.ArchiveError as e:
         if not source_dir:
@@ -240,7 +242,16 @@ def run_check(opts):
     if redactions:
         log(f"Masked {redactions} sensitive value(s) before upload")
 
-    archive_bytes, manifest, source_skipped = pack_documents(opts.source_dir, plan, state, infracost)
+    # Every path a document was read from, so the source walk cannot ship the unmasked original
+    # beside the masked copy. --plan-file supplies the document in memory and no path, which is
+    # exactly the case that needs no exclusion.
+    archive_bytes, manifest, source_skipped = pack_documents(
+        opts.source_dir,
+        plan,
+        state,
+        infracost,
+        document_sources=(opts.input_path, opts.state_path, opts.infracost_path),
+    )
     log(
         f"Packed {manifest['files']} file(s) and {len(manifest['documents'])} document(s) "
         f"into {manifest['bytes'] // 1024} KB"
@@ -296,7 +307,17 @@ def run_check(opts):
     # The run facts are the source of truth -- they are what the dashboard renders. Fetched once:
     # the document carries the verdict and the cost estimate, and it embeds the whole plan, so it
     # is large enough that fetching it twice is worth avoiding.
-    facts = client.get_run_facts(opts.workflow_group, opts.workflow_id, run_id)
+    # A read failure is held rather than raised straight away: an older step image publishes its
+    # verdict as an artifact instead, and that fallback below is still worth trying. What must not
+    # happen is a failed read falling through to an empty result set, which renders as "no policies
+    # in scope" -- a clean-looking exit for a run whose policies may well have failed.
+    facts_error = None
+    try:
+        facts = client.get_run_facts(opts.workflow_group, opts.workflow_id, run_id)
+    except SGError as e:
+        facts = {}
+        facts_error = e
+
     policy_results = facts.get("PolicyEvalResults") or {}
     # PreApply is what the step writes for a check run; the bare key is the fallback for an older
     # step image that only set that one.
@@ -308,6 +329,9 @@ def run_check(opts):
         legacy = client.get_results_artifact(opts.workflow_group, opts.workflow_id, f"{run_id}/tirith-results.json")
         if legacy is not None:
             policy_results = legacy
+
+    if not policy_results and facts_error is not None:
+        raise CheckError(f"The run completed but its results could not be read: {facts_error} (run: {run_url})")
 
     # The archive is deliberately retained. It is the source that produced these findings, and the
     # autofix system reads it to generate fixes -- so deleting it here would remove the only copy of

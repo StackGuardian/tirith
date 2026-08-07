@@ -107,9 +107,15 @@ def _scrub_config_module(module):
     if isinstance(module_calls, dict):
         calls = {}
         for name, call in module_calls.items():
-            if isinstance(call, dict) and isinstance(call.get("module"), dict):
-                call = {**call, "module": _scrub_config_module(call["module"])}
-                # A module's own arguments are literals too.
+            if isinstance(call, dict):
+                if isinstance(call.get("module"), dict):
+                    call = {**call, "module": _scrub_config_module(call["module"])}
+                else:
+                    call = dict(call)
+                # A module's own arguments are literals too. Dropped whether or not the call
+                # carries an inlined `module` body -- it did not when the module came from a
+                # registry or a git source, which is the common case, and the arguments passed to
+                # it are literals either way.
                 call.pop("expressions", None)
             calls[name] = call
         scrubbed["module_calls"] = calls
@@ -126,11 +132,26 @@ def _scrub_config_resource(resource):
     if not isinstance(resource, dict):
         return resource
 
-    expressions = resource.get("expressions")
-    if not isinstance(expressions, dict):
-        return resource
+    scrubbed = dict(resource)
 
-    return {**resource, "expressions": {k: _keep_references(v) for k, v in expressions.items()}}
+    expressions = scrubbed.get("expressions")
+    if isinstance(expressions, dict):
+        scrubbed["expressions"] = {k: _keep_references(v) for k, v in expressions.items()}
+
+    # A provisioner carries its own expressions one level down -- `connection.password`, and the
+    # `inline` script itself. Scrubbing only the resource's own expressions left those verbatim,
+    # and a provisioner block is exactly where a password tends to be written literally.
+    provisioners = scrubbed.get("provisioners")
+    if isinstance(provisioners, list):
+        scrubbed["provisioners"] = [_scrub_config_resource(p) for p in provisioners]
+
+    # count/for_each are expressions in their own right, and a `for_each` over a map of literals
+    # carries those literals.
+    for key in ("count_expression", "for_each_expression"):
+        if key in scrubbed:
+            scrubbed[key] = _keep_references(scrubbed[key])
+
+    return scrubbed
 
 
 def _keep_references(expression):
@@ -181,6 +202,22 @@ def _mask_by_marker(value, marker):
     return value
 
 
+def _mask_resource_change(resource_change):
+    """Mask one `resource_changes`/`resource_drift` entry by its own before/after markers."""
+    if not isinstance(resource_change, dict):
+        return resource_change
+
+    masked = dict(resource_change)
+    change = masked.get("change")
+    if isinstance(change, dict):
+        masked_change = dict(change)
+        for value_key, marker_key in (("before", "before_sensitive"), ("after", "after_sensitive")):
+            if value_key in masked_change:
+                masked_change[value_key] = _mask_by_marker(masked_change[value_key], masked_change.get(marker_key))
+        masked["change"] = masked_change
+    return masked
+
+
 def redact_plan(plan):
     """
     Slim, then mask every value terraform flagged sensitive, then drop root `variables`.
@@ -195,26 +232,13 @@ def redact_plan(plan):
     redacted = dict(plan)
     redacted.pop("variables", None)
 
-    resource_changes = redacted.get("resource_changes")
-    if isinstance(resource_changes, list):
-        masked_changes = []
-        for resource_change in resource_changes:
-            if not isinstance(resource_change, dict):
-                masked_changes.append(resource_change)
-                continue
-
-            masked = dict(resource_change)
-            change = masked.get("change")
-            if isinstance(change, dict):
-                masked_change = dict(change)
-                for value_key, marker_key in (("before", "before_sensitive"), ("after", "after_sensitive")):
-                    if value_key in masked_change:
-                        masked_change[value_key] = _mask_by_marker(
-                            masked_change[value_key], masked_change.get(marker_key)
-                        )
-                masked["change"] = masked_change
-            masked_changes.append(masked)
-        redacted["resource_changes"] = masked_changes
+    # resource_drift has the same shape and the same sensitivity markers as resource_changes, and
+    # terraform emits it whenever a refresh finds drift -- so a masked resource_changes sitting
+    # beside an unmasked resource_drift shipped the same secret in plaintext one key away.
+    for section in ("resource_changes", "resource_drift"):
+        entries = redacted.get(section)
+        if isinstance(entries, list):
+            redacted[section] = [_mask_resource_change(entry) for entry in entries]
 
     output_changes = redacted.get("output_changes")
     if isinstance(output_changes, dict):

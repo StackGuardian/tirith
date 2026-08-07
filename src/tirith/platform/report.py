@@ -10,6 +10,11 @@ WARN = "WARN"
 PASS = "PASS"
 APPROVAL_REQUIRED = "APPROVAL_REQUIRED"
 
+# Anything the step reports that is not one of the four above. It is counted separately and treated
+# as unresolved rather than folded into any of them: a result this module does not understand is not
+# evidence of a pass, and bucketing it under a key `verdict` never inspects made it one.
+UNKNOWN = "UNKNOWN"
+
 # GitHub rejects an issue-comment body over 65536 characters and a check-run output.summary over
 # 65535. Budget well under both: the count that matters is characters after rendering, and a
 # 422 at the end of a run is a bad way to find out.
@@ -26,7 +31,7 @@ def summarize(policy_results):
     folded into passes -- reporting a skipped control as passing is the kind of quiet
     inaccuracy this whole design exists to avoid.
     """
-    counts = {FAIL: 0, WARN: 0, APPROVAL_REQUIRED: 0, PASS: 0, "SKIPPED": 0}
+    counts = {FAIL: 0, WARN: 0, APPROVAL_REQUIRED: 0, PASS: 0, "SKIPPED": 0, UNKNOWN: 0}
     findings = []
 
     for policy_id, rules in sorted((policy_results or {}).items()):
@@ -44,7 +49,13 @@ def summarize(policy_results):
                 )
                 continue
 
-            result = rule.get("result", PASS)
+            # No default of PASS: a rule the step wrote without a `result`, or with one this module
+            # does not know, is unresolved. Defaulting to PASS turned "we cannot tell" into a clean
+            # bill of health, and an unrecognised value landed in a count key `verdict` never reads,
+            # so it disappeared entirely.
+            result = rule.get("result")
+            if result not in (FAIL, WARN, APPROVAL_REQUIRED, PASS):
+                result = UNKNOWN
             counts[result] = counts.get(result, 0) + 1
             messages, resources = _extract_detail(rule)
             findings.append(
@@ -138,23 +149,33 @@ def verdict(counts, run_status):
     author's intent is still visible in the comment. Gating on it properly needs a run that stays
     open, an approve action on it, and this client re-polling afterwards -- none of which exist yet.
 
-    Run status APPROVAL_REQUIRED means the platform itself paused the run. Not reachable for a
-    one-step run today, but if it happens the results may be partial: warn when there are results,
-    error when there are none, and never report a pass for a run that evaluated nothing.
+    Run status APPROVAL_REQUIRED means the platform itself paused the run. It is ranked by the same
+    ladder and then floored, rather than short-circuited: an early return there let a paused run
+    carrying a FAIL report `warned`, which is the one direction that must never happen. And because
+    a paused run did not finish, it can never rank better than `warned` either -- the policies that
+    would have run after the pause did not, so "everything passed" is not something we know.
+
+    A rule whose result this module does not recognise counts as UNKNOWN and lands in `errored`.
+    "We cannot tell" is not a pass.
     """
-    if run_status == "APPROVAL_REQUIRED":
-        return "warned" if any(counts.get(k) for k in (FAIL, WARN, APPROVAL_REQUIRED, PASS, "SKIPPED")) else "errored"
-    if run_status not in ("COMPLETED",):
+    if run_status not in ("COMPLETED", "APPROVAL_REQUIRED"):
         return "errored"
+
+    paused = run_status == "APPROVAL_REQUIRED"
+
     if counts.get(FAIL):
         return "failed"
+    # An unreadable result outranks a warning: part of the evaluation is unaccounted for.
+    if counts.get(UNKNOWN):
+        return "errored"
     if counts.get(APPROVAL_REQUIRED) or counts.get(WARN):
         return "warned"
     if counts.get(PASS) or counts.get("SKIPPED"):
-        return "passed"
-    # A COMPLETED run with no policy results at all: nothing was in scope. Report it rather than
-    # implying a clean bill of health.
-    return "no-policies"
+        return "warned" if paused else "passed"
+    # No policy results at all. On a COMPLETED run that means nothing was in scope -- worth saying,
+    # rather than implying a clean bill of health. On a paused run it means the evaluation never got
+    # far enough to produce any, which is not "nothing in scope" but "we do not know".
+    return "errored" if paused else "no-policies"
 
 
 def headline(counts, verdict_value):

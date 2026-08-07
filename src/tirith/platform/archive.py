@@ -42,6 +42,11 @@ RESERVED_DOCUMENTS = frozenset((PLAN_DOCUMENT, STATE_DOCUMENT, INFRACOST_DOCUMEN
 # .terraform/       provider binaries and modules; hundreds of MB, and the runner does its own init
 # .git/             full history, so anything ever committed would ship
 # *.tfstate*        raw state -- unmasked by definition, including .backup files
+# tfplan / *.tfplan the BINARY plan. It embeds the prior state, so it carries every attribute of
+#                   every existing resource in plaintext -- strictly worse than a raw state file,
+#                   and it matches none of the *.tfstate patterns. `--plan-file` reads it, converts
+#                   it and masks the result in memory, which the source walk then undid by packing
+#                   the original.
 # .terraform.lock.hcl is deliberately NOT excluded: it pins provider versions and is small.
 DEFAULT_EXCLUDES = (
     ".git",
@@ -49,6 +54,9 @@ DEFAULT_EXCLUDES = (
     "*.tfstate",
     "*.tfstate.*",
     "*.tfstate.backup",
+    "tfplan",
+    "*.tfplan",
+    "*.tfplan.*",
     "__pycache__",
     "*.pyc",
     ".venv",
@@ -124,13 +132,28 @@ def _is_excluded(relative_path, name, patterns):
     return False
 
 
-def pack(source_dir, plan=None, state=None, infracost=None, extra_excludes=(), respect_gitignore=True):
+def pack(
+    source_dir,
+    plan=None,
+    state=None,
+    infracost=None,
+    extra_excludes=(),
+    respect_gitignore=True,
+    document_sources=(),
+):
     """
     Build the archive in memory and return its bytes.
 
     `plan`, `state` and `infracost` are already-redacted objects. They are serialized here and
     written at the archive root, overriding any same-named file in `source_dir` -- so a stale
     plan.json lying around cannot displace the masked one.
+
+    `document_sources` are the paths those objects were *read from*. They are excluded from the
+    source walk, because the file on disk is the unmasked original: masking `tfplan.json` and then
+    packing the source tree shipped the plaintext copy one filename away from the redacted one.
+    Reserving only the three names this function writes was not enough -- the input is routinely
+    called something else (`tfplan.json`, `state.json`, or the binary `tfplan`, which carries the
+    prior state inside it).
 
     Returns (archive_bytes, manifest) where manifest lists what went in, for logging.
     """
@@ -159,7 +182,11 @@ def pack(source_dir, plan=None, state=None, infracost=None, extra_excludes=(), r
             # the documented way to produce one -- so packing it would ship every attribute in
             # plaintext beside the masked copy. If the caller wants it evaluated they pass
             # --state-path, which masks it first.
-            manifest["files"], manifest["skipped"] = _add_tree(tar, source_dir, patterns, RESERVED_DOCUMENTS)
+            #
+            # Plus whatever the documents were actually read from, which is usually named something
+            # else entirely.
+            reserved = set(RESERVED_DOCUMENTS) | _relative_sources(source_dir, document_sources)
+            manifest["files"], manifest["skipped"] = _add_tree(tar, source_dir, patterns, reserved)
         for name, document in documents.items():
             _add_document(tar, name, document)
 
@@ -216,6 +243,33 @@ def _add_tree(tar, source_dir, patterns, reserved_names):
                 skipped += 1
 
     return added, skipped
+
+
+def _relative_sources(source_dir, document_sources):
+    """
+    The document source paths, expressed the way _add_tree names members, for exclusion.
+
+    Anything outside `source_dir` is dropped rather than kept as an unanchored basename: it cannot
+    collide with a member name, and excluding a bare basename would silently drop an unrelated
+    same-named file from the archive.
+    """
+    relative = set()
+    try:
+        root = os.path.realpath(source_dir)
+    except OSError:
+        return relative
+
+    for path in document_sources or ():
+        if not path:
+            continue
+        try:
+            full = os.path.realpath(path)
+            rel = os.path.relpath(full, root)
+        except (OSError, ValueError):
+            continue
+        if rel != os.pardir and not rel.startswith(os.pardir + os.sep) and not os.path.isabs(rel):
+            relative.add(rel)
+    return relative
 
 
 def _add_document(tar, name, document):
