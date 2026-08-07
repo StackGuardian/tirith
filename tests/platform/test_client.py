@@ -505,3 +505,28 @@ def test_an_unreadable_workflow_is_treated_as_managing_its_own_state(monkeypatch
     monkeypatch.setattr(sg, "_request", lambda *a, **k: response)
 
     assert sg.manages_terraform_state("default", "wf") is True
+
+
+def test_an_absent_facts_document_is_not_a_read_failure(monkeypatch):
+    """
+    404 means the run produced no facts document, which is a legitimate empty result. Treating it
+    as unreadable would turn healthy runs red -- the opposite of the mistake the raise exists to fix.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (404, {"msg": "not found"}))
+
+    assert sg.get_run_facts("default", "wf", "run-1") == {}
+
+
+def test_an_unreadable_facts_document_raises_rather_than_reading_as_empty(monkeypatch):
+    """
+    A 403 or a 500 means we could not read the verdict, not that there was none. Returning {} made
+    that indistinguishable from "no policies in scope", so a run whose policies had failed reported
+    a clean scope and exited 0.
+    """
+    for status in (403, 500, 502):
+        sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+        monkeypatch.setattr(sg, "_request", lambda *a, **k: (status, {"msg": "nope"}))
+
+        with pytest.raises(SGError, match="Could not read the run facts"):
+            sg.get_run_facts("default", "wf", "run-1")

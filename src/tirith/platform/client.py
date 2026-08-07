@@ -406,6 +406,11 @@ class SGClient:
             "GET",
             f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/{run_id}/wfrunfacts/default/",
         )
+        if status == 404:
+            # Absent, not unreadable. A run that never produced a facts document answers this way,
+            # and that is a legitimate empty result -- treating it as a read failure would turn
+            # healthy runs red, which is the opposite of the mistake being fixed.
+            return {}
         if status != 200:
             raise SGError(f"Could not read the run facts for {run_id} (HTTP {status}): {payload.get('msg')}")
 

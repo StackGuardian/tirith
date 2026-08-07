@@ -243,14 +243,20 @@ def run_check(opts):
         log(f"Masked {redactions} sensitive value(s) before upload")
 
     # Every path a document was read from, so the source walk cannot ship the unmasked original
-    # beside the masked copy. --plan-file supplies the document in memory and no path, which is
-    # exactly the case that needs no exclusion.
+    # beside the masked copy.
+    #
+    # `plan_file` belongs here most of all, and was the omission that made this half a fix:
+    # --plan-file converts the BINARY plan in memory precisely so nothing unmasked touches the
+    # disk, but the binary plan itself is already on disk, and it embeds the prior state -- every
+    # attribute of every existing resource. The `tfplan` name patterns in DEFAULT_EXCLUDES only
+    # cover the spellings the README happens to use; `terraform plan -out=plan.out` is at least as
+    # common, and that file is the one thing here worth protecting most.
     archive_bytes, manifest, source_skipped = pack_documents(
         opts.source_dir,
         plan,
         state,
         infracost,
-        document_sources=(opts.input_path, opts.state_path, opts.infracost_path),
+        document_sources=(opts.input_path, opts.state_path, opts.infracost_path, getattr(opts, "plan_file", None)),
     )
     log(
         f"Packed {manifest['files']} file(s) and {len(manifest['documents'])} document(s) "
@@ -361,6 +367,10 @@ def run_check(opts):
             "warned": counts.get(report.WARN, 0),
             "approval_required": counts.get(report.APPROVAL_REQUIRED, 0),
             "skipped": counts.get("SKIPPED", 0),
+            # Published so a consumer can tell "nothing failed" from "we could not read part of
+            # it". Without it an errored run reported failed: 0, which the action copies straight
+            # to its `failed` output.
+            "unknown": counts.get(report.UNKNOWN, 0),
         },
         "headline": report.headline(counts, verdict_value),
         "wfrun_id": run_id,

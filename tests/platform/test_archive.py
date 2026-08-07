@@ -305,3 +305,23 @@ def test_manifest_reports_what_went_in(tmp_path):
     assert manifest["documents"] == ["plan.json"]
     assert manifest["skipped"] >= 1
     assert manifest["bytes"] > 0
+
+
+def test_the_binary_plan_that_plan_file_read_is_never_packed(tmp_path):
+    """
+    --plan-file converts the binary plan in memory precisely so nothing unmasked touches the disk --
+    but the binary plan is already on disk, and it embeds the prior state: every attribute of every
+    existing resource. The `tfplan` name patterns only cover the spellings the README uses, and
+    `terraform plan -out=plan.out` is at least as common.
+    """
+    (tmp_path / "plan.out").write_bytes(b"binary plan " + SECRET.encode())
+    (tmp_path / "main.tf").write_text("")
+
+    body, _manifest = archive.pack(
+        source_dir=str(tmp_path),
+        plan={"masked": True},
+        document_sources=(str(tmp_path / "plan.out"),),
+    )
+
+    assert SECRET.encode() not in raw_bytes(body)
+    assert members(body) == ["main.tf", "plan.json"]

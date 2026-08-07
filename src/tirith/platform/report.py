@@ -20,7 +20,7 @@ UNKNOWN = "UNKNOWN"
 # 422 at the end of a run is a bad way to find out.
 COMMENT_LIMIT = 60000
 
-_ICONS = {FAIL: "❌", WARN: "⚠️", APPROVAL_REQUIRED: "⏳", PASS: "✅"}
+_ICONS = {FAIL: "❌", WARN: "⚠️", APPROVAL_REQUIRED: "⏳", PASS: "✅", UNKNOWN: "❓"}
 
 
 def summarize(policy_results):
@@ -274,11 +274,22 @@ def render_markdown(
         header += [f"<sub>Scanned commit <code>{_short_commit(commit)}</code></sub>", ""]
 
     if verdict_value == "errored":
-        header += [
-            f"The workflow run finished as `{run_status}` without producing policy results.",
-            "This is reported as a failure rather than a pass: no verdict is not the same as a clean one.",
-            "",
-        ]
+        # Two different reasons land here, and saying the wrong one is worse than saying nothing:
+        # a run that produced NOTHING, and a run whose results included one this tool cannot read.
+        # The second renders a populated table, under which "without producing policy results"
+        # reads as a plain contradiction.
+        if counts.get(UNKNOWN):
+            header += [
+                f"{counts[UNKNOWN]} policy result(s) could not be read, so this run has no verdict.",
+                "This is reported as a failure rather than a pass: partial results are not a clean bill of health.",
+                "",
+            ]
+        else:
+            header += [
+                f"The workflow run finished as `{run_status}` without producing policy results.",
+                "This is reported as a failure rather than a pass: no verdict is not the same as a clean one.",
+                "",
+            ]
 
     table = _render_table(findings)
     # Ahead of the footer so the cost sits directly under the findings, and outside the truncation
@@ -286,7 +297,7 @@ def render_markdown(
     cost = render_cost(cost_breakdown)
     footer = cost + _render_footer(counts, run_url)
 
-    detail_sections = [_render_detail(f) for f in findings if f["result"] in (FAIL, APPROVAL_REQUIRED, WARN)]
+    detail_sections = [_render_detail(f) for f in findings if f["result"] in (FAIL, APPROVAL_REQUIRED, WARN, UNKNOWN)]
 
     body = "\n".join(header + table + detail_sections + footer)
     if len(body) <= limit:
