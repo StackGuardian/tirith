@@ -227,7 +227,7 @@ class SGClient:
     # `content` rather than `payload`: the response variable below is already called payload, and
     # shadowing it sent the JSON response body to S3 in place of the file.
     def upload_file(self, wfgrp, workflow_id, filename, folder, content, content_type=ARCHIVE_CONTENT_TYPE):
-        """
+        r"""
         Upload one object into the workflow's artifact prefix via a presigned PUT, returning its key.
 
         For the project archive the key is what the caller passes back as CodeZipWfArtifactPath when
@@ -425,7 +425,7 @@ class SGClient:
             return {}
 
     def get_policy_results(self, wfgrp, workflow_id, run_id):
-        """PolicyEvalResults from the run facts. This is the primary source of the verdict."""
+        """Read PolicyEvalResults from the run facts. This is the primary source of the verdict."""
         return self.get_run_facts(wfgrp, workflow_id, run_id).get("PolicyEvalResults") or {}
 
     def delete_artifact(self, wfgrp, workflow_id, artifact_name):
