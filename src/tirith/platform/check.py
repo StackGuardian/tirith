@@ -122,7 +122,7 @@ def prepare_documents(input_path, input_kind, state_path, infracost_path, input_
 # Deliberately not overridable: the archive layout, the exit-12 contract and the facts document are
 # all part of one agreement between this client and that image. Pointing the workflow at some other
 # step would produce a run that looks like a policy check and is not one.
-POLICY_STEP_TEMPLATE = "/stackguardian/tirith-iac-governance:1"
+POLICY_STEP_TEMPLATE = "/demo-org/tirith-iac-governance:2"  # QA-ONLY: no stackguardian-org write access
 POLICY_STEP_NAME = "evaluate-policies"
 POLICY_STEP_TIMEOUT = 1800
 
