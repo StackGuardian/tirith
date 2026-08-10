@@ -208,62 +208,62 @@ def test_a_step_template_override_is_honoured():
     assert config["prePlanWfStepsConfig"][0]["wfStepTemplateId"] == "/demo-org/tirith-iac-governance:3"
 
 
-# --- the bundle nonce: did we grade the bundle we uploaded? ---------------------------------------
+# --- the bundle is named per commit, and per RUN ------------------------------------------------
 #
-# The bundle sits at a FIXED name in the workflow's artifact prefix, overwritten every run. That is
-# what stops it accumulating -- the prefix is synced down into every later run of the workflow and
-# nothing deletes from it -- but it means a second run starting between our upload and our step's read
-# replaces ours. Without a check, this run reports a verdict on that commit's code while claiming it is
-# ours: silent, and wrong in the direction that matters.
+# A name shared by every run of the workflow is one two concurrent runs can overwrite, and the action
+# derives a single workflow id per repository -- so two open pull requests, the ordinary case, would
+# have one run evaluating the other's code and reporting the verdict as its own. Silently, on a merge
+# gate. Naming it per commit removes the collision rather than detecting it afterwards.
+#
+# That is only possible because the name travels per RUN: core merges the run's TerraformConfig over
+# the workflow's, so `prePlanWfStepsConfig` can differ every time. The workflow's stored copy is
+# written once, at creation, and never updated.
 
 
-def test_a_bundle_id_mismatch_fails_the_check():
-    """The race, made loud. A verdict describing someone else's code must never be returned."""
-    with pytest.raises(check.CheckError) as failure:
-        check.assert_bundle_identity({"TirithBundle": {"bundleId": "theirs"}}, "ours", "wf-a", "http://run")
+def test_the_bundle_name_carries_the_commit():
+    from tirith.platform.client import ARCHIVE_NAME_TEMPLATE
 
-    message = str(failure.value)
-    assert "evaluated a different bundle" in message
-    # Actionable: the fix is distinct workflow ids for pipelines that run concurrently.
-    assert "--workflow-id" in message
-    assert "wf-a" in message
+    name = ARCHIVE_NAME_TEMPLATE.format(sha="a1b2c3d", tag="plan")
+
+    assert name == "tirith-bundle-a1b2c3d-plan.tar.gz"
+    # Two commits cannot collide, which is the entire point.
+    assert name != ARCHIVE_NAME_TEMPLATE.format(sha="9999999", tag="plan")
 
 
-def test_a_matching_bundle_id_passes():
-    check.assert_bundle_identity({"TirithBundle": {"bundleId": "ours"}}, "ours", "wf-a", "http://run")
-
-
-def test_a_step_that_reports_no_bundle_id_is_not_a_mismatch():
+def test_the_bundle_name_survives_the_artifact_syncs_exclude_list():
     """
-    An older step image writes no TirithBundle. Treating silence as a mismatch would fail every run
-    against it -- turning a missing guard into a total outage.
+    The sync is the delivery mechanism, so a name matching any of its excludes would be dropped
+    silently and never reach the container. `__sg.`, which this name used to carry, is excluded
+    precisely so the old carrier stayed OUT of the sync -- exactly wrong now.
     """
-    check.assert_bundle_identity({}, "ours", "wf-a", "http://run")
-    check.assert_bundle_identity({"TirithBundle": {}}, "ours", "wf-a", "http://run")
+    import fnmatch
+
+    from tirith.platform.client import ARCHIVE_NAME_TEMPLATE
+
+    name = ARCHIVE_NAME_TEMPLATE.format(sha="a1b2c3d", tag="plan")
+    excluded = ("sg.*", "__sg.*", "*__sg.*", "*pci_*", "*_thrifty_*", "*_gdpr_*", "*compliance_raw*")
+
+    for pattern in excluded:
+        assert not fnmatch.fnmatch(name, pattern), f"the bundle name matches the sync exclude {pattern!r}"
+    assert name != "tfstate.json", "that name is a managed-state workflow's live state"
 
 
-def test_the_bundle_id_is_written_into_the_archive():
-    """The client's half of the handshake: the id has to actually be in the bundle it uploads."""
-    import io
-    import tarfile
-
-    archive_bytes, _manifest, _skipped = check.pack_documents(
-        None, {"masked": True}, None, None, bundle_id="abc123"
-    )
-
-    with tarfile.open(fileobj=io.BytesIO(archive_bytes)) as tar:
-        payload = json.loads(tar.extractfile(check.archive.BUNDLE_DOCUMENT).read())
-
-    assert payload == {"bundleId": "abc123"}
-
-
-def test_the_bundle_document_is_not_reported_as_an_evaluated_document():
+def test_the_run_names_its_own_bundle():
     """
-    It is bookkeeping, not a policy input. Listing it would make logs and the report claim a document
-    was evaluated that no provider ever saw.
+    The per-run half. `wfStepInputData` on the *workflow* is written once and never updated, so the
+    name has to be re-sent with each run for it to describe that run's commit.
     """
-    _archive_bytes, manifest, _skipped = check.pack_documents(
-        None, {"masked": True}, None, None, bundle_id="abc123"
-    )
+    step = check.policy_step(None, "tirith-bundle-a1b2c3d-plan.tar.gz")
 
-    assert manifest["documents"] == ["plan.json"]
+    assert step["wfStepInputData"]["data"]["bundlePath"] == "tirith-bundle-a1b2c3d-plan.tar.gz"
+    # Sent in full: core's merge is shallow, so supplying prePlanWfStepsConfig replaces the whole
+    # list and a partial entry would lose the template id the step runs from.
+    assert step["wfStepTemplateId"] == check.POLICY_STEP_TEMPLATE
+    assert step["name"] == check.POLICY_STEP_NAME
+    assert step["timeout"] == check.POLICY_STEP_TIMEOUT
+
+
+def test_the_step_template_override_reaches_the_per_run_step():
+    step = check.policy_step("/demo-org/tirith-iac-governance:3", "b.tar.gz")
+
+    assert step["wfStepTemplateId"] == "/demo-org/tirith-iac-governance:3"

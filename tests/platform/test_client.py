@@ -569,3 +569,42 @@ def test_an_unreadable_facts_document_raises_rather_than_reading_as_empty(monkey
 
         with pytest.raises(SGError, match="Could not read the run facts"):
             sg.get_run_facts("default", "wf", "run-1")
+
+
+def test_create_run_sends_the_bundle_name_in_terraform_config(monkeypatch):
+    """
+    The per-run channel, and the only one that works for a TERRAFORM workflow.
+
+    core ignores a run's `WfStepsConfig` for TERRAFORM and synthesises the steps from TerraformConfig
+    instead, so a step entry has to travel inside `TerraformConfig.prePlanWfStepsConfig` to reach the
+    run at all. Verified against QA: the same entry sent as top-level WfStepsConfig was silently
+    discarded and the step kept the workflow's stored path.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+
+    def fake_request(method, path, body=None, **kwargs):
+        captured["body"] = body
+        return 200, {"data": {"ResourceName": "wfrun-1"}}
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+    step = {"name": "evaluate-policies", "wfStepInputData": {"data": {"bundlePath": "tirith-bundle-a1b2c3d-plan.tar.gz"}}}
+
+    sg.create_run("default", "wf", {"type": "tirith"}, pre_plan_steps=[step])
+
+    sent = captured["body"]["TerraformConfig"]["prePlanWfStepsConfig"]
+    assert sent[0]["wfStepInputData"]["data"]["bundlePath"] == "tirith-bundle-a1b2c3d-plan.tar.gz"
+    # Only prePlanWfStepsConfig: core's merge is shallow, so sending terraformVersion or
+    # managedTerraformState here would override what the workflow stores rather than inherit it.
+    assert set(captured["body"]["TerraformConfig"]) == {"prePlanWfStepsConfig"}
+
+
+def test_create_run_without_steps_sends_no_terraform_config(monkeypatch):
+    """A caller that names no bundle must not blank the workflow's stored configuration."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+    monkeypatch.setattr(sg, "_request", lambda m, p, body=None, **k: (captured.setdefault("body", body), (200, {"data": {"ResourceName": "r"}}))[1])
+
+    sg.create_run("default", "wf", {"type": "tirith"})
+
+    assert "TerraformConfig" not in captured["body"]

@@ -29,19 +29,30 @@ from . import regions
 # SignatureDoesNotMatch; the stored object is merely labelled wrongly, which nothing reads.
 ARCHIVE_CONTENT_TYPE = "application/json"
 
-# The bundle's name in the workflow's artifact directory. Flat, fixed, and overwritten every run.
+# The bundle's name in the workflow's artifact directory, per commit and tag.
 #
-# Flat because there is no folder to put it in: `?folder=` exists but nesting buys nothing here.
+# Namespaced rather than fixed because a fixed name is shared by every run of the workflow, and two
+# runs overlapping -- two pull requests, which is routine, since the action derives one workflow id per
+# repository -- would leave one run evaluating the other's code and reporting the verdict as its own.
+# Silent, and wrong in the direction that gates a merge. A per-commit name cannot collide, so the race
+# does not exist rather than being detected after the fact.
 #
-# Fixed rather than namespaced per commit because the artifact directory is synced *down* into every
-# later run of the workflow, workflow-scoped, and the S3 up-sync carries no --delete -- so a
-# per-commit name would accumulate forever with no way to remove it (api exposes no artifact DELETE).
-# One object, replaced in place, cannot grow.
+# The cost is growth: the artifact directory is synced *down* into every later run of the workflow, the
+# up-sync carries no --delete, and api exposes no artifact DELETE, so bundles accumulate and every run
+# pays to download all of them. Accepted deliberately -- correctness over transfer cost -- and the
+# reason `delete_artifact` below is kept for a retention sweep to use.
+#
+# Flat, because a nested key cannot be deleted correctly: the authorizer's greedy <path:wfGrp>
+# converter swallows it, so `DELETE .../artifacts/<sha>/<name>/` matches the workflow-group delete and
+# is checked against the wrong permission entirely.
 #
 # The name is constrained more than it looks. The down-sync excludes `sg.*`, `*__sg.*`, `*pci_*`,
 # `*_thrifty_*`, `*_gdpr_*`, `*compliance_raw*` and the other compliance globs, so a name matching any
 # of those would be dropped silently and never reach the container. It also must not be
 # `tfstate.json`, which at the artifact root is a managed-state workflow's live state.
+ARCHIVE_NAME_TEMPLATE = "tirith-bundle-{sha}-{tag}.tar.gz"
+
+# What the workflow stores as a fallback, and what the step falls back to if a run names nothing.
 ARCHIVE_DOCUMENT = "tirith-bundle.tar.gz"
 
 # Terminal run states. QUEUED/PENDING/RUNNING are transient; a run can sit in QUEUED for a long
@@ -297,23 +308,28 @@ class SGClient:
 
         return key
 
-    def create_run(self, wfgrp, workflow_id, trigger_details, action="plan"):
+    def create_run(self, wfgrp, workflow_id, trigger_details, pre_plan_steps=None, action="plan"):
         """
         Create one workflow run. Every invocation makes a new run.
 
-        Deliberately carries no WfStepsConfig: core ignores it for TERRAFORM workflows and
-        synthesises the steps from the workflow's TerraformConfig and this TerraformAction. The only
-        per-run state is where the run came from.
+        Deliberately carries no WfStepsConfig: core ignores that for TERRAFORM workflows, synthesising
+        the steps from TerraformConfig and TerraformAction instead. `TerraformConfig` is the field it
+        *does* honour per run -- core merges the run's over the workflow's
+        (`workflowruns/__init__.py:1646`) -- so that is how each run names its own bundle.
 
-        Note what is *not* here: the bundle. It reaches the step through the workflow's artifact
-        directory, which the run controller syncs down before any step runs, and the step is told its
-        name in that step's own `wfStepInputData`. So the run body needs no archive field, which is
-        what lets api stay completely untouched -- no new serializer field, no new response key.
+        The merge is shallow, so `prePlanWfStepsConfig` replaces the workflow's list wholesale and the
+        caller must send the complete step entry. Keys it does not send, `terraformVersion` and
+        `managedTerraformState`, still come from the workflow.
+
+        Note what is *not* here: any archive field. The bundle reaches the step through the workflow's
+        artifact directory, which the run controller syncs down before any step runs, and the step is
+        told which one to read via that step's `wfStepInputData`. So api needs no new serializer field
+        and no new response key -- `TerraformConfig` is already declared on WorkflowRunSerializer.
 
         `terraformProjectZip` was the previous carrier and is gone. It worked, but it cost a declared
-        field in api's WorkflowRunSerializer: DRF drops undeclared keys, so without that change a run
-        came back 201 having silently discarded the reference and would have evaluated a VCS checkout
-        instead of the uploaded code.
+        field in api: DRF drops undeclared keys, so without that change a run came back 201 having
+        silently discarded the reference and would have evaluated a VCS checkout instead of the
+        uploaded code.
 
         A context tag was the other obvious-looking option and is the wrong tool: run context tags are
         indexed into global search, so an internal storage key would surface in customers' tag
@@ -323,6 +339,8 @@ class SGClient:
             "TerraformAction": {"action": action},
             "TriggerDetails": trigger_details,
         }
+        if pre_plan_steps:
+            body["TerraformConfig"] = {"prePlanWfStepsConfig": pre_plan_steps}
         status, payload = self._request("POST", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/", body)
         if status not in (200, 201):
             raise SGError(f"Could not create the workflow run (HTTP {status}): {payload.get('msg')}")
