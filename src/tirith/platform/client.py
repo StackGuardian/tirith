@@ -230,7 +230,7 @@ class SGClient:
         r"""
         Upload one object into the workflow's artifact prefix via a presigned PUT, returning its key.
 
-        For the project archive the key is what the caller passes back as CodeZipWfArtifactPath when
+        For the project archive the key is what the caller passes back as `terraformProjectZip` when
         creating the run. It comes from the response rather than being rebuilt here: the layout is
         runner-aware (a private runner's own S3 bucket or Azure container rather than the shared
         bucket), so a client-side guess would be wrong for exactly the customers who are hardest to
@@ -290,10 +290,11 @@ class SGClient:
         synthesises the steps from the workflow's TerraformConfig and this TerraformAction. The
         only per-run state is the archive key and where the run came from.
 
-        The archive travels as `CodeZipWfArtifactPath`, which core stores under RuntimeParameters.
-        `terraformProjectZip` expresses the same thing but belongs to the CLI-driven workflow
-        feature; a separate key keeps the two distinguishable, so a rule that ties an archive to one
-        action can be written without touching the other's path.
+        The archive travels as `terraformProjectZip`, which core stores under RuntimeParameters and
+        both runners have read since SG-3809. Reusing it rather than adding a second key is what
+        lets core and the run controller stay untouched -- at the cost of making a policy-check
+        archive indistinguishable from the CLI-driven workflow's, so a validation rule cannot tie an
+        archive to one action. That trade is recorded on the api PR.
 
         A context tag was the obvious-looking alternative and is the wrong tool: run context tags are
         indexed into global search, so an internal storage key would surface in customers' tag

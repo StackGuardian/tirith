@@ -90,7 +90,7 @@ def test_extract_signed_url_returns_none_when_absent():
 
 def test_upload_archive_requires_a_storage_key(monkeypatch):
     """
-    The key is what the caller passes back as CodeZipWfArtifactPath. A platform that predates it
+    The key is what the caller passes back as `terraformProjectZip`. A platform that predates it
     being returned answers with the URL alone, and continuing would create a run pointing at nothing.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
@@ -215,7 +215,7 @@ def test_create_run_sends_no_step_config(monkeypatch):
 
 def test_create_run_rejects_a_platform_that_dropped_the_archive_reference(monkeypatch):
     """
-    An api that predates CodeZipWfArtifactPath drops it during request validation, and the run then
+    An api that does not declare `terraformProjectZip` drops it during request validation, and the run then
     evaluates a VCS checkout instead of the uploaded code -- the wrong answer, delivered without
     complaint. The one failure mode of this design, so it is asserted rather than assumed.
     """
