@@ -203,10 +203,13 @@ def test_create_run_sends_no_step_config(monkeypatch):
 
     assert run_id == "wfrun-1"
     assert "WfStepsConfig" not in captured["body"]
-    assert captured["body"]["TerraformAction"] == {"action": "tirith-iac-governance"}
-    assert captured["body"]["CodeZipWfArtifactPath"] == "orgs/acme/…/a.tar.gz"
-    # Not a context tag: run context tags are indexed into global search, so an internal storage key
-    # would surface in customers' tag typeaheads and could be enumerated by filtering on it.
+    # `plan` is a dummy: the policy step is spliced in ahead of the plan step and exits 12, so the
+    # plan never runs. `plan` is simply the action whose synthesis splices pre-plan steps in.
+    assert captured["body"]["TerraformAction"] == {"action": "plan"}
+    # The CLI-driven workflow's field, reused -- core and both runners have read it since SG-3809, so
+    # the archive needs no new plumbing.
+    assert captured["body"]["terraformProjectZip"] == "orgs/acme/…/a.tar.gz"
+    assert "CodeZipWfArtifactPath" not in captured["body"]
     assert "ContextTags" not in captured["body"]
 
 
@@ -247,7 +250,7 @@ def test_create_run_passes_when_the_platform_stored_the_archive_reference(monkey
         "_request",
         lambda *a, **k: (
             200,
-            {"data": {"ResourceName": "wfrun-1", "RuntimeParameters": {"codeZipWfArtifactPath": "orgs/acme/a.tar.gz"}}},
+            {"data": {"ResourceName": "wfrun-1", "RuntimeParameters": {"terraformProjectZip": "orgs/acme/a.tar.gz"}}},
         ),
     )
 

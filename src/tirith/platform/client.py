@@ -26,11 +26,11 @@ from . import regions
 ARCHIVE_CONTENT_TYPE = "application/gzip"
 
 # The run-creation field naming the uploaded project archive, and the RuntimeParameters key core
-# stores it under. The run controller keys off the stored one; a mismatch anywhere along that chain
-# means the archive is silently ignored and the run falls back to a VCS checkout, which for a
-# workflow created by this client is no checkout at all. Hence the read-back in create_run.
-CODE_ZIP_FIELD = "CodeZipWfArtifactPath"
-CODE_ZIP_RUNTIME_KEY = "codeZipWfArtifactPath"
+# stores it under -- the same name in both cases. This is the CLI-driven workflow's field (SG-3809),
+# reused deliberately: core and both runners have read it since December, so the archive needs no new
+# plumbing anywhere. The cost is that a policy-check archive is now indistinguishable from that
+# feature's, so a future rule cannot reject the field for the wrong action.
+ARCHIVE_FIELD = "terraformProjectZip"
 
 # Terminal run states. QUEUED/PENDING/RUNNING are transient; a run can sit in QUEUED for a long
 # while behind the per-workflow concurrency gate, which is why the caller logs each poll.
@@ -282,7 +282,7 @@ class SGClient:
 
         return key
 
-    def create_run(self, wfgrp, workflow_id, project_zip_key, trigger_details, action="tirith-iac-governance"):
+    def create_run(self, wfgrp, workflow_id, project_zip_key, trigger_details, action="plan"):
         """
         Create one workflow run. Every invocation makes a new run.
 
@@ -301,7 +301,7 @@ class SGClient:
         """
         body = {
             "TerraformAction": {"action": action},
-            CODE_ZIP_FIELD: project_zip_key,
+            ARCHIVE_FIELD: project_zip_key,
             "TriggerDetails": trigger_details,
         }
         status, payload = self._request("POST", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/", body)
@@ -318,11 +318,11 @@ class SGClient:
         # back rather than let that pass as a result. Only when the response says: an older
         # response shape that omits RuntimeParameters is not evidence either way.
         runtime_parameters = data.get("RuntimeParameters")
-        if isinstance(runtime_parameters, dict) and not runtime_parameters.get(CODE_ZIP_RUNTIME_KEY):
+        if isinstance(runtime_parameters, dict) and not runtime_parameters.get(ARCHIVE_FIELD):
             raise SGError(
                 f"The platform dropped the code bundle reference: run {run_name} came back without "
-                f"RuntimeParameters.{CODE_ZIP_RUNTIME_KEY}. It would evaluate a VCS checkout instead "
-                f"of the uploaded code. The platform may predate {CODE_ZIP_FIELD}."
+                f"RuntimeParameters.{ARCHIVE_FIELD}. It would evaluate a VCS checkout instead "
+                f"of the uploaded code. The platform may predate {ARCHIVE_FIELD}."
             )
 
         return run_name, data

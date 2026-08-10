@@ -118,27 +118,48 @@ def prepare_documents(input_path, input_kind, state_path, infracost_path, input_
     return plan, state, infracost, redactions
 
 
+# The step template that evaluates the policies, and the name its run stage takes.
+POLICY_STEP_TEMPLATE = "/stackguardian/tirith-iac-governance:1"
+POLICY_STEP_NAME = "evaluate-policies"
+POLICY_STEP_TIMEOUT = 1800
+
+
 def terraform_config(terraform_version, step_template_id):
     """
-    The workflow's stored configuration.
+    The workflow's stored configuration, carrying the policy step as a PRE-PLAN step.
 
-    core synthesises the run's steps from this plus the per-run TerraformAction, so anything the
-    step needs that does not vary per run belongs here.
+    This is the whole mechanism, and it uses only primitives the platform already had. core splices
+    `prePlanWfStepsConfig` ahead of `generate-terraform-plan`, and a step exiting 12 tells the run
+    controller to complete the run successfully and skip everything after it. So the policy step runs,
+    exits 12, and the terraform plan never happens -- without core knowing anything about this feature.
+
+    That is why the run's TerraformAction is `plan`: a dummy value, never acted on, chosen because it
+    is the action whose synthesis splices pre-plan steps in.
+
+    `managedTerraformState` stays False -- a policy check writes no state, and it must not take the
+    managed-state backend override even on a workflow configured for one.
 
     Deliberately carries no "input kind". The step routes on which document is present in the
-    archive -- plan.json is a plan, tfstate.json is JSON -- because a stored kind cannot be trusted:
-    a two-phase pipeline gates the plan and then checks the state against the SAME workflow, whose
-    identity derives from the repository and workflow name. The workflow is created once, by
-    whichever phase ran first, so the stored kind was that phase's and the other phase fed its
-    document to the wrong provider. Every policy came back unevaluated and the phase looked like it
-    had passed with warnings.
+    archive, because a stored kind cannot be trusted: a two-phase pipeline gates the plan and then
+    checks the state against the SAME workflow, whose identity derives from the repository and
+    workflow name. The workflow is created once, by whichever phase ran first, so the stored kind was
+    that phase's and the other phase fed its document to a provider that cannot read it.
     """
     config = {
         "terraformVersion": terraform_version or DEFAULT_TERRAFORM_VERSION,
         "managedTerraformState": False,
+        "prePlanWfStepsConfig": [
+            {
+                "name": POLICY_STEP_NAME,
+                "wfStepTemplateId": step_template_id or POLICY_STEP_TEMPLATE,
+                "timeout": POLICY_STEP_TIMEOUT,
+                "approval": False,
+                # Everything the step needs travels here. It reads nothing from the workflow's
+                # terraform configuration.
+                "wfStepInputData": {"schemaType": "FORM_JSONSCHEMA", "data": {}},
+            }
+        ],
     }
-    if step_template_id:
-        config["wfStepTemplateRevisionId"] = step_template_id
     return config
 
 

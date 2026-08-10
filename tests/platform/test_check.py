@@ -179,3 +179,30 @@ def test_the_size_message_is_readable_below_a_megabyte(monkeypatch):
     assert _human_bytes(137 * 1024 * 1024) == "137.0 MB"
     assert _human_bytes(300 * 1024) == "300.0 KB"
     assert _human_bytes(512) == "512 bytes"
+
+
+def test_the_policy_step_is_spliced_in_as_a_pre_plan_step():
+    """
+    The whole mechanism, and it uses only primitives the platform already had: core splices
+    `prePlanWfStepsConfig` ahead of `generate-terraform-plan`, and the step exits 12, which tells the
+    run controller to complete the run and skip everything after it. So core needs to know nothing
+    about this feature -- which is why there is no terraform action for it.
+    """
+    config = check.terraform_config("1.5.7", None)
+
+    steps = config["prePlanWfStepsConfig"]
+    assert len(steps) == 1
+    assert steps[0]["name"] == check.POLICY_STEP_NAME
+    assert steps[0]["wfStepTemplateId"] == check.POLICY_STEP_TEMPLATE
+    # Every input the step needs travels in its own step input, not the terraform configuration.
+    assert steps[0]["wfStepInputData"]["schemaType"] == "FORM_JSONSCHEMA"
+    # A policy check writes no state, so it must not take a managed-state backend override.
+    assert config["managedTerraformState"] is False
+    # No stored input kind: routing is by which document is in the archive.
+    assert "policyInputKind" not in config
+
+
+def test_a_step_template_override_is_honoured():
+    config = check.terraform_config("1.5.7", "/demo-org/tirith-iac-governance:3")
+
+    assert config["prePlanWfStepsConfig"][0]["wfStepTemplateId"] == "/demo-org/tirith-iac-governance:3"
