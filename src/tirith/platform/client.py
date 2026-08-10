@@ -23,14 +23,26 @@ import urllib.request
 from . import regions
 
 # Signed into the upload URL by the platform, so the PUT must send the same value.
-ARCHIVE_CONTENT_TYPE = "application/gzip"
+# The bundle is PUT to a URL the platform signs for application/json regardless of filename, and S3
+# validates the signature against the header the client sends -- not against the body. So the header
+# has to be the signed one even though the body is gzip. Sending application/gzip earns a
+# SignatureDoesNotMatch; the stored object is merely labelled wrongly, which nothing reads.
+ARCHIVE_CONTENT_TYPE = "application/json"
 
-# The run-creation field naming the uploaded project archive, and the RuntimeParameters key core
-# stores it under -- the same name in both cases. This is the CLI-driven workflow's field (SG-3809),
-# reused deliberately: core and both runners have read it since December, so the archive needs no new
-# plumbing anywhere. The cost is that a policy-check archive is now indistinguishable from that
-# feature's, so a future rule cannot reject the field for the wrong action.
-ARCHIVE_FIELD = "terraformProjectZip"
+# The bundle's name in the workflow's artifact directory. Flat, fixed, and overwritten every run.
+#
+# Flat because there is no folder to put it in: `?folder=` exists but nesting buys nothing here.
+#
+# Fixed rather than namespaced per commit because the artifact directory is synced *down* into every
+# later run of the workflow, workflow-scoped, and the S3 up-sync carries no --delete -- so a
+# per-commit name would accumulate forever with no way to remove it (api exposes no artifact DELETE).
+# One object, replaced in place, cannot grow.
+#
+# The name is constrained more than it looks. The down-sync excludes `sg.*`, `*__sg.*`, `*pci_*`,
+# `*_thrifty_*`, `*_gdpr_*`, `*compliance_raw*` and the other compliance globs, so a name matching any
+# of those would be dropped silently and never reach the container. It also must not be
+# `tfstate.json`, which at the artifact root is a managed-state workflow's live state.
+ARCHIVE_DOCUMENT = "tirith-bundle.tar.gz"
 
 # Terminal run states. QUEUED/PENDING/RUNNING are transient; a run can sit in QUEUED for a long
 # while behind the per-workflow concurrency gate, which is why the caller logs each poll.
@@ -241,7 +253,11 @@ class SGClient:
         callers want: the archive because a nested key cannot be deleted correctly, and the state
         document because `artifacts/tfstate.json` is the canonical location the platform reads.
         """
-        params = {"filename": filename, "contentType": content_type}
+        # No `contentType` parameter. The endpoint signs application/json regardless, and asking it to
+        # sign anything else needs an api change this feature deliberately does not make -- so the PUT
+        # below sends application/json to match the signature, and the bundle is merely labelled
+        # wrongly in storage. Nothing reads that label.
+        params = {"filename": filename}
         if folder:
             # Only when set. urlencode stringifies None to the literal "None", and the endpoint
             # treats any non-empty value as a subfolder -- so passing it unconditionally produced a
@@ -255,13 +271,12 @@ class SGClient:
         if status != 200:
             raise SGError(f"Could not get an upload URL for {filename} (HTTP {status}): {payload.get('msg')}")
 
-        key = (payload.get("data") or {}).get("key")
-        if not key:
-            raise SGError(
-                f"The upload response for {filename} carried no storage key (data.key). The "
-                f"platform may predate the key being returned from file_upload_url. "
-                f"Response: {payload}"
-            )
+        # Informational only, and optional. It used to be required, because the caller had to pass the
+        # key back as a run field -- and an api that did not return it produced a run pointing at
+        # nothing. Nothing passes the key anywhere now: the step finds the bundle by name in the
+        # artifacts directory. So an api that does not return a key is fine, and this stays a label for
+        # the log line rather than a hard requirement.
+        key = (payload.get("data") or {}).get("key") or f"{filename} (key not reported)"
         signed_url = _extract_signed_url(payload)
         if not signed_url:
             raise SGError(f"No signed URL in the upload response for {filename}: {payload}")
@@ -282,27 +297,30 @@ class SGClient:
 
         return key
 
-    def create_run(self, wfgrp, workflow_id, project_zip_key, trigger_details, action="plan"):
+    def create_run(self, wfgrp, workflow_id, trigger_details, action="plan"):
         """
         Create one workflow run. Every invocation makes a new run.
 
         Deliberately carries no WfStepsConfig: core ignores it for TERRAFORM workflows and
-        synthesises the steps from the workflow's TerraformConfig and this TerraformAction. The
-        only per-run state is the archive key and where the run came from.
+        synthesises the steps from the workflow's TerraformConfig and this TerraformAction. The only
+        per-run state is where the run came from.
 
-        The archive travels as `terraformProjectZip`, which core stores under RuntimeParameters and
-        both runners have read since SG-3809. Reusing it rather than adding a second key is what
-        lets core and the run controller stay untouched -- at the cost of making a policy-check
-        archive indistinguishable from the CLI-driven workflow's, so a validation rule cannot tie an
-        archive to one action. That trade is recorded on the api PR.
+        Note what is *not* here: the bundle. It reaches the step through the workflow's artifact
+        directory, which the run controller syncs down before any step runs, and the step is told its
+        name in that step's own `wfStepInputData`. So the run body needs no archive field, which is
+        what lets api stay completely untouched -- no new serializer field, no new response key.
 
-        A context tag was the obvious-looking alternative and is the wrong tool: run context tags are
+        `terraformProjectZip` was the previous carrier and is gone. It worked, but it cost a declared
+        field in api's WorkflowRunSerializer: DRF drops undeclared keys, so without that change a run
+        came back 201 having silently discarded the reference and would have evaluated a VCS checkout
+        instead of the uploaded code.
+
+        A context tag was the other obvious-looking option and is the wrong tool: run context tags are
         indexed into global search, so an internal storage key would surface in customers' tag
         typeaheads and could be enumerated by filtering on it.
         """
         body = {
             "TerraformAction": {"action": action},
-            ARCHIVE_FIELD: project_zip_key,
             "TriggerDetails": trigger_details,
         }
         status, payload = self._request("POST", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/", body)
@@ -313,18 +331,6 @@ class SGClient:
         run_name = data.get("ResourceName")
         if not run_name:
             raise SGError(f"No ResourceName in the run-creation response: {payload}")
-
-        # A platform that predates the field drops it during request validation and the run then
-        # falls back to a VCS checkout -- the wrong code, evaluated without complaint. Assert it
-        # back rather than let that pass as a result. Only when the response says: an older
-        # response shape that omits RuntimeParameters is not evidence either way.
-        runtime_parameters = data.get("RuntimeParameters")
-        if isinstance(runtime_parameters, dict) and not runtime_parameters.get(ARCHIVE_FIELD):
-            raise SGError(
-                f"The platform dropped the code bundle reference: run {run_name} came back without "
-                f"RuntimeParameters.{ARCHIVE_FIELD}. It would evaluate a VCS checkout instead "
-                f"of the uploaded code. The platform may predate {ARCHIVE_FIELD}."
-            )
 
         return run_name, data
 

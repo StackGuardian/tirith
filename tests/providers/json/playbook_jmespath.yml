@@ -1,0 +1,138 @@
+- name: Provision EC2 instance and set up MySQL
+  hosts: localhost
+  gather_facts: false
+  become: true
+  vars:
+    region: "us-east-1"
+    instance_type: "t2.micro"
+    ami_id: "ami-0c55b159cbfafe1f0"
+    key_name: "my-key-pair"
+    security_group: "sg-0123456789abcdef0"
+    subnet_id: "subnet-0123456789abcdef0"
+    mysql_root_password: "SecurePassword123!"
+    mysql_app_password: "AppSecure456!"
+    db_name: "production_db"
+    app_user: "app_service"
+    backup_retention_days: 7
+    package_list:
+      - mysql-server
+      - python3-pymysql
+      - mysql-client
+    allowed_networks:
+      - "10.0.0.0/8"
+      - "172.16.0.0/12"
+  
+  tasks:
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        region: "{{ region }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        security_group: "{{ security_group }}"
+        subnet_id: "{{ subnet_id }}"
+        assign_public_ip: true
+        wait: yes
+        count: 1
+        instance_tags:
+          Name: "MySQLInstance"
+          Environment: "production"
+          Application: "database"
+          ManagedBy: "Ansible"
+      register: ec2
+
+    - name: Wait for EC2 instance to be ready
+      wait_for:
+        host: "{{ ec2.instances[0].public_ip_address }}"
+        port: 22
+        delay: 10
+        timeout: 300
+        state: started
+
+    - name: Install required packages
+      become: true
+      ansible.builtin.package:
+        name: "{{ package_list }}"
+        state: present
+
+    - name: Configure MySQL to bind to all interfaces
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: '^bind-address'
+        line: 'bind-address = 0.0.0.0'
+        backup: yes
+      register: mysql_config
+
+    - name: Start MySQL service
+      become: true
+      ansible.builtin.service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Set MySQL root password with secure authentication
+      become: true
+      ansible.builtin.shell: |
+        mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}';"
+      no_log: true
+
+    - name: Create application database
+      become: true
+      ansible.builtin.shell: |
+        mysql -u root -p'{{ mysql_root_password }}' -e "CREATE DATABASE IF NOT EXISTS {{ db_name }} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+      no_log: true
+
+    - name: Create application user with limited privileges
+      become: true
+      ansible.builtin.shell: |
+        mysql -u root -p'{{ mysql_root_password }}' -e "CREATE USER IF NOT EXISTS '{{ app_user }}'@'%' IDENTIFIED BY '{{ mysql_app_password }}';"
+        mysql -u root -p'{{ mysql_root_password }}' -e "GRANT SELECT, INSERT, UPDATE, DELETE ON {{ db_name }}.* TO '{{ app_user }}'@'%';"
+        mysql -u root -p'{{ mysql_root_password }}' -e "FLUSH PRIVILEGES;"
+      no_log: true
+
+    - name: Configure MySQL backup script
+      become: true
+      ansible.builtin.copy:
+        dest: /usr/local/bin/mysql-backup.sh
+        mode: '0750'
+        content: |
+          #!/bin/bash
+          BACKUP_DIR="/var/backups/mysql"
+          DATE=$(date +%Y%m%d_%H%M%S)
+          mkdir -p $BACKUP_DIR
+          mysqldump -u root -p'{{ mysql_root_password }}' --all-databases > $BACKUP_DIR/backup_$DATE.sql
+          find $BACKUP_DIR -name "backup_*.sql" -mtime +{{ backup_retention_days }} -delete
+      no_log: true
+
+    - name: Set up MySQL backup cron job
+      become: true
+      ansible.builtin.cron:
+        name: "MySQL daily backup"
+        minute: "0"
+        hour: "2"
+        job: "/usr/local/bin/mysql-backup.sh"
+        user: root
+
+    - name: Verify MySQL is listening on port 3306
+      ansible.builtin.wait_for:
+        port: 3306
+        host: localhost
+        timeout: 30
+        state: started
+
+    - name: Get MySQL version
+      become: true
+      ansible.builtin.shell: mysql --version
+      register: mysql_version
+      changed_when: false
+
+    - name: Store instance metadata
+      ansible.builtin.set_fact:
+        instance_info:
+          instance_id: "{{ ec2.instances[0].instance_id }}"
+          public_ip: "{{ ec2.instances[0].public_ip_address }}"
+          private_ip: "{{ ec2.instances[0].private_ip_address }}"
+          mysql_version: "{{ mysql_version.stdout }}"
+          database_name: "{{ db_name }}"
+          created_at: "{{ ansible_date_time.iso8601 }}"

@@ -206,3 +206,64 @@ def test_a_step_template_override_is_honoured():
     config = check.terraform_config("1.5.7", "/demo-org/tirith-iac-governance:3")
 
     assert config["prePlanWfStepsConfig"][0]["wfStepTemplateId"] == "/demo-org/tirith-iac-governance:3"
+
+
+# --- the bundle nonce: did we grade the bundle we uploaded? ---------------------------------------
+#
+# The bundle sits at a FIXED name in the workflow's artifact prefix, overwritten every run. That is
+# what stops it accumulating -- the prefix is synced down into every later run of the workflow and
+# nothing deletes from it -- but it means a second run starting between our upload and our step's read
+# replaces ours. Without a check, this run reports a verdict on that commit's code while claiming it is
+# ours: silent, and wrong in the direction that matters.
+
+
+def test_a_bundle_id_mismatch_fails_the_check():
+    """The race, made loud. A verdict describing someone else's code must never be returned."""
+    with pytest.raises(check.CheckError) as failure:
+        check.assert_bundle_identity({"TirithBundle": {"bundleId": "theirs"}}, "ours", "wf-a", "http://run")
+
+    message = str(failure.value)
+    assert "evaluated a different bundle" in message
+    # Actionable: the fix is distinct workflow ids for pipelines that run concurrently.
+    assert "--workflow-id" in message
+    assert "wf-a" in message
+
+
+def test_a_matching_bundle_id_passes():
+    check.assert_bundle_identity({"TirithBundle": {"bundleId": "ours"}}, "ours", "wf-a", "http://run")
+
+
+def test_a_step_that_reports_no_bundle_id_is_not_a_mismatch():
+    """
+    An older step image writes no TirithBundle. Treating silence as a mismatch would fail every run
+    against it -- turning a missing guard into a total outage.
+    """
+    check.assert_bundle_identity({}, "ours", "wf-a", "http://run")
+    check.assert_bundle_identity({"TirithBundle": {}}, "ours", "wf-a", "http://run")
+
+
+def test_the_bundle_id_is_written_into_the_archive():
+    """The client's half of the handshake: the id has to actually be in the bundle it uploads."""
+    import io
+    import tarfile
+
+    archive_bytes, _manifest, _skipped = check.pack_documents(
+        None, {"masked": True}, None, None, bundle_id="abc123"
+    )
+
+    with tarfile.open(fileobj=io.BytesIO(archive_bytes)) as tar:
+        payload = json.loads(tar.extractfile(check.archive.BUNDLE_DOCUMENT).read())
+
+    assert payload == {"bundleId": "abc123"}
+
+
+def test_the_bundle_document_is_not_reported_as_an_evaluated_document():
+    """
+    It is bookkeeping, not a policy input. Listing it would make logs and the report claim a document
+    was evaluated that no provider ever saw.
+    """
+    _archive_bytes, manifest, _skipped = check.pack_documents(
+        None, {"masked": True}, None, None, bundle_id="abc123"
+    )
+
+    assert manifest["documents"] == ["plan.json"]

@@ -1,0 +1,251 @@
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json",
+        "description": "Advanced JMESPath policy for Ansible playbook validation with complex queries"
+    },
+    "evaluators": [
+        {
+            "id": "check_aws_region",
+            "description": "Verify AWS region is set correctly in playbook vars",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].vars.region"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "us-east-1"
+            }
+        },
+        {
+            "id": "check_production_instance_types",
+            "description": "Filter tasks with production environment tags and validate instance types",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'amazon.aws.ec2_instance' && `amazon.aws.ec2_instance`.instance_tags.Environment == 'production'].`amazon.aws.ec2_instance`.instance_type | [0]"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": ["t2.micro", "t3.micro", "t3.small"]
+            }
+        },
+        {
+            "id": "check_no_unauthorized_packages",
+            "description": "Use filter to check package installation tasks don't contain unauthorized apps",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?contains(keys(@), 'ansible.builtin.package')].`ansible.builtin.package`.name | [0]"
+            },
+            "condition": {
+                "type": "NotContains",
+                "value": "unauthorized-app"
+            }
+        },
+        {
+            "id": "check_sensitive_tasks_no_log",
+            "description": "Ensure tasks with passwords have no_log enabled using filter and multi-select",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?contains(to_string(@), 'password') || contains(to_string(@), 'secret')].no_log"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": true
+            }
+        },
+        {
+            "id": "check_task_count_minimum",
+            "description": "Use length function to ensure minimum number of tasks",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThanEqualTo",
+                "value": 5
+            }
+        },
+        {
+            "id": "check_privileged_tasks",
+            "description": "Filter tasks that require become privilege and count them",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?become == `true`] | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThan",
+                "value": 0
+            }
+        },
+        {
+            "id": "check_ec2_public_ip",
+            "description": "Extract and validate EC2 instance configuration with nested attributes",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'amazon.aws.ec2_instance'].`amazon.aws.ec2_instance`.assign_public_ip | [0]"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": true
+            }
+        },
+        {
+            "id": "check_service_tasks_state",
+            "description": "Filter service tasks and extract their states using projection",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'ansible.builtin.service'].`ansible.builtin.service`.{state: state, enabled: enabled}"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": {"state": "started", "enabled": true}
+            }
+        },
+        {
+            "id": "check_wait_for_timeout",
+            "description": "Validate wait_for timeout is within acceptable range using comparison",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?wait_for].wait_for.timeout | [0]"
+            },
+            "condition": {
+                "type": "LessThanEqualTo",
+                "value": 600
+            }
+        },
+        {
+            "id": "check_tags_present_on_resources",
+            "description": "Use pipe expressions to extract and validate EC2 tags exist",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'amazon.aws.ec2_instance'].`amazon.aws.ec2_instance`.instance_tags | [0] | keys(@) | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThanEqualTo",
+                "value": 2
+            }
+        },
+        {
+            "id": "check_no_shell_without_args",
+            "description": "Filter shell/command tasks and ensure they don't run without proper args",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'ansible.builtin.shell' || 'ansible.builtin.command'].name"
+            },
+            "condition": {
+                "type": "NotContains",
+                "value": "Run arbitrary command"
+            }
+        },
+        {
+            "id": "check_register_variables",
+            "description": "Extract all register variable names using projection",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?register].register"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "ec2"
+            }
+        },
+        {
+            "id": "check_package_state_present",
+            "description": "Multi-select hash to extract specific attributes from package tasks",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'ansible.builtin.package'].{name: name, state: `ansible.builtin.package`.state}"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": {"state": "present"}
+            }
+        },
+        {
+            "id": "check_no_debug_in_production",
+            "description": "Ensure debug tasks are not present when environment is production",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?debug && contains(to_string(@), 'public_ip')] | length(@)"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 0,
+                "error_tolerance": 1
+            }
+        },
+        {
+            "id": "check_mysql_secure_password_method",
+            "description": "Complex filter to verify MySQL authentication method in shell commands",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'ansible.builtin.shell' && contains(`ansible.builtin.shell` | to_string(@), 'mysql_native_password')].no_log"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": true
+            }
+        },
+        {
+            "id": "check_task_names_convention",
+            "description": "Use starts_with function to validate task naming",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[*].name"
+            },
+            "condition": {
+                "type": "RegexMatch",
+                "value": "^[A-Z][a-z].*"
+            }
+        },
+        {
+            "id": "check_all_tasks_have_names",
+            "description": "Verify all tasks have proper names defined",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?!name] | length(@)"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 0
+            }
+        },
+        {
+            "id": "check_gather_facts_disabled",
+            "description": "Ensure gather_facts is explicitly set when targeting localhost",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].gather_facts"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": false
+            }
+        },
+        {
+            "id": "check_ec2_wait_enabled",
+            "description": "Complex nested query to validate EC2 wait configuration",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'amazon.aws.ec2_instance' && `amazon.aws.ec2_instance`.wait].`amazon.aws.ec2_instance`.{wait: wait, count: count}"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": {"wait": true, "count": 1}
+            }
+        },
+        {
+            "id": "check_playbook_metadata",
+            "description": "Multi-select list projection to extract playbook metadata",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].{name: name, hosts: hosts, become: become} | @ "
+            },
+            "condition": {
+                "type": "Contains",
+                "value": {"become": true}
+            }
+        }
+    ],
+    "eval_expression": "(check_aws_region && check_production_instance_types && check_ec2_public_ip && check_ec2_wait_enabled) && (check_no_unauthorized_packages && check_package_state_present) && (check_sensitive_tasks_no_log && check_mysql_secure_password_method) && (check_task_count_minimum && check_all_tasks_have_names && check_task_names_convention) && (check_privileged_tasks && check_gather_facts_disabled) && check_playbook_metadata"
+}

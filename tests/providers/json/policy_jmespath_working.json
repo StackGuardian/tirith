@@ -1,0 +1,190 @@
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json",
+        "description": "Working JMESPath policy examples for Ansible playbook validation"
+    },
+    "evaluators": [
+        {
+            "id": "check_playbook_name",
+            "description": "Verify playbook has a name",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].name"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "Provision"
+            }
+        },
+        {
+            "id": "check_region",
+            "description": "Verify AWS region is us-east-1",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].vars.region"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "us-east-1"
+            }
+        },
+        {
+            "id": "check_instance_type",
+            "description": "Verify instance type is t2.micro",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].vars.instance_type"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "t2.micro"
+            }
+        },
+        {
+            "id": "check_task_count",
+            "description": "Ensure minimum 10 tasks are defined",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThanEqualTo",
+                "value": 10
+            }
+        },
+        {
+            "id": "check_all_tasks_named",
+            "description": "Verify all tasks have names",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?!name] | length(@)"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 0
+            }
+        },
+        {
+            "id": "check_task_names",
+            "description": "Get all task names",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[*].name"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "Install required packages"
+            }
+        },
+        {
+            "id": "check_privileged_tasks",
+            "description": "Find tasks with become=true",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?become == `true`] | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThan",
+                "value": 5
+            }
+        },
+        {
+            "id": "check_registered_vars",
+            "description": "Get all registered variable names",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?register].register"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "ec2"
+            }
+        },
+        {
+            "id": "check_package_list",
+            "description": "Verify required packages are defined",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].vars.package_list"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "mysql-server"
+            }
+        },
+        {
+            "id": "check_gather_facts",
+            "description": "Verify gather_facts is disabled for localhost",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].gather_facts"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": false
+            }
+        },
+        {
+            "id": "check_become_enabled",
+            "description": "Verify become is enabled",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].become"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": true
+            }
+        },
+        {
+            "id": "check_hosts_localhost",
+            "description": "Verify hosts targets localhost",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].hosts"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "localhost"
+            }
+        },
+        {
+            "id": "check_shell_tasks",
+            "description": "Find all shell tasks",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?shell] | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThan",
+                "value": 0
+            }
+        },
+        {
+            "id": "check_no_log_tasks",
+            "description": "Verify sensitive tasks have no_log",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?no_log == `true`] | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThan",
+                "value": 2
+            }
+        },
+        {
+            "id": "check_playbook_metadata",
+            "description": "Extract key playbook metadata",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].{name: name, hosts: hosts, become: become, gather_facts: gather_facts}"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": {"become": true}
+            }
+        }
+    ],
+    "eval_expression": "check_playbook_name && check_region && check_instance_type && check_task_count && check_all_tasks_named && check_task_names && check_privileged_tasks && check_registered_vars && check_package_list && check_gather_facts && check_become_enabled && check_hosts_localhost && check_no_log_tasks && check_playbook_metadata"
+}

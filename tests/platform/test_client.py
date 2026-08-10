@@ -88,16 +88,42 @@ def test_extract_signed_url_returns_none_when_absent():
 # --- archive upload ----------------------------------------------------------------------------
 
 
-def test_upload_archive_requires_a_storage_key(monkeypatch):
+def _fake_put(recorder):
+    """Stand in for the presigned PUT, recording what was sent."""
+
+    def fake_urlopen(request, timeout=None):
+        recorder["content_type"] = request.get_header("Content-type")
+        recorder["body"] = request.data
+
+        class _R:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return _R()
+
+    return fake_urlopen
+
+
+def test_upload_archive_tolerates_a_response_with_no_storage_key(monkeypatch):
     """
-    The key is what the caller passes back as `terraformProjectZip`. A platform that predates it
-    being returned answers with the URL alone, and continuing would create a run pointing at nothing.
+    The key used to be mandatory, because the caller passed it back as a run field and an api that did
+    not return it produced a run pointing at nothing. Nothing passes it anywhere now -- the step finds
+    the bundle by name in the artifacts directory -- so an api that omits it must not fail the upload.
+
+    This is what lets the feature ship against an unmodified api.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
     monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"msg": "https://s3.example/put"}))
+    monkeypatch.setattr(client.urllib.request, "urlopen", _fake_put({}))
 
-    with pytest.raises(SGError, match="storage key"):
-        sg.upload_file("default", "wf", "a.tar.gz", "abc1234", b"x")
+    key = sg.upload_file("default", "wf", "a.tar.gz", None, b"x")
+
+    assert "a.tar.gz" in key
 
 
 def _upload_response():
@@ -135,15 +161,20 @@ def test_upload_archive_returns_the_key_from_the_response(monkeypatch):
 
     assert key == "orgs/acme/wfs/K/artifacts/abc1234/a.tar.gz"
     assert uploaded["body"] == b"tarbytes"
-    # Must match what the URL was signed with, or S3 rejects it as a signature mismatch.
-    assert uploaded["content_type"] == "application/gzip"
+    # application/json even though the body is gzip: the endpoint signs application/json whatever
+    # the filename, and S3 validates the signature against the header the client sends. Asking for
+    # application/gzip would need an api change, and sending it unasked earns SignatureDoesNotMatch.
+    assert uploaded["content_type"] == "application/json"
 
 
 def test_upload_archive_uses_the_shared_artifact_endpoint(monkeypatch):
     """
-    Not a bespoke endpoint. The archive is unpacked into the same workflow whose artifacts live
-    under this prefix, so it uploads through the same route -- and the contentType it asks to be
-    signed with has to match the header the PUT sends.
+    Not a bespoke endpoint. The bundle has to land in the workflow's own artifact prefix, because
+    that prefix is what the runner syncs down into the step -- so it uploads through the same route
+    every other artifact uses.
+
+    And it must ask for nothing the endpoint does not already offer: no contentType parameter, since
+    signing anything other than application/json would need an api change this feature avoids.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
     seen = {}
@@ -161,7 +192,7 @@ def test_upload_archive_uses_the_shared_artifact_endpoint(monkeypatch):
     assert seen["method"] == "GET"
     assert "/file_upload_url/" in seen["path"]
     assert "configuration_upload_url" not in seen["path"]
-    assert "contentType=application%2Fgzip" in seen["path"]
+    assert "contentType" not in seen["path"], "asking for a signed content type needs an api change"
     assert "filename=a.tar.gz" in seen["path"]
 
 
@@ -199,25 +230,29 @@ def test_create_run_sends_no_step_config(monkeypatch):
 
     monkeypatch.setattr(sg, "_request", fake_request)
 
-    run_id, _data = sg.create_run("default", "wf", "orgs/acme/…/a.tar.gz", {"type": "tirith"})
+    run_id, _data = sg.create_run("default", "wf", {"type": "tirith"})
 
     assert run_id == "wfrun-1"
     assert "WfStepsConfig" not in captured["body"]
     # `plan` is a dummy: the policy step is spliced in ahead of the plan step and exits 12, so the
     # plan never runs. `plan` is simply the action whose synthesis splices pre-plan steps in.
     assert captured["body"]["TerraformAction"] == {"action": "plan"}
-    # The CLI-driven workflow's field, reused -- core and both runners have read it since SG-3809, so
-    # the archive needs no new plumbing.
-    assert captured["body"]["terraformProjectZip"] == "orgs/acme/…/a.tar.gz"
+    # No archive field of any kind. The bundle reaches the step through the workflow's artifact
+    # directory, which is what lets this run against an unmodified api -- so a field appearing here
+    # again would mean the api dependency had come back.
+    assert "terraformProjectZip" not in captured["body"]
     assert "CodeZipWfArtifactPath" not in captured["body"]
     assert "ContextTags" not in captured["body"]
 
 
-def test_create_run_rejects_a_platform_that_dropped_the_archive_reference(monkeypatch):
+def test_create_run_does_not_depend_on_the_platform_echoing_an_archive_field(monkeypatch):
     """
-    An api that does not declare `terraformProjectZip` drops it during request validation, and the run then
-    evaluates a VCS checkout instead of the uploaded code -- the wrong answer, delivered without
-    complaint. The one failure mode of this design, so it is asserted rather than assumed.
+    There used to be a guard here: the run body carried `terraformProjectZip`, an api that did not
+    declare it dropped it silently during validation, and the run then evaluated a VCS checkout instead
+    of the uploaded code. The guard asserted the field back out of RuntimeParameters.
+
+    It is gone because the cause is gone -- nothing is sent for the platform to drop. A run whose
+    RuntimeParameters mention no archive at all is now completely normal, and must not fail.
     """
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
     monkeypatch.setattr(
@@ -226,8 +261,9 @@ def test_create_run_rejects_a_platform_that_dropped_the_archive_reference(monkey
         lambda *a, **k: (200, {"data": {"ResourceName": "wfrun-1", "RuntimeParameters": {"vcsConfig": {}}}}),
     )
 
-    with pytest.raises(SGError, match="dropped the code bundle reference"):
-        sg.create_run("default", "wf", "orgs/acme/…/a.tar.gz", {"type": "tirith"})
+    run_id, _data = sg.create_run("default", "wf", {"type": "tirith"})
+
+    assert run_id == "wfrun-1"
 
 
 def test_create_run_accepts_a_response_that_carries_no_runtime_parameters(monkeypatch):
@@ -238,7 +274,7 @@ def test_create_run_accepts_a_response_that_carries_no_runtime_parameters(monkey
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
     monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"data": {"ResourceName": "wfrun-1"}}))
 
-    run_id, _data = sg.create_run("default", "wf", "orgs/acme/…/a.tar.gz", {"type": "tirith"})
+    run_id, _data = sg.create_run("default", "wf", {"type": "tirith"})
 
     assert run_id == "wfrun-1"
 
@@ -254,7 +290,7 @@ def test_create_run_passes_when_the_platform_stored_the_archive_reference(monkey
         ),
     )
 
-    run_id, _data = sg.create_run("default", "wf", "orgs/acme/a.tar.gz", {"type": "tirith"})
+    run_id, _data = sg.create_run("default", "wf", {"type": "tirith"})
 
     assert run_id == "wfrun-1"
 
@@ -472,8 +508,8 @@ def test_upload_file_honours_a_json_content_type(monkeypatch):
 
     assert uploaded["content_type"] == "application/json"
     assert uploaded["body"] == b'{"version": 4}'
-    # And the same type is what the URL was signed for.
-    assert "contentType=application%2Fjson" in captured["path"]
+    # The endpoint already signs application/json, so nothing has to be asked for.
+    assert "contentType" not in captured["path"]
 
 
 def test_manages_terraform_state_reads_the_workflow_config(monkeypatch):

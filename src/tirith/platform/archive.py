@@ -32,10 +32,23 @@ PLAN_DOCUMENT = "plan.json"
 STATE_DOCUMENT = "tfstate.json"
 INFRACOST_DOCUMENT = "infracost.json"
 
+# Identifies *which* bundle this is, and is the whole concurrency guard.
+#
+# The bundle lives at a fixed name in the workflow's artifact directory, overwritten on every run --
+# that is what stops it accumulating, since the artifact directory is synced down into every later run
+# and nothing ever deletes from it. The cost is that two runs of the same workflow racing each other
+# can leave run A executing against run B's bundle.
+#
+# So the client writes a nonce here, the step echoes it into the run facts, and the client asserts the
+# nonce that came back is the one it uploaded. A race then fails loudly instead of quietly grading the
+# wrong commit. It cannot be *prevented* client-side: the bundle is uploaded before the run exists, so
+# there is no run identity to name it after, and wfStepInputData is frozen at workflow creation.
+BUNDLE_DOCUMENT = "tirith-bundle.json"
+
 # These names are ALWAYS written by pack(), never copied from the source tree -- whether or not a
 # masked document was supplied for them. A file called tfstate.json in the working directory is raw,
 # unmasked state; see the note in pack().
-RESERVED_DOCUMENTS = frozenset((PLAN_DOCUMENT, STATE_DOCUMENT, INFRACOST_DOCUMENT))
+RESERVED_DOCUMENTS = frozenset((PLAN_DOCUMENT, STATE_DOCUMENT, INFRACOST_DOCUMENT, BUNDLE_DOCUMENT))
 
 # Always excluded, regardless of .gitignore.
 #
@@ -140,6 +153,7 @@ def pack(
     extra_excludes=(),
     respect_gitignore=True,
     document_sources=(),
+    bundle_id=None,
 ):
     """
     Build the archive in memory and return its bytes.
@@ -171,9 +185,13 @@ def pack(
         documents[STATE_DOCUMENT] = state
     if infracost is not None:
         documents[INFRACOST_DOCUMENT] = infracost
+    if bundle_id:
+        documents[BUNDLE_DOCUMENT] = {"bundleId": bundle_id}
 
     buffer = io.BytesIO()
-    manifest = {"documents": sorted(documents), "files": 0, "skipped": 0}
+    # BUNDLE_DOCUMENT is bookkeeping, not a policy input, so it stays out of the reported documents --
+    # otherwise it reads as something that was evaluated, in logs and in the report.
+    manifest = {"documents": sorted(d for d in documents if d != BUNDLE_DOCUMENT), "files": 0, "skipped": 0}
 
     with tarfile.open(fileobj=buffer, mode="w:gz") as tar:
         if source_dir:
