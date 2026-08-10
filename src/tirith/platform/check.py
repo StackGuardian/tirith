@@ -119,12 +119,15 @@ def prepare_documents(input_path, input_kind, state_path, infracost_path, input_
 
 
 # The step template that evaluates the policies, and the name its run stage takes.
+# Deliberately not overridable: the archive layout, the exit-12 contract and the facts document are
+# all part of one agreement between this client and that image. Pointing the workflow at some other
+# step would produce a run that looks like a policy check and is not one.
 POLICY_STEP_TEMPLATE = "/stackguardian/tirith-iac-governance:1"
 POLICY_STEP_NAME = "evaluate-policies"
 POLICY_STEP_TIMEOUT = 1800
 
 
-def terraform_config(terraform_version, step_template_id):
+def terraform_config(terraform_version):
     """
     The workflow's stored configuration, carrying the policy step as a PRE-PLAN step.
 
@@ -151,7 +154,7 @@ def terraform_config(terraform_version, step_template_id):
         "prePlanWfStepsConfig": [
             {
                 "name": POLICY_STEP_NAME,
-                "wfStepTemplateId": step_template_id or POLICY_STEP_TEMPLATE,
+                "wfStepTemplateId": POLICY_STEP_TEMPLATE,
                 "timeout": POLICY_STEP_TIMEOUT,
                 "approval": False,
                 # Everything the step needs travels here. It reads nothing from the workflow's
@@ -297,7 +300,7 @@ def run_check(opts):
             opts.workflow_group,
             opts.workflow_id,
             f"Policy checks for {opts.workflow_id}",
-            terraform_config(opts.terraform_version, opts.step_template_id),
+            terraform_config(opts.terraform_version),
             vcs_config=SGClient.vcs_config(getattr(opts, "repo_url", None), getattr(opts, "repo_ref", None)),
         )
 
