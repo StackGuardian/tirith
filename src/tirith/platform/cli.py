@@ -112,6 +112,11 @@ def build_parser():
         help="Source repository URL, recorded on the workflow at creation so it links back to the code.",
     )
     workflow.add_argument("--repo-ref", default=None, help="Branch, tag or commit, recorded alongside --repo-url.")
+    workflow.add_argument(
+        "--step-template-id",
+        default=None,
+        help="Override the policy-evaluation step template. Omit to use the platform's own default.",
+    )
 
     inputs = check.add_argument_group("inputs")
     inputs.add_argument(

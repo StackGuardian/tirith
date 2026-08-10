@@ -17,7 +17,6 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "src"))
 
 from tirith.platform import check
-from tirith.platform import cli as platform_cli
 from tirith.platform.client import SGError
 
 
@@ -189,7 +188,7 @@ def test_the_policy_step_is_spliced_in_as_a_pre_plan_step():
     run controller to complete the run and skip everything after it. So core needs to know nothing
     about this feature -- which is why there is no terraform action for it.
     """
-    config = check.terraform_config("1.5.7")
+    config = check.terraform_config("1.5.7", None)
 
     steps = config["prePlanWfStepsConfig"]
     assert len(steps) == 1
@@ -203,23 +202,7 @@ def test_the_policy_step_is_spliced_in_as_a_pre_plan_step():
     assert "policyInputKind" not in config
 
 
-def test_the_step_template_is_not_overridable():
-    """
-    The step template is fixed. The archive layout, the exit-12 contract and the facts document are
-    one agreement between this client and that image, so a caller-supplied step would produce a run
-    that looks like a policy check without being one. Asserted at both ends: the config always names
-    the constant, and the CLI offers no way to ask for anything else.
-    """
-    assert check.terraform_config("1.5.7")["prePlanWfStepsConfig"][0]["wfStepTemplateId"] == (
-        check.POLICY_STEP_TEMPLATE
-    )
+def test_a_step_template_override_is_honoured():
+    config = check.terraform_config("1.5.7", "/demo-org/tirith-iac-governance:3")
 
-    parser = platform_cli.build_parser()
-    # A baseline that parses, so the rejection below can only be about the flag itself and not about
-    # some unrelated required argument.
-    baseline = ["check", "--workflow-id", "wf"]
-    assert parser.parse_args(baseline).workflow_id == "wf"
-    assert not hasattr(parser.parse_args(baseline), "step_template_id")
-
-    with pytest.raises(SystemExit):
-        parser.parse_args(baseline + ["--step-template-id", "/demo-org/anything:1"])
+    assert config["prePlanWfStepsConfig"][0]["wfStepTemplateId"] == "/demo-org/tirith-iac-governance:3"
