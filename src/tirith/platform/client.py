@@ -46,14 +46,21 @@ ARCHIVE_CONTENT_TYPE = "application/json"
 # converter swallows it, so `DELETE .../artifacts/<sha>/<name>/` matches the workflow-group delete and
 # is checked against the wrong permission entirely.
 #
-# The name is constrained more than it looks. The down-sync excludes `sg.*`, `*__sg.*`, `*pci_*`,
-# `*_thrifty_*`, `*_gdpr_*`, `*compliance_raw*` and the other compliance globs, so a name matching any
-# of those would be dropped silently and never reach the container. It also must not be
-# `tfstate.json`, which at the artifact root is a managed-state workflow's live state.
-ARCHIVE_NAME_TEMPLATE = "tirith-bundle-{sha}-{tag}.tar.gz"
+# The `__sg.` prefix hides these from a user's artifact listing: core's `__is_sg_file` filters any name
+# starting with `sg.` or `__sg.` unless the caller passes `fetchSGFiles`. Given the growth above, a
+# reviewer's artifact list would otherwise fill with one bundle per commit -- machine input, not
+# something anyone asked to keep. It is the same convention steampipe's artifacts use.
+#
+# The prefix is only safe because the run controller re-includes these bundles by name after excluding
+# `__sg.*` from the down-sync (sg-run-controller#304, both runners). Without that include the sync drops
+# them and the step finds no input, so this name must not be adopted ahead of that deploy. The rest of
+# the exclude list -- `*pci_*`, `*_thrifty_*`, `*_gdpr_*`, `*compliance_raw*` and the other compliance
+# globs -- still applies, and the name must not be `tfstate.json`, which at the artifact root is a
+# managed-state workflow's live state.
+ARCHIVE_NAME_TEMPLATE = "__sg.tirith-bundle-{sha}-{tag}.tar.gz"
 
 # What the workflow stores as a fallback, and what the step falls back to if a run names nothing.
-ARCHIVE_DOCUMENT = "tirith-bundle.tar.gz"
+ARCHIVE_DOCUMENT = "__sg.tirith-bundle.tar.gz"
 
 # Terminal run states. QUEUED/PENDING/RUNNING are transient; a run can sit in QUEUED for a long
 # while behind the per-workflow concurrency gate, which is why the caller logs each poll.

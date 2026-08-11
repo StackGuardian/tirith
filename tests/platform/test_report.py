@@ -435,6 +435,57 @@ def test_the_tirith_shape_still_renders():
     assert resources == ["null_resource.untagged"]
 
 
+def test_an_empty_description_does_not_hide_the_finding():
+    """
+    The exact shape a tirith rule with no declared description produces, taken from a QA run of the
+    cost policy `DO_NOT_TOUCH / cost-control`:
+
+        {"id": ..., "description": "", "result": [{"message": "`23.832` is not less than `20`", ...}]}
+
+    Both keys are present. Dispatching on `"description" in entry` took the Checkov path, found an
+    empty string to report, and skipped `result` -- so the policy appeared in the summary table with
+    an empty <details> block. A reviewer saw that a cost rule had tripped and no reason why.
+    """
+    messages, resources = render._extract_detail(
+        {
+            "evaluations": {
+                "fails": [
+                    {
+                        "id": "max-price-monthly-20",
+                        "description": "",
+                        "result": [{"passed": False, "message": "`23.832` is not less than `20`", "meta": None}],
+                        "passed": False,
+                    }
+                ]
+            }
+        }
+    )
+
+    assert messages == ["`23.832` is not less than `20`"]
+    # meta is None on the infracost provider -- only terraform_plan populates an address.
+    assert resources == []
+
+
+def test_an_entry_carrying_both_shapes_reports_both():
+    """Reading both is additive, so neither shape can mask the other."""
+    messages, resources = render._extract_detail(
+        {
+            "evaluations": {
+                "fails": [
+                    {
+                        "description": "Ensure RDS is encrypted at rest",
+                        "keys": ["aws_db_instance.db.storage_encrypted"],
+                        "result": [{"message": "`false` is not equal to `true`", "meta": {"address": "aws_db_instance.db"}}],
+                    }
+                ]
+            }
+        }
+    )
+
+    assert messages == ["Ensure RDS is encrypted at rest", "`false` is not equal to `true`"]
+    assert resources == ["aws_db_instance.db"]
+
+
 def test_an_engine_error_is_still_surfaced_verbatim():
     messages, _resources = render._extract_detail(
         {"evaluations": {"fails": [{"exec_err": "Checkov policy has no configPolicyIds"}]}}

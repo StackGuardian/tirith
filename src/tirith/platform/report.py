@@ -87,17 +87,22 @@ def _extract_detail(rule):
         # than a list under "result". Reading only the tirith shape rendered a Checkov policy as an
         # empty <details> block -- a dozen real findings, silently blank, in the one place a
         # reviewer looks.
-        if "description" in entry:
-            description = entry.get("description")
-            if description:
-                messages.append(description)
-            for key in entry.get("keys") or []:
-                # `aws_instance.app.root_block_device` -> `aws_instance.app`. The suffix is the
-                # attribute the check looked at; the address is what a reviewer navigates by.
-                address = _resource_address(key)
-                if address and address not in resources:
-                    resources.append(address)
-            continue
+        #
+        # Both shapes are read here rather than dispatched between, because an entry can carry both
+        # keys. A tirith rule sets `description` to "" when the policy declares none and puts the
+        # finding under `result`; branching on the *presence* of `description` therefore matched the
+        # Checkov shape, found nothing to say, and skipped the `result` loop -- reproducing exactly
+        # the blank block above for cost rules. This is additive: a Checkov entry has no `result`,
+        # so its loop is a no-op.
+        description = entry.get("description")
+        if description:
+            messages.append(description)
+        for key in entry.get("keys") or []:
+            # `aws_instance.app.root_block_device` -> `aws_instance.app`. The suffix is the
+            # attribute the check looked at; the address is what a reviewer navigates by.
+            address = _resource_address(key)
+            if address and address not in resources:
+                resources.append(address)
 
         for evaluation in entry.get("result") or []:
             message = evaluation.get("message")
