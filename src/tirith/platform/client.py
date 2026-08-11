@@ -175,10 +175,15 @@ class SGClient:
         connector-less provider. With `isPrivate: false` it needs no auth at all, and it skips the
         GitHub repo-id extraction that rejects anything it cannot parse as an owner/name pair.
 
-        This is metadata only. Nothing clones it: core pops `iacVCSConfig` from the run's
-        RuntimeParameters whenever an archive is named, and the runner takes the archive
-        branch of its if/elif regardless. It exists so the workflow shows a repo link instead of a
-        "configure" prompt.
+        This is display metadata, set on the *workflow* so it shows a repo link instead of a
+        "configure" prompt. It is not a source of code: every run sends `VCSConfig: {}` to suppress
+        the checkout (see `create_run`). Keeping the two apart is deliberate -- the workflow records
+        where the code came from, the run declines to fetch it.
+
+        It cannot be made inert by shape alone. Dropping `useMarketplaceTemplate`, which is what
+        actually arms the runner's clone, is rejected by api: `IACVCSConfig` declares it
+        `BooleanField(required=True)` (`serializers/commons.py:141`). Send `iacVCSConfig` at all and
+        the key comes with it.
         """
         if not repo_url:
             return None
@@ -336,10 +341,25 @@ class SGClient:
         A context tag was the other obvious-looking option and is the wrong tool: run context tags are
         indexed into global search, so an internal storage key would surface in customers' tag
         typeaheads and could be enumerated by filtering on it.
+
+        `VCSConfig: {}` suppresses the checkout for this run. The workflow keeps its own VCSConfig so
+        the dashboard still shows which repository the runs came from, but core resolves the run's
+        copy as `data.get("VCSConfig", wfDetails.get("VCSConfig", {}))`
+        (`workflowruns/__init__.py:1770`) -- a *present* empty value beats the workflow's, while
+        omitting the key inherits it. The runner then clones only when
+        `vcsConfig.iacVCSConfig` carries a `useMarketplaceTemplate` key (`external.py:2484`), so an
+        empty config skips git entirely.
+
+        Sending it matters for two reasons. A private repository has no credentials here -- the
+        checkout died with "could not read Password for 'https://None@github.com'" before the step
+        ran -- and on a public one the clone quietly placed the *unmasked* source in the workspace,
+        which then reached S3 inside the run snapshot. The bundle is the only source this feature
+        wants on the platform.
         """
         body = {
             "TerraformAction": {"action": action},
             "TriggerDetails": trigger_details,
+            "VCSConfig": {},
         }
         if pre_plan_steps:
             body["TerraformConfig"] = {"prePlanWfStepsConfig": pre_plan_steps}

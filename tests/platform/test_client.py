@@ -608,3 +608,52 @@ def test_create_run_without_steps_sends_no_terraform_config(monkeypatch):
     sg.create_run("default", "wf", {"type": "tirith"})
 
     assert "TerraformConfig" not in captured["body"]
+
+
+def test_every_run_suppresses_the_vcs_checkout(monkeypatch):
+    """
+    The run must send an *empty* VCSConfig, and must send it even when nothing else is set.
+
+    core resolves the run's config as `data.get("VCSConfig", wfDetails.get("VCSConfig", {}))`, so a
+    present empty value beats the workflow's and an omitted key inherits it. Inheriting is what broke
+    private repositories: the runner cloned with no credentials and the run ERRORED before the step
+    ran. Asserting `== {}` rather than truthiness is the point -- `None` would also read as "no
+    checkout" here but flows into core's config-policy payload as a null.
+    """
+    for kwargs in ({}, {"pre_plan_steps": [{"name": "tirith-iac-governance"}]}):
+        sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+        captured = {}
+
+        def fake_request(method, path, body=None, **kw):
+            captured["body"] = body
+            return 200, {"data": {"ResourceName": "r"}}
+
+        monkeypatch.setattr(sg, "_request", fake_request)
+        sg.create_run("default", "wf", {"type": "tirith"}, **kwargs)
+
+        assert "VCSConfig" in captured["body"], "an omitted key inherits the workflow's repo"
+        assert captured["body"]["VCSConfig"] == {}
+
+
+def test_the_workflow_still_records_its_repository(monkeypatch):
+    """
+    Suppressing the checkout per run must not cost the workflow its repo link -- that is the whole
+    reason the config is set on creation, and the two live at different levels for that reason.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+
+    def fake_request(method, path, body=None, **kw):
+        captured["body"] = body
+        return 201, {}
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+    vcs = SGClient.vcs_config("https://github.com/acme/repo", "main")
+    sg.ensure_workflow("default", "wf", "d", {"terraformVersion": "1.5.7"}, vcs_config=vcs)
+
+    source = captured["body"]["VCSConfig"]["iacVCSConfig"]["customSource"]
+    assert source["config"]["repo"] == "https://github.com/acme/repo"
+    assert source["sourceConfigDestKind"] == "GIT_OTHER"
+    # api rejects iacVCSConfig without it, so it is always present at this level -- which is exactly
+    # why the run has to send an empty config rather than a trimmed one.
+    assert captured["body"]["VCSConfig"]["iacVCSConfig"]["useMarketplaceTemplate"] is False
