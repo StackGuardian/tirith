@@ -253,11 +253,13 @@ class SGClient:
         r"""
         Upload one object into the workflow's artifact prefix via a presigned PUT, returning its key.
 
-        For the project archive the key is what the caller passes back as `terraformProjectZip` when
-        creating the run. It comes from the response rather than being rebuilt here: the layout is
-        runner-aware (a private runner's own S3 bucket or Azure container rather than the shared
-        bucket), so a client-side guess would be wrong for exactly the customers who are hardest to
-        debug.
+        The returned key is informational -- a log line, and something to quote in a bug report. It is
+        deliberately not load-bearing: nothing passes it back on the run, and the step finds the bundle
+        by *basename* inside the artifact directory the run controller syncs down for it. That is why
+        an api which returns no key at all is fine here. It comes from the response rather than being
+        rebuilt because the layout is runner-aware (a private runner's own S3 bucket or Azure container
+        rather than the shared bucket), so a client-side guess would be wrong for exactly the customers
+        who are hardest to debug.
 
         `folder` is optional and must be a flat token -- the endpoint rejects `/`, `\\` and `..` to
         prevent path traversal. Omitting it puts the object at the artifacts root, which is what both
