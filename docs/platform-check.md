@@ -36,7 +36,7 @@ history:
 ## Workflow identity
 
 `--workflow-id` names the StackGuardian workflow, and is created on first use. `--workflow-group`
-defaults to `default`. Policies are scoped per group, so the group decides which policies apply.
+defaults to `default`.
 
 Two things worth knowing before choosing an id:
 
@@ -136,7 +136,7 @@ inputs:
                         Optional `infracost breakdown --format json`.
   --source-dir SOURCE_DIR
                         Terraform source to pack alongside the documents.
-  --no-source           Send only the documents, not the source tree.
+  --no-source           Send only the documents. Discovery still looks in --source-dir (or .) for the plan..
 
 run:
   --sha SHA             Commit SHA, used to namespace the uploaded archive.
