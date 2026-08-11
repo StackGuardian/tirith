@@ -202,6 +202,69 @@ def _mask_by_marker(value, marker):
     return value
 
 
+# A value shorter than this is not swept. `_sweep_known_secrets` replaces exact string matches
+# everywhere, and a two-character secret would also match ids, regions and resource names -- mangling
+# the document the policies then evaluate. A real credential is longer than this; a two-character one
+# that leaks is the lesser harm against breaking every policy on the plan.
+MIN_SWEPT_SECRET_LENGTH = 6
+
+
+def _collect_sensitive_values(value, marker, found):
+    """Gather the plaintext strings terraform marked sensitive, so they can be swept elsewhere."""
+    if marker is True:
+        if isinstance(value, str) and len(value) >= MIN_SWEPT_SECRET_LENGTH:
+            found.add(value)
+        elif isinstance(value, (dict, list)):
+            _collect_all_strings(value, found)
+        return
+
+    if isinstance(marker, dict) and isinstance(value, dict):
+        for key, item in value.items():
+            _collect_sensitive_values(item, marker.get(key), found)
+    elif isinstance(marker, list) and isinstance(value, list):
+        for index, item in enumerate(value):
+            _collect_sensitive_values(item, marker[index] if index < len(marker) else None, found)
+
+
+def _collect_all_strings(node, found):
+    """Every string under a subtree terraform marked sensitive wholesale."""
+    if isinstance(node, dict):
+        for item in node.values():
+            _collect_all_strings(item, found)
+    elif isinstance(node, list):
+        for item in node:
+            _collect_all_strings(item, found)
+    elif isinstance(node, str) and len(node) >= MIN_SWEPT_SECRET_LENGTH:
+        found.add(node)
+
+
+def _sweep_known_secrets(node, secrets):
+    """
+    Replace any value terraform told us was sensitive *somewhere* with the sentinel *everywhere*.
+
+    The markers alone are not enough. A provider that computes a mirror of an attribute does not
+    inherit its sensitivity: an `aws_instance` with a sensitive value in `tags` is marked
+    `after_sensitive.tags.Password = true`, while `after_sensitive.tags_all` comes back `{}` even
+    though `tags_all` holds the identical plaintext. Every AWS resource with tags has `tags_all`, so
+    that single gap leaks any secret ever used in a tag.
+
+    Caught by an end-to-end test that downloaded the uploaded bundle and grepped it, not by the unit
+    suite -- which asserted the markers were honoured, and they were.
+
+    Exact string matches only: it cannot know that a *substring* is the secret without guessing, and a
+    guess here corrupts the document the policies read.
+    """
+    if not secrets:
+        return node
+    if isinstance(node, dict):
+        return {k: _sweep_known_secrets(v, secrets) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_sweep_known_secrets(item, secrets) for item in node]
+    if isinstance(node, str) and node in secrets:
+        return SENTINEL
+    return node
+
+
 def _mask_resource_change(resource_change):
     """Mask one `resource_changes`/`resource_drift` entry by its own before/after markers."""
     if not isinstance(resource_change, dict):
@@ -230,6 +293,20 @@ def redact_plan(plan):
         return plan
 
     redacted = dict(plan)
+
+    # Collect the sensitive plaintext BEFORE masking replaces it, and before `variables` is dropped --
+    # a sensitive root variable is often the origin of the value that reappears elsewhere unmarked.
+    secrets = set()
+    for section in ("resource_changes", "resource_drift"):
+        for entry in redacted.get(section) or []:
+            change = (entry or {}).get("change") if isinstance(entry, dict) else None
+            if isinstance(change, dict):
+                for value_key, marker_key in (("before", "before_sensitive"), ("after", "after_sensitive")):
+                    _collect_sensitive_values(change.get(value_key), change.get(marker_key), secrets)
+    for name, variable in (redacted.get("variables") or {}).items():
+        if isinstance(variable, dict):
+            _collect_all_strings(variable.get("value"), secrets)
+
     redacted.pop("variables", None)
 
     # resource_drift has the same shape and the same sensitivity markers as resource_changes, and
@@ -251,7 +328,9 @@ def redact_plan(plan):
     if planned_values:
         redacted["planned_values"] = planned_values
 
-    return redacted
+    # Last, over the whole document: anything terraform called sensitive somewhere is masked
+    # everywhere, including the unmarked provider-computed mirrors the markers miss.
+    return _sweep_known_secrets(redacted, secrets)
 
 
 def rebuild_planned_values(masked_resource_changes):

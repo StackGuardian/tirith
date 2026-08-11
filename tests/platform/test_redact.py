@@ -977,3 +977,104 @@ def test_the_raw_state_shape_still_works():
 
     assert out["resources"][0]["instances"][0]["attributes"]["password"] == redact.SENTINEL
     assert out["outputs"]["token"]["value"] == redact.SENTINEL
+
+
+# --- provider-computed mirrors: the markers are not enough -----------------------------------------
+#
+# Terraform does not propagate sensitivity into attributes a provider computes from a sensitive one.
+# An aws_instance with a secret in `tags` is marked `after_sensitive.tags.Password = true`, while
+# `after_sensitive.tags_all` comes back `{}` even though `tags_all` holds the identical plaintext.
+# Every AWS resource with tags has `tags_all`, so that one gap leaks any secret used in a tag.
+#
+# Found by an E2E that downloaded the uploaded bundle and grepped it. The unit suite was green
+# throughout, because it asserted the markers were honoured -- and they were.
+
+
+def _plan_with_tags_all():
+    return {
+        "format_version": "1.2",
+        "resource_changes": [
+            {
+                "address": "aws_instance.app",
+                "type": "aws_instance",
+                "change": {
+                    "actions": ["create"],
+                    "after": {
+                        "instance_type": "t3.micro",
+                        "tags": {"Name": "keep-me", "Password": "hunter2-plan-secret"},
+                        "tags_all": {"Name": "keep-me", "Password": "hunter2-plan-secret"},
+                    },
+                    "after_sensitive": {"tags": {"Password": True}, "tags_all": {}},
+                },
+            }
+        ],
+    }
+
+
+def test_a_secret_mirrored_into_an_unmarked_attribute_is_still_masked():
+    masked = redact.redact_plan(_plan_with_tags_all())
+
+    assert "hunter2-plan-secret" not in json.dumps(masked), "tags_all leaked the secret terraform marked in tags"
+
+
+def test_the_sweep_does_not_mangle_values_that_were_never_sensitive():
+    """Over-redaction would corrupt the document the policies read, which is its own kind of failure."""
+    masked = redact.redact_plan(_plan_with_tags_all())
+    after = masked["resource_changes"][0]["change"]["after"]
+
+    assert after["instance_type"] == "t3.micro"
+    assert after["tags"]["Name"] == "keep-me"
+    assert after["tags_all"]["Name"] == "keep-me"
+
+
+def test_a_sensitive_root_variable_is_swept_out_of_the_resources_too():
+    """
+    The variable block is dropped wholesale, but its value routinely reappears in an unmarked
+    attribute -- so the value has to be collected before it is dropped.
+    """
+    plan = {
+        "variables": {"db_password": {"value": "hunter2-plan-secret"}},
+        "resource_changes": [
+            {
+                "address": "aws_instance.app",
+                "type": "aws_instance",
+                "change": {
+                    "actions": ["create"],
+                    "after": {"tags_all": {"Password": "hunter2-plan-secret"}},
+                    "after_sensitive": {},
+                },
+            }
+        ],
+    }
+
+    masked = redact.redact_plan(plan)
+
+    assert "variables" not in masked
+    assert "hunter2-plan-secret" not in json.dumps(masked)
+
+
+def test_a_very_short_sensitive_value_is_not_swept():
+    """
+    The sweep matches exact strings everywhere, so a two-character secret would also match ids and
+    regions and mangle the plan. Leaking a two-character value is the lesser harm against breaking
+    every policy on the document.
+    """
+    plan = {
+        "resource_changes": [
+            {
+                "address": "aws_instance.app",
+                "type": "aws_instance",
+                "change": {
+                    "actions": ["create"],
+                    "after": {"tags": {"P": "ab"}, "region": "ab", "instance_type": "t3.micro"},
+                    "after_sensitive": {"tags": {"P": True}},
+                },
+            }
+        ],
+    }
+
+    masked = redact.redact_plan(plan)
+    after = masked["resource_changes"][0]["change"]["after"]
+
+    assert after["tags"]["P"] == redact.SENTINEL, "the marked value is still masked by the marker"
+    assert after["region"] == "ab", "but an unrelated two-character value must survive"
