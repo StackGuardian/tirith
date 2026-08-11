@@ -225,49 +225,27 @@ def test_the_bundle_name_carries_the_commit():
 
     name = ARCHIVE_NAME_TEMPLATE.format(sha="a1b2c3d", tag="plan")
 
-    assert name == "__sg.tirith-bundle-a1b2c3d-plan.tar.gz"
+    assert name == "tirith-bundle-a1b2c3d-plan.tar.gz"
     # Two commits cannot collide, which is the entire point.
     assert name != ARCHIVE_NAME_TEMPLATE.format(sha="9999999", tag="plan")
 
 
-def test_the_bundle_is_hidden_from_a_users_artifact_listing():
+def test_the_bundle_name_survives_the_artifact_syncs_exclude_list():
     """
-    core's `__is_sg_file` hides `sg.`- and `__sg.`-prefixed names unless the caller asks for them, and
-    these bundles should be hidden: one accumulates per commit and they are machine input.
-
-    This name is only deliverable because the run controller re-includes it by name after excluding
-    `__sg.*` from the download sync (sg-run-controller#304). The test below pins the other half.
-    """
-    from tirith.platform.client import ARCHIVE_DOCUMENT, ARCHIVE_NAME_TEMPLATE
-
-    for name in (ARCHIVE_NAME_TEMPLATE.format(sha="a1b2c3d", tag="plan"), ARCHIVE_DOCUMENT):
-        assert name.startswith("__sg."), f"{name} would show up in a user's artifact list"
-
-
-def test_the_bundle_name_survives_the_artifact_syncs_other_excludes():
-    """
-    The sync is the delivery mechanism, so a name matching one of its excludes is dropped silently and
-    never reaches the container.
-
-    `__sg.*` is deliberately absent from the list checked here: it *is* excluded, and the runner's
-    matching `--include __sg.tirith-bundle-*.tar.gz` is what carves these back out. That coupling is
-    the reason this name cannot change shape freely -- the include pattern has to keep matching it,
-    which is what the second assertion pins.
+    The sync is the delivery mechanism, so a name matching any of its excludes would be dropped
+    silently and never reach the container. `__sg.`, which this name used to carry, is excluded
+    precisely so the old carrier stayed OUT of the sync -- exactly wrong now.
     """
     import fnmatch
 
     from tirith.platform.client import ARCHIVE_NAME_TEMPLATE
 
     name = ARCHIVE_NAME_TEMPLATE.format(sha="a1b2c3d", tag="plan")
-    excluded = ("*pci_*", "*_thrifty_*", "*_gdpr_*", "*_cis_v150_*", "*_hipaa_*", "*compliance_raw*")
+    excluded = ("sg.*", "__sg.*", "*__sg.*", "*pci_*", "*_thrifty_*", "*_gdpr_*", "*compliance_raw*")
 
     for pattern in excluded:
         assert not fnmatch.fnmatch(name, pattern), f"the bundle name matches the sync exclude {pattern!r}"
     assert name != "tfstate.json", "that name is a managed-state workflow's live state"
-
-    # The runner's re-include, verbatim. If the template changes so this stops matching, the bundle
-    # silently stops being delivered and the step reports it has nothing to evaluate.
-    assert fnmatch.fnmatch(name, "__sg.tirith-bundle-*.tar.gz")
 
 
 def test_the_run_names_its_own_bundle():
