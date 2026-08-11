@@ -59,6 +59,11 @@ def main(args=None) -> ExitStatus:
             description="Tirith (StackGuardian Policy Framework)",
             formatter_class=_WidthFormatter,
             epilog=textwrap.dedent("""\
+         Subcommands:
+
+            tirith platform check --help   Evaluate against the policies your StackGuardian
+                                          organization enforces, rather than local files.
+
          About Tirith:
          
             * Abstract away the implementation complexity of policy engine underneath.
@@ -66,7 +71,7 @@ def main(args=None) -> ExitStatus:
             * Provide a standard framework for scanning various configurations with granularity.
             * Provide modularity to enable easy extensibility
             * Github - https://github.com/StackGuardian/tirith
-            * Docs - https://docs.stackguardian.io/docs/tirith/overview
+            * Docs - https://github.com/StackGuardian/tirith#readme
         """),
         )
         parser.add_argument(

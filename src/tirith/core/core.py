@@ -153,6 +153,22 @@ def generate_compiled_code_without_none_and_variables(eval_str: str) -> Tuple[Op
 
     tree = ast.parse(eval_str, mode="eval")
 
+    # `&` and `|` parse as BinOp, which nothing below handles: the tree stays uncompilable, the retry
+    # loop exhausts, and the caller reports "Could not evaluate the eval expression. Please report this
+    # error" -- telling a user to file a bug against their own typo. The README documented `&` in two
+    # examples, so this was reachable by copying the docs. Name the operator instead.
+    for node in ast.walk(tree):
+        if isinstance(node, ast.BinOp):
+            operators = {ast.BitAnd: ("&", "&&"), ast.BitOr: ("|", "||")}
+            wrong, right = operators.get(type(node.op), (None, None))
+            if wrong:
+                raise ValueError(
+                    f"Unsupported operator '{wrong}' in eval_expression. Use '{right}' instead."
+                )
+            raise ValueError(
+                "Unsupported operator in eval_expression. Only '&&', '||' and '!' are supported."
+            )
+
     compiled_code = None
     tries_count = 0
     is_tree_compilable = False
