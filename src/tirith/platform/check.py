@@ -125,7 +125,10 @@ def prepare_documents(input_path, input_kind, state_path, infracost_path, input_
 
 # The step template that evaluates the policies, and the name its run stage takes.
 POLICY_STEP_TEMPLATE = "/stackguardian/tirith-iac-governance:1"
-POLICY_STEP_NAME = "evaluate-policies"
+# Names the run stage, so it surfaces as `on_0_tirith-iac-governance` in the dashboard and in
+# every status key. Matches the step template's own name rather than describing the action, so a
+# reader seeing the stage knows which template produced it.
+POLICY_STEP_NAME = "tirith-iac-governance"
 POLICY_STEP_TIMEOUT = 1800
 
 

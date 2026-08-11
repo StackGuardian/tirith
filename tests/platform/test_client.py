@@ -588,7 +588,7 @@ def test_create_run_sends_the_bundle_name_in_terraform_config(monkeypatch):
         return 200, {"data": {"ResourceName": "wfrun-1"}}
 
     monkeypatch.setattr(sg, "_request", fake_request)
-    step = {"name": "evaluate-policies", "wfStepInputData": {"data": {"bundlePath": "tirith-bundle-a1b2c3d-plan.tar.gz"}}}
+    step = {"name": "tirith-iac-governance", "wfStepInputData": {"data": {"bundlePath": "tirith-bundle-a1b2c3d-plan.tar.gz"}}}
 
     sg.create_run("default", "wf", {"type": "tirith"}, pre_plan_steps=[step])
 
