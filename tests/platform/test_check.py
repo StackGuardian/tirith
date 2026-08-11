@@ -267,3 +267,22 @@ def test_the_step_template_override_reaches_the_per_run_step():
     step = check.policy_step("/demo-org/tirith-iac-governance:3", "b.tar.gz")
 
     assert step["wfStepTemplateId"] == "/demo-org/tirith-iac-governance:3"
+
+
+def test_the_run_tells_the_step_whether_state_is_managed():
+    """
+    The step writes the masked state to `artifacts/tfstate.json`, which for a managed-state workflow is
+    the LIVE state. It must be told, and told explicitly rather than left to a default: a missing key
+    that happens to mean "not managed" is one refactor away from meaning the opposite.
+    """
+    step = check.policy_step(None, "tirith-bundle-a1b2c3d-plan.tar.gz")
+
+    data = step["wfStepInputData"]["data"]
+    assert data["managedTerraformState"] is False
+
+
+def test_the_workflow_never_takes_a_managed_state_backend():
+    """And the claim the passthrough rests on: these workflows do not manage state in the first place."""
+    config = check.terraform_config("1.5.7", None)
+
+    assert config["managedTerraformState"] is False

@@ -148,7 +148,18 @@ def policy_step(step_template_id, bundle_path):
         "approval": False,
         # Everything the step needs travels here. It reads nothing from the workflow's terraform
         # configuration.
-        "wfStepInputData": {"schemaType": "FORM_JSONSCHEMA", "data": {"bundlePath": bundle_path}},
+        "wfStepInputData": {
+            "schemaType": "FORM_JSONSCHEMA",
+            "data": {
+                "bundlePath": bundle_path,
+                # Passed through so the step knows whether it may write the masked state to
+                # `artifacts/tfstate.json`. For a managed-state workflow that object *is* the live
+                # state, and a masked copy over it would be data loss. Always false here, because
+                # terraform_config below sets it false -- sent explicitly rather than relying on the
+                # step's default, so the intent is visible on every run.
+                "managedTerraformState": False,
+            },
+        },
     }
 
 
