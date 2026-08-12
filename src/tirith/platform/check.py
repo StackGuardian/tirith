@@ -244,19 +244,37 @@ def _split_repo_url(repo_url):
         return None, None
 
     text = repo_url.strip()
-    if "://" not in text and "@" in text and ":" in text.split("@", 1)[1]:
-        # scp-style. Rewrite to a URL shape so the host is recoverable, keeping it lossless enough to
-        # be recognisable to a human reading the metadata.
-        userinfo, _, remainder = text.partition("@")
-        host, _, path = remainder.partition(":")
-        return f"ssh://{host}/{path}", host.lower() or None
+    if "://" not in text and "@" in text:
+        # scp-style (`git@host:path`, and the `host/path` spelling a scheme-less CI variable produces).
+        # Rewritten to a URL shape so the host is recoverable, and so the userinfo is discarded rather
+        # than carried along.
+        _userinfo, _, remainder = text.rpartition("@")
+        host, separator, path = remainder.partition(":")
+        if not separator:
+            host, _, path = remainder.partition("/")
+        host = host.lower()
+        return (f"ssh://{host}/{path.lstrip('/')}", host) if host else (None, None)
 
     parts = urllib.parse.urlsplit(text)
-    host = (parts.hostname or "").lower() or None
-    if not host:
-        return text, None
+    try:
+        host = (parts.hostname or "").lower() or None
+        port = parts.port
+    except ValueError:
+        # An unparseable port raises rather than returning None.
+        host, port = None, None
 
-    authority = host if parts.port is None else f"{host}:{parts.port}"
+    if not host:
+        # Fail closed. The input reached here *with* whatever userinfo it carried, and a URL we cannot
+        # parse is a URL we cannot sanitise -- returning it verbatim is how a token ends up in a file
+        # that ships inside the bundle and outlives the run. Both real-world shapes that land here
+        # carry credentials: `https://oauth2:${TOKEN}@${HOST}/x` with HOST unset renders an empty
+        # authority, and a scheme-less `user:token@host/path` parses its username as a scheme. Losing
+        # the URL from the metadata is a far cheaper failure than leaking the secret in it.
+        return None, None
+
+    # hostname strips IPv6 brackets, so they have to go back or the authority is malformed.
+    literal = f"[{host}]" if ":" in host else host
+    authority = literal if port is None else f"{literal}:{port}"
     return urllib.parse.urlunsplit((parts.scheme, authority, parts.path, parts.query, "")), host
 
 

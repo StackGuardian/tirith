@@ -196,10 +196,15 @@ tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 echo $?    # 3 if a policy failed, 0 if everything passed
 ```
 
-Note what `--fail-on-error` does *not* do: a policy that could not be evaluated at all — an
-unparseable `eval_expression`, an unresolved variable — exits `1`, not `3`. "Nothing was checked" must
-never be reportable as "your infrastructure violates a policy"; a CI job treating them alike reports an
-outage as a violation.
+`3` means a check ran and said no. Anything that leaves no verdict at all exits `1` instead — an
+unparseable `eval_expression`, an unresolved variable, or a policy whose every check was skipped.
+"Nothing was checked" must never be reportable as "your infrastructure violates a policy"; a CI job
+treating them alike reports an outage as a violation.
+
+One limit worth stating plainly: a *misconfigured* policy — an unsupported `condition.type`, an unknown
+`required_provider` — comes back from the engine as an ordinary failed check with no error attached, so
+it is indistinguishable from a real violation and exits `3`. It fails closed, which is the safe
+direction, but it will point at your infrastructure when the fault is in the policy.
 
 ## Evaluating against your StackGuardian organization
 
@@ -256,10 +261,10 @@ That third outcome is why some sample output below shows `"passed": null` rather
 `eval_expression`** before it is evaluated, because `None` is falsy in Python and leaving it in would
 silently read as a failure.
 
-Two consequences worth knowing before using it. A policy whose every check is skipped evaluates to a
-pass, so a wide tolerance can produce a green result that checked nothing. And `--fail-on-error` exits
-`0` for that, because no policy *failed* — if you need "nothing was evaluated" to be loud, keep the
-tolerance at `0`.
+One consequence worth knowing before using it: a policy whose every check is skipped has evaluated
+nothing at all, and reports `"final_result": null` rather than `true` or `false`. With
+`--fail-on-error` that exits **1**, not 0 and not 3 — a check that looked at nothing is not a pass, and
+it is not a violation either. Keep the tolerance at `0` if you would rather such a policy fail outright.
 
 ### Terraform plan provider
 <details>

@@ -179,15 +179,35 @@ def main(args=None) -> ExitStatus:
             # 1 says tirith could not tell you. The same split `remote check` uses, because a caller
             # scripting both should not have to learn two vocabularies.
             #
-            # Which means `final_result` alone is not enough to decide. It is False both for a policy
-            # that genuinely failed and for one that could not be evaluated -- an unparseable
-            # eval_expression, or an operator the evaluator does not implement -- and those are not the
-            # same answer. `errors` is what separates them; the missing-variables path returns errors
-            # and no `final_result` key at all, so absence is treated the same way.
+            # `final_result` is tri-state, and that is what decides:
+            #
+            #   True    every check that ran passed              -> 0
+            #   False   a check ran and said no                  -> 3
+            #   None    nothing ran; every check was skipped     -> 1
+            #   absent  the policy could not be loaded at all    -> 1
+            #
+            # None is not a pass. A policy whose every check was skipped -- `error_tolerance` swallowing
+            # a provider that found nothing -- checked precisely nothing, and reporting that as green is
+            # the failure this whole flag exists to prevent. `absent` is the missing-variables path,
+            # which returns `errors` and no result at all.
+            #
+            # `errors` is deliberately NOT consulted. It reads like a tool-failure signal and is not: it
+            # is populated only by the eval-expression pass, and the one thing that puts a message there
+            # beside a real verdict is the informational "these ids are not defined and have been
+            # removed" note. Gating on it inverted both halves of this contract -- a genuine violation
+            # whose expression mentioned a typo'd id exited 1, while a policy naming an unknown provider
+            # exited 3.
+            #
+            # Known limit, worth stating rather than pretending otherwise: a *misconfigured* policy -- an
+            # unsupported `condition.type`, an unknown `required_provider` -- surfaces from the engine as
+            # an ordinary failed evaluator with no error attached, so it is indistinguishable from a
+            # violation here and exits 3. Fixing that means the engine reporting it distinctly, not this
+            # branch guessing from free text.
             if args.failOnError:
-                if result.get("errors") or "final_result" not in result:
+                final_result = result.get("final_result")
+                if "final_result" not in result or final_result is None:
                     return ExitStatus.ERROR
-                if result["final_result"] is not True:
+                if final_result is not True:
                     return ExitStatus.ERROR_POLICY_FAILED
             return ExitStatus.SUCCESS
         except Exception as e:
