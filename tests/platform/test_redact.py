@@ -11,6 +11,8 @@ import json
 import os
 import sys
 
+import pytest
+
 
 from tirith.platform import redact
 
@@ -1078,3 +1080,152 @@ def test_a_very_short_sensitive_value_is_not_swept():
 
     assert after["tags"]["P"] == redact.SENTINEL, "the marked value is still masked by the marker"
     assert after["region"] == "ab", "but an unrelated two-character value must survive"
+
+
+# --- state: provider-computed mirrors -----------------------------------------------------------
+#
+# From a penetration test. `redact_plan` already swept the plaintext of every marked value across the
+# whole document to catch computed mirrors; `redact_state` did not, so a secret in a tag was masked at
+# `tags.Password` and shipped in cleartext at `tags_all.Password`.
+#
+# State is the worse place for this hole than a plan: it carries every attribute of every resource, and
+# the bundle it is uploaded in is retained indefinitely. Neither existing state test had an unmarked
+# mirror attribute, which is why both passed with the leak present.
+
+TAG_SECRET = "hunter2-tag-secret"
+
+
+def _raw_state_with_tags_all():
+    """Raw `terraform state pull`: sensitivity is a list of attribute paths."""
+    return {
+        "version": 4,
+        "resources": [
+            {
+                "type": "aws_instance",
+                "name": "app",
+                "instances": [
+                    {
+                        "attributes": {
+                            "tags": {"Password": TAG_SECRET},
+                            # The provider's computed mirror. Same plaintext, named by nothing.
+                            "tags_all": {"Password": TAG_SECRET},
+                            "region": "us-east-1",
+                        },
+                        "sensitive_attributes": [
+                            [{"type": "get_attr", "value": "tags"}, {"type": "get_attr", "value": "Password"}]
+                        ],
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def _show_json_state_with_tags_all():
+    """`terraform show -json <state>`: sensitivity is a parallel marker tree, as in a plan."""
+    return {
+        "format_version": "1.0",
+        "values": {
+            "root_module": {
+                "resources": [
+                    {
+                        "address": "aws_instance.app",
+                        "values": {
+                            "tags": {"Password": TAG_SECRET},
+                            "tags_all": {"Password": TAG_SECRET},
+                            "region": "us-east-1",
+                        },
+                        # tags_all is present and empty -- terraform marks nothing in it.
+                        "sensitive_values": {"tags": {"Password": True}, "tags_all": {}},
+                    }
+                ]
+            }
+        },
+    }
+
+
+@pytest.mark.parametrize(
+    "build, read",
+    [
+        (_raw_state_with_tags_all, lambda o: o["resources"][0]["instances"][0]["attributes"]),
+        (_show_json_state_with_tags_all, lambda o: o["values"]["root_module"]["resources"][0]["values"]),
+    ],
+    ids=["raw", "show-json"],
+)
+def test_a_secret_mirrored_into_an_unmarked_state_attribute_is_still_masked(build, read):
+    out = redact.redact_state(build())
+    attributes = read(out)
+
+    assert attributes["tags"]["Password"] == redact.SENTINEL
+    assert attributes["tags_all"]["Password"] == redact.SENTINEL
+    # The whole-document assertion is the one that matters: the mirror is only the case we know about.
+    assert TAG_SECRET not in json.dumps(out)
+
+
+@pytest.mark.parametrize(
+    "build, read",
+    [
+        (_raw_state_with_tags_all, lambda o: o["resources"][0]["instances"][0]["attributes"]),
+        (_show_json_state_with_tags_all, lambda o: o["values"]["root_module"]["resources"][0]["values"]),
+    ],
+    ids=["raw", "show-json"],
+)
+def test_the_state_sweep_does_not_redact_unrelated_values(build, read):
+    """A sweep that masks by value will over-mask if it is not bounded. `region` is not a secret."""
+    out = redact.redact_state(build())
+
+    assert read(out)["region"] == "us-east-1"
+
+
+def test_a_sensitive_state_output_is_swept_out_of_a_resource_attribute():
+    """
+    An output's plaintext is discarded when the output is masked, so nothing else knew it was a secret --
+    and the same value sitting in an ordinary attribute stayed in cleartext.
+    """
+    state = {
+        "version": 4,
+        "outputs": {"db_password": {"value": TAG_SECRET, "sensitive": True}},
+        "resources": [
+            {
+                "type": "aws_db_instance",
+                "instances": [{"attributes": {"password_copy": TAG_SECRET, "engine": "postgres"}}],
+            }
+        ],
+    }
+
+    out = redact.redact_state(state)
+
+    assert out["outputs"]["db_password"]["value"] == redact.SENTINEL
+    assert out["resources"][0]["instances"][0]["attributes"]["password_copy"] == redact.SENTINEL
+    assert out["resources"][0]["instances"][0]["attributes"]["engine"] == "postgres"
+    assert TAG_SECRET not in json.dumps(out)
+
+
+def test_a_short_state_secret_is_not_swept():
+    """
+    The length floor exists so masking one short value does not redact every id, region and short
+    string that happens to equal it. Same bound as the plan sweep.
+    """
+    state = {
+        "version": 4,
+        "resources": [
+            {
+                "type": "aws_instance",
+                "instances": [
+                    {
+                        "attributes": {"tags": {"Env": "dev"}, "tags_all": {"Env": "dev"}, "stage": "dev"},
+                        "sensitive_attributes": [
+                            [{"type": "get_attr", "value": "tags"}, {"type": "get_attr", "value": "Env"}]
+                        ],
+                    }
+                ],
+            }
+        ],
+    }
+
+    out = redact.redact_state(state)
+    attributes = out["resources"][0]["instances"][0]["attributes"]
+
+    # Masked where it is marked, and left alone everywhere else.
+    assert attributes["tags"]["Env"] == redact.SENTINEL
+    assert attributes["stage"] == "dev"

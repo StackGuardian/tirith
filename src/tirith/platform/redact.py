@@ -452,15 +452,26 @@ def redact_state(state):
 
     redacted = dict(state)
 
+    # Every plaintext we are about to mask, collected as we go and swept from the whole document at the
+    # end -- the same two-pass shape as redact_plan, and for the same reason.
+    #
+    # Marker-driven masking alone is not enough, because a provider writes computed *mirrors* of an
+    # attribute with no sensitivity marker of their own. The confirmed case is `tags_all`: a secret in
+    # `tags.Password` is masked there and shipped in plaintext one key away. A pen test found this exact
+    # hole in state after the equivalent had been closed for plans -- and state is the worse place for
+    # it, since state carries every attribute of every resource and the bundle is retained.
+    secrets = set()
+
     values = redacted.get("values")
     if isinstance(values, dict):
-        redacted["values"] = _redact_show_json_values(values)
+        redacted["values"] = _redact_show_json_values(values, secrets)
 
     outputs = redacted.get("outputs")
     if isinstance(outputs, dict):
         masked_outputs = {}
         for name, output in outputs.items():
             if isinstance(output, dict) and output.get("sensitive"):
+                _collect_all_strings(output.get("value"), secrets)
                 masked_outputs[name] = {**output, "value": SENTINEL}
             else:
                 masked_outputs[name] = output
@@ -468,12 +479,12 @@ def redact_state(state):
 
     resources = redacted.get("resources")
     if isinstance(resources, list):
-        redacted["resources"] = [_redact_state_resource(r) for r in resources]
+        redacted["resources"] = [_redact_state_resource(r, secrets) for r in resources]
 
-    return redacted
+    return _sweep_known_secrets(redacted, secrets)
 
 
-def _redact_show_json_values(values):
+def _redact_show_json_values(values, secrets=None):
     """
     Mask the `values` tree of `terraform show -json <state>` output.
 
@@ -484,23 +495,33 @@ def _redact_show_json_values(values):
     if not isinstance(values, dict):
         return values
 
+    if secrets is None:
+        secrets = set()
+
     masked = dict(values)
     root = masked.get("root_module")
     if isinstance(root, dict):
-        masked["root_module"] = _redact_show_json_module(root)
+        masked["root_module"] = _redact_show_json_module(root, secrets)
 
     outputs = masked.get("outputs")
     if isinstance(outputs, dict):
-        masked["outputs"] = {
-            name: ({**o, "value": SENTINEL} if isinstance(o, dict) and o.get("sensitive") else o)
-            for name, o in outputs.items()
-        }
+        masked_outputs = {}
+        for name, o in outputs.items():
+            if isinstance(o, dict) and o.get("sensitive"):
+                _collect_all_strings(o.get("value"), secrets)
+                masked_outputs[name] = {**o, "value": SENTINEL}
+            else:
+                masked_outputs[name] = o
+        masked["outputs"] = masked_outputs
     return masked
 
 
-def _redact_show_json_module(module):
+def _redact_show_json_module(module, secrets=None):
     if not isinstance(module, dict):
         return module
+
+    if secrets is None:
+        secrets = set()
 
     masked = dict(module)
 
@@ -513,20 +534,26 @@ def _redact_show_json_module(module):
                 continue
             entry = dict(resource)
             if "values" in entry:
+                # Collect before masking. The marker convention here is identical to a plan's, so this
+                # is the same call redact_plan makes over `change.before` / `change.after`.
+                _collect_sensitive_values(entry["values"], entry.get("sensitive_values"), secrets)
                 entry["values"] = _mask_by_marker(entry["values"], entry.get("sensitive_values"))
             out.append(entry)
         masked["resources"] = out
 
     children = masked.get("child_modules")
     if isinstance(children, list):
-        masked["child_modules"] = [_redact_show_json_module(c) for c in children]
+        masked["child_modules"] = [_redact_show_json_module(c, secrets) for c in children]
 
     return masked
 
 
-def _redact_state_resource(resource):
+def _redact_state_resource(resource, secrets=None):
     if not isinstance(resource, dict):
         return resource
+
+    if secrets is None:
+        secrets = set()
 
     instances = resource.get("instances")
     if not isinstance(instances, list):
@@ -545,7 +572,13 @@ def _redact_state_resource(resource):
         if isinstance(attributes, dict) and sensitive_attributes:
             masked_attributes = copy.deepcopy(attributes)
             for sensitive_attribute in sensitive_attributes:
-                _mask_attribute_path(masked_attributes, _attribute_steps(sensitive_attribute))
+                steps = _attribute_steps(sensitive_attribute)
+                # Read from the untouched original, not from the copy being masked: once the first path
+                # is masked the copy holds the sentinel there, and sweeping for that would do nothing.
+                plaintext = _read_attribute_path(attributes, steps)
+                if plaintext is not _ABSENT:
+                    _collect_all_strings(plaintext, secrets)
+                _mask_attribute_path(masked_attributes, steps)
             masked["attributes"] = masked_attributes
 
         masked_instances.append(masked)
@@ -585,6 +618,30 @@ def _attribute_steps(sensitive_attribute):
             # would be worse than reporting nothing.
             return []
     return steps
+
+
+_ABSENT = object()
+
+
+def _read_attribute_path(container, steps):
+    """
+    Return the value at `steps` within `container`, or `_ABSENT`.
+
+    The mirror of `_mask_attribute_path` below, and deliberately the same walk: the two have to agree
+    on what a path means, or the sweep collects a different value from the one that was masked.
+    """
+    if not steps:
+        return _ABSENT
+
+    node = container
+    for step in steps:
+        if isinstance(node, dict) and step in node:
+            node = node[step]
+        elif isinstance(node, list) and isinstance(step, int) and 0 <= step < len(node):
+            node = node[step]
+        else:
+            return _ABSENT
+    return node
 
 
 def _mask_attribute_path(container, steps):
