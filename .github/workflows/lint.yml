@@ -15,3 +15,11 @@ jobs:
         with:
           options: "--check"
           src: "."
+          # Pinned. `psf/black@stable` resolves to whatever Black is newest at the time the job runs,
+          # so a Black release reformats the world and this check goes red on every open branch with
+          # nothing in the repository having changed. That is what happened here: main last passed
+          # this job in November 2025 and fails it today, on 14 files nobody touched.
+          #
+          # 25.1.0 is the release the tree is actually formatted for -- verified by running it against
+          # origin/main, which comes back clean. Bump it deliberately, in a commit that reformats.
+          version: "25.1.0"

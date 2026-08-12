@@ -67,7 +67,8 @@ def main(args=None) -> ExitStatus:
         parser = argparse.ArgumentParser(
             description="Tirith (StackGuardian Policy Framework)",
             formatter_class=_WidthFormatter,
-            epilog=textwrap.dedent("""\
+            epilog=textwrap.dedent(
+                """\
          Subcommands:
 
             tirith remote check --help     Evaluate against the policies your StackGuardian
@@ -81,7 +82,8 @@ def main(args=None) -> ExitStatus:
             * Provide modularity to enable easy extensibility
             * Github - https://github.com/StackGuardian/tirith
             * Docs - https://github.com/StackGuardian/tirith#readme
-        """),
+        """
+            ),
         )
         parser.add_argument(
             "-policy-path",
