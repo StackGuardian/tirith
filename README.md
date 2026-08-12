@@ -183,23 +183,20 @@ About Tirith:
 | 3 | A policy failed. Only with `--fail-on-error`, on either surface |
 | 130 | Interrupted |
 
-**3 is deliberately not 1.** `3` means your infrastructure violates a policy; `1` means Tirith could
-not tell you either way. A CI job that treats every non-zero code the same reports an outage as a
-policy violation, and — worse — cannot distinguish a real gate from a broken one.
-
-**Gating locally.** By default `tirith -policy-path … -input-path …` exits `0` whether the policy
-passed or failed — the verdict is in the output, and that default is kept so an upgrade cannot turn a
-green pipeline red. Pass `--fail-on-error` to make it gate:
+**Gate a CI job with `--fail-on-error`:**
 
 ```
 tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
-echo $?    # 3 if a policy failed, 0 if everything passed
+echo $?    # 3 a policy failed · 1 nothing could be evaluated · 0 everything passed
 ```
 
-`3` means a check ran and said no. Anything that leaves no verdict at all exits `1` instead — an
-unparseable `eval_expression`, an unresolved variable, or a policy whose every check was skipped.
-"Nothing was checked" must never be reportable as "your infrastructure violates a policy"; a CI job
-treating them alike reports an outage as a violation.
+Without the flag the exit code is always `0` and the verdict is in the output — that is how the
+command has always behaved, and it is left alone so upgrading cannot turn a passing pipeline red.
+
+**`3` is deliberately not `1`.** `3` means a check ran and said no. `1` means Tirith could not tell you
+either way — an unparseable `eval_expression`, an unresolved variable, or a policy whose every check was
+skipped. A job that treats every non-zero code alike reports an outage as a policy violation, and
+cannot tell a working gate from a broken one.
 
 One limit worth stating plainly: a *misconfigured* policy — an unsupported `condition.type`, an unknown
 `required_provider` — comes back from the engine as an ordinary failed check with no error attached, so
