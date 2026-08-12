@@ -91,30 +91,30 @@ def test_the_version_shown_in_the_install_steps_is_the_shipped_one():
     )
 
 
-def test_the_remote_subcommand_is_documented():
+def test_the_platform_subcommand_is_documented():
     """
     It is dispatched before argparse sees anything (`cli.py`, SUBCOMMANDS), so it cannot appear in the
     top-level usage line automatically -- which is exactly how it stayed undocumented while being the
     reason the branch exists.
     """
     text = _readme()
-    assert "tirith remote check" in text
+    assert "tirith platform check" in text
     assert "SG_API_TOKEN" in text and "SG_ORG" in text, "the credentials it needs are not named"
-    assert os.path.exists(os.path.join(ROOT, "docs", "remote-check.md")), "the reference page is linked but missing"
+    assert os.path.exists(os.path.join(ROOT, "docs", "platform-check.md")), "the reference page is linked but missing"
 
 
 def test_the_flag_reference_page_lists_every_flag_the_command_accepts():
     """
-    docs/remote-check.md embeds the full `--help`. A flag added without touching it silently stops
+    docs/platform-check.md embeds the full `--help`. A flag added without touching it silently stops
     being documented, which is how a 25-flag surface ends up with a partial reference.
     """
-    with open(os.path.join(ROOT, "docs", "remote-check.md")) as f:
+    with open(os.path.join(ROOT, "docs", "platform-check.md")) as f:
         page = f.read()
 
-    flags = set(re.findall(r"(?<![\w-])--[a-z][a-z0-9-]+", _help("remote", "check")))
+    flags = set(re.findall(r"(?<![\w-])--[a-z][a-z0-9-]+", _help("platform", "check")))
     missing = sorted(f for f in flags if f not in page)
 
-    assert not missing, f"flags accepted by `remote check` but absent from docs/remote-check.md: {missing}"
+    assert not missing, f"flags accepted by `platform check` but absent from docs/platform-check.md: {missing}"
 
 
 def test_the_documented_exit_codes_are_the_real_ones():

@@ -31,14 +31,15 @@ def eprint(*args, **kwargs):
 # local-evaluation surface is a contract: tests/core/test_output_compatibility.py asserts its --json
 # output is byte-identical to a golden file. An explicit pre-dispatch leaves that untouched.
 #
-# `remote` names the distinction that actually exists: the policies and the evaluation live somewhere
-# else. `platform` was internal vocabulary escaping into a user-facing verb -- it reads in English as
-# "check the platform", which is what `--platform` means in most tools a reader has used.
+# Named `platform` because that is what it evaluates against: the policies your StackGuardian
+# organization enforces, run on the platform, rather than policy files in your repository.
 #
-# It was called `platform` on this branch and is renamed outright, with no alias: nothing is released
-# -- py-tirith is not on PyPI and the action pins a branch -- so there is no caller to keep working,
-# and an alias kept for hypothetical callers is a second name to explain forever.
-SUBCOMMAND = "remote"
+# It was briefly `remote` on this branch, on the argument that "platform check" can read as *a check of
+# the platform*. Reverted -- the vagueness is minor next to having one name, and the concern that
+# prompted the rename was really that the open-source surface could not gate at all, which
+# `--fail-on-error` fixed. No alias in either direction: nothing is released, so there is no caller to
+# keep working.
+SUBCOMMAND = "platform"
 SUBCOMMANDS = {SUBCOMMAND}
 
 
@@ -54,9 +55,9 @@ def main(args=None) -> ExitStatus:
     argv = list(sys.argv[1:] if args is None else args)
 
     if argv and argv[0] in SUBCOMMANDS:
-        from tirith.platform import cli as remote_cli
+        from tirith.platform import cli as platform_cli
 
-        return remote_cli.main(argv)
+        return platform_cli.main(argv)
 
     try:
 
@@ -71,7 +72,7 @@ def main(args=None) -> ExitStatus:
                 """\
          Subcommands:
 
-            tirith remote check --help     Evaluate against the policies your StackGuardian
+            tirith platform check --help   Evaluate against the policies your StackGuardian
                                            organization enforces, rather than local files.
 
          About Tirith:
@@ -178,7 +179,7 @@ def main(args=None) -> ExitStatus:
             # people at the hosted path when they need an exit code that means something.
             #
             # 3, not 1, and the distinction is the point: 3 says the infrastructure violates a policy,
-            # 1 says tirith could not tell you. The same split `remote check` uses, because a caller
+            # 1 says tirith could not tell you. The same split `platform check` uses, because a caller
             # scripting both should not have to learn two vocabularies.
             #
             # `final_result` is tri-state, and that is what decides:

@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-08-03
 
 ### Added
-- `tirith remote check`: run an organization's policies against a plan, state or arbitrary JSON
+- `tirith platform check`: run an organization's policies against a plan, state or arbitrary JSON
   document from CI or a laptop. Masks the document locally, packs it with the terraform source into
   an archive, uploads it, creates a StackGuardian run, polls it and reports the verdict as JSON
   and/or markdown. The uploaded bundle carries the source under `code/` and a `metadata.json`
@@ -25,8 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it could not evaluate.
 
 ### Changed
-- The subcommand is `remote`, not `platform`. Renamed outright with no alias: nothing was released,
-  so there was no caller to keep working.
 - `cli.main(args=...)` is now honoured. It previously called `parse_args()` with no argument, so
   the parameter was ignored and the CLI could only ever read `sys.argv`.
 

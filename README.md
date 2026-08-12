@@ -159,7 +159,7 @@ options:
 
 Subcommands:
 
-   tirith remote check --help     Evaluate against the policies your StackGuardian
+   tirith platform check --help   Evaluate against the policies your StackGuardian
                                   organization enforces, rather than local files.
 
 About Tirith:
@@ -205,7 +205,7 @@ direction, but it will point at your infrastructure when the fault is in the pol
 
 ## Evaluating against your StackGuardian organization
 
-`tirith remote check` evaluates against the policies your StackGuardian organization enforces,
+`tirith platform check` evaluates against the policies your StackGuardian organization enforces,
 instead of policy files committed to your repository — so policy lives in one place rather than being
 copied into every repository that needs gating.
 
@@ -213,7 +213,7 @@ copied into every repository that needs gating.
 export SG_API_TOKEN=sgo_...        # an organization token
 export SG_ORG=my-org
 
-tirith remote check --workflow-id my-repo --input-path plan.json --fail-on-error
+tirith platform check --workflow-id my-repo --input-path plan.json --fail-on-error
 ```
 
 It masks the document on your machine before anything leaves it, packs it with your terraform source,
@@ -233,7 +233,7 @@ Common flags:
 | `--output-json` / `--output-markdown` | Write the verdict to files for a later CI step |
 
 `--api-url` overrides `--region` for a self-hosted or dedicated host. Every flag is in
-[docs/remote-check.md](docs/remote-check.md) or `tirith remote check --help`.
+[docs/platform-check.md](docs/platform-check.md) or `tirith platform check --help`.
 
 Running this from GitHub Actions? Use the action instead — it wires up the plan discovery, the sticky
 pull-request comment, the check run and the exit codes for you:

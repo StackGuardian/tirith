@@ -1,5 +1,5 @@
 """
-Tests for `tirith remote check` option handling.
+Tests for `tirith platform check` option handling.
 
 Everything here is asserted *before* any HTTP call, which is the point: a bad workflow id or a
 contradictory pair of URL flags should fail immediately rather than after a run has been created.
@@ -31,7 +31,7 @@ def no_network(monkeypatch):
 def base_args(tmp_path, *extra):
     plan = tmp_path / "plan.json"
     plan.write_text(json.dumps(PLAN))
-    return ["remote", "check", "--input-path", str(plan), *extra]
+    return ["platform", "check", "--input-path", str(plan), *extra]
 
 
 def env(monkeypatch, **values):
@@ -146,14 +146,14 @@ class TestDocumentSelection:
         seen = {}
         monkeypatch.setattr(cli, "run_check", lambda opts: seen.update(input_path=opts.input_path) or PASSED)
 
-        cli.main(["remote", "check", "--workflow-id", "wf", "--source-dir", str(tmp_path)])
+        cli.main(["platform", "check", "--workflow-id", "wf", "--source-dir", str(tmp_path)])
 
         assert seen["input_path"].endswith("plan.json")
 
     def test_nothing_to_evaluate_is_an_error(self, tmp_path, monkeypatch, no_network, capsys):
         env(monkeypatch, SG_API_TOKEN="sgo_x", SG_ORG="acme")
 
-        status = cli.main(["remote", "check", "--workflow-id", "wf", "--source-dir", str(tmp_path)])
+        status = cli.main(["platform", "check", "--workflow-id", "wf", "--source-dir", str(tmp_path)])
 
         assert status == ExitStatus.ERROR
         assert "No plan document found" in capsys.readouterr().err
@@ -176,7 +176,7 @@ class TestDocumentSelection:
 
         status = cli.main(
             [
-                "remote",
+                "platform",
                 "check",
                 "--workflow-id",
                 "wf",

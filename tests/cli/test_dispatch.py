@@ -3,7 +3,7 @@ Tests for subcommand dispatch.
 
 The local-evaluation surface is a contract: the platform and the workflow-step templates parse its
 --json output, and tests/core/test_output_compatibility.py asserts that output byte-for-byte.
-Adding `tirith remote` must leave it completely untouched, including its single-dash long
+Adding `tirith platform` must leave it completely untouched, including its single-dash long
 options, which argparse cannot express alongside a subparser.
 """
 
@@ -53,29 +53,29 @@ def test_no_arguments_prints_help(capsys):
     assert "usage" in capsys.readouterr().out.lower()
 
 
-def test_remote_is_dispatched_to_the_subcommand(capsys):
-    """`remote` with no subcommand prints the remote help, not the local-evaluation help."""
-    status = cli.main(["remote"])
+def test_platform_is_dispatched_to_the_subcommand(capsys):
+    """`platform` with no subcommand prints the platform help, not the local-evaluation help."""
+    status = cli.main(["platform"])
 
     assert status == ExitStatus.SUCCESS
-    assert "tirith remote" in capsys.readouterr().out
+    assert "tirith platform" in capsys.readouterr().out
 
 
-def test_remote_check_requires_credentials(capsys, monkeypatch):
+def test_platform_check_requires_credentials(capsys, monkeypatch):
     monkeypatch.delenv("SG_API_TOKEN", raising=False)
     monkeypatch.delenv("SG_ORG", raising=False)
 
-    status = cli.main(["remote", "check", "--workflow-id", "wf", "--input-path", INPUT])
+    status = cli.main(["platform", "check", "--workflow-id", "wf", "--input-path", INPUT])
 
     assert status == ExitStatus.ERROR
     assert "--api-key" in capsys.readouterr().err
 
 
-def test_remote_check_requires_a_document(capsys, monkeypatch):
+def test_platform_check_requires_a_document(capsys, monkeypatch):
     monkeypatch.setenv("SG_API_TOKEN", "sgo_x")
     monkeypatch.setenv("SG_ORG", "acme")
 
-    status = cli.main(["remote", "check", "--workflow-id", "wf"])
+    status = cli.main(["platform", "check", "--workflow-id", "wf"])
 
     assert status == ExitStatus.ERROR
     assert "--input-path" in capsys.readouterr().err
@@ -89,23 +89,20 @@ def test_a_bare_word_is_not_mistaken_for_a_subcommand(capsys):
     depended on whether SG_API_TOKEN happened to be exported, so an ambient environment variable could
     silently swap local policy files for an organization's enforced set.
     """
-    assert cli.SUBCOMMAND == "remote"
-    assert "remote" in cli.SUBCOMMANDS
+    assert cli.SUBCOMMAND == "platform"
+    assert "platform" in cli.SUBCOMMANDS
     assert "check" not in cli.SUBCOMMANDS
 
 
-def test_the_old_name_is_gone_entirely(capsys):
+def test_there_is_exactly_one_subcommand_name(capsys):
     """
-    Renamed outright rather than aliased. Nothing is released -- py-tirith is not on PyPI and the
-    action pins a branch -- so there was no caller to keep working, and an alias kept for hypothetical
-    ones is a second name to explain forever.
-
-    `platform` therefore falls through to the flat parser, where it is an unrecognised positional and
-    fails the way any typo does, rather than being silently accepted.
+    `platform` was briefly renamed to `remote` and then reverted. Neither direction kept an alias --
+    nothing is released, so there was never a caller to keep working -- and this pins the outcome: one
+    name, and `remote` is not quietly still accepted.
     """
-    assert "platform" not in cli.SUBCOMMANDS
+    assert cli.SUBCOMMANDS == {"platform"}
 
-    status = cli.main(["platform"])
+    status = cli.main(["remote"])
 
     assert status != ExitStatus.SUCCESS
-    assert "tirith remote" not in capsys.readouterr().out
+    assert "tirith platform" not in capsys.readouterr().out
