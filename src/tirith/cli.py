@@ -30,7 +30,17 @@ def eprint(*args, **kwargs):
 # optional subcommand alongside options like `-policy-path` (a single dash and a long name), and the
 # local-evaluation surface is a contract: tests/core/test_output_compatibility.py asserts its --json
 # output is byte-identical to a golden file. An explicit pre-dispatch leaves that untouched.
-SUBCOMMANDS = {"platform"}
+#
+# `remote` names the distinction that actually exists: the policies and the evaluation live somewhere
+# else. `platform` was internal vocabulary escaping into a user-facing verb -- it reads in English as
+# "check the platform", which is what `--platform` means in most tools a reader has used.
+SUBCOMMAND = "remote"
+
+# `platform` still dispatches, undocumented, because snippets carrying it exist. Not in the help, not
+# in the README: two documented names for one command is how the vagueness complaint arrives twice.
+DEPRECATED_SUBCOMMANDS = {"platform": SUBCOMMAND}
+
+SUBCOMMANDS = {SUBCOMMAND, *DEPRECATED_SUBCOMMANDS}
 
 
 def main(args=None) -> ExitStatus:
@@ -45,9 +55,14 @@ def main(args=None) -> ExitStatus:
     argv = list(sys.argv[1:] if args is None else args)
 
     if argv and argv[0] in SUBCOMMANDS:
-        from tirith.platform import cli as platform_cli
+        from tirith.platform import cli as remote_cli
 
-        return platform_cli.main(argv)
+        if argv[0] in DEPRECATED_SUBCOMMANDS:
+            replacement = DEPRECATED_SUBCOMMANDS[argv[0]]
+            eprint(f"'tirith {argv[0]}' is deprecated; use 'tirith {replacement}'.")
+            argv = [replacement, *argv[1:]]
+
+        return remote_cli.main(argv)
 
     try:
 
@@ -61,7 +76,7 @@ def main(args=None) -> ExitStatus:
             epilog=textwrap.dedent("""\
          Subcommands:
 
-            tirith platform check --help   Evaluate against the policies your StackGuardian
+            tirith remote check --help     Evaluate against the policies your StackGuardian
                                           organization enforces, rather than local files.
 
          About Tirith:
@@ -167,7 +182,7 @@ def main(args=None) -> ExitStatus:
             # people at the hosted path when they need an exit code that means something.
             #
             # 3, not 1, and the distinction is the point: 3 says the infrastructure violates a policy,
-            # 1 says tirith could not tell you. The same split `platform check` uses, because a caller
+            # 1 says tirith could not tell you. The same split `remote check` uses, because a caller
             # scripting both should not have to learn two vocabularies.
             #
             # Which means `final_result` alone is not enough to decide. It is False both for a policy

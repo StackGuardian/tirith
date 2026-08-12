@@ -1,5 +1,5 @@
 """
-`tirith platform ...` -- run policy checks against a StackGuardian organization.
+`tirith remote ...` -- run policy checks against a StackGuardian organization.
 
 Flag and environment names follow sg-cli (SG_API_TOKEN, SG_BASE_URL, SG_ORG, SG_DASHBOARD_URL) so
 someone who knows one tool knows the other. `--region` names both URLs at once; see regions.py for
@@ -57,7 +57,7 @@ def _load_trigger_details(opts):
 
 def build_parser():
     parser = argparse.ArgumentParser(
-        prog="tirith platform",
+        prog="tirith remote",
         description="Run StackGuardian policy checks from a CI pipeline or a laptop.",
     )
     sub = parser.add_subparsers(dest="subcommand")

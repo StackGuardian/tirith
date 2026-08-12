@@ -1,5 +1,5 @@
 """
-Orchestration for `tirith platform check`.
+Orchestration for `tirith remote check`.
 
     read -> mask -> pack -> ensure workflow -> upload archive -> create run -> poll -> fetch -> report
 

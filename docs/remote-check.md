@@ -1,4 +1,4 @@
-# `tirith platform check`
+# `tirith remote check`
 
 Evaluate a terraform plan, state document or cost breakdown against the policies your StackGuardian
 organization enforces, from any CI system or from a laptop.
@@ -31,7 +31,7 @@ rejected, so the symptom is a later 403.
 `--api-key -` reads the key from stdin, which keeps it out of the process table and out of shell
 history:
 
-    echo "$SG_TOKEN" | tirith platform check --api-key - --workflow-id infra
+    echo "$SG_TOKEN" | tirith remote check --api-key - --workflow-id infra
 
 ## Workflow identity
 
@@ -142,29 +142,28 @@ in `--output-json`.
 ## Full flag reference
 
 ```
-usage: tirith platform check [-h] [--api-key API_KEY] [--org ORG]
-                             [--region {eu,us}] [--api-url API_URL]
-                             [--dashboard-url DASHBOARD_URL]
-                             --workflow-id WORKFLOW_ID
-                             [--workflow-group WORKFLOW_GROUP]
-                             [--terraform-version TERRAFORM_VERSION]
-                             [--repo-url REPO_URL] [--repo-ref REPO_REF]
-                             [--repo-path REPO_PATH]
-                             [--step-template-id STEP_TEMPLATE_ID]
-                             [--input-path INPUT_PATH] [--plan-file PLAN_FILE]
-                             [--terraform-bin TERRAFORM_BIN]
-                             [--input-kind {terraform_plan,terraform_state,kubernetes,json}]
-                             [--state-path STATE_PATH]
-                             [--infracost-path INFRACOST_PATH]
-                             [--source-dir SOURCE_DIR] [--no-source]
-                             [--sha SHA] [--artifact-tag ARTIFACT_TAG]
-                             [--trigger-details-json TRIGGER_DETAILS_JSON]
-                             [--trigger-details-file TRIGGER_DETAILS_FILE]
-                             [--timeout TIMEOUT] [--output-json OUTPUT_JSON]
-                             [--output-markdown OUTPUT_MARKDOWN]
-                             [--comment-marker COMMENT_MARKER]
-                             [--markdown-limit MARKDOWN_LIMIT]
-                             [--fail-on-error]
+usage: tirith remote check [-h] [--api-key API_KEY] [--org ORG]
+                           [--region {eu,us}] [--api-url API_URL]
+                           [--dashboard-url DASHBOARD_URL]
+                           --workflow-id WORKFLOW_ID
+                           [--workflow-group WORKFLOW_GROUP]
+                           [--terraform-version TERRAFORM_VERSION]
+                           [--repo-url REPO_URL] [--repo-ref REPO_REF]
+                           [--repo-path REPO_PATH]
+                           [--step-template-id STEP_TEMPLATE_ID]
+                           [--input-path INPUT_PATH] [--plan-file PLAN_FILE]
+                           [--terraform-bin TERRAFORM_BIN]
+                           [--input-kind {terraform_plan,terraform_state,kubernetes,json}]
+                           [--state-path STATE_PATH]
+                           [--infracost-path INFRACOST_PATH]
+                           [--source-dir SOURCE_DIR] [--no-source] [--sha SHA]
+                           [--artifact-tag ARTIFACT_TAG]
+                           [--trigger-details-json TRIGGER_DETAILS_JSON]
+                           [--trigger-details-file TRIGGER_DETAILS_FILE]
+                           [--timeout TIMEOUT] [--output-json OUTPUT_JSON]
+                           [--output-markdown OUTPUT_MARKDOWN]
+                           [--comment-marker COMMENT_MARKER]
+                           [--markdown-limit MARKDOWN_LIMIT] [--fail-on-error]
 
 Masks the document, packs it with the terraform source into an archive,
 uploads it, runs the policies on StackGuardian and reports the verdict.
