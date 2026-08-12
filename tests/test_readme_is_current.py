@@ -56,18 +56,31 @@ def _fenced_block_after(heading):
     return text[open_fence + 3 : close_fence].strip("\n")
 
 
-def test_the_usage_block_is_the_real_help_output():
+def _options(text):
+    """Every option string in a help text, e.g. `{-policy-path, --json, --fail-on-error}`."""
+    return set(re.findall(r"(?<![\w-])(--?[a-z][\w-]*)", text))
+
+
+def test_the_usage_block_lists_every_option_the_cli_accepts():
     """
     A pasted `--help` is stale as soon as a flag is added, and two were: `-var-path` and `-var`,
     which are the whole policy-parameterization feature.
-    """
-    documented = _fenced_block_after("## Usage")
-    actual = _help().strip("\n")
 
-    assert documented == actual, (
-        "the README's Usage block no longer matches `tirith --help`.\n\n"
-        f"--- README ---\n{documented}\n\n--- actual ---\n{actual}"
-    )
+    Compares the *set of options* rather than the text byte for byte. Byte equality looked stronger and
+    was unusable: argparse renamed its section header from "optional arguments:" to "options:" in 3.10,
+    so a block generated on any one interpreter fails on the other half of the CI matrix -- which is
+    exactly how this test failed on 3.8 and 3.9 while passing on 3.10 through 3.12. The version-portable
+    part is the thing worth pinning anyway: a flag that exists and is undocumented, or documented and
+    gone.
+    """
+    documented = _options(_fenced_block_after("## Usage"))
+    actual = _options(_help())
+
+    undocumented = sorted(actual - documented)
+    phantom = sorted(documented - actual)
+
+    assert not undocumented, f"accepted by the CLI but absent from the README's Usage block: {undocumented}"
+    assert not phantom, f"documented in the Usage block but not accepted by the CLI: {phantom}"
 
 
 def test_the_version_shown_in_the_install_steps_is_the_shipped_one():

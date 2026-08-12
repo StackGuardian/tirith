@@ -162,12 +162,8 @@ def generate_compiled_code_without_none_and_variables(eval_str: str) -> Tuple[Op
             operators = {ast.BitAnd: ("&", "&&"), ast.BitOr: ("|", "||")}
             wrong, right = operators.get(type(node.op), (None, None))
             if wrong:
-                raise ValueError(
-                    f"Unsupported operator '{wrong}' in eval_expression. Use '{right}' instead."
-                )
-            raise ValueError(
-                "Unsupported operator in eval_expression. Only '&&', '||' and '!' are supported."
-            )
+                raise ValueError(f"Unsupported operator '{wrong}' in eval_expression. Use '{right}' instead.")
+            raise ValueError("Unsupported operator in eval_expression. Only '&&', '||' and '!' are supported.")
 
     compiled_code = None
     tries_count = 0

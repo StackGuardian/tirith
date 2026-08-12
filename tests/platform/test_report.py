@@ -475,7 +475,9 @@ def test_an_entry_carrying_both_shapes_reports_both():
                     {
                         "description": "Ensure RDS is encrypted at rest",
                         "keys": ["aws_db_instance.db.storage_encrypted"],
-                        "result": [{"message": "`false` is not equal to `true`", "meta": {"address": "aws_db_instance.db"}}],
+                        "result": [
+                            {"message": "`false` is not equal to `true`", "meta": {"address": "aws_db_instance.db"}}
+                        ],
                     }
                 ]
             }

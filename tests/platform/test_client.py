@@ -588,7 +588,10 @@ def test_create_run_sends_the_bundle_name_in_terraform_config(monkeypatch):
         return 200, {"data": {"ResourceName": "wfrun-1"}}
 
     monkeypatch.setattr(sg, "_request", fake_request)
-    step = {"name": "tirith-iac-governance", "wfStepInputData": {"data": {"bundlePath": "tirith-bundle-a1b2c3d-plan.tar.gz"}}}
+    step = {
+        "name": "tirith-iac-governance",
+        "wfStepInputData": {"data": {"bundlePath": "tirith-bundle-a1b2c3d-plan.tar.gz"}},
+    }
 
     sg.create_run("default", "wf", {"type": "tirith"}, pre_plan_steps=[step])
 
@@ -603,7 +606,11 @@ def test_create_run_without_steps_sends_no_terraform_config(monkeypatch):
     """A caller that names no bundle must not blank the workflow's stored configuration."""
     sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
     captured = {}
-    monkeypatch.setattr(sg, "_request", lambda m, p, body=None, **k: (captured.setdefault("body", body), (200, {"data": {"ResourceName": "r"}}))[1])
+    monkeypatch.setattr(
+        sg,
+        "_request",
+        lambda m, p, body=None, **k: (captured.setdefault("body", body), (200, {"data": {"ResourceName": "r"}}))[1],
+    )
 
     sg.create_run("default", "wf", {"type": "tirith"})
 

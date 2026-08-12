@@ -554,9 +554,7 @@ def run_check(opts):
         # A flat, fixed name at the artifact root, overwritten every run. The step finds it there
         # because the run controller syncs that directory down before any step executes -- which is
         # what removes the need for any run-creation field, and therefore for any api change at all.
-        bundle_name = ARCHIVE_NAME_TEMPLATE.format(
-            sha=opts.sha[:7] if opts.sha else "latest", tag=opts.artifact_tag
-        )
+        bundle_name = ARCHIVE_NAME_TEMPLATE.format(sha=opts.sha[:7] if opts.sha else "latest", tag=opts.artifact_tag)
         key = client.upload_file(
             opts.workflow_group,
             opts.workflow_id,
