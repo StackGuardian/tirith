@@ -124,8 +124,10 @@ inputs:
                         Document to evaluate. Defaults to whichever of
                         plan.json or tfplan.json is in --source-dir.
   --plan-file PLAN_FILE
-                        Binary terraform plan. Rendered with `show -json` in
-                        memory, so no unmasked plan JSON is written to disk.
+                        Binary plan from `terraform plan -out=`. Rendered with
+                        `show -json` in memory, so no unmasked plan JSON is
+                        written to disk. Use --input-path if you already have
+                        the JSON.
   --terraform-bin TERRAFORM_BIN
                         terraform/tofu binary for --plan-file. Auto-detected,
                         preferring the real binary over a CI wrapper.
@@ -136,12 +138,16 @@ inputs:
                         Optional `infracost breakdown --format json`.
   --source-dir SOURCE_DIR
                         Terraform source to pack alongside the documents.
-  --no-source           Send only the documents. Discovery still looks in --source-dir (or .) for the plan..
+  --no-source           Send only the documents. Discovery still looks in
+                        --source-dir (or .) for the plan.
 
 run:
   --sha SHA             Commit SHA, used to namespace the uploaded archive.
   --artifact-tag ARTIFACT_TAG
-                        Namespaces the archive within a commit.
+                        Namespaces the archive within a commit. Needed only
+                        when one workflow evaluates the same commit more than
+                        once -- a plan phase and a state phase, or matrix legs
+                        sharing a workflow.
   --trigger-details-json TRIGGER_DETAILS_JSON
                         JSON object describing what triggered this run.
   --trigger-details-file TRIGGER_DETAILS_FILE

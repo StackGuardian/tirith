@@ -226,9 +226,9 @@ Common flags:
 |---|---|
 | `--region {eu,us}` | Which StackGuardian region. Default `eu`, or `$SG_REGION` |
 | `--api-key -` | Read the key from stdin instead of the environment |
-| `--plan-file tfplan` | A binary plan, rendered through `terraform show -json` in memory |
+| `--plan-file tfplan` | The binary plan from `terraform plan -out=`, rendered through `terraform show -json` in memory. Use `--input-path` if you already have the JSON |
 | `--state-path` / `--infracost-path` | Add a state document or a cost breakdown to the evaluation |
-| `--source-dir ""` | Do not upload the terraform source |
+| `--no-source` | Do not upload the terraform source. Discovery still looks in `--source-dir` for the plan |
 | `--fail-on-error` | Exit `3` when a policy fails, instead of `0` |
 | `--output-json` / `--output-markdown` | Write the verdict to files for a later CI step |
 

@@ -131,8 +131,8 @@ def build_parser():
         "--plan-file",
         default=None,
         help=(
-            "Binary terraform plan. Rendered with `show -json` in memory, so no unmasked plan JSON "
-            "is written to disk."
+            "Binary plan from `terraform plan -out=`. Rendered with `show -json` in memory, so no "
+            "unmasked plan JSON is written to disk. Use --input-path if you already have the JSON."
         ),
     )
     inputs.add_argument(
@@ -144,11 +144,22 @@ def build_parser():
     inputs.add_argument("--state-path", default=None, help="Optional terraform state, masked before upload.")
     inputs.add_argument("--infracost-path", default=None, help="Optional `infracost breakdown --format json`.")
     inputs.add_argument("--source-dir", default=".", help="Terraform source to pack alongside the documents.")
-    inputs.add_argument("--no-source", action="store_true", help="Send only the documents, not the source tree.")
+    inputs.add_argument(
+        "--no-source",
+        action="store_true",
+        help="Send only the documents. Discovery still looks in --source-dir (or .) for the plan.",
+    )
 
     run = check.add_argument_group("run")
     run.add_argument("--sha", default=None, help="Commit SHA, used to namespace the uploaded archive.")
-    run.add_argument("--artifact-tag", default="default", help="Namespaces the archive within a commit.")
+    run.add_argument(
+        "--artifact-tag",
+        default="default",
+        help=(
+            "Namespaces the archive within a commit. Needed only when one workflow evaluates the same "
+            "commit more than once -- a plan phase and a state phase, or matrix legs sharing a workflow."
+        ),
+    )
     run.add_argument("--trigger-details-json", default=None, help="JSON object describing what triggered this run.")
     run.add_argument("--trigger-details-file", default=None, help="File containing that JSON object.")
     run.add_argument("--timeout", type=int, default=1800, help="Seconds to wait for the run. Default: 1800")
