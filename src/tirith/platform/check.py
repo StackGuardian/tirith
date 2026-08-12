@@ -412,7 +412,15 @@ def pack_documents(source_dir, plan, state, infracost, document_sources=(), meta
 
     Only when a source tree was actually requested. If we are already documents-only and still over
     the limit, the *documents* are too big and there is nothing left to drop, so that stays fatal.
+
+    A source directory that does not exist is a different thing entirely and must not degrade. It
+    raises `ArchiveError` too, so letting it reach the retry below reported a typo'd `--source-dir` as
+    "the tree was too large", dropped the code, and completed the run -- the check would pass having
+    silently evaluated no source at all. Caught here, where the distinction is still available.
     """
+    if source_dir and not os.path.isdir(source_dir):
+        raise CheckError(f"--source-dir does not exist: {source_dir}")
+
     try:
         archive_bytes, manifest = archive.pack(
             source_dir=source_dir,

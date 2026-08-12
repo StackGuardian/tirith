@@ -484,3 +484,20 @@ def test_a_declared_repo_path_is_normalised(tmp_path):
         code = check.build_metadata(_opts(source_dir=str(tmp_path), repo_path=declared), redactions=0)["code"]
         assert code["repo_path"] == expected, f"{declared!r} -> {code['repo_path']!r}"
         assert code["repo_path_from"] == "flag"
+
+
+def test_a_nonexistent_source_dir_fails_rather_than_degrading(tmp_path):
+    """
+    `archive.pack` raises ArchiveError for a missing directory *and* for an oversized archive, and the
+    degrade path only knew about the second. A typo'd `--source-dir` therefore reported "the tree was
+    too large", dropped the code and completed the run -- a check that passed having evaluated no
+    source at all, with the bundle's own metadata stating the wrong reason.
+    """
+    with pytest.raises(check.CheckError, match="--source-dir does not exist"):
+        check.pack_documents(
+            str(tmp_path / "no-such-dir"),
+            {"masked": True},
+            None,
+            None,
+            metadata={"schema_version": 1, "code": {}},
+        )
