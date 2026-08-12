@@ -1,0 +1,132 @@
+---
+# BAD EXAMPLE: Playbook with multiple ansible-lint violations
+# This file demonstrates common mistakes that ansible-lint would catch
+
+- hosts: all
+  # VIOLATION: Missing play name [name[play]]
+  gather_facts: yes  # VIOLATION: Should be 'true' for localhost [performance]
+  sudo: yes  # VIOLATION: Use 'become' instead of deprecated 'sudo' [deprecated-command-syntax]
+  
+  vars:
+    db_password: "SuperSecret123!"  # VIOLATION: Plain text password [var-naming[no-role-prefix]]
+    app_password: "MyPassword456"   # VIOLATION: Plain text password
+    region: us-east-1
+    package_name: nginx
+    
+  tasks:
+    # VIOLATION: Task without name [name[task]]
+    - command: echo "Starting deployment"
+    
+    - name: install package with latest  # VIOLATION: Bad capitalization [name[casing]]
+      yum:
+        name: "{{ package_name }}"
+        state: latest  # VIOLATION: Don't use 'latest' [package-latest]
+    
+    - name: Create file with bad permissions
+      file:
+        path: /tmp/myfile
+        mode: 0777  # VIOLATION: Too permissive [risky-file-permissions]
+        state: touch
+    
+    - name: Use shell instead of specific module
+      shell: git clone https://github.com/example/repo.git  # VIOLATION: Use git module [command-instead-of-module]
+    
+    - name: Shell with pipe without pipefail
+      shell: cat /var/log/app.log | grep ERROR  # VIOLATION: Use pipefail [risky-shell-pipe]
+    
+    - name: Set database password
+      shell: |
+        mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ db_password }}';"
+      # VIOLATION: Missing no_log for password [no-log-password]
+    
+    - name: Run command without changed_when
+      command: /usr/local/bin/check_status.sh  # VIOLATION: Missing changed_when [no-changed-when]
+    
+    - name: Compare to literal boolean
+      debug:
+        msg: "Service is running"
+      when: service_running == True  # VIOLATION: Don't compare to literal True/False [literal-compare]
+    
+    - name: Use relative path
+      copy:
+        src: ../files/config.yml  # VIOLATION: Avoid relative paths [no-relative-paths]
+        dest: /etc/app/config.yml
+    
+    - name: become_user without become
+      command: whoami
+      become_user: appuser  # VIOLATION: become_user requires become [become-user-without-become]
+    
+    - name: Task with ignore_errors
+      command: /opt/script_that_might_fail.sh
+      ignore_errors: yes  # WARNING: Use sparingly [ignore-errors]
+    
+    - name: when with Jinja2 delimiters
+      debug:
+        msg: "Variable is set"
+      when: "{{ my_var is defined }}"  # VIOLATION: Don't use {{ }} in when [no-jinja-when]
+    
+    - name: Using deprecated local_action
+      local_action: command echo "Running locally"  # VIOLATION: Use delegate_to [deprecated-local-action]
+    
+    - name: Using deprecated bare variables
+      debug:
+        msg: "{{ item }}"
+      with_items: my_list  # VIOLATION: Should be "{{ my_list }}" [deprecated-bare-vars]
+    
+    - name: Empty string comparison
+      debug:
+        msg: "Variable is empty"
+      when: my_var == ""  # VIOLATION: Use 'when: not my_var' [empty-string-compare]
+    
+    - name: Inline environment variable
+      shell: MY_VAR=value /usr/bin/script.sh  # VIOLATION: Use 'environment' keyword [inline-env-var]
+    
+    - name: Compare to empty string
+      shell: test -z "$VAR"
+      when: some_var == ''  # VIOLATION: Don't compare to empty string [empty-string-compare]
+    
+    - name: Service restart without handler
+      service:
+        name: nginx
+        state: restarted  # VIOLATION: Should use handler [handler-usage]
+    
+    - name: Run once without delegation
+      command: /usr/bin/singleton_task.sh
+      run_once: true  # WARNING: Usually needs delegate_to [run-once]
+    
+    - name: meta task with tags
+      meta: flush_handlers
+      tags:
+        - always  # VIOLATION: meta should not have tags [meta-no-tags]
+    
+    - name: Using deprecated module
+      ec2_facts:  # VIOLATION: Deprecated module [deprecated-module]
+    
+    - name: Shell command that should be command
+      shell: /usr/bin/simple_script.sh  # VIOLATION: No shell features used [command-instead-of-shell]
+    
+    - name: Copy with same owner and group
+      copy:
+        src: /tmp/file
+        dest: /opt/file
+        owner: myuser
+        group: myuser  # WARNING: Owner and group are same [no-same-owner]
+    
+    - name: Task using args
+      command: ls
+      args:  # VIOLATION: Use module parameters directly [args]
+        chdir: /tmp
+    
+    - name: Use command instead of module
+      command: systemctl restart nginx  # VIOLATION: Use service/systemd module [command-instead-of-module]
+    
+    - name: Missing FQCN
+      copy:  # VIOLATION: Should use ansible.builtin.copy [fqcn]
+        src: /tmp/source
+        dest: /tmp/dest
+
+  handlers:
+    # VIOLATION: Handler without name [unnamed-task]
+    - service:
+        name: nginx
+        state: restarted

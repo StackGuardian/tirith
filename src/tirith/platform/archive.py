@@ -77,7 +77,6 @@ DEFAULT_EXCLUDES = (
     ".terraform",
     "*.tfstate",
     "*.tfstate.*",
-    "*.tfstate.backup",
     "tfplan",
     "*.tfplan",
     "*.tfplan.*",
@@ -294,6 +293,11 @@ def _add_tree(tar, source_dir, patterns, reserved_names, prefix=CODE_PREFIX):
             relative = os.path.join(relative_root, d) if relative_root else d
             if _is_excluded(relative, d, patterns):
                 skipped += 1
+            elif os.path.islink(os.path.join(root, d)):
+                # os.walk does not follow symlinked directories, so this one contributes nothing --
+                # count it rather than letting a whole subtree disappear without appearing anywhere in
+                # the manifest. Same reasoning as the file-level islink guard below.
+                skipped += 1
             else:
                 kept_dirs.append(d)
         dirs[:] = kept_dirs
@@ -312,6 +316,13 @@ def _add_tree(tar, source_dir, patterns, reserved_names, prefix=CODE_PREFIX):
             full = os.path.join(root, name)
             if os.path.islink(full):
                 # A symlink out of the tree would either break on extraction or smuggle a file in.
+                skipped += 1
+                continue
+            if not os.path.isfile(full):
+                # Sockets, fifos and device nodes. `tar.add` does not raise for a type it cannot
+                # classify -- it debug-logs "Unsupported type" and returns -- so counting the attempt
+                # made `added` disagree with what the tar actually holds, and `code.present` could
+                # then be true with nothing under the prefix at all.
                 skipped += 1
                 continue
             try:

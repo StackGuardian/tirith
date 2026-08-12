@@ -11,6 +11,7 @@ already happened.
 import datetime
 import json
 import os
+import posixpath
 import sys
 import urllib.parse
 
@@ -295,7 +296,16 @@ def _repo_path(source_dir, declared=None):
     anywhere in this package, and a `.git` *file* (worktrees, submodules) counts.
     """
     if declared is not None:
-        return declared.strip("/").replace(os.sep, "/"), "flag"
+        candidate = posixpath.normpath(declared.replace(os.sep, "/").strip("/"))
+        if candidate in (".", "/"):
+            return "", "flag"
+        # `..` here would have a consumer write outside the repository it thinks it is patching, which
+        # is the entire use of this field. Refuse it rather than record a path that escapes, and fall
+        # through to inference so the answer is merely absent rather than wrong.
+        if candidate.startswith("..") or posixpath.isabs(candidate):
+            log(f"WARNING: ignoring --repo-path {declared!r}: it must be a path inside the repository")
+        else:
+            return candidate, "flag"
     if not source_dir:
         return None, None
 
@@ -429,7 +439,14 @@ def pack_documents(source_dir, plan, state, infracost, document_sources=(), meta
         retry_metadata = metadata
         if metadata is not None:
             retry_metadata = dict(metadata)
-            retry_metadata["code"] = dict(metadata.get("code") or {}, absent_reason="too_large")
+            code = dict(metadata.get("code") or {})
+            # Only overwrite a reason the caller did not already give. This path is reached solely
+            # when a source tree WAS requested and dropped -- `pack_documents` re-raises when there
+            # was none -- but stamping unconditionally would relabel a deliberate documents-only run
+            # as an oversize failure if the retry were ever reached another way.
+            if not code.get("absent_reason"):
+                code["absent_reason"] = "too_large"
+            retry_metadata["code"] = code
         archive_bytes, manifest = archive.pack(
             source_dir=None, plan=plan, state=state, infracost=infracost, metadata=retry_metadata
         )
@@ -661,7 +678,10 @@ def run_check(opts):
         # Whether that archive actually contains the source. Normally true, and false when the tree
         # was too large and got dropped so the check could still run. A consumer must not assume:
         # "no code in the bundle" and "no code was wanted" need to be distinguishable.
-        "source_packed": bool(opts.source_dir) and source_skipped is None,
+        # Derived from what the archive actually holds, not from what was asked for: a tree whose
+        # every file was excluded packs nothing, and this must not then claim otherwise while
+        # metadata.json says `present: false`.
+        "source_packed": bool(manifest.get("files")),
         "source_skipped_reason": source_skipped,
     }
 

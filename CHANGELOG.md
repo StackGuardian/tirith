@@ -11,15 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-08-03
 
 ### Added
-- `tirith platform check`: run an organization's policies against a plan, state or arbitrary JSON
+- `tirith remote check`: run an organization's policies against a plan, state or arbitrary JSON
   document from CI or a laptop. Masks the document locally, packs it with the terraform source into
   an archive, uploads it, creates a StackGuardian run, polls it and reports the verdict as JSON
-  and/or markdown.
+  and/or markdown. The uploaded bundle carries the source under `code/` and a `metadata.json`
+  describing the repository, the commit and where in the repository `code/` belongs.
+- `--fail-on-error` on the local surface too, so evaluating policy files without an account can gate
+  a merge. Off by default: the local form has always exited 0 either way, and changing that silently
+  would turn existing green pipelines red.
 - `ExitStatus.ERROR_POLICY_FAILED` (3), so a caller can tell "a policy said no" from "tirith could
-  not reach the platform". Exit 1 stays reserved for the latter, and applies even without
-  `--fail-on-error`: a run that produced no verdict must never look like a pass.
+  not tell you". Both surfaces use the same code for the same meaning. Note this applies **only**
+  with `--fail-on-error`; without it the local form still exits 0 for everything, including a policy
+  it could not evaluate.
 
 ### Changed
+- The subcommand is `remote`, not `platform`. Renamed outright with no alias: nothing was released,
+  so there was no caller to keep working.
 - `cli.main(args=...)` is now honoured. It previously called `parse_args()` with no argument, so
   the parameter was ignored and the CLI could only ever read `sys.argv`.
 

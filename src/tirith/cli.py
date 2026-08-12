@@ -71,7 +71,7 @@ def main(args=None) -> ExitStatus:
          Subcommands:
 
             tirith remote check --help     Evaluate against the policies your StackGuardian
-                                          organization enforces, rather than local files.
+                                           organization enforces, rather than local files.
 
          About Tirith:
          

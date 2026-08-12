@@ -459,3 +459,28 @@ def test_the_oversize_retry_records_that_the_code_was_dropped_for_size(tmp_path,
         metadata = _json.loads(tar.extractfile(check.archive.METADATA_DOCUMENT).read())
     assert metadata["code"]["absent_reason"] == "too_large"
     assert metadata["code"]["present"] is False
+
+
+def test_a_declared_repo_path_cannot_escape_the_repository(tmp_path, capsys):
+    """
+    `--repo-path ../..` used to survive `strip("/")` and be recorded verbatim.
+
+    The single use of this field is a consumer joining it to write files back into the repository it
+    thinks it is patching, so a value that climbs out of the tree is the one shape that must not be
+    recorded. Refused and left absent rather than recorded wrong -- absent is a state consumers already
+    handle.
+    """
+    for escaping in ("../..", "/etc", "infra/../../elsewhere"):
+        code = check.build_metadata(_opts(source_dir=str(tmp_path), repo_path=escaping), redactions=0)["code"]
+
+        assert code["repo_path"] != escaping
+        assert code["repo_path"] is None or not code["repo_path"].startswith("..")
+    assert "must be a path inside the repository" in capsys.readouterr().err
+
+
+def test_a_declared_repo_path_is_normalised(tmp_path):
+    """Leading and trailing slashes, and a redundant `.`, all describe the same location."""
+    for declared, expected in (("/infra/prod/", "infra/prod"), ("./infra", "infra"), (".", ""), ("/", "")):
+        code = check.build_metadata(_opts(source_dir=str(tmp_path), repo_path=declared), redactions=0)["code"]
+        assert code["repo_path"] == expected, f"{declared!r} -> {code['repo_path']!r}"
+        assert code["repo_path_from"] == "flag"

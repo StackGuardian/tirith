@@ -1,0 +1,310 @@
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json",
+        "description": "Advanced JMESPath examples showcasing complex filtering, functions, and projections"
+    },
+    "evaluators": [
+        {
+            "id": "filter_by_multiple_conditions",
+            "description": "Filter tasks that are shell commands AND have no_log enabled",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'ansible.builtin.shell' && no_log == `true`].name"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "Set MySQL root password"
+            }
+        },
+        {
+            "id": "complex_or_filter",
+            "description": "Filter tasks that are either package or service related",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'ansible.builtin.package' || 'ansible.builtin.service'] | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThanEqualTo",
+                "value": 2
+            }
+        },
+        {
+            "id": "nested_filter_with_contains",
+            "description": "Filter tasks where the module contains 'mysql' string",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?contains(to_string(@), 'mysql')].name | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThan",
+                "value": 3
+            }
+        },
+        {
+            "id": "multi_select_hash_projection",
+            "description": "Create custom objects with selected fields from filtered tasks",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?register].{task_name: name, variable: register, has_become: become || `false`}"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": {"task_name": "Create EC2 instance", "variable": "ec2"}
+            }
+        },
+        {
+            "id": "flatten_nested_arrays",
+            "description": "Use flatten to get all package names from nested structure",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].vars.package_list[] | @"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "mysql-server"
+            }
+        },
+        {
+            "id": "sort_and_select",
+            "description": "Sort tasks by name and get first task",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks | sort_by(@, &name) | [0].name"
+            },
+            "condition": {
+                "type": "NotEquals",
+                "value": null
+            }
+        },
+        {
+            "id": "max_function_usage",
+            "description": "Find maximum timeout value across all wait_for tasks",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?wait_for].wait_for.timeout | max(@)"
+            },
+            "condition": {
+                "type": "LessThanEqualTo",
+                "value": 600
+            }
+        },
+        {
+            "id": "not_null_filter",
+            "description": "Get all tasks that have register field (not null)",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?register != `null`].register"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "ec2"
+            }
+        },
+        {
+            "id": "starts_with_filter",
+            "description": "Filter tasks where name starts with specific prefix",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?starts_with(name, 'Create')].name | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThan",
+                "value": 0
+            }
+        },
+        {
+            "id": "ends_with_filter",
+            "description": "Filter and count tasks where name ends with 'password'",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?ends_with(name, 'password')].name | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThan",
+                "value": 0
+            }
+        },
+        {
+            "id": "pipe_with_transformation",
+            "description": "Chain multiple operations: filter, project, then count",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?become == `true`] | [*].name | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThanEqualTo",
+                "value": 5
+            }
+        },
+        {
+            "id": "reverse_and_first",
+            "description": "Reverse task order and get first (last task)",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks | reverse(@) | [0].name"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "metadata"
+            }
+        },
+        {
+            "id": "merge_with_defaults",
+            "description": "Use merge to combine task attributes with defaults",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[0] | merge({default_become: `false`}, @) | @.become || @.default_become"
+            },
+            "condition": {
+                "type": "NotEquals",
+                "value": null
+            }
+        },
+        {
+            "id": "compare_greater_than_in_filter",
+            "description": "Filter using comparison - find tasks with timeout > 100",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?wait_for && wait_for.timeout > `100`].name"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "Wait for"
+            }
+        },
+        {
+            "id": "type_filtering",
+            "description": "Filter by checking value type - string values only",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].vars | to_entries(@) | [?type(value) == 'string'].key | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThan",
+                "value": 5
+            }
+        },
+        {
+            "id": "map_and_flatten",
+            "description": "Map over tasks to extract nested values and flatten",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[*].{name: name, modules: keys(@) | [?starts_with(@, 'ansible') || starts_with(@, 'amazon')]} | [].modules[] | @"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "ansible.builtin.package"
+            }
+        },
+        {
+            "id": "conditional_projection",
+            "description": "Project different values based on condition using merge",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?no_log].{name: name, security_level: no_log && 'HIGH' || 'LOW'}"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": {"security_level": "HIGH"}
+            }
+        },
+        {
+            "id": "group_by_module_type",
+            "description": "Extract and group tasks by their primary module",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[*].{name: name, module_type: keys(@) | [?contains(@, '.')].[0]} | [?module_type].module_type | @"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "ansible.builtin.service"
+            }
+        },
+        {
+            "id": "array_slicing",
+            "description": "Get first 3 tasks using array slicing",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[:3].name"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "Create EC2 instance"
+            }
+        },
+        {
+            "id": "unique_values",
+            "description": "Get unique module types used across all tasks",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[*].keys(@) | [] | [?contains(@, 'ansible') || contains(@, 'amazon')] | sort(@) | @"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "amazon.aws.ec2_instance"
+            }
+        },
+        {
+            "id": "sum_aggregation",
+            "description": "Sum numeric values - count total instances across EC2 tasks",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'amazon.aws.ec2_instance'].`amazon.aws.ec2_instance`.count | sum(@)"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": 1
+            }
+        },
+        {
+            "id": "avg_function",
+            "description": "Calculate average of numeric values",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?wait_for].wait_for.delay | avg(@)"
+            },
+            "condition": {
+                "type": "LessThan",
+                "value": 20
+            }
+        },
+        {
+            "id": "join_strings",
+            "description": "Join task names into single string with separator",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[:3].name | join(', ', @)"
+            },
+            "condition": {
+                "type": "Contains",
+                "value": "Create EC2 instance"
+            }
+        },
+        {
+            "id": "complex_boolean_logic",
+            "description": "Complex filter with multiple AND/OR conditions",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?(become == `true` || no_log == `true`) && contains(to_string(@), 'mysql')].name | length(@)"
+            },
+            "condition": {
+                "type": "GreaterThanEqualTo",
+                "value": 2
+            }
+        },
+        {
+            "id": "nested_contains",
+            "description": "Check if any EC2 instance tags contain specific keys",
+            "provider_args": {
+                "operation_type": "jmespath",
+                "query": "[0].tasks[?'amazon.aws.ec2_instance'].`amazon.aws.ec2_instance`.instance_tags | [0] | contains(keys(@), 'Environment')"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": true
+            }
+        }
+    ],
+    "eval_expression": "filter_by_multiple_conditions && complex_or_filter && multi_select_hash_projection && not_null_filter && starts_with_filter && pipe_with_transformation && compare_greater_than_in_filter && conditional_projection && sum_aggregation && complex_boolean_logic && nested_contains"
+}

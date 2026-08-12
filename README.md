@@ -160,7 +160,7 @@ options:
 Subcommands:
 
    tirith remote check --help     Evaluate against the policies your StackGuardian
-                                 organization enforces, rather than local files.
+                                  organization enforces, rather than local files.
 
 About Tirith:
 

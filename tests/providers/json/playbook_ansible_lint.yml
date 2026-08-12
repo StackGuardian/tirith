@@ -1,0 +1,260 @@
+---
+# Good example playbook following ansible-lint best practices
+- name: Deploy web application with security best practices
+  hosts: webservers
+  gather_facts: true
+  become: false
+  
+  vars:
+    app_name: "webapp"
+    app_port: 8080
+    app_user: "appuser"
+    app_group: "appgroup"
+    app_home: "/opt/webapp"
+    # Sensitive data should be in vault (not plain text)
+    # db_password: "{{ vault_db_password }}"
+    db_host: "localhost"
+    db_name: "webapp_db"
+    allowed_networks:
+      - "10.0.0.0/8"
+      - "192.168.0.0/16"
+    
+  handlers:
+    - name: Restart application service
+      ansible.builtin.systemd:
+        name: "{{ app_name }}"
+        state: restarted
+        daemon_reload: true
+      become: true
+
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      become: true
+
+  tasks:
+    - name: Create application user
+      ansible.builtin.user:
+        name: "{{ app_user }}"
+        group: "{{ app_group }}"
+        home: "{{ app_home }}"
+        shell: /bin/bash
+        create_home: true
+        state: present
+      become: true
+
+    - name: Create application directory
+      ansible.builtin.file:
+        path: "{{ app_home }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0755'
+      become: true
+
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - python3
+          - python3-pip
+          - nginx
+          - git
+        state: present
+      become: true
+
+    - name: Copy application configuration
+      ansible.builtin.template:
+        src: templates/app_config.j2
+        dest: "{{ app_home }}/config.yml"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0640'
+      become: true
+      notify: Restart application service
+
+    - name: Clone application repository
+      ansible.builtin.git:
+        repo: 'https://github.com/example/webapp.git'
+        dest: "{{ app_home }}/source"
+        version: main
+        force: false
+      become: true
+      become_user: "{{ app_user }}"
+
+    - name: Install Python dependencies
+      ansible.builtin.pip:
+        requirements: "{{ app_home }}/source/requirements.txt"
+        virtualenv: "{{ app_home }}/venv"
+        state: present
+      become: true
+      become_user: "{{ app_user }}"
+
+    - name: Configure nginx reverse proxy
+      ansible.builtin.template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/sites-available/{{ app_name }}
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+      notify: Reload nginx
+
+    - name: Enable nginx site
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/{{ app_name }}
+        dest: /etc/nginx/sites-enabled/{{ app_name }}
+        state: link
+      become: true
+      notify: Reload nginx
+
+    - name: Create systemd service file
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/{{ app_name }}.service
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Web Application Service
+          After=network.target
+
+          [Service]
+          Type=simple
+          User={{ app_user }}
+          Group={{ app_group }}
+          WorkingDirectory={{ app_home }}
+          ExecStart={{ app_home }}/venv/bin/python {{ app_home }}/source/app.py
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      become: true
+      notify: Restart application service
+
+    - name: Start and enable application service
+      ansible.builtin.systemd:
+        name: "{{ app_name }}"
+        state: started
+        enabled: true
+        daemon_reload: true
+      become: true
+
+    - name: Configure firewall for application port
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "{{ app_port }}"
+        jump: ACCEPT
+        state: present
+      become: true
+
+    - name: Verify application is listening
+      ansible.builtin.wait_for:
+        host: localhost
+        port: "{{ app_port }}"
+        timeout: 30
+        state: started
+
+    - name: Check application health endpoint
+      ansible.builtin.uri:
+        url: "http://localhost:{{ app_port }}/health"
+        method: GET
+        status_code: 200
+      register: health_check
+      changed_when: false
+
+    - name: Create log directory
+      ansible.builtin.file:
+        path: /var/log/{{ app_name }}
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0755'
+      become: true
+
+    - name: Configure log rotation
+      ansible.builtin.copy:
+        dest: /etc/logrotate.d/{{ app_name }}
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          /var/log/{{ app_name }}/*.log {
+              daily
+              rotate 7
+              compress
+              delaycompress
+              notifempty
+              create 0640 {{ app_user }} {{ app_group }}
+              sharedscripts
+              postrotate
+                  systemctl reload {{ app_name }} > /dev/null 2>&1 || true
+              endscript
+          }
+      become: true
+
+    - name: Set up backup cron job
+      ansible.builtin.cron:
+        name: "Backup {{ app_name }} data"
+        minute: "0"
+        hour: "2"
+        job: "/usr/local/bin/backup-{{ app_name }}.sh"
+        user: "{{ app_user }}"
+        state: present
+      become: true
+
+    - name: Create backup script
+      ansible.builtin.copy:
+        dest: "/usr/local/bin/backup-{{ app_name }}.sh"
+        owner: root
+        group: root
+        mode: '0755'
+        content: |
+          #!/bin/bash
+          set -euo pipefail
+          BACKUP_DIR="/var/backups/{{ app_name }}"
+          DATE=$(date +%Y%m%d_%H%M%S)
+          mkdir -p "$BACKUP_DIR"
+          tar -czf "$BACKUP_DIR/backup_$DATE.tar.gz" {{ app_home }}/data
+          find "$BACKUP_DIR" -name "backup_*.tar.gz" -mtime +7 -delete
+      become: true
+      changed_when: false
+
+- name: Configure monitoring
+  hosts: webservers
+  gather_facts: false
+  become: true
+  
+  vars:
+    monitoring_port: 9090
+    alert_email: "ops@example.com"
+  
+  tasks:
+    - name: Install monitoring agent
+      ansible.builtin.package:
+        name:
+          - prometheus-node-exporter
+          - collectd
+        state: present
+
+    - name: Configure monitoring agent
+      ansible.builtin.template:
+        src: templates/monitoring.conf.j2
+        dest: /etc/monitoring/config.yml
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart monitoring service
+
+    - name: Start monitoring service
+      ansible.builtin.systemd:
+        name: prometheus-node-exporter
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Restart monitoring service
+      ansible.builtin.systemd:
+        name: prometheus-node-exporter
+        state: restarted
