@@ -113,6 +113,14 @@ def build_parser():
     )
     workflow.add_argument("--repo-ref", default=None, help="Branch, tag or commit, recorded alongside --repo-url.")
     workflow.add_argument(
+        "--repo-path",
+        default=None,
+        help=(
+            "Path of --source-dir within the repository, recorded in the bundle's metadata.json so a "
+            "consumer knows where code/ belongs. Inferred from the enclosing git checkout if omitted."
+        ),
+    )
+    workflow.add_argument(
         "--step-template-id",
         default=None,
         help="Override the policy-evaluation step template. Omit to use the platform's own default.",

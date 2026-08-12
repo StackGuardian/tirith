@@ -85,7 +85,7 @@ def test_reserved_names_on_disk_are_never_packed(tmp_path, name):
     body, _manifest = archive.pack(source_dir=str(tmp_path), plan={"masked": True})
 
     assert SECRET.encode() not in raw_bytes(body)
-    assert members(body) == ["main.tf", "plan.json"]
+    assert members(body) == ["code/main.tf", "plan.json"]
 
 
 @pytest.mark.parametrize("name", ["tfplan.json", "state.json", "terraform.plan.json"])
@@ -106,7 +106,7 @@ def test_the_file_a_document_was_read_from_is_never_packed(tmp_path, name):
     )
 
     assert SECRET.encode() not in raw_bytes(body)
-    assert members(body) == ["main.tf", "plan.json"]
+    assert members(body) == ["code/main.tf", "plan.json"]
 
 
 def test_the_binary_plan_is_never_packed(tmp_path):
@@ -122,7 +122,7 @@ def test_the_binary_plan_is_never_packed(tmp_path):
     body, _manifest = archive.pack(source_dir=str(tmp_path), plan={"masked": True})
 
     assert SECRET.encode() not in raw_bytes(body)
-    assert members(body) == ["main.tf", "plan.json"]
+    assert members(body) == ["code/main.tf", "plan.json"]
 
 
 def test_a_document_source_outside_the_tree_excludes_nothing(tmp_path):
@@ -143,8 +143,8 @@ def test_a_document_source_outside_the_tree_excludes_nothing(tmp_path):
         document_sources=(str(outside / "main.tf"),),
     )
 
-    assert members(body) == ["main.tf", "plan.json"]
-    assert read_member(body, "main.tf") == b"resource {}"
+    assert members(body) == ["code/main.tf", "plan.json"]
+    assert read_member(body, "code/main.tf") == b"resource {}"
 
 
 def test_masked_document_is_what_gets_written(tmp_path):
@@ -169,7 +169,7 @@ def test_terraform_provider_cache_is_excluded(tmp_path):
 
     body, manifest = archive.pack(source_dir=str(tmp_path))
 
-    assert members(body) == ["main.tf"]
+    assert members(body) == ["code/main.tf"]
     assert manifest["skipped"] >= 1
 
 
@@ -181,7 +181,7 @@ def test_git_directory_is_excluded(tmp_path):
 
     body, _manifest = archive.pack(source_dir=str(tmp_path))
 
-    assert members(body) == ["main.tf"]
+    assert members(body) == ["code/main.tf"]
     assert SECRET.encode() not in raw_bytes(body)
 
 
@@ -196,7 +196,7 @@ def test_raw_state_files_are_excluded(tmp_path, name):
 
     body, _manifest = archive.pack(source_dir=str(tmp_path))
 
-    assert name not in members(body)
+    assert f"code/{name}" not in members(body)
     assert SECRET.encode() not in raw_bytes(body)
 
 
@@ -209,8 +209,8 @@ def test_gitignore_is_honoured(tmp_path):
 
     body, _manifest = archive.pack(source_dir=str(tmp_path))
 
-    assert "secrets.auto.tfvars" not in members(body)
-    assert "build/out.bin" not in members(body)
+    assert "code/secrets.auto.tfvars" not in members(body)
+    assert "code/build/out.bin" not in members(body)
     assert SECRET.encode() not in raw_bytes(body)
 
 
@@ -220,7 +220,7 @@ def test_gitignore_can_be_turned_off(tmp_path):
 
     body, _manifest = archive.pack(source_dir=str(tmp_path), respect_gitignore=False)
 
-    assert "keep-me.tf" in members(body)
+    assert "code/keep-me.tf" in members(body)
 
 
 def test_extra_excludes_are_applied(tmp_path):
@@ -229,7 +229,7 @@ def test_extra_excludes_are_applied(tmp_path):
 
     body, _manifest = archive.pack(source_dir=str(tmp_path), extra_excludes=("*.zip",))
 
-    assert members(body) == ["main.tf"]
+    assert members(body) == ["code/main.tf"]
 
 
 def test_lock_file_is_kept(tmp_path):
@@ -238,7 +238,7 @@ def test_lock_file_is_kept(tmp_path):
 
     body, _manifest = archive.pack(source_dir=str(tmp_path))
 
-    assert ".terraform.lock.hcl" in members(body)
+    assert "code/.terraform.lock.hcl" in members(body)
 
 
 def test_symlinks_are_skipped(tmp_path):
@@ -252,7 +252,7 @@ def test_symlinks_are_skipped(tmp_path):
 
     body, _manifest = archive.pack(source_dir=str(source))
 
-    assert members(body) == ["main.tf"]
+    assert members(body) == ["code/main.tf"]
     assert SECRET.encode() not in raw_bytes(body)
 
 
@@ -266,7 +266,7 @@ def test_nested_directories_keep_their_relative_paths(tmp_path):
 
     body, _manifest = archive.pack(source_dir=str(tmp_path))
 
-    assert "modules/vpc/main.tf" in members(body)
+    assert "code/modules/vpc/main.tf" in members(body)
 
 
 def test_no_source_dir_is_allowed():
@@ -324,4 +324,153 @@ def test_the_binary_plan_that_plan_file_read_is_never_packed(tmp_path):
     )
 
     assert SECRET.encode() not in raw_bytes(body)
-    assert members(body) == ["main.tf", "plan.json"]
+    assert members(body) == ["code/main.tf", "plan.json"]
+
+
+# --- layout: code/ is a prefix, the root belongs to the documents -------------------------------
+
+
+def test_the_source_lives_under_the_code_prefix(tmp_path):
+    """
+    The layout is a contract for whatever reads the bundle: source under `code/`, documents at the
+    root, and `code/x` maps back to `<repo_path>/x`.
+    """
+    (tmp_path / "main.tf").write_text("")
+    (tmp_path / "modules" / "vpc").mkdir(parents=True)
+    (tmp_path / "modules" / "vpc" / "main.tf").write_text("")
+
+    body, _manifest = archive.pack(source_dir=str(tmp_path), plan={"masked": True})
+
+    assert members(body) == ["code/main.tf", "code/modules/vpc/main.tf", "plan.json"]
+
+
+def test_the_documents_are_at_the_archive_root_and_never_under_a_prefix(tmp_path):
+    """
+    The one layout mistake that would not fail loudly.
+
+    The step finds its inputs with a flat join onto the extraction directory and treats absence as
+    normal (`_discover_document` returns None). So a document moved under `code/` -- or under any
+    prefix -- would not raise: every policy would come back unevaluated and the run would report as
+    passed-with-warnings. Nothing downstream distinguishes that from a genuinely clean plan, which is
+    why this is asserted here rather than trusted.
+    """
+    (tmp_path / "main.tf").write_text("")
+
+    body, _manifest = archive.pack(
+        source_dir=str(tmp_path),
+        plan={"masked": True},
+        state={"masked": True},
+        infracost={"masked": True},
+    )
+
+    for document in (archive.PLAN_DOCUMENT, archive.STATE_DOCUMENT, archive.INFRACOST_DOCUMENT):
+        assert document in members(body), f"{document} must be at the archive root"
+    assert not [name for name in members(body) if name.endswith(f"/{archive.PLAN_DOCUMENT}")]
+
+
+def test_a_committed_document_name_is_still_skipped_under_the_prefix(tmp_path):
+    """
+    The reservation is a leak guard, and it stopped being self-evident when the prefix arrived.
+
+    Under the old flat layout a committed `tfstate.json` would have collided with the masked one, so
+    skipping it looked obviously necessary. `code/tfstate.json` cannot collide with anything -- and is
+    still raw, unmasked state, which is the actual reason for the skip. Deleting it because "the
+    collision is impossible now" is the mistake this test exists to catch.
+    """
+    (tmp_path / "tfstate.json").write_text(json.dumps({"secret": SECRET}))
+    (tmp_path / "main.tf").write_text("")
+
+    body, _manifest = archive.pack(source_dir=str(tmp_path), state={"masked": True})
+
+    assert "code/tfstate.json" not in members(body)
+    assert SECRET.encode() not in raw_bytes(body)
+
+
+def test_metadata_is_absent_unless_asked_for(tmp_path):
+    """A caller that supplies no metadata gets no member, so old bundles stay describable as such."""
+    (tmp_path / "main.tf").write_text("")
+
+    body, _manifest = archive.pack(source_dir=str(tmp_path))
+
+    assert archive.METADATA_DOCUMENT not in members(body)
+
+
+# --- metadata.json: what pack() observes, as opposed to what it was told ------------------------
+
+
+def _metadata(archive_bytes):
+    return json.loads(read_member(archive_bytes, archive.METADATA_DOCUMENT))
+
+
+def test_metadata_records_what_was_actually_packed(tmp_path):
+    """
+    The counts come from the walk, not from the caller. "Claims code, packed nothing" is only
+    detectable because this half of the document is produced here.
+    """
+    (tmp_path / "main.tf").write_text("")
+    (tmp_path / "notes.txt").write_text("")
+
+    body, _manifest = archive.pack(
+        source_dir=str(tmp_path),
+        plan={"masked": True},
+        metadata={"schema_version": 1, "code": {"repo_path": "infra/prod", "repo_path_from": "flag"}},
+    )
+
+    code = _metadata(body)["code"]
+    assert code["present"] is True
+    assert code["prefix"] == "code/"
+    assert code["files"] == 2
+    assert code["repo_path"] == "infra/prod"
+    assert _metadata(body)["documents"] == {"plan": "plan.json", "state": None, "infracost": None}
+
+
+def test_metadata_cannot_claim_code_the_archive_does_not_carry(tmp_path):
+    """
+    `present` means "there are members under the prefix", not "a source directory was requested".
+
+    Nothing writes an explicit directory entry, so a tree whose every file was excluded leaves no
+    `code/` in the tar at all. A consumer comparing the tar against the metadata must never find them
+    disagreeing, so the flag is derived from the count rather than from the request.
+    """
+    (tmp_path / "everything.tfstate").write_text("raw state")
+
+    body, _manifest = archive.pack(
+        source_dir=str(tmp_path),
+        plan={"masked": True},
+        metadata={"schema_version": 1, "code": {"repo_path": "infra", "repo_path_from": "flag"}},
+    )
+
+    code = _metadata(body)["code"]
+    assert code["present"] is False
+    assert code["prefix"] is None
+    assert code["files"] == 0
+    # And the path is withdrawn: there is nothing for it to describe.
+    assert code["repo_path"] is None
+    assert code["absent_reason"] == "empty_after_excludes"
+    assert not [name for name in members(body) if name.startswith("code/")]
+
+
+def test_metadata_says_why_no_source_was_requested(tmp_path):
+    """
+    A documents-only bundle has to distinguish "none wanted" from "dropped for size", or a consumer
+    cannot tell a deliberate configuration from a truncated one.
+    """
+    body, _manifest = archive.pack(
+        source_dir=None,
+        plan={"masked": True},
+        metadata={"schema_version": 1, "code": {"absent_reason": "not_requested"}},
+    )
+
+    code = _metadata(body)["code"]
+    assert code["present"] is False
+    assert code["absent_reason"] == "not_requested"
+
+
+def test_metadata_does_not_mutate_the_caller_dict(tmp_path):
+    """The retry path re-packs with a modified copy; mutating the original would corrupt it."""
+    (tmp_path / "main.tf").write_text("")
+    supplied = {"schema_version": 1, "code": {"repo_path": "infra"}}
+
+    archive.pack(source_dir=str(tmp_path), metadata=supplied)
+
+    assert supplied == {"schema_version": 1, "code": {"repo_path": "infra"}}

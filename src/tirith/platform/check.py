@@ -8,12 +8,32 @@ anything leaves it. Masking server-side would be theatre: once the bytes arrive 
 already happened.
 """
 
+import datetime
 import json
 import os
 import sys
+import urllib.parse
 
+from .. import __version__
 from . import archive, redact, report
 from .client import ARCHIVE_DOCUMENT, ARCHIVE_NAME_TEMPLATE, SGClient, SGError
+
+# The version of the metadata.json contract. One integer, bumped only when a change breaks a reader;
+# added fields do not bump it. A consumer seeing a higher number should read what it recognises and
+# refuse to act destructively -- in particular, it must not write files back using `code.repo_path`
+# from a schema it does not understand.
+METADATA_SCHEMA_VERSION = 1
+
+# Hosts we can name with confidence. Anything else is reported as `unknown` with the raw host
+# alongside, because a self-hosted GitLab at git.example.internal is unrecognisable by design and
+# guessing "github" for it would be worse than admitting ignorance.
+_KNOWN_VCS_HOSTS = {
+    "github.com": "github",
+    "gitlab.com": "gitlab",
+    "bitbucket.org": "bitbucket",
+    "dev.azure.com": "azure_devops",
+    "ssh.dev.azure.com": "azure_devops",
+}
 
 DEFAULT_WORKFLOW_GROUP = "default"
 DEFAULT_TERRAFORM_VERSION = "1.5.7"
@@ -207,7 +227,150 @@ def write_output_json(path, payload):
         log(f"WARNING: could not write {path}: {e}")
 
 
-def pack_documents(source_dir, plan, state, infracost, document_sources=()):
+def _split_repo_url(repo_url):
+    """
+    Return (sanitized_url, host) for a repo URL, or (None, None).
+
+    **Strips userinfo.** `https://x-access-token:ghs_abc@github.com/acme/infra` is an ordinary value
+    for a CI checkout to hold, and GitLab's own `CI_REPOSITORY_URL` embeds a job token the same way.
+    Writing that into a file that ships inside the bundle would persist a credential in an artifact
+    that outlives the run. Sanitizing here rather than at the call site because it is the kind of thing
+    a later caller would forget.
+
+    Handles scp syntax (`git@github.com:acme/infra.git`), which `urlsplit` reads as a path with no
+    host at all.
+    """
+    if not repo_url:
+        return None, None
+
+    text = repo_url.strip()
+    if "://" not in text and "@" in text and ":" in text.split("@", 1)[1]:
+        # scp-style. Rewrite to a URL shape so the host is recoverable, keeping it lossless enough to
+        # be recognisable to a human reading the metadata.
+        userinfo, _, remainder = text.partition("@")
+        host, _, path = remainder.partition(":")
+        return f"ssh://{host}/{path}", host.lower() or None
+
+    parts = urllib.parse.urlsplit(text)
+    host = (parts.hostname or "").lower() or None
+    if not host:
+        return text, None
+
+    authority = host if parts.port is None else f"{host}:{parts.port}"
+    return urllib.parse.urlunsplit((parts.scheme, authority, parts.path, parts.query, "")), host
+
+
+def _repo_path(source_dir, declared=None):
+    """
+    Where `code/` belongs inside the repository. Returns (path, how) with POSIX separators.
+
+    This is the field an autofix consumer cannot do without: `--source-dir infra/prod` means `code/`
+    holds only that subtree, so `code/main.tf` has to be written back to `infra/prod/main.tf`. The
+    packing destroys that prefix -- members are named relative to the source directory -- so if it is
+    not recorded here it is unrecoverable.
+
+    `""` means the repository root, and is deliberately not `None`: joining still works and it stays
+    distinguishable from "we could not tell", which is `None`. `how` is `"flag"` or `"git_root"`, so a
+    consumer about to write into someone's repository can tell a declared answer from an inferred one.
+
+    Inference walks up for a `.git` entry rather than shelling out to git -- there is no git dependency
+    anywhere in this package, and a `.git` *file* (worktrees, submodules) counts.
+    """
+    if declared is not None:
+        return declared.strip("/").replace(os.sep, "/"), "flag"
+    if not source_dir:
+        return None, None
+
+    try:
+        current = os.path.realpath(source_dir)
+    except OSError:
+        return None, None
+
+    root = current
+    while True:
+        if os.path.exists(os.path.join(root, ".git")):
+            relative = os.path.relpath(current, root)
+            return ("" if relative == "." else relative.replace(os.sep, "/")), "git_root"
+        parent = os.path.dirname(root)
+        if parent == root:
+            return None, None
+        root = parent
+
+
+def build_metadata(opts, redactions, absent_reason=None):
+    """
+    The caller's half of `metadata.json`: what this bundle is.
+
+    `archive.pack` fills in what it observes -- whether code was packed, under what prefix, and the
+    file counts -- so nothing here asserts a fact about the archive's contents.
+
+    Two shapes of run have to produce an honest document. From CI, `--trigger-details-file` carries the
+    repository and commit. From a laptop there is no trigger payload at all (`{"type": "cli"}`), often
+    no `--sha` and no `--repo-url`; those fields are then `null` rather than omitted or invented, and
+    `origin.kind` says `local` as a positive statement instead of leaving CI to be inferred from an
+    absence.
+
+    Field names are snake_case, matching every other JSON this tool *authors* -- the result document,
+    the manifest, and terraform's own plan.json sitting beside it. camelCase in this package appears
+    only where it mirrors the platform's wire API, which this file never touches.
+    """
+    trigger = opts.trigger_details if isinstance(getattr(opts, "trigger_details", None), dict) else {}
+    trigger_type = trigger.get("type") or "cli"
+    url, host = _split_repo_url(getattr(opts, "repo_url", None) or trigger.get("repoHttpUrl"))
+    path, path_from = _repo_path(opts.source_dir, getattr(opts, "repo_path", None))
+
+    change_request = None
+    if trigger.get("prId"):
+        change_request = {
+            "id": str(trigger["prId"]),
+            "url": trigger.get("eventSource"),
+            "target_ref": trigger.get("baseRef"),
+        }
+
+    return {
+        "schema_version": METADATA_SCHEMA_VERSION,
+        "generator": {"name": "tirith", "version": __version__},
+        "created_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "input_kind": opts.input_kind,
+        "origin": {
+            # `cli` is what the CLI defaults the trigger type to when nothing supplied one, so it is
+            # the signal that no CI system was involved.
+            "kind": "local" if trigger_type == "cli" else "ci",
+            "trigger_type": trigger_type,
+            "ci_run_url": trigger.get("runUrl"),
+        },
+        "repository": {
+            # Sniffed from the host, never from the CI provider: a GitHub Actions job can perfectly
+            # well check out a GitLab repository, so these are independent facts.
+            "provider": _KNOWN_VCS_HOSTS.get(host, "unknown"),
+            "host": host,
+            "url": url,
+            "ref": getattr(opts, "repo_ref", None) or trigger.get("ref"),
+            "commit": opts.sha or trigger.get("headSha"),
+            "change_request": change_request,
+        },
+        "code": {
+            "repo_path": path,
+            "repo_path_from": path_from,
+            "absent_reason": absent_reason,
+        },
+        "masking": {
+            # Named so a consumer can find masked values without hardcoding the sentinel, and knows
+            # not to feed this state to terraform.
+            "redactions": redactions,
+            "marker": redact.SENTINEL,
+            "documents_are_masked": True,
+        },
+        "workflow": {
+            "org": opts.org,
+            "group": opts.workflow_group,
+            "id": opts.workflow_id,
+            "artifact_tag": opts.artifact_tag,
+        },
+    }
+
+
+def pack_documents(source_dir, plan, state, infracost, document_sources=(), metadata=None):
     """
     Build the archive, dropping the source tree rather than failing if it is too large.
 
@@ -229,6 +392,7 @@ def pack_documents(source_dir, plan, state, infracost, document_sources=()):
             state=state,
             infracost=infracost,
             document_sources=document_sources,
+            metadata=metadata,
         )
         return archive_bytes, manifest, None
     except archive.ArchiveError as e:
@@ -242,8 +406,14 @@ def pack_documents(source_dir, plan, state, infracost, document_sources=()):
             f"fixes has nothing to work from. Point --source-dir at your terraform directory, or add "
             f"the large paths to .gitignore."
         )
+        # The retry has to say *why* the code is missing, or a consumer cannot tell a deliberate
+        # documents-only run from a tree that was dropped for size.
+        retry_metadata = metadata
+        if metadata is not None:
+            retry_metadata = dict(metadata)
+            retry_metadata["code"] = dict(metadata.get("code") or {}, absent_reason="too_large")
         archive_bytes, manifest = archive.pack(
-            source_dir=None, plan=plan, state=state, infracost=infracost
+            source_dir=None, plan=plan, state=state, infracost=infracost, metadata=retry_metadata
         )
         return archive_bytes, manifest, reason
 
@@ -325,6 +495,11 @@ def run_check(opts):
         state,
         infracost,
         document_sources=(opts.input_path, opts.state_path, opts.infracost_path, getattr(opts, "plan_file", None)),
+        metadata=build_metadata(
+            opts,
+            redactions,
+            absent_reason=None if opts.source_dir else "not_requested",
+        ),
     )
     log(
         f"Packed {manifest['files']} file(s) and {len(manifest['documents'])} document(s) "

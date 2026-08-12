@@ -1,12 +1,21 @@
 """
 Build the gzipped tar that carries a run's inputs to StackGuardian.
 
-The archive is what the run controller unpacks in place of a VCS checkout, so it holds both the
-terraform source and the documents to evaluate, at the fixed names the step looks for:
+The step unpacks this and reads the documents out of it, so the layout is a contract:
 
     plan.json       terraform plan JSON     -- the primary policy input
-    tfstate.json      terraform state JSON
+    tfstate.json    terraform state JSON
     infracost.json  cost breakdown
+    metadata.json   what this bundle is: repository, commit, where the code belongs
+    code/           the terraform source, if any was packed
+
+**The documents stay at the root.** The step joins those three names onto the extraction directory and
+treats absence as normal -- so moving one under a prefix would not raise, it would make every policy
+report "unevaluated" and the run would look like it passed with warnings.
+
+**`code/` is a prefix, not a directory member.** Nothing writes an explicit directory entry, so the
+prefix exists in the tar only while at least one file carries it. `metadata.json` says so rather than
+leaving a consumer to infer it from an absence.
 
 Two things here are easy to get wrong and expensive to get wrong.
 
@@ -25,6 +34,7 @@ next to the masked copy.
 import fnmatch
 import io
 import os
+import posixpath
 import tarfile
 
 # Fixed names the step looks for at the archive root.
@@ -32,10 +42,24 @@ PLAN_DOCUMENT = "plan.json"
 STATE_DOCUMENT = "tfstate.json"
 INFRACOST_DOCUMENT = "infracost.json"
 
+# What this bundle is, for whatever reads it later. Written at the root beside the documents.
+METADATA_DOCUMENT = "metadata.json"
+
+# The source tree lives under here, so the root belongs to us alone.
+CODE_PREFIX = "code"
+
 # These names are ALWAYS written by pack(), never copied from the source tree -- whether or not a
-# masked document was supplied for them. A file called tfstate.json in the working directory is raw,
-# unmasked state; see the note in pack().
-RESERVED_DOCUMENTS = frozenset((PLAN_DOCUMENT, STATE_DOCUMENT, INFRACOST_DOCUMENT))
+# masked document was supplied for them.
+#
+# This is a LEAK guard, not a collision guard, and the distinction matters now that the source sits
+# under `code/` where it cannot collide with anything. A file called tfstate.json in the working
+# directory is raw, unmasked state by definition -- `terraform state pull > state.json` is the
+# documented way to make one -- so packing it as `code/tfstate.json` would ship every attribute in
+# plaintext next to the masked copy. Nothing about the prefix makes that safe; see the note in pack().
+#
+# metadata.json is here for a plainer reason: it is a thoroughly ordinary filename for a repository to
+# contain, tar tolerates duplicate members, and extraction order would decide which one won.
+RESERVED_DOCUMENTS = frozenset((PLAN_DOCUMENT, STATE_DOCUMENT, INFRACOST_DOCUMENT, METADATA_DOCUMENT))
 
 # Always excluded, regardless of .gitignore.
 #
@@ -140,6 +164,7 @@ def pack(
     extra_excludes=(),
     respect_gitignore=True,
     document_sources=(),
+    metadata=None,
 ):
     """
     Build the archive in memory and return its bytes.
@@ -147,6 +172,12 @@ def pack(
     `plan`, `state` and `infracost` are already-redacted objects. They are serialized here and
     written at the archive root, overriding any same-named file in `source_dir` -- so a stale
     plan.json lying around cannot displace the masked one.
+
+    `metadata` is the caller's half of `metadata.json`: what it intended. This function fills in the
+    half only it can observe -- whether a tree was actually walked, under what prefix, and how many
+    files went in or were skipped -- and writes the member last. The split is deliberate: a bundle
+    that claims code but packed nothing is detectable only because the count is produced here rather
+    than asserted by the caller.
 
     `document_sources` are the paths those objects were *read from*. They are excluded from the
     source walk, because the file on disk is the unmasked original: masking `tfplan.json` and then
@@ -189,6 +220,8 @@ def pack(
             manifest["files"], manifest["skipped"] = _add_tree(tar, source_dir, patterns, reserved)
         for name, document in documents.items():
             _add_document(tar, name, document)
+        if metadata is not None:
+            _add_document(tar, METADATA_DOCUMENT, _observed_metadata(metadata, source_dir, manifest))
 
     archive = buffer.getvalue()
     if len(archive) > MAX_ARCHIVE_BYTES:
@@ -202,8 +235,51 @@ def pack(
     return archive, manifest
 
 
-def _add_tree(tar, source_dir, patterns, reserved_names):
-    """Walk `source_dir`, adding everything not excluded. Returns (added, skipped)."""
+def _observed_metadata(metadata, source_dir, manifest):
+    """
+    Overlay what this module observed onto the caller's metadata, without mutating it.
+
+    `code.present` is `files > 0`, not "a source directory was requested". Nothing writes an explicit
+    directory member, so a tree where every file was excluded leaves no `code/` in the tar at all --
+    and a consumer comparing the two must not find them disagreeing. `present` therefore means
+    literally "there are members under the prefix".
+
+    The caller's `code.absent_reason` survives when it has one (it knows *why* it asked for no source);
+    a tree that was requested and vanished into the exclude list gets one from here, because the caller
+    cannot know that happened.
+    """
+    code = dict(metadata.get("code") or {})
+    files = manifest.get("files", 0)
+    present = bool(source_dir) and files > 0
+
+    code["present"] = present
+    code["prefix"] = f"{CODE_PREFIX}/" if present else None
+    code["files"] = files
+    code["skipped"] = manifest.get("skipped", 0)
+    if not present:
+        code["repo_path"] = None
+        code["repo_path_from"] = None
+        if not code.get("absent_reason"):
+            code["absent_reason"] = "empty_after_excludes" if source_dir else "not_requested"
+
+    merged = dict(metadata)
+    merged["code"] = code
+    merged["documents"] = {
+        "plan": PLAN_DOCUMENT if PLAN_DOCUMENT in manifest.get("documents", ()) else None,
+        "state": STATE_DOCUMENT if STATE_DOCUMENT in manifest.get("documents", ()) else None,
+        "infracost": INFRACOST_DOCUMENT if INFRACOST_DOCUMENT in manifest.get("documents", ()) else None,
+    }
+    return merged
+
+
+def _add_tree(tar, source_dir, patterns, reserved_names, prefix=CODE_PREFIX):
+    """
+    Walk `source_dir`, adding everything not excluded under `prefix`. Returns (added, skipped).
+
+    Member names are built with `posixpath`, not `os.path`: tar names are `/`-separated on every
+    platform, and joining with the OS separator would emit backslashes on Windows -- extracting to
+    literal one-segment filenames with backslashes in them.
+    """
     added = 0
     skipped = 0
 
@@ -227,7 +303,9 @@ def _add_tree(tar, source_dir, patterns, reserved_names):
             if _is_excluded(relative, name, patterns):
                 skipped += 1
                 continue
-            # The masked documents are written separately and must win.
+            # Reserved names are skipped on the path they have in the SOURCE tree, before the prefix
+            # is applied. `code/tfstate.json` could not displace the masked root copy, but it would
+            # still be unmasked state inside the bundle -- which is the actual reason for this skip.
             if relative in reserved_names:
                 skipped += 1
                 continue
@@ -237,7 +315,7 @@ def _add_tree(tar, source_dir, patterns, reserved_names):
                 skipped += 1
                 continue
             try:
-                tar.add(full, arcname=relative)
+                tar.add(full, arcname=posixpath.join(prefix, relative.replace(os.sep, "/")))
                 added += 1
             except OSError:
                 skipped += 1

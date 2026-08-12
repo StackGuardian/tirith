@@ -286,3 +286,176 @@ def test_the_workflow_never_takes_a_managed_state_backend():
     config = check.terraform_config("1.5.7", None)
 
     assert config["managedTerraformState"] is False
+
+
+# --- metadata.json: the provenance half -----------------------------------------------------------
+#
+# Two shapes have to produce an honest document: a CI run, where the trigger payload carries the
+# repository and commit, and a bare local invocation, where none of it exists. The local case is the
+# one worth guarding -- the temptation is to fill the gaps from the environment, and a fabricated
+# repository in a file that outlives the run is worse than a null.
+
+
+class MetaOpts:
+    trigger_details = {"type": "cli"}
+    repo_url = None
+    repo_ref = None
+    repo_path = None
+    sha = None
+    source_dir = None
+    input_kind = "terraform_plan"
+    org = "acme"
+    workflow_group = "default"
+    workflow_id = "infra"
+    artifact_tag = "default"
+
+
+def _opts(**overrides):
+    opts = MetaOpts()
+    for key, value in overrides.items():
+        setattr(opts, key, value)
+    return opts
+
+
+def test_a_local_run_states_it_is_local_rather_than_leaving_ci_to_be_inferred():
+    metadata = check.build_metadata(_opts(), redactions=0)
+
+    assert metadata["origin"] == {"kind": "local", "trigger_type": "cli", "ci_run_url": None}
+    # Nulls, not omissions, and nothing invented.
+    assert metadata["repository"]["provider"] == "unknown"
+    assert metadata["repository"]["url"] is None
+    assert metadata["repository"]["commit"] is None
+    assert metadata["repository"]["change_request"] is None
+    assert metadata["schema_version"] == check.METADATA_SCHEMA_VERSION
+
+
+def test_a_ci_run_records_the_repository_and_the_change_request():
+    opts = _opts(
+        trigger_details={
+            "type": "tirith",
+            "repoHttpUrl": "https://github.com/acme/infra",
+            "headSha": "9f2c1ab5",
+            "ref": "feat/rds",
+            "prId": "412",
+            "eventSource": "https://github.com/acme/infra/pull/412",
+            "runUrl": "https://github.com/acme/infra/actions/runs/1",
+        }
+    )
+
+    metadata = check.build_metadata(opts, redactions=12)
+
+    assert metadata["origin"]["kind"] == "ci"
+    assert metadata["repository"]["provider"] == "github"
+    assert metadata["repository"]["commit"] == "9f2c1ab5"
+    assert metadata["repository"]["change_request"]["id"] == "412"
+    assert metadata["masking"]["redactions"] == 12
+
+
+def test_a_credential_in_the_repo_url_never_reaches_the_metadata():
+    """
+    `https://x-access-token:ghs_…@github.com/…` is an ordinary value for a CI checkout to hold, and
+    GitLab's own CI_REPOSITORY_URL embeds a job token the same way. This file ships inside the bundle
+    and outlives the run, so a token written here is a token persisted in an artifact.
+    """
+    import json as _json
+
+    opts = _opts(repo_url="https://x-access-token:ghs_verysecret@github.com/acme/infra.git")
+
+    metadata = check.build_metadata(opts, redactions=0)
+
+    assert "ghs_verysecret" not in _json.dumps(metadata)
+    assert "x-access-token" not in _json.dumps(metadata)
+    assert metadata["repository"]["url"] == "https://github.com/acme/infra.git"
+    assert metadata["repository"]["host"] == "github.com"
+
+
+def test_an_scp_style_remote_still_yields_a_host():
+    """`git@github.com:acme/infra.git` has no scheme, so urlsplit reads it as a path with no host."""
+    metadata = check.build_metadata(_opts(repo_url="git@github.com:acme/infra.git"), redactions=0)
+
+    assert metadata["repository"]["host"] == "github.com"
+    assert metadata["repository"]["provider"] == "github"
+
+
+def test_a_self_hosted_host_is_unknown_rather_than_guessed():
+    """Guessing `github` for git.example.internal would be worse than admitting we cannot tell."""
+    metadata = check.build_metadata(_opts(repo_url="https://git.example.internal/acme/infra"), redactions=0)
+
+    assert metadata["repository"]["provider"] == "unknown"
+    # The raw host is still recorded, which is what makes the honest answer useful.
+    assert metadata["repository"]["host"] == "git.example.internal"
+
+
+def test_the_declared_repo_path_wins_over_inference():
+    opts = _opts(source_dir=".", repo_path="infra/prod")
+
+    code = check.build_metadata(opts, redactions=0)["code"]
+
+    assert code["repo_path"] == "infra/prod"
+    assert code["repo_path_from"] == "flag"
+
+
+def test_the_repo_path_is_inferred_from_the_enclosing_checkout(tmp_path):
+    """
+    Inference walks up for a `.git` entry rather than shelling out -- this package has no git
+    dependency, and a `.git` *file* (worktrees, submodules) has to count too.
+    """
+    (tmp_path / ".git").write_text("gitdir: /elsewhere")
+    nested = tmp_path / "infra" / "prod"
+    nested.mkdir(parents=True)
+
+    code = check.build_metadata(_opts(source_dir=str(nested)), redactions=0)["code"]
+
+    assert code["repo_path"] == "infra/prod"
+    assert code["repo_path_from"] == "git_root"
+
+
+def test_the_repository_root_is_the_empty_string_not_a_dot(tmp_path):
+    """
+    `""` means the root and joins correctly; `None` means "we could not tell". Collapsing them would
+    make a consumer unable to distinguish a root-level project from an unknown one.
+    """
+    (tmp_path / ".git").mkdir()
+
+    code = check.build_metadata(_opts(source_dir=str(tmp_path)), redactions=0)["code"]
+
+    assert code["repo_path"] == ""
+    assert code["repo_path_from"] == "git_root"
+
+
+def test_an_unlocatable_repository_root_says_so(tmp_path):
+    code = check.build_metadata(_opts(source_dir=str(tmp_path)), redactions=0)["code"]
+
+    assert code["repo_path"] is None
+    assert code["repo_path_from"] is None
+
+
+def test_the_oversize_retry_records_that_the_code_was_dropped_for_size(tmp_path, monkeypatch):
+    """
+    The fallback re-packs without the source. A consumer holding only the bundle must be able to tell
+    that from a deliberate documents-only run, which is the difference between "nothing to fix here"
+    and "we could not show you the code".
+    """
+    import io
+    import json as _json
+    import tarfile
+
+    monkeypatch.setattr(check.archive, "MAX_ARCHIVE_BYTES", 50 * 1024)
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "main.tf").write_text("")
+    (source / "vendor.bin").write_bytes(os.urandom(200_000))
+
+    archive_bytes, _manifest, reason = check.pack_documents(
+        str(source),
+        {"masked": True},
+        None,
+        None,
+        metadata={"schema_version": 1, "code": {}},
+    )
+
+    assert reason
+    with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:gz") as tar:
+        metadata = _json.loads(tar.extractfile(check.archive.METADATA_DOCUMENT).read())
+    assert metadata["code"]["absent_reason"] == "too_large"
+    assert metadata["code"]["present"] is False
