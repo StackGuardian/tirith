@@ -34,13 +34,12 @@ def eprint(*args, **kwargs):
 # `remote` names the distinction that actually exists: the policies and the evaluation live somewhere
 # else. `platform` was internal vocabulary escaping into a user-facing verb -- it reads in English as
 # "check the platform", which is what `--platform` means in most tools a reader has used.
+#
+# It was called `platform` on this branch and is renamed outright, with no alias: nothing is released
+# -- py-tirith is not on PyPI and the action pins a branch -- so there is no caller to keep working,
+# and an alias kept for hypothetical callers is a second name to explain forever.
 SUBCOMMAND = "remote"
-
-# `platform` still dispatches, undocumented, because snippets carrying it exist. Not in the help, not
-# in the README: two documented names for one command is how the vagueness complaint arrives twice.
-DEPRECATED_SUBCOMMANDS = {"platform": SUBCOMMAND}
-
-SUBCOMMANDS = {SUBCOMMAND, *DEPRECATED_SUBCOMMANDS}
+SUBCOMMANDS = {SUBCOMMAND}
 
 
 def main(args=None) -> ExitStatus:
@@ -56,11 +55,6 @@ def main(args=None) -> ExitStatus:
 
     if argv and argv[0] in SUBCOMMANDS:
         from tirith.platform import cli as remote_cli
-
-        if argv[0] in DEPRECATED_SUBCOMMANDS:
-            replacement = DEPRECATED_SUBCOMMANDS[argv[0]]
-            eprint(f"'tirith {argv[0]}' is deprecated; use 'tirith {replacement}'.")
-            argv = [replacement, *argv[1:]]
 
         return remote_cli.main(argv)
 

@@ -94,25 +94,18 @@ def test_a_bare_word_is_not_mistaken_for_a_subcommand(capsys):
     assert "check" not in cli.SUBCOMMANDS
 
 
-def test_the_old_name_still_dispatches_and_says_it_is_deprecated(capsys):
+def test_the_old_name_is_gone_entirely(capsys):
     """
-    `platform` was the name until 1.2.0 and snippets carrying it exist, so it keeps working -- but it
-    says so on stderr, not stdout, where it cannot corrupt `--json` output being piped somewhere.
+    Renamed outright rather than aliased. Nothing is released -- py-tirith is not on PyPI and the
+    action pins a branch -- so there was no caller to keep working, and an alias kept for hypothetical
+    ones is a second name to explain forever.
+
+    `platform` therefore falls through to the flat parser, where it is an unrecognised positional and
+    fails the way any typo does, rather than being silently accepted.
     """
+    assert "platform" not in cli.SUBCOMMANDS
+
     status = cli.main(["platform"])
 
-    assert status == ExitStatus.SUCCESS
-    captured = capsys.readouterr()
-    assert "tirith remote" in captured.out, "the old name must still reach the subcommand"
-    assert "deprecated" in captured.err
-    assert "deprecated" not in captured.out
-
-
-def test_the_old_name_is_not_documented(capsys):
-    """
-    Deliberately absent from the help. Two documented names for one command is how the complaint that
-    prompted the rename arrives a second time.
-    """
-    cli.main([])
-
-    assert "platform" not in capsys.readouterr().out
+    assert status != ExitStatus.SUCCESS
+    assert "tirith remote" not in capsys.readouterr().out
