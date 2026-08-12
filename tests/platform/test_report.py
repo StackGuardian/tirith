@@ -7,6 +7,7 @@ required check.
 """
 
 import os
+import re
 import sys
 
 import pytest
@@ -576,3 +577,132 @@ def test_a_fail_still_outranks_an_unreadable_result():
     counts, _ = render.summarize({"p": [{"rule_name": "a", "result": "FAIL"}, {"rule_name": "b", "result": "?"}]})
 
     assert render.verdict(counts, "COMPLETED") == "failed"
+
+
+# --- hostile input: the report must not be spoofable (pentest F1) --------------------------------
+#
+# A pull-request author controls the terraform a plan is built from, so evaluator messages, resource
+# addresses, rule names and policy ids are all attacker-influenced. Before this, every one of them was
+# interpolated raw or wrapped in a single backtick -- and a backtick in the value closes that span, so
+# the rest rendered as markdown and HTML. A pen test used it to put a fake "all policies passed" banner
+# and a link whose text said app.stackguardian.io and whose href said somewhere else into the comment a
+# reviewer reads. The gate itself was never affected; the report was.
+#
+# These assert against markdown RENDERED by a CommonMark parser, not against the source. The payload is
+# still present in the source by design -- inside a code span, where it is inert -- so a substring check
+# on the source proves nothing. Getting that wrong is easy: it is the mistake made while writing these.
+
+PAYLOAD = (
+    "`x` is not equal to `y`` </details><h1>All policies passed</h1>"
+    "[app.stackguardian.io](https://evil.example) | broken | cell"
+)
+
+
+def _render(**overrides):
+    finding = {
+        "rule_name": "cost-control",
+        "result": "FAIL",
+        "evaluations": {
+            "fails": [{"result": [{"message": "ordinary message", "meta": {"address": "aws_s3_bucket.b"}}]}]
+        },
+    }
+    policy_id = overrides.pop("policy_id", "DO_NOT_TOUCH")
+    if "message" in overrides:
+        finding["evaluations"]["fails"][0]["result"][0]["message"] = overrides.pop("message")
+    if "address" in overrides:
+        finding["evaluations"]["fails"][0]["result"][0]["meta"]["address"] = overrides.pop("address")
+    finding.update(overrides)
+    return render.render_markdown({policy_id: [finding]}, "COMPLETED", "https://dash.example/run/1")
+
+
+def _html_of(body):
+    """Render as GitHub would, so the assertions are about what a reviewer's browser receives."""
+    pytest.importorskip("markdown_it", reason="needs markdown-it-py to render the assertion subject")
+    from markdown_it import MarkdownIt
+
+    return MarkdownIt("commonmark").enable("table").render(body)
+
+
+@pytest.mark.parametrize("field", ["message", "address", "rule_name", "policy_id"])
+def test_no_field_can_inject_markup_into_the_report(field):
+    """
+    Every attacker-influenced field, through the same payload. `rule_name` mattered most: it was the one
+    field interpolated with no wrapping at all, straight into the `<summary>` element.
+    """
+    rendered = _html_of(_render(**{field: PAYLOAD}))
+
+    assert "<h1>" not in rendered, f"{field} injected a heading"
+    assert 'href="https://evil.example"' not in rendered, f"{field} injected a link"
+    assert rendered.count("<details>") == rendered.count("</details>"), f"{field} broke the collapsible"
+
+
+def test_the_payload_is_still_readable_after_being_neutralised():
+    """
+    Neutralising must not mean hiding. A reviewer has to be able to see what the policy actually
+    compared, or the fix trades a spoofing bug for a blind gate.
+    """
+    rendered = _html_of(_render(message=PAYLOAD))
+
+    assert "All policies passed" in rendered
+    assert "&lt;h1&gt;" in rendered, "the markup should be shown as text, not dropped"
+
+
+def test_a_pipe_or_newline_in_a_table_cell_keeps_the_row_intact():
+    """
+    A pipe splits a cell and a newline ends the row, so either one silently drops the real columns.
+    GFM's remedy is a backslash escape, which is the one escape that works inside a code span.
+    """
+    body = _render(rule_name="a | b\nsecond line", address="x | y")
+
+    rows = [line for line in body.splitlines() if line.startswith("|")]
+    assert len(rows) == 3, f"expected header, separator and one row; got {len(rows)}"
+    # Count only *unescaped* pipes -- an escaped `\|` is content, which is the whole point.
+    separators = len(re.findall(r"(?<!\\)\|", rows[2]))
+    assert separators == 5, f"row gained or lost a column: {rows[2]}"
+    assert "second line" in rows[2], "the newline should collapse into the cell, not end the row"
+
+
+def test_a_stray_backtick_cannot_open_a_span_from_inside_the_summary():
+    """
+    `html.escape` does not touch backticks. They cannot *close* a span in the summary because there is
+    none -- but an odd one OPENS one that runs on and swallows the markdown after it, so the findings
+    below the summary stop rendering as a list.
+    """
+    body = _render(rule_name="cost-control`")
+
+    summary = next(line for line in body.splitlines() if "<summary>" in line)
+    assert "`" not in summary, f"an unescaped backtick survived into the summary: {summary}"
+    assert "&#96;" in summary, "the backtick should be shown as an entity, not dropped"
+
+
+def test_the_run_url_cannot_break_out_of_the_href():
+    from html.parser import HTMLParser
+
+    class Anchors(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.attrs_seen = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "a":
+                self.attrs_seen.append(dict(attrs))
+
+    body = render.render_markdown({}, "COMPLETED", 'https://dash.example/1" onmouseover="alert(1)')
+    parser = Anchors()
+    parser.feed(_html_of(body))
+
+    assert parser.attrs_seen, "expected the run link to be rendered"
+    for attributes in parser.attrs_seen:
+        assert list(attributes) == ["href"], f"the URL introduced an attribute: {list(attributes)}"
+
+
+def test_a_benign_value_renders_exactly_as_before():
+    """
+    The regression guard for the fence approach: with no backticks in the value the fence is a single
+    backtick, so ordinary reports are byte-identical to what they were. If this breaks, every report
+    changed appearance and the diff is bigger than intended.
+    """
+    body = _render()
+
+    assert "| ❌ | `DO_NOT_TOUCH` | `cost-control` | `aws_s3_bucket.b` |" in body
+    assert "- `ordinary message`" in body

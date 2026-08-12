@@ -588,9 +588,14 @@ def run_check(opts):
     except SGError as e:
         raise CheckError(str(e))
 
+    # Quoted, the way client.py quotes the same three values on every API path it builds. This one is
+    # rendered into an `href` in the pull-request comment, so an unquoted value could put a space or a
+    # quote into a URL a reviewer clicks. The renderer escapes it as well; both, because neither alone
+    # is obviously sufficient at the point you are reading only one of them.
     run_url = (
-        f"{opts.dashboard_url.rstrip('/')}/orchestrator/orgs/{opts.org}"
-        f"/wfgrps/{opts.workflow_group}/wfs/{opts.workflow_id}/wfruns/{run_id}"
+        f"{opts.dashboard_url.rstrip('/')}/orchestrator/orgs/{urllib.parse.quote(opts.org)}"
+        f"/wfgrps/{urllib.parse.quote(opts.workflow_group)}/wfs/{urllib.parse.quote(opts.workflow_id)}"
+        f"/wfruns/{urllib.parse.quote(str(run_id))}"
     )
     log(f"Run created: {run_url}")
 

@@ -5,6 +5,8 @@ Pure functions over the results document so the layout and the truncation arithm
 without touching a network.
 """
 
+import html
+
 FAIL = "FAIL"
 WARN = "WARN"
 PASS = "PASS"
@@ -239,7 +241,7 @@ def render_cost(breakdown):
     except (TypeError, ValueError):
         monthly_text = str(monthly)
 
-    line = f"💵 Estimated monthly cost: **{monthly_text} {currency}**"
+    line = f"💵 Estimated monthly cost: **{_html(monthly_text)} {_html(currency)}**"
 
     # Infracost fills the diff from the plan's prior state, so it is the number a reviewer of a
     # change actually wants. Only shown when it is non-zero and distinguishable from the total.
@@ -276,7 +278,7 @@ def render_markdown(
         "",
     ]
     if commit:
-        header += [f"<sub>Scanned commit <code>{_short_commit(commit)}</code></sub>", ""]
+        header += [f"<sub>Scanned commit <code>{_html(_short_commit(commit))}</code></sub>", ""]
 
     if verdict_value == "errored":
         # Two different reasons land here, and saying the wrong one is worse than saying nothing:
@@ -291,7 +293,7 @@ def render_markdown(
             ]
         else:
             header += [
-                f"The workflow run finished as `{run_status}` without producing policy results.",
+                f"The workflow run finished as {_code(run_status)} without producing policy results.",
                 "This is reported as a failure rather than a pass: no verdict is not the same as a clean one.",
                 "",
             ]
@@ -324,6 +326,69 @@ def render_markdown(
     return body
 
 
+def _code(value, in_table=False):
+    r"""
+    Render an untrusted value as an inline code span that cannot be closed from inside it.
+
+    A penetration test found the report spoofable: every plan- and policy-derived string was
+    interpolated raw or wrapped in a single backtick, and a backtick *in the value* closes that span so
+    the remainder renders as markdown and HTML. A pull-request author controls the terraform a plan is
+    made from, so they controlled the gate report a reviewer reads -- a fake "all policies passed"
+    banner, a stray `</details>` collapsing the real findings, or a link whose text says one domain and
+    whose href says another. The verdict and exit code were never affected; the report was.
+
+    Escaping the dangerous characters was the other option and is worse here. The engine deliberately
+    puts backticks in its own messages (`json_format_value` wraps every compared value in one), so
+    escaping them would put visible backslashes through every finding a reviewer reads, and it only
+    holds while the list of dangerous characters stays complete.
+
+    A code span is inert by construction instead: per CommonMark a span opened by N backticks contains
+    any run of fewer than N, so a fence one longer than the longest run inside the value cannot be
+    closed by it. Nothing inside is interpreted -- no HTML, no links, no emphasis -- with no list to
+    enumerate.
+
+    Two things a fence does not fix, both handled here:
+      * a newline ends the span, and ends a table row with it, so newlines collapse to a space;
+      * a pipe splits a table cell even inside a code span, and GFM's documented remedy is `\|`, which
+        is the one escape that works in there. Only applied for table cells, since outside a table the
+        backslash would show.
+    """
+    text = "" if value is None else str(value)
+    text = " ".join(text.split())
+    if in_table:
+        text = text.replace("|", "\\|")
+
+    longest = 0
+    run = 0
+    for character in text:
+        run = run + 1 if character == "`" else 0
+        longest = max(longest, run)
+
+    fence = "`" * (longest + 1)
+    # A span whose content starts or ends with a backtick needs padding, or the delimiters merge.
+    pad = " " if text.startswith("`") or text.endswith("`") else ""
+    return f"{fence}{pad}{text}{pad}{fence}"
+
+
+def _html(value):
+    """
+    Escape an untrusted value for interpolation into inline HTML.
+
+    A code span is the wrong tool inside `<summary>`, `<code>`, `<sub>` or an attribute: GFM does not
+    reliably render markdown inside inline HTML, so the span would show as literal backticks. What
+    matters in an HTML context is that the value cannot terminate the element or the attribute it sits
+    in, which is what escaping the four characters does. Backticks are harmless here -- there is no
+    span to close.
+
+    Backticks are escaped too, which `html.escape` does not do. They cannot close a span here because
+    there is none -- but an *odd* one can OPEN a span that runs on and swallows the markdown after it,
+    so a value like ``cost-control` `` inside `<summary>` still distorts the report even with the tags
+    neutralised. Turning it into an entity leaves it visible and inert.
+    """
+    escaped = html.escape("" if value is None else str(value), quote=True)
+    return escaped.replace("`", "&#96;")
+
+
 def _render_table(findings):
     if not findings:
         return []
@@ -333,10 +398,13 @@ def _render_table(findings):
     ]
     for finding in findings:
         icon = _ICONS.get(finding["result"], "⚪")
-        resources = ", ".join(f"`{r}`" for r in finding["resources"][:3]) or "—"
+        resources = ", ".join(_code(r, in_table=True) for r in finding["resources"][:3]) or "—"
         if len(finding["resources"]) > 3:
             resources += f" _+{len(finding['resources']) - 3}_"
-        rows.append(f"| {icon} | `{finding['policy_id']}` | {finding['rule_name']} | {resources} |")
+        rows.append(
+            f"| {icon} | {_code(finding['policy_id'], in_table=True)} "
+            f"| {_code(finding['rule_name'], in_table=True)} | {resources} |"
+        )
     rows.append("")
     return rows
 
@@ -345,15 +413,15 @@ def _render_detail(finding):
     icon = _ICONS.get(finding["result"], "⚪")
     lines = [
         "<details>",
-        f"<summary><strong>{icon} {finding['policy_id']} › {finding['rule_name']}</strong></summary>",
+        f"<summary><strong>{icon} {_html(finding['policy_id'])} › {_html(finding['rule_name'])}" "</strong></summary>",
         "",
     ]
     for message in finding["messages"][:20]:
-        lines.append(f"- {message}")
+        lines.append(f"- {_code(message)}")
     if len(finding["messages"]) > 20:
         lines.append(f"- _… and {len(finding['messages']) - 20} more_")
     if finding["resources"]:
-        lines += ["", "Resources:"] + [f"- `{r}`" for r in finding["resources"][:20]]
+        lines += ["", "Resources:"] + [f"- {_code(r)}" for r in finding["resources"][:20]]
     lines += ["", "</details>", ""]
     return "\n".join(lines)
 
@@ -365,7 +433,7 @@ def _render_footer(counts, run_url):
     if counts.get("SKIPPED"):
         bits.append(f"⚪ {counts['SKIPPED']} skipped")
     if run_url:
-        bits.append(f'<a href="{run_url}">View run in StackGuardian</a>')
+        bits.append(f'<a href="{_html(run_url)}">View run in StackGuardian</a>')
     return ["", f"<sub>{' · '.join(bits)}</sub>"] if bits else []
 
 
