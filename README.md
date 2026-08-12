@@ -12,16 +12,10 @@
 This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
 
 
-## A call for contributors
-
-We are calling for contributors to help build out new features, review pull requests, fix bugs, and maintain overall code quality. If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
-
 Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using JSON.
 
 ## Content
 
-<!-- - [Feature Road-Map](#feature-road-map) -->
-<!-- - [Local Development Environment](#local-development-environment) -->
 - [What is Tirith?](#what-is-tirith)
 - [Features](#features)
 - [Installation](#installation)
@@ -29,6 +23,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 - [Exit codes](#exit-codes)
 - [Evaluating against your StackGuardian organization](#evaluating-against-your-stackguardian-organization)
 - [Example Tirith policies](#example-tirith-policies)
+    - [error_tolerance](#error_tolerance-and-the-third-outcome)
     - [Terraform Plan](#terraform-plan-provider)
     - [Infracost](#infracost-provider)
     - [StackGuardian Workflow Policy](#stackguardian-workflow-policy-using-sg-workflow-provider)
@@ -68,13 +63,6 @@ Tirith is a policy framework developed by StackGuardian for enforcing policies o
 - Easily evaluate inputs against policy using pre-defined evaluators like ContainedIn, Equals, RegexMatch etc.
 - Write your own provider (plugin) by leveraging a highly extensible and pluggable architecture to support any input formats.
 
-<!-- ## Feature Road-map
-
-This is only a list of approved features that will be included in Tirith over the next iterations.
-
-- Extended support for Terraform Plan
-- Support for Cloudformation and ARM
-- Extended library of evaluator functions -->
 
 ## Installation
 
@@ -154,7 +142,7 @@ Congratulations! Tirith has been setup in your system
 
 ```
 usage: tirith [-h] [-policy-path PATH] [-input-path PATH] [-var-path PATH]
-              [-var PATH] [--json] [--verbose] [--version]
+              [-var PATH] [--json] [--verbose] [--fail-on-error] [--version]
 
 Tirith (StackGuardian Policy Framework)
 
@@ -166,6 +154,7 @@ options:
   -var PATH          Inline variable(s)
   --json             Only print the result in JSON form (useful for passing output to other programs)
   --verbose          Show detailed logs of from the run
+  --fail-on-error    Exit 3 when a policy fails, instead of 0. Off by default for compatibility.
   --version          show program's version number and exit
 
 Subcommands:
@@ -189,19 +178,28 @@ About Tirith:
 | Code | Meaning |
 |---|---|
 | 0 | Policies passed, or nothing was in scope to gate on |
-| 1 | Tirith could not complete the evaluation — bad input, unreachable API, engine error |
+| 1 | Tirith could not complete the evaluation — bad input, a policy it could not evaluate, unreachable API |
 | 2 | Timed out waiting for a StackGuardian run |
-| 3 | A policy failed. Only from `platform check --fail-on-error` |
+| 3 | A policy failed. Only with `--fail-on-error`, on either surface |
 | 130 | Interrupted |
 
 **3 is deliberately not 1.** `3` means your infrastructure violates a policy; `1` means Tirith could
 not tell you either way. A CI job that treats every non-zero code the same reports an outage as a
 policy violation, and — worse — cannot distinguish a real gate from a broken one.
 
-Note the legacy top-level form (`tirith -policy-path … -input-path …`) always exits `0`, pass or
-fail, so on its own it does not gate anything. Use `platform check`, or the
-[GitHub Action](https://github.com/StackGuardian/tirith-iac-governance-action), when you need the
-exit code to mean something.
+**Gating locally.** By default `tirith -policy-path … -input-path …` exits `0` whether the policy
+passed or failed — the verdict is in the output, and that default is kept so an upgrade cannot turn a
+green pipeline red. Pass `--fail-on-error` to make it gate:
+
+```
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+echo $?    # 3 if a policy failed, 0 if everything passed
+```
+
+Note what `--fail-on-error` does *not* do: a policy that could not be evaluated at all — an
+unparseable `eval_expression`, an unresolved variable — exits `1`, not `3`. "Nothing was checked" must
+never be reportable as "your infrastructure violates a policy"; a CI job treating them alike reports an
+outage as a violation.
 
 ## Evaluating against your StackGuardian organization
 
@@ -242,6 +240,26 @@ pull-request comment, the check run and the exit codes for you:
 ## Example Tirith policies
 
 [Examples using various providers](tests/providers)
+
+### `error_tolerance`, and the third outcome
+
+Every `condition` takes an `error_tolerance`, and it appears in most of the examples below without
+being explained. It is a severity threshold for *problems reading the input*, not for policy failures:
+
+- **`0`** — anything the provider could not read is an error, and the check **fails**.
+- **`1` or higher** — a problem whose severity is at or below the tolerance is *skipped* instead. A
+  missing attribute has severity 2, so `error_tolerance: 2` turns "this key is not in the plan" from a
+  failure into a non-answer.
+
+That third outcome is why some sample output below shows `"passed": null` rather than `true` or
+`false` — the check did not pass and did not fail, it never ran. A skipped check is then **removed from
+`eval_expression`** before it is evaluated, because `None` is falsy in Python and leaving it in would
+silently read as a failure.
+
+Two consequences worth knowing before using it. A policy whose every check is skipped evaluates to a
+pass, so a wide tolerance can produce a green result that checked nothing. And `--fail-on-error` exits
+`0` for that, because no policy *failed* — if you need "nothing was evaluated" to be loud, keep the
+tolerance at `0`.
 
 ### Terraform plan provider
 <details>
@@ -1064,6 +1082,7 @@ JSON Output
    ],
    "errors": [],
    "eval_expression": "check1 && check2 && check3 && check4 && check5"
+}
 ```
 </details>
 
@@ -1072,7 +1091,7 @@ JSON Output
 <summary>Kubernetes — example policies and output</summary>
 
 Kubernetes (using Kubernetes provider)
-#### Example 1
+#### Example
 - Make sure that all pods have a liveness probe defined
 
 ```json
@@ -1099,71 +1118,9 @@ Kubernetes (using Kubernetes provider)
   "eval_expression": "!kinds_have_null_liveness_probe"
 }
 ```
-#### Example 2
 
-Example Policy:
+Example output:
 
-```json
-{
-  "meta": {
-    "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
-  },
-  "evaluators": [
-    {
-      "id": "kinds_have_null_liveness_probe",
-      "provider_args": {
-        "operation_type": "attribute",
-        "kubernetes_kind": "Pod",
-        "attribute_path": "spec.containers.*.livenessProbe"
-      },
-      "condition": {
-        "type": "Contains",
-        "value": null,
-        "error_tolerance": 2
-      }
-    }
-  ],
-  "eval_expression": "!kinds_have_null_liveness_probe"
-}
-```
-
-Example Input:
-
-```yml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: wfs-demp-wfs-demo
-  labels:
-    helm.sh/chart: wfs-demo-0.1.0
-    app.kubernetes.io/name: wfs-demo
-    app.kubernetes.io/instance: wfs-demp
-    app.kubernetes.io/version: "1.16.0"
-    app.kubernetes.io/managed-by: Helm
----
-# Source: wfs-demo/templates/user-acces.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-...
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['wfs-demp-wfs-demo:80']
-      livenessProbe:
-        exec:
-          command:
-          - cat
-          - /tmp/healthy
-        initialDelaySeconds: 5
-        periodSeconds: 5
-  restartPolicy: Never
-
-```
-
-Output:
-![](docs/kubernetes_example.gif)
-
-JSON Output:
 ```json
 {
    "meta": {
@@ -1191,30 +1148,8 @@ JSON Output:
 ```
 
 </details>
-<!-- ## Local Development Environment
 
-- [Python 3.6 or higher](https://www.python.org/downloads/) is required.
-- [pip](https://pip.pypa.io/en/stable/) is required. -->
 
-<!-- ## Publish Package on test.pypi.org
-* Use the following command to install the latest version of the setuptools package.
-  ```
-    python -m pip install --user --upgrade setuptools
-  ```
-
-* Make sure you are at the same directory where setup.py is located and run this command.
-  ```
-    python setup.py sdist
-  ```
-* Visit <a href="https://test.pypi.org/">test.pypi.org</a> and create a new account if not already.
-* Install Twine package using following command.
-  ```
-    pip install twine
-  ```
-* Upload you package to test.pypi using following command.
-  ```
-    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-  ``` -->
 ## Getting Started
 
 This is a short getting started guide for Tirith. We will take a look on how we can use Tirith to guardrail a JSON input.
@@ -1335,7 +1270,9 @@ Final expression used:
 
 ## Want to contribute?
 
-If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
+We are calling for contributors to help build out new features, review pull requests, fix bugs, and
+maintain overall code quality. Email us at team[at]stackguardian.io, or get started by reading
+[contributing.md](./CONTRIBUTING.md).
 
 ### Getting an issue assigned
 

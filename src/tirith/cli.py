@@ -118,6 +118,12 @@ def main(args=None) -> ExitStatus:
             action="store_true",
             help="Show detailed logs of from the run",
         )
+        parser.add_argument(
+            "--fail-on-error",
+            dest="failOnError",
+            action="store_true",
+            help="Exit 3 when a policy fails, instead of 0. Off by default for compatibility.",
+        )
         parser.add_argument("--version", action="version", version=__version__)
 
         args = parser.parse_args(argv)
@@ -151,6 +157,29 @@ def main(args=None) -> ExitStatus:
                 print(formatted_result)
             else:
                 pretty_print_result_dict(result)
+
+            # Without --fail-on-error this returns 0 whether the policy passed or failed, which is
+            # what it has always done: the verdict is in the output, and changing that silently would
+            # turn every existing green CI job red on upgrade.
+            #
+            # But a gate that cannot fail is not a gate, and this was the only way to run tirith
+            # without an account -- so the honest answer was an opt-in flag rather than pointing
+            # people at the hosted path when they need an exit code that means something.
+            #
+            # 3, not 1, and the distinction is the point: 3 says the infrastructure violates a policy,
+            # 1 says tirith could not tell you. The same split `platform check` uses, because a caller
+            # scripting both should not have to learn two vocabularies.
+            #
+            # Which means `final_result` alone is not enough to decide. It is False both for a policy
+            # that genuinely failed and for one that could not be evaluated -- an unparseable
+            # eval_expression, or an operator the evaluator does not implement -- and those are not the
+            # same answer. `errors` is what separates them; the missing-variables path returns errors
+            # and no `final_result` key at all, so absence is treated the same way.
+            if args.failOnError:
+                if result.get("errors") or "final_result" not in result:
+                    return ExitStatus.ERROR
+                if result["final_result"] is not True:
+                    return ExitStatus.ERROR_POLICY_FAILED
             return ExitStatus.SUCCESS
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.
