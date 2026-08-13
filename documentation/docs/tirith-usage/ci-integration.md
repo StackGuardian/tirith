@@ -144,5 +144,3 @@ the same way. The recipe is always the same three steps —
 — and gate the job on the exit code, which every CI system does by default for a non-zero exit.
 Use `--json` to capture the result document for a later step, and see [Exit codes](exit-codes.md)
 for telling a policy failure (`3`) apart from a tooling failure (`1`).
-
-Azure DevOps has no integration and is not supported today.

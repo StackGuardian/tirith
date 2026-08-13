@@ -124,11 +124,6 @@ const content = {
         title: 'Your machine',
         body: 'The same command, the same verdict, no account and no network.',
       },
-      {
-        title: 'Azure DevOps',
-        body: 'Not supported today.',
-        muted: true,
-      },
     ],
   },
 
@@ -227,7 +222,7 @@ export default function Home() {
         <Section heading={content.worksWith.heading}>
           <ul className={styles.list}>
             {content.worksWith.items.map((item) => (
-              <li key={item.title} className={item.muted ? styles.muted : undefined}>
+              <li key={item.title}>
                 <strong>{item.title}</strong> — {item.body}
                 {item.link ? (
                   <>
