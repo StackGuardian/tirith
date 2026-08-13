@@ -988,6 +988,42 @@ def test_builder_parses_values_as_json_with_a_string_fallback():
 
 @mark.passing
 @drives_the_app
+async def test_the_app_itself_never_scrolls():
+    """
+    Each pane scrolls its own content; the application does not. Fixed-height rows summing past
+    a short viewport made the Screen scroll, which put a scrollbar down the far right edge of
+    the whole app and let the title scroll out of sight, leaving a bare tab row.
+
+    Checked at a short terminal, which is where it appeared.
+    """
+    app = build_app()
+    async with app.run_test(size=(200, 30)) as pilot:
+        await pilot.pause()
+
+        assert not app.screen.show_vertical_scrollbar
+        scrolling = {w.id for w in app.screen.walk_children() if getattr(w, "show_vertical_scrollbar", False)}
+        # Only the editors, which have documents longer than themselves.
+        assert scrolling <= {"policy-editor", "input-editor"}, scrolling
+
+
+@mark.passing
+@drives_the_app
+async def test_the_wordmark_does_not_cover_the_tabs():
+    """
+    It shares the tab row on the overlay layer, so it costs no height -- but an overlay
+    swallows the whole row it spans, and at full width it hid the tab labels underneath.
+    """
+    app = build_app()
+    async with app.run_test(size=(200, 38)) as pilot:
+        await pilot.pause()
+
+        banner = app.query_one("#app-banner")
+        # Sits in the right-hand end of the row, clear of the labels at the left.
+        assert banner.region.x > 100, banner.region
+
+
+@mark.passing
+@drives_the_app
 async def test_number_keys_switch_tabs():
     app = build_app()
     async with app.run_test(size=TERMINAL_SIZE) as pilot:

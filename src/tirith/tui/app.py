@@ -61,9 +61,14 @@ class TirithApp(App):
         self._explorer_is_pinned = report is not None
 
     def compose(self) -> ComposeResult:
-        # A drawn wordmark rather than Header. A terminal has one font size, so "bigger" means
-        # taller glyphs -- three rows of block characters -- and Header cannot do that. It also
-        # centres properly, which is the other half of the ask.
+        # The wordmark shares the tab row rather than occupying a band of its own. As a
+        # separate row it cost height that the Builder's form and the Playground's editors
+        # need, and on a short terminal it pushed the layout past the viewport -- which made
+        # the whole Screen scroll, putting a scrollbar down the edge of the application and
+        # letting the title scroll out of sight.
+        # Sits on the overlay layer, drawn over the right-hand end of the tab row, so it costs
+        # no height at all. Nesting it in a Horizontal with the tabs would have worked too, but
+        # would constrain every pane inside that container for the sake of one label.
         yield Static(BANNER, id="app-banner")
         with TabbedContent(initial=self._start_tab, id="tabs"):
             with TabPane("Explorer", id="explorer"):

@@ -8,8 +8,15 @@
  * invisible to a good fraction of users and to anyone piping this through a recorder.
  */
 
+/*
+ * The app fills the terminal and never scrolls as a whole: each pane scrolls its own content.
+ * Without this the Screen itself scrolled once the fixed-height rows (banner, tabs, headers,
+ * footer) exceeded a short viewport, which put a scrollbar down the far right edge of the
+ * *application* and let the banner scroll out of view -- leaving a bare tab row at the top.
+ */
 Screen {
     layers: base overlay;
+    overflow: hidden hidden;
 }
 
 /* ---------------------------------------------------------------- header */
@@ -20,15 +27,23 @@ Screen {
  * the name of the thing you are looking at.
  */
 /*
- * The drawn wordmark. Two rows, which is as much as can be spent on chrome before the
- * Builder's form starts losing fields off the bottom of a normal terminal.
+ * The wordmark, drawn over the right-hand end of the tab row on the overlay layer. It costs
+ * no height this way, which is what keeps the layout inside a short viewport -- as its own
+ * band it pushed the app past the bottom of the screen and made the whole thing scroll.
+ *
+ * `dock: top` with a right-aligned single row puts it opposite the tabs, where the eye is not
+ * already busy.
  */
 #app-banner {
-    height: 2;
-    background: $primary;
-    color: $text;
-    content-align: center middle;
-    text-align: center;
+    layer: overlay;
+    dock: right;
+    height: 1;
+    /* Only as wide as the text. Full width covered the tab labels underneath it, since an
+     * overlay swallows the row it spans whether or not it paints anything there. */
+    width: auto;
+    padding: 0 2;
+    color: $text-muted;
+    background: $surface;
 }
 
 /* ---------------------------------------------------------------- shared */
