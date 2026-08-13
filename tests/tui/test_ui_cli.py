@@ -119,6 +119,48 @@ def test_piping_into_serve_is_refused(monkeypatch, capsys):
 
 
 @mark.passing
+def test_a_path_that_is_not_a_dash_is_read_from_disk():
+    """The ordinary case: `--result some/file.json` reads that file."""
+    importorskip("textual", reason="the TUI is an optional extra")
+
+    document = ui_cli._load(os.path.join(EXAMPLE, "policy.json"), "--policy")
+
+    assert document["meta"]["required_provider"] == "stackguardian/terraform_plan"
+
+
+@mark.passing
+def test_an_unreadable_file_is_reported_not_raised(capsys, monkeypatch):
+    """
+    A directory named where a document was expected, which is what a shell completion of a
+    path one level too shallow produces.
+    """
+    importorskip("textual", reason="the TUI is an optional extra")
+    monkeypatch.setattr(ui_cli, "_reattach_stdin", lambda: False)
+
+    status = ui_cli.main(["ui", "--result", EXAMPLE])
+
+    assert status == ExitStatus.ERROR
+    assert "ERROR" in capsys.readouterr().err
+
+
+@mark.passing
+def test_the_missing_extra_is_reported_with_instructions(capsys, monkeypatch):
+    """
+    The expected failure for anyone who installed plain `py-tirith`: an instruction, not an
+    ImportError traceback.
+    """
+
+    # Setting the module to None makes `from .app import ...` raise ImportError, which is what
+    # a missing extra does.
+    monkeypatch.setitem(sys.modules, "tirith.tui.app", None)
+
+    status = ui_cli.main(["ui"])
+
+    assert status == ExitStatus.ERROR
+    assert "pip install" in capsys.readouterr().err
+
+
+@mark.passing
 def test_the_serve_banner_rows_are_the_same_width():
     """
     The wordmark is drawn by hand, and a row one character short runs one letter into the next

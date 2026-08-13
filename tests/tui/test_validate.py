@@ -298,6 +298,141 @@ def test_terraform_plan_without_resource_changes_is_flagged():
     assert any("resource_changes" in f.where for f in findings)
 
 
+# Each malformed shape the validator recognises, as (mutation, expected text). These are the
+# branches that exist *because* the engine reports them confusingly or not at all, so leaving
+# them untested would leave the validator's whole reason for existing unexercised.
+MALFORMED = [
+    ("meta is not an object", {"meta": []}, "Must be an object"),
+    ("evaluators missing", {"evaluators": None}, "Missing"),
+    ("evaluators is not a list", {"evaluators": {}}, "Must be a list"),
+    ("evaluator is not an object", {"evaluators": ["nope"]}, "Must be an object"),
+    ("eval_expression missing", {"eval_expression": None}, "Missing"),
+    ("eval_expression is not a string", {"eval_expression": 7}, "Must be a string"),
+    ("eval_expression is empty", {"eval_expression": "   "}, "Empty"),
+]
+
+
+@mark.passing
+@mark.parametrize("label,patch,expected", MALFORMED, ids=[m[0] for m in MALFORMED])
+def test_malformed_policies_are_reported(label, patch, expected):
+    del label
+    policy = _valid_policy()
+    policy.update(patch)
+    # A key set to None means "absent" here, which is how these arrive from a half-written
+    # document rather than from a deliberate null.
+    for key, value in patch.items():
+        if value is None:
+            del policy[key]
+
+    assert any(expected in f.message for f in _errors(policy)), _errors(policy)
+
+
+@mark.passing
+def test_a_missing_version_is_only_a_warning():
+    """The engine does not read it, so it is a convention rather than a requirement."""
+    policy = _valid_policy()
+    del policy["meta"]["version"]
+
+    findings = validate.check_policy(policy)
+    assert not [f for f in findings if f.severity == "error"]
+    assert any("version" in f.where for f in findings)
+
+
+@mark.passing
+def test_an_empty_evaluator_list_warns_that_nothing_is_checked():
+    policy = _valid_policy()
+    policy["evaluators"] = []
+    policy["eval_expression"] = "x"
+
+    assert any("checks nothing" in f.message for f in validate.check_policy(policy))
+
+
+@mark.passing
+def test_a_check_without_an_id_is_reported():
+    policy = _valid_policy()
+    del policy["evaluators"][0]["id"]
+
+    assert any(f.where.endswith(".id") for f in _errors(policy))
+
+
+@mark.passing
+def test_missing_provider_args_and_condition_are_reported():
+    for key in ("provider_args", "condition"):
+        policy = _valid_policy()
+        del policy["evaluators"][0][key]
+        assert any(f.where.endswith(key) for f in _errors(policy)), key
+
+
+@mark.passing
+def test_provider_args_and_condition_of_the_wrong_type_are_reported():
+    for key in ("provider_args", "condition"):
+        policy = _valid_policy()
+        policy["evaluators"][0][key] = "not an object"
+        assert any("Must be an object" in f.message for f in _errors(policy)), key
+
+
+@mark.passing
+def test_a_value_outside_a_closed_choice_list_is_reported():
+    """
+    sg_workflow raises KeyError on an attribute it does not branch on, so a value outside the
+    list is a policy that always errors rather than one that merely reads oddly.
+    """
+    policy = {
+        "meta": {"version": "v1", "required_provider": "stackguardian/sg_workflow"},
+        "evaluators": [
+            {
+                "id": "wf",
+                "provider_args": {"workflow_attribute": "NoSuchField"},
+                "condition": {"type": "Equals", "value": True},
+            }
+        ],
+        "eval_expression": "wf",
+    }
+
+    assert any("is not one of" in f.message for f in _errors(policy))
+
+
+@mark.passing
+def test_a_single_pipe_is_reported():
+    """The mirror of the `&` case: core rejects it, so say so before the engine runs."""
+    policy = _valid_policy()
+    policy["eval_expression"] = "check0 | check0"
+
+    assert any("||" in f.message for f in _errors(policy))
+
+
+@mark.passing
+def test_a_non_integer_error_tolerance_is_reported():
+    policy = _valid_policy()
+    policy["evaluators"][0]["condition"]["error_tolerance"] = "two"
+
+    assert any(f.where.endswith("error_tolerance") for f in _errors(policy))
+
+
+@mark.passing
+def test_infracost_input_without_projects_is_flagged():
+    findings = validate.check_input_document({}, "stackguardian/infracost")
+    assert any("projects" in f.where for f in findings)
+
+
+@mark.passing
+def test_a_single_kubernetes_object_is_flagged():
+    """The provider iterates a list of manifests; one object matches no kind at all."""
+    findings = validate.check_input_document({"kind": "Pod"}, "stackguardian/kubernetes")
+    assert findings
+
+
+@mark.passing
+def test_summarize_counts_errors_and_warnings():
+    policy = _valid_policy()
+    policy["evaluators"][0]["provider_args"]["kee_path"] = "a"  # warning
+    policy["evaluators"][0]["condition"]["type"] = "Nope"  # error
+
+    errors, warnings = validate.summarize(validate.check_policy(policy))
+
+    assert errors >= 1 and warnings >= 1
+
+
 @mark.passing
 def test_errors_sort_before_warnings():
     """A UI showing only the first finding must show a blocking one."""
