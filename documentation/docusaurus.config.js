@@ -45,11 +45,12 @@ const config = {
       navbar: {
         title: 'Tirith',
         hideOnScroll: true,    
+        // No href: the logo and title link to the site home, which is what a
+        // reader clicking a site's own logo expects. It used to open the policy
+        // builder in a new tab, which left no way back to the docs home.
         logo: {
           alt: 'Tirith Logo',
           src: 'img/tirith.png',
-          href: 'https://tirith-policy-builder.vercel.app/',
-          target:'_blank',
         },
         items: [
           {
@@ -57,6 +58,11 @@ const config = {
             sidebarId: 'TirithSidebar',
             position: 'left',
             label: 'Docs',
+          },
+          {
+            href: 'https://tirith-policy-builder.vercel.app/',
+            label: 'Policy Builder',
+            position: 'right',
           },
           {
             href: 'https://github.com/StackGuardian/tirith',
