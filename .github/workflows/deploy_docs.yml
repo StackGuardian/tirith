@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  # Lets the site be republished without a commit to main -- useful to deploy
+  # from a branch before it merges, and to redeploy after a failed run.
+  workflow_dispatch:
 
 permissions:
   contents: write
