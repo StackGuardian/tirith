@@ -53,31 +53,6 @@
   margin-top: 1.5rem;
 }
 
-.action,
-.actionPrimary {
-  display: inline-block;
-  padding: 0.5rem 1.1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  text-decoration: none;
-  border: 1px solid var(--ifm-color-primary);
-}
-
-.action {
-  color: var(--ifm-color-primary);
-}
-
-.actionPrimary {
-  background: var(--ifm-color-primary);
-  color: var(--ifm-background-color);
-}
-
-.action:hover,
-.actionPrimary:hover {
-  text-decoration: none;
-  opacity: 0.85;
-}
-
 @media screen and (max-width: 996px) {
   .page {
     padding: 2rem 1rem 3rem;

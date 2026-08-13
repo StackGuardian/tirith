@@ -145,8 +145,12 @@ const content = {
  * ---------------------------------------------------------------------------
  */
 
+// Uses Docusaurus's own button classes rather than hand-rolled ones: they carry
+// a readable foreground in both light and dark mode. A custom rule here had set
+// the label to var(--ifm-background-color), which is #0000 in light mode -- so
+// the text was transparent on a purple fill.
 function Action({label, to, href, primary}) {
-  const className = primary ? styles.actionPrimary : styles.action;
+  const className = `button button--lg ${primary ? 'button--primary' : 'button--secondary'}`;
   return to ? (
     <Link className={className} to={to}>
       {label}
