@@ -148,9 +148,13 @@ const content = {
 // Uses Docusaurus's own button classes rather than hand-rolled ones: they carry
 // a readable foreground in both light and dark mode. A custom rule here had set
 // the label to var(--ifm-background-color), which is #0000 in light mode -- so
-// the text was transparent on a purple fill.
+// the text was transparent on a purple fill. The primary button additionally
+// takes a CSS-module class that recolours it to the StackGuardian icon blue by
+// overriding the --ifm-button-* custom properties (see index.module.css).
 function Action({label, to, href, primary}) {
-  const className = `button button--lg ${primary ? 'button--primary' : 'button--secondary'}`;
+  const className = primary
+    ? `button button--lg button--primary ${styles.heroPrimary}`
+    : 'button button--lg button--secondary';
   return to ? (
     <Link className={className} to={to}>
       {label}
