@@ -140,7 +140,7 @@ const content = {
       'evaluates against the policies a StackGuardian organization enforces instead — same ' +
       'document, same verdict, same exit codes, plus a central run history. That mode is optional, ' +
       'and is the only part that talks to a network.',
-    link: {label: 'Read about platform mode', to: '/docs/platform-check/'},
+    link: {label: 'Read about platform mode', to: '/docs/tirith-usage/platform-check/'},
   },
 };
 
