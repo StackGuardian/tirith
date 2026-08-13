@@ -38,6 +38,14 @@ setup(
     package_dir={"": "src"},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
+    # Declared explicitly as well as in MANIFEST.in: MANIFEST governs the sdist, but a wheel
+    # built straight from the tree takes its data files from here. Without this the TUI
+    # installs with no stylesheet and no examples -- it starts, and every playground pane is
+    # empty, which is a worse failure than not starting at all.
+    package_data={
+        "tirith.tui": ["*.css"],
+        "tirith.tui.examples": ["*/*.json", "*/*.md"],
+    },
     zip_safe=False,
     classifiers=[
         # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -71,9 +79,18 @@ setup(
     python_requires=">=3.8",
     install_requires=["simplejson==3.17.2", "pydash==6.0.0", "PyYAML==6.0.1"],
     extras_require={
-        # eg:
-        #   'rst': ['docutils>=0.11'],
-        #   ':python_version=="2.6"': ['argparse'],
+        # `pip install py-tirith[tui]` adds the interactive interface (`tirith ui`).
+        #
+        # An extra rather than a dependency, for two reasons. The UI toolkit requires Python
+        # >=3.9 while tirith supports >=3.8, so a hard dependency would drop 3.8 support for
+        # everyone; the environment markers below let 3.8 users install the extra and simply
+        # get nothing rather than an error. And tirith's main use is as a CI gate, where every
+        # dependency is install time on every run -- people gating a pipeline should not pay
+        # for an interface they never open.
+        "tui": [
+            'textual>=0.60; python_version >= "3.9"',
+            'textual-serve>=1.0; python_version >= "3.9"',
+        ],
     },
     setup_requires=[
         "pytest-runner",

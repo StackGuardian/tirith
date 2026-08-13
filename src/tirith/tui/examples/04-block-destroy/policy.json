@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "Stateful resources are never destroyed",
+    "severity": "critical"
+  },
+  "evaluators": [
+    {
+      "id": "database_not_destroyed",
+      "description": "No plan may destroy an RDS instance",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_db_instance"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "database_not_destroyed"
+}

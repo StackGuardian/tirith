@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "Every resource carries a costcenter tag"
+  },
+  "evaluators": [
+    {
+      "id": "costcenter_tag_present",
+      "description": "Every taggable resource declares a costcenter tag",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "tags.costcenter"
+      },
+      "condition": {
+        "type": "IsNotEmpty"
+      }
+    }
+  ],
+  "eval_expression": "costcenter_tag_present"
+}

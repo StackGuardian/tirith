@@ -16,6 +16,9 @@ recursive-include resources *.svg
 recursive-include resources Makefile
 recursive-include src *.json
 recursive-include src *.md
+# The TUI's stylesheet, and the about.md beside each bundled playground example. Without
+# these the installed interface loads unstyled and the playground has nothing to open.
+recursive-include src *.css
 recursive-include src *.new
 recursive-include src *.old
 recursive-include src *.py

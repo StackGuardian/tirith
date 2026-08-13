@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes",
+    "name": "Pods declare liveness probes and pinned images"
+  },
+  "evaluators": [
+    {
+      "id": "has_liveness_probe",
+      "description": "Every container declares a liveness probe",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Pod",
+        "attribute_path": "spec.containers.*.livenessProbe"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": null
+      }
+    },
+    {
+      "id": "uses_latest_tag",
+      "description": "Detects any container running the floating :latest tag",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Pod",
+        "attribute_path": "spec.containers.*.image"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": ":latest"
+      }
+    }
+  ],
+  "eval_expression": "has_liveness_probe && !uses_latest_tag"
+}

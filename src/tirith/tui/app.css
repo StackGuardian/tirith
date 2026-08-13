@@ -1,0 +1,447 @@
+/*
+ * Styling for the Tirith TUI.
+ *
+ * Colours come from Textual's theme variables ($success, $error, $warning, ...) rather than
+ * being hard-coded, so the app follows the user's light/dark preference and stays legible on
+ * a terminal whose palette we do not control. The one thing never encoded by colour alone is
+ * a verdict: pass/fail/skip always carry a glyph too, because a red/green distinction is
+ * invisible to a good fraction of users and to anyone piping this through a recorder.
+ */
+
+Screen {
+    layers: base overlay;
+}
+
+/* ---------------------------------------------------------------- header */
+
+/*
+ * A taller, louder title bar. The default Header renders the app name in the same weight as
+ * everything else, which on a screen this dense reads as another row of chrome rather than as
+ * the name of the thing you are looking at.
+ */
+/*
+ * The drawn wordmark. Two rows, which is as much as can be spent on chrome before the
+ * Builder's form starts losing fields off the bottom of a normal terminal.
+ */
+#app-banner {
+    height: 2;
+    background: $primary;
+    color: $text;
+    content-align: center middle;
+    text-align: center;
+}
+
+/* ---------------------------------------------------------------- shared */
+
+.pane-title {
+    background: $panel;
+    color: $text-muted;
+    padding: 0 1;
+    text-style: bold;
+    width: 100%;
+}
+
+.verdict-pass {
+    color: $success;
+    text-style: bold;
+}
+
+.verdict-fail {
+    color: $error;
+    text-style: bold;
+}
+
+.verdict-skip {
+    color: $text-muted;
+    text-style: bold;
+}
+
+.verdict-error {
+    color: $warning;
+    text-style: bold;
+}
+
+.hint {
+    color: $text-muted;
+    padding: 1 2;
+}
+
+/*
+ * The one-line "what this tab is for" strip at the top of each view. A single row by design:
+ * the Builder's form and the Playground's editors both need the vertical space more than a
+ * paragraph of prose does, and a description nobody can fit on screen helps nobody.
+ */
+.tab-description {
+    color: $text-muted;
+    background: $surface;
+    padding: 0 1;
+    height: 1;
+}
+
+.empty-state {
+    color: $text-muted;
+    padding: 2 4;
+    text-align: center;
+}
+
+/* ------------------------------------------------------------- explorer */
+
+#explorer-body {
+    height: 1fr;
+}
+
+#check-tree {
+    width: 42%;
+    border-right: solid $panel;
+    padding: 0 1;
+}
+
+#detail-pane {
+    width: 1fr;
+    padding: 0 1;
+    overflow-y: auto;
+}
+
+#report-summary {
+    background: $panel;
+    padding: 0 1;
+    height: auto;
+}
+
+/* Hidden via .display = False in the view when there are no errors, which also removes it
+ * from the layout. */
+#report-errors {
+    color: $error;
+    padding: 0 1;
+    height: auto;
+}
+
+.detail-heading {
+    text-style: bold;
+    padding: 1 0 0 0;
+}
+
+.detail-message {
+    padding: 0 0 1 0;
+}
+
+.resource-address {
+    color: $accent;
+    text-style: bold;
+}
+
+.attribute-diff {
+    padding: 0 0 0 2;
+}
+
+/* -------------------------------------------------------------- builder */
+
+#builder-body {
+    height: 1fr;
+}
+
+#builder-form {
+    width: 50%;
+    border-right: solid $panel;
+    padding: 0 1;
+    overflow-y: auto;
+}
+
+#builder-preview {
+    width: 1fr;
+    padding: 0 1;
+}
+
+.field-label {
+    text-style: bold;
+    height: 1;
+}
+
+.field-help {
+    color: $text-muted;
+    height: auto;
+}
+
+/* Argument name and its help on one row, to keep the form within a screen. */
+.field-label-inline {
+    height: auto;
+}
+
+.field-required {
+    color: $warning;
+}
+
+/*
+ * No vertical margin. Textual's Input and Select each carry a border, so a margin on top of
+ * that spaced the form out enough to push the Condition section below the fold on a normal
+ * terminal -- the form was unusable without scrolling to fields that should have been visible.
+ */
+#builder-form Input, #builder-form Select {
+    margin: 0;
+}
+
+#builder-form Select {
+    height: 3;
+}
+
+#check-list {
+    height: auto;
+    max-height: 6;
+    border: solid $panel;
+}
+
+/* The JSON takes the slack, so the controls below it keep a fixed place on screen. */
+#policy-json-scroll {
+    height: 1fr;
+    min-height: 6;
+}
+
+#builder-preview Input {
+    margin: 0;
+}
+
+/* ----------------------------------------------------------- playground */
+
+/* Takes the height left over by the description strip; without this the two columns inside it
+ * collapse to their content height and the editors disappear. */
+#playground-body {
+    height: 1fr;
+}
+
+/*
+ * The column itself never scrolls -- each TextArea inside it scrolls its own document, so a
+ * scrollbar here is a second one at the same edge that moves nothing the first one does not.
+ */
+#playground-editors {
+    width: 55%;
+    border-right: solid $panel;
+    overflow: hidden hidden;
+}
+
+#playground-results {
+    width: 1fr;
+    padding: 0 1;
+}
+
+/* Sits directly under the results rather than being pushed to the middle of the column by
+ * the scroll region above it. */
+#playground-buttons {
+    height: auto;
+    padding: 0 0 1 0;
+}
+
+
+#playground-output-scroll {
+    height: 1fr;
+    min-height: 8;
+}
+
+#example-detail {
+    padding: 0 1;
+}
+
+/*
+ * One row per editor holding its label and its actions, so Copy/Open/Clear sit next to the
+ * thing they act on rather than in a shared block further down the column.
+ */
+.editor-toolbar {
+    height: 1;
+    background: $panel;
+}
+
+.toolbar-label {
+    width: 1fr;
+    color: $text-muted;
+    text-style: bold;
+    padding: 0 1;
+}
+
+/* Minimal chrome: a bordered Button is 3 rows tall, which would spend six rows of a column
+ * that needs them for JSON. `min-width: 0` lets the label decide the width. */
+.icon-button {
+    height: 1;
+    min-width: 0;
+    border: none;
+    padding: 0 1;
+    margin: 0;
+    background: $panel;
+    color: $text-muted;
+}
+
+.icon-button:hover {
+    background: $primary;
+    color: $text;
+}
+
+/*
+ * The tab's own header: what this screen is for on the left, the example picker on the right.
+ * One band, so the picker reads as a page-level control rather than as a third editor.
+ */
+#playground-header {
+    height: 1;
+    width: 100%;
+    background: $panel;
+}
+
+/* Takes the slack after the picker, so the control group stays left where the eye starts. */
+#playground-description {
+    width: 1fr;
+    height: 1;
+    color: $text-muted;
+    padding: 0 2;
+}
+
+#example-label {
+    height: 1;
+    width: auto;
+    padding: 0 0 0 1;
+    color: $text-muted;
+    text-style: bold;
+}
+
+/*
+ * Built with compact=True, which drops the border and lets this sit on one row inside the
+ * header band instead of as a lighter box floating on it. A fixed width keeps it from
+ * stretching across the pane on a wide terminal.
+ */
+/*
+ * Coloured like a control rather than like text. Unstyled it rendered as muted words next to
+ * other muted words, so the current example read as a label stating a fact instead of as the
+ * thing you click to change it.
+ */
+#example-select {
+    width: 24;
+    height: 1;
+    margin: 0 1;
+    background: $boost;
+    color: $accent;
+    text-style: bold;
+}
+
+/*
+ * The open list needs an opaque background of its own. Compact mode drops the border, and
+ * without this the results underneath show through between the option labels, which makes
+ * both unreadable.
+ */
+#example-select SelectOverlay {
+    background: $surface;
+    border: round $primary;
+}
+
+.header-button {
+    height: 1;
+    min-width: 0;
+    border: none;
+    padding: 0 2;
+    margin: 0;
+    background: $panel;
+    color: $text-muted;
+}
+
+.header-button:hover {
+    background: $primary;
+    color: $text;
+}
+
+/* ----------------------------------------------------------- file picker */
+
+/* Dims whatever is behind it, so the modal reads as being on top rather than as another pane. */
+FilePicker {
+    align: center middle;
+    background: $background 60%;
+}
+
+#file-picker {
+    width: 70%;
+    max-width: 90;
+    height: 80%;
+    background: $surface;
+    border: round $primary;
+    padding: 1 2;
+}
+
+#file-picker-title {
+    text-style: bold;
+    color: $accent;
+    height: 1;
+}
+
+/* The directory currently shown. Needed once the tree can move: without it, "up" gives no
+ * feedback about where you have arrived. */
+#file-picker-location {
+    color: $accent;
+    height: 1;
+}
+
+/* $text-muted on the panel was too dark to read; this is the row that teaches the keys. */
+#file-picker-help {
+    color: $text-secondary;
+    height: 1;
+    margin: 0 0 1 0;
+}
+
+#file-picker-tree {
+    height: 1fr;
+    border: none;
+    background: $surface;
+}
+
+#file-picker-path {
+    height: 3;
+    margin: 1 0 0 0;
+}
+
+#file-picker-buttons {
+    height: auto;
+    align-horizontal: right;
+}
+
+
+.editor-label {
+    background: $panel;
+    color: $text-muted;
+    padding: 0 1;
+    text-style: bold;
+}
+
+/*
+ * Slim, muted scrollbars. The default is a wide $primary bar, and because each editor's
+ * scrollbar lands on the right edge of the left column it read as a heavy blue divider
+ * between the two panes rather than as part of the editor it belongs to.
+ */
+#policy-editor, #input-editor {
+    height: 1fr;
+    border: none;
+    scrollbar-size-vertical: 1;
+    scrollbar-background: $surface;
+    scrollbar-color: $panel-lighten-2;
+    scrollbar-color-hover: $accent;
+    scrollbar-color-active: $accent;
+}
+
+#playground-status {
+    height: auto;
+    padding: 0 1;
+    background: $panel;
+}
+
+/* Confirmations for actions with no visible result. Separate from the status line so the
+ * debounced re-evaluation does not wipe them a moment after they appear. */
+#playground-notice {
+    height: auto;
+    padding: 0 1;
+    color: $text-muted;
+}
+
+#findings-list {
+    height: auto;
+    padding: 0 1;
+}
+
+.finding-error {
+    color: $error;
+}
+
+.finding-warning {
+    color: $warning;
+}

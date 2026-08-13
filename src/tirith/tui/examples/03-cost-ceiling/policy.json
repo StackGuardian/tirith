@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/infracost",
+    "name": "Monthly spend stays under budget"
+  },
+  "evaluators": [
+    {
+      "id": "total_under_budget",
+      "description": "The whole plan costs less than $500 a month",
+      "provider_args": {
+        "operation_type": "total_monthly_cost",
+        "resource_type": ["*"]
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 500
+      }
+    },
+    {
+      "id": "compute_under_budget",
+      "description": "Compute alone stays under $200 a month",
+      "provider_args": {
+        "operation_type": "total_monthly_cost",
+        "resource_type": ["aws_instance"]
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 200
+      }
+    }
+  ],
+  "eval_expression": "total_under_budget && compute_under_budget"
+}

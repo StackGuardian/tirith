@@ -1,0 +1,51 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.5.7",
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.primary",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "primary",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["delete", "create"],
+        "before": {
+          "identifier": "acme-primary",
+          "instance_class": "db.t3.medium",
+          "allocated_storage": 100
+        },
+        "after": {
+          "identifier": "acme-primary",
+          "instance_class": "db.t3.large",
+          "allocated_storage": 100
+        },
+        "after_unknown": {
+          "endpoint": true,
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_db_instance.replica",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "replica",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "identifier": "acme-replica",
+          "instance_class": "db.t3.medium",
+          "allocated_storage": 100
+        },
+        "after": {
+          "identifier": "acme-replica",
+          "instance_class": "db.t3.medium",
+          "allocated_storage": 200
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

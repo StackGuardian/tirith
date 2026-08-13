@@ -1,0 +1,35 @@
+{
+  "version": "0.2",
+  "currency": "USD",
+  "projects": [
+    {
+      "name": "acme/infrastructure",
+      "breakdown": {
+        "resources": [
+          {
+            "name": "aws_instance.app_server",
+            "monthlyCost": "121.18",
+            "hourlyCost": "0.166"
+          },
+          {
+            "name": "aws_instance.worker",
+            "monthlyCost": "60.59",
+            "hourlyCost": "0.083"
+          },
+          {
+            "name": "aws_rds_cluster.primary",
+            "monthlyCost": "204.40",
+            "hourlyCost": "0.280"
+          },
+          {
+            "name": "aws_s3_bucket.assets",
+            "monthlyCost": "2.30",
+            "hourlyCost": "0.003"
+          }
+        ]
+      }
+    }
+  ],
+  "totalMonthlyCost": "388.47",
+  "totalHourlyCost": "0.532"
+}

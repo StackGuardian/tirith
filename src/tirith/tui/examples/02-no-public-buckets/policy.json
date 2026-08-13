@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "No public S3 buckets",
+    "severity": "high"
+  },
+  "evaluators": [
+    {
+      "id": "acl_is_private",
+      "description": "Bucket ACLs must not grant public access",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_s3_bucket",
+        "terraform_resource_attribute": "acl"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": ["public-read", "public-read-write", "authenticated-read"]
+      }
+    },
+    {
+      "id": "encryption_enabled",
+      "description": "Buckets declare server-side encryption",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_s3_bucket",
+        "terraform_resource_attribute": "server_side_encryption_configuration"
+      },
+      "condition": {
+        "type": "IsNotEmpty"
+      }
+    }
+  ],
+  "eval_expression": "acl_is_private && encryption_enabled"
+}
