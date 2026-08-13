@@ -40,7 +40,7 @@ def drives_the_app(test):
 
 # Imported after the importorskip above, so this module is skipped rather than failing to
 # import when textual is absent.
-from textual.widgets import Button, Input, Select  # noqa: E402
+from textual.widgets import Button, Input, Select, Tabs  # noqa: E402
 
 from tirith.core.core import start_policy_evaluation_from_dict  # noqa: E402
 from tirith.tui import examples, results, validate  # noqa: E402
@@ -1052,16 +1052,25 @@ async def test_the_app_itself_never_scrolls():
 @drives_the_app
 async def test_the_wordmark_does_not_cover_the_tabs():
     """
-    It shares the tab row on the overlay layer, so it costs no height -- but an overlay
-    swallows the whole row it spans, and at full width it hid the tab labels underneath.
+    The wordmark shares the tab row on the overlay layer, so it costs no height -- but an
+    overlay swallows the row it spans, so the tabs have to start clear of it.
+
+    The indent is a hardcoded CSS value that has to track the banner string, and getting it
+    wrong is quiet: at one column short, "Explorer" rendered as "orer". Comparing the two
+    measured regions catches that, where reading either alone would not.
     """
     app = build_app()
     async with app.run_test(size=(200, 38)) as pilot:
         await pilot.pause()
 
         banner = app.query_one("#app-banner")
-        # Sits in the right-hand end of the row, clear of the labels at the left.
-        assert banner.region.x > 100, banner.region
+        tabs = app.query_one("#tabs").query_one(Tabs)
+
+        assert banner.region.x == 0, "the wordmark should lead the row"
+        assert tabs.content_region.x >= banner.region.right, (
+            f"tab labels start at {tabs.content_region.x}, inside the wordmark "
+            f"which ends at {banner.region.right} -- the first label will be clipped"
+        )
 
 
 @mark.passing

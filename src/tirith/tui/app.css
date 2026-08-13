@@ -34,16 +34,32 @@ Screen {
  * `dock: top` with a right-aligned single row puts it opposite the tabs, where the eye is not
  * already busy.
  */
+/*
+ * Docked left, so the name is the first thing read and the tabs follow it -- the order a
+ * window title and its tabs normally appear in.
+ *
+ * Only as wide as its text: a full-width overlay swallows the row it spans whether or not it
+ * paints anything there, which hid the tab labels underneath.
+ */
 #app-banner {
     layer: overlay;
-    dock: right;
+    dock: left;
     height: 1;
-    /* Only as wide as the text. Full width covered the tab labels underneath it, since an
-     * overlay swallows the row it spans whether or not it paints anything there. */
     width: auto;
     padding: 0 2;
     color: $text-muted;
     background: $surface;
+}
+
+/*
+ * Indented clear of the wordmark, which is drawn over this row's left end: without this the
+ * tab labels start at column 0 and the overlay eats them.
+ *
+ * 34 = the banner's 28 characters, its 2+2 padding, and two columns of gap. It has to be at
+ * least the banner's full width -- 27 clipped "Explorer" to "orer".
+ */
+#tabs Tabs {
+    padding-left: 34;
 }
 
 /* ---------------------------------------------------------------- shared */
@@ -298,7 +314,11 @@ Screen {
     background: $panel;
 }
 
-/* Takes the slack after the picker, so the control group stays left where the eye starts. */
+/*
+ * The header row's pieces share one baseline and one left margin. Previously the label began
+ * hard against column 0 while the description ran to the far edge, so nothing in the row lined
+ * up with the pane titles beneath it.
+ */
 #playground-description {
     width: 1fr;
     height: 1;
@@ -309,7 +329,7 @@ Screen {
 #example-label {
     height: 1;
     width: auto;
-    padding: 0 0 0 1;
+    padding: 0 1;
     color: $text-muted;
     text-style: bold;
 }
