@@ -414,6 +414,47 @@ async def test_builder_form_follows_the_selected_provider():
 
 @mark.passing
 @drives_the_app
+async def test_add_check_refuses_a_check_with_no_arguments():
+    """
+    An empty form used to be a working button: pressing Add check appended a check with no
+    provider_args, so three presses gave three of them and a policy the engine could not run.
+    """
+    app = build_app()
+    async with app.run_test(size=TERMINAL_SIZE) as pilot:
+        app.query_one("#tabs").active = "builder"
+        await pilot.pause()
+
+        builder = app.query_one("#builder-view", BuilderView)
+        builder._add_check()
+        await pilot.pause()
+
+        assert builder.build_policy()["evaluators"] == []
+        # And it names what is missing rather than failing silently.
+        assert "terraform_resource_type" in _text_of(app.query_one("#builder-findings"))
+
+
+@mark.passing
+@drives_the_app
+async def test_open_in_playground_refuses_an_unrunnable_policy():
+    """
+    Handing over an invalid policy dropped the user into the Playground showing "Policy is
+    incomplete" and no results -- which reads as a broken button, and leaves them in the wrong
+    tab to fix it. Staying put, with the reason, is the more useful answer.
+    """
+    app = build_app()
+    async with app.run_test(size=TERMINAL_SIZE) as pilot:
+        app.query_one("#tabs").active = "builder"
+        await pilot.pause()
+
+        app.query_one("#send-to-playground", Button).press()
+        await pilot.pause()
+
+        assert app.query_one("#tabs").active == "builder"
+        assert "Add a check" in _text_of(app.query_one("#builder-findings"))
+
+
+@mark.passing
+@drives_the_app
 async def test_builder_sends_its_policy_to_the_playground():
     app = build_app()
     async with app.run_test(size=TERMINAL_SIZE) as pilot:
@@ -911,29 +952,30 @@ async def test_choosing_the_prompt_row_clears_both_editors():
 
 @mark.passing
 @drives_the_app
-async def test_an_unset_optional_select_is_left_out_of_the_policy():
+async def test_an_unset_optional_argument_is_left_out_of_the_policy():
     """
-    Same sentinel confusion in the Builder: an untouched optional Select would serialise
-    `Select.NULL` into the policy as the argument's value instead of being omitted.
+    Same sentinel confusion in the Builder: an untouched Select would serialise `Select.NULL`
+    into the policy as the argument's value instead of being omitted.
+
+    Uses `attribute`, whose exclude_resource_types is genuinely optional -- the required ones
+    have to be filled or the check is refused, which is a different rule being tested
+    elsewhere.
     """
     app = build_app()
     async with app.run_test(size=TERMINAL_SIZE) as pilot:
         app.query_one("#tabs").active = "builder"
         await pilot.pause()
 
-        # provider_config has an `attribute` Select that starts unselected.
-        app.query_one("#operation-select", Select).value = "provider_config"
-        await pilot.pause()
-
         builder = app.query_one("#builder-view", BuilderView)
-        app.query_one("#arg-terraform_provider_full_name").value = "registry.terraform.io/hashicorp/aws"
-        app.query_one("#id-input").value = "provider_check"
-        app.query_one("#value-input").value = '"us-east-1"'
+        app.query_one("#arg-terraform_resource_type").value = "*"
+        app.query_one("#arg-terraform_resource_attribute").value = "tags.costcenter"
+        app.query_one("#id-input").value = "tagged"
+        app.query_one("#value-input").value = "true"
         builder._add_check()
         await pilot.pause()
 
         provider_args = builder.build_policy()["evaluators"][0]["provider_args"]
-        assert "attribute" not in provider_args, provider_args
+        assert "exclude_resource_types" not in provider_args, provider_args
         assert "NULL" not in json.dumps(provider_args)
 
 

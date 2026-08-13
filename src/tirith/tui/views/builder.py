@@ -156,8 +156,35 @@ class BuilderView(Vertical):
             self._expression_is_custom = False
             self._refresh_preview()
         elif event.button.id == "send-to-playground":
-            if self._on_policy_built and self._checks:
-                self._on_policy_built(self.build_policy())
+            self._send_to_playground()
+
+    def _send_to_playground(self) -> None:
+        """
+        Hand the assembled policy to the Playground, unless it is not ready to run.
+
+        Sending an invalid policy dropped the user into the Playground showing "Policy is
+        incomplete" and no results, which reads as the button being broken rather than as the
+        policy being unfinished -- and leaves them in the wrong tab to fix it. The findings
+        pane already says what is wrong, so staying put is the more useful answer.
+        """
+        findings = self.query_one("#builder-findings", Static)
+
+        if not self._checks:
+            findings.update("[red]✘ Add a check before opening this in the playground.[/red]")
+            return
+
+        policy = self.build_policy()
+        errors = [f for f in validate.check_policy(policy) if f.severity == "error"]
+        if errors:
+            findings.update(
+                "[red]✘ Not ready to run:[/red] "
+                + render.escape(errors[0].message)
+                + f"  [dim]({errors[0].where})[/dim]"
+            )
+            return
+
+        if self._on_policy_built:
+            self._on_policy_built(policy)
 
     # ----------------------------------------------------------------- form
 
@@ -283,6 +310,27 @@ class BuilderView(Vertical):
         return args
 
     def _add_check(self) -> None:
+        """
+        Add the check currently described by the form.
+
+        Refuses a check whose operation is missing a required argument. It used to accept one,
+        which made an empty form a working button: pressing Add check on a blank form appended
+        a check with no provider_args at all, and doing it three times gave three of them and a
+        policy the engine could not run.
+        """
+        provider_args = self._collect_provider_args()
+        operation = schema.operation_for(self._provider_name, self._operation_name)
+        missing = [
+            arg.name for arg in (operation.args if operation else []) if arg.required and arg.name not in provider_args
+        ]
+        if missing:
+            self.query_one("#builder-findings", Static).update(
+                "[red]✘ Fill in "
+                + ", ".join(f"[b]{render.escape(name)}[/b]" for name in missing)
+                + " before adding this check.[/red]"
+            )
+            return
+
         check_id = self.query_one("#id-input", Input).value.strip()
         if not check_id:
             check_id = f"check{len(self._checks) + 1}"
@@ -297,7 +345,7 @@ class BuilderView(Vertical):
         self._checks.append(
             {
                 "id": check_id,
-                "provider_args": self._collect_provider_args(),
+                "provider_args": provider_args,
                 "condition": condition,
             }
         )
