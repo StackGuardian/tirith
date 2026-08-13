@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=alert_status&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
@@ -5,14 +6,24 @@
 [![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ)
 [![codecov](https://codecov.io/gh/StackGuardian/tirith/branch/main/graph/badge.svg)](https://codecov.io/gh/StackGuardian/tirith)
 
-# Tirith (StackGuardian Policy Framework)
+# Tirith — IaC Governance plugin
 
-## Maintainers
+**Plugin IaC Governance for any pipeline, running anywhere.** Evaluate plans with Tirith, protect
+sensitive values, enforce centralised governance, and surface actionable results before
+infrastructure changes are applied.
 
-This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
+Tirith reads the plan your pipeline already produces — the output of `terraform show -json tfplan` —
+checks it against your policies, and exits non-zero so a violating change never reaches `apply`. The
+reason it is a plugin rather than an integration is that one policy set then covers every pipeline
+you run it from: the same policy files gate a GitHub Actions job, a GitLab job and a laptop, and in
+platform mode Tirith rules and Checkov findings come back in one verdict instead of two tools you
+have to reconcile by hand.
 
-
-Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using JSON.
+It is Apache-2.0 and needs no account. Policies are JSON files in your repository, evaluation happens
+on your own runner, and nothing is sent anywhere. If you would rather keep policy in one place across
+many repositories, `tirith platform check` evaluates against the policies a
+[StackGuardian](https://www.stackguardian.io/) organization enforces instead — same document, same
+verdict, same exit codes. That mode is optional and is the only part that talks to a network.
 
 ## Content
 
@@ -20,6 +31,7 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Run it in CI](#run-it-in-ci)
 - [Exit codes](#exit-codes)
 - [Evaluating against your StackGuardian organization](#evaluating-against-your-stackguardian-organization)
 - [Example Tirith policies](#example-tirith-policies)
@@ -40,7 +52,10 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 
 ## What is Tirith?
 
-Tirith is a policy framework developed by StackGuardian for enforcing policies on infrastructure configurations such as Terraform, CloudFormation, Kubernetes etc. It simplifies policy creation and enforcement ensuring compliance with infrastructure policies through a user-friendly approach.
+Tirith turns a declarative policy — a JSON file, not a program — into a pass or fail verdict on a
+concrete infrastructure change. Point it at a terraform plan, a terraform state file, a Kubernetes
+manifest, an Infracost breakdown or any JSON document, and it reports which rules passed, which
+failed, and on which resource and value.
 
 ## Who is the project for?
 - DevSecOps engineers
@@ -71,6 +86,16 @@ Tirith is a policy framework developed by StackGuardian for enforcing policies o
 ```
 pip install git+https://github.com/StackGuardian/tirith.git
 ```
+
+Pin a tag rather than tracking the default branch, so a CI job cannot change behaviour underneath you:
+
+```
+pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+```
+
+`1.0.5` is the newest tag; `git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists
+them. Tirith is not on PyPI — `pip install tirith` installs an unrelated project of the same name, so
+install from git. Python 3.8 or newer.
 
 ### For developers
 
@@ -173,6 +198,42 @@ About Tirith:
 ```
 
 
+## Run it in CI
+
+### GitHub Actions
+
+Use [StackGuardian/tirith-iac-governance-action](https://github.com/StackGuardian/tirith-iac-governance-action).
+It finds the plan, posts a sticky pull-request comment, creates a check run and sets the job's exit
+code:
+
+```yaml
+- run: terraform show -json tfplan > plan.json
+- uses: StackGuardian/tirith-iac-governance-action@v2
+```
+
+With a `plan.json` in the working directory that is the whole integration — no `with:` block. Add
+`with: { fail-on-error: true }` to make a failing policy fail the job, and see the action's own README
+for the rest of its inputs.
+
+### GitLab, or any container-based CI
+
+There is no GitLab-native equivalent of the action, so you invoke the CLI directly — which is all the
+action does underneath. Given an earlier job that saved `plan.json` as an artifact:
+
+```yaml
+policy:
+  image: python:3.12
+  needs: [plan]
+  script:
+    - pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+    - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+```
+
+Swap the last line for `tirith platform check --workflow-id my-repo --input-path plan.json
+--fail-on-error` to use your organization's policies instead of the committed files. Nothing here is
+GitLab-specific: any runner that can execute a container and produce a plan works the same way.
+Azure DevOps has no integration and is not supported today.
+
 ## Exit codes
 
 | Code | Meaning |
@@ -235,9 +296,8 @@ Common flags:
 `--api-url` overrides `--region` for a self-hosted or dedicated host. Every flag is in
 [docs/platform-check.md](docs/platform-check.md) or `tirith platform check --help`.
 
-Running this from GitHub Actions? Use the action instead — it wires up the plan discovery, the sticky
-pull-request comment, the check run and the exit codes for you:
-[StackGuardian/tirith-iac-governance-action](https://github.com/StackGuardian/tirith-iac-governance-action).
+Running this from GitHub Actions? Use [the action](#github-actions) instead — it wires up the plan
+discovery, the sticky pull-request comment, the check run and the exit codes for you.
 
 ## Example Tirith policies
 
@@ -1305,6 +1365,10 @@ Head over to the <a href="https://github.com/StackGuardian/tirith">Tirith reposi
 Wanna submit a feedback? It's as simple as writing and posting it in the <a href="https://github.com/StackGuardian/feedback/discussions/8">feedback section</a>.
 
 <p>Your feedback will help us improve</p>
+
+## Maintainers
+
+This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
 
 ## Support
 
