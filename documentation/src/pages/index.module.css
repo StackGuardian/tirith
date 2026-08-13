@@ -53,6 +53,25 @@
   margin-top: 1.5rem;
 }
 
+/*
+ * The primary hero button uses the StackGuardian icon blue rather than the
+ * site primary. The icon's #007aff fails 4.5:1 against white (4.02:1), so the
+ * fill is the same hue darkened to #006ee6 (4.80:1), and darker again on
+ * hover. The label is pinned to opaque white because --ifm-button-color
+ * resolves differently per theme.
+ */
+.heroPrimary {
+  --ifm-button-background-color: #006ee6;
+  --ifm-button-border-color: #006ee6;
+  --ifm-button-color: #fff;
+}
+
+.heroPrimary:hover,
+.heroPrimary:active {
+  --ifm-button-background-color: #0062cc;
+  --ifm-button-border-color: #0062cc;
+}
+
 @media screen and (max-width: 996px) {
   .page {
     padding: 2rem 1rem 3rem;
