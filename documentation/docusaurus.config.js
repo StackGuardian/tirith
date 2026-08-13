@@ -49,8 +49,8 @@ const config = {
         // reader clicking a site's own logo expects. It used to open the policy
         // builder in a new tab, which left no way back to the docs home.
         logo: {
-          alt: 'Tirith Logo',
-          src: 'img/tirith.png',
+          alt: 'StackGuardian logo',
+          src: 'img/sg-icon.png',
         },
         items: [
           {
