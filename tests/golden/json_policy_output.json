@@ -1,0 +1,87 @@
+{
+   "meta": {
+      "version": "v1",
+      "required_provider": "stackguardian/json"
+   },
+   "final_result": true,
+   "evaluators": [
+      {
+         "id": "check0",
+         "passed": null,
+         "result": [
+            {
+               "message": "key_path: `z.b` is not found (severity: 2)",
+               "passed": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check1",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "`1` is less than equal to `1`",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check2",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "Found `\"aa\"` inside `[\"aa\", \"bb\"]`",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check3",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "`\"3\"` is equal to `\"3\"`",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check4",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "`\"value1\"` is equal to `\"value1\"`",
+               "meta": null
+            },
+            {
+               "passed": true,
+               "message": "`\"value1\"` is equal to `\"value1\"`",
+               "meta": null
+            }
+         ],
+         "description": null
+      },
+      {
+         "id": "check5",
+         "passed": true,
+         "result": [
+            {
+               "passed": true,
+               "message": "`{\"e\": {\"f\": \"3\"}}` is equal to `{\"e\": {\"f\": \"3\"}}`",
+               "meta": null
+            }
+         ],
+         "description": null
+      }
+   ],
+   "errors": [],
+   "eval_expression": "check1 && check2 && check3 && check4 && check5"
+}

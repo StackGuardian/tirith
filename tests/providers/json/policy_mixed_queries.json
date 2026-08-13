@@ -1,0 +1,131 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json",
+    "policy_name": "Mixed Query Language Example",
+    "policy_description": "Demonstrates using both JMESPath and jq_query in the same policy"
+  },
+  "evaluators": [
+    {
+      "id": "jmespath_check_region",
+      "description": "Use JMESPath for simple field extraction",
+      "provider_args": {
+        "operation_type": "jmespath",
+        "query": "[0].vars.region"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "us-east-1"
+      }
+    },
+    {
+      "id": "jq_query_check_become",
+      "description": "Use jq_query for boolean checks",
+      "provider_args": {
+        "operation_type": "jq_query",
+        "query": ".[0].become"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    },
+    {
+      "id": "jmespath_task_count",
+      "description": "Use JMESPath length function",
+      "provider_args": {
+        "operation_type": "jmespath",
+        "query": "length([0].tasks)"
+      },
+      "condition": {
+        "type": "GreaterThan",
+        "value": 5
+      }
+    },
+    {
+      "id": "jq_query_filter_service_tasks",
+      "description": "Use jq_query for complex filtering",
+      "provider_args": {
+        "operation_type": "jq_query",
+        "query": "[.[0].tasks[] | select(has(\"service\"))] | length"
+      },
+      "condition": {
+        "type": "GreaterThan",
+        "value": 0
+      }
+    },
+    {
+      "id": "jmespath_contains_check",
+      "description": "Use JMESPath contains for array membership",
+      "provider_args": {
+        "operation_type": "jmespath",
+        "query": "[0].tasks[*].name"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "Start MySQL service"
+      }
+    },
+    {
+      "id": "jq_query_conditional_logic",
+      "description": "Use jq_query for conditional transformations",
+      "provider_args": {
+        "operation_type": "jq_query",
+        "query": "if .[0].become then \"privileged\" else \"unprivileged\" end"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "privileged"
+      }
+    },
+    {
+      "id": "jmespath_projection",
+      "description": "Use JMESPath for multi-select projection",
+      "provider_args": {
+        "operation_type": "jmespath",
+        "query": "[0].{playbook_name: name, host_group: hosts}"
+      },
+      "condition": {
+        "type": "RegexMatch",
+        "value": ".*Configure MySQL.*"
+      }
+    },
+    {
+      "id": "jq_query_type_validation",
+      "description": "Use jq_query for type checking",
+      "provider_args": {
+        "operation_type": "jq_query",
+        "query": ".[0].tasks | type"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "array"
+      }
+    },
+    {
+      "id": "get_value_simple",
+      "description": "Use classic get_value for straightforward paths",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "[0].hosts"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "mysql_servers"
+      }
+    },
+    {
+      "id": "jq_query_map_transform",
+      "description": "Use jq_query map for array transformations",
+      "provider_args": {
+        "operation_type": "jq_query",
+        "query": "[.[0].tasks[] | select(has(\"mysql\")) | .name]"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "Create application database"
+      }
+    }
+  ],
+  "eval_expression": "(jmespath_check_region && jq_query_check_become) && (jmespath_task_count || jq_query_filter_service_tasks) && jmespath_contains_check && get_value_simple"
+}

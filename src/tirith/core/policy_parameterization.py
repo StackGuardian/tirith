@@ -1,3 +1,4 @@
+import copy
 import re
 import pydash
 
@@ -52,11 +53,17 @@ def get_policy_with_vars_replaced(policy_dict: dict, var_dict: dict) -> Tuple[di
     """
     Replace the variables in the policy_dict with the values from the var_dict
 
+    The caller's `policy_dict` is never mutated: substitution happens on a deep copy. This
+    matters when the same parsed policy is evaluated more than once (for example a policy set
+    run against several inputs, or a retry), where substituted values would otherwise leak
+    from one evaluation into the next.
+
     :param policy_dict: The policy dictionary
     :param var_dict:    The dictionary containing the variables
-    :return:            The policy dictionary with the variables replaced
+    :return:            A copy of the policy dictionary with the variables replaced
                         and the list of variables that are not found
     """
+    policy_dict = copy.deepcopy(policy_dict)
     not_found_vars = []
     # Replace vars in the meta key
     _replace_vars_in_dict(policy_dict["meta"], var_dict, not_found_vars)

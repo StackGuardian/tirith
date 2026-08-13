@@ -1,0 +1,43 @@
+name: Build Documentation Site
+
+# The site is configured with `onBrokenLinks: 'throw'`, so a single bad
+# cross-link fails the build. deploy_docs.yml only runs on push to main, which
+# meant a broken link was discovered after merging rather than before. This job
+# builds the site on pull requests so the PR proves it still builds.
+
+on:
+  pull_request:
+    paths:
+      - 'documentation/**'
+      - '.github/workflows/build_docs.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'documentation/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: documentation/package-lock.json
+
+      # npm, not yarn: package-lock.json is the lockfile that is committed, and
+      # there is no yarn.lock. `yarn install` would ignore it and resolve fresh.
+      - name: Install dependencies
+        working-directory: documentation
+        run: npm ci
+
+      - name: Build
+        working-directory: documentation
+        run: npm run build

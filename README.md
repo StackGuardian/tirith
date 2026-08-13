@@ -1,32 +1,41 @@
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=alert_status&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=sqale_rating&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
 [![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ)
 [![codecov](https://codecov.io/gh/StackGuardian/tirith/branch/main/graph/badge.svg)](https://codecov.io/gh/StackGuardian/tirith)
 
-# Tirith (StackGuardian Policy Framework)
+# Tirith — IaC Governance plugin
 
-## Maintainers
+**Plugin IaC Governance for any pipeline, running anywhere.** Evaluate plans with Tirith, protect
+sensitive values, enforce centralised governance, and surface actionable results before
+infrastructure changes are applied.
 
-This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
+Tirith reads the plan your pipeline already produces — the output of `terraform show -json tfplan` —
+checks it against your policies, and exits non-zero so a violating change never reaches `apply`. The
+reason it is a plugin rather than an integration is that one policy set then covers every pipeline
+you run it from: the same policy files gate a GitHub Actions job, a GitLab job and a laptop, and in
+platform mode Tirith rules and Checkov findings come back in one verdict instead of two tools you
+have to reconcile by hand.
 
-
-## A call for contributors
-
-We are calling for contributors to help build out new features, review pull requests, fix bugs, and maintain overall code quality. If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
-
-Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraform against policies defined using JSON.
+It is Apache-2.0 and needs no account. Policies are JSON files in your repository, evaluation happens
+on your own runner, and nothing is sent anywhere. If you would rather keep policy in one place across
+many repositories, `tirith platform check` evaluates against the policies a
+[StackGuardian](https://www.stackguardian.io/) organization enforces instead — same document, same
+verdict, same exit codes. That mode is optional and is the only part that talks to a network.
 
 ## Content
 
-<!-- - [Feature Road-Map](#feature-road-map) -->
-<!-- - [Local Development Environment](#local-development-environment) -->
 - [What is Tirith?](#what-is-tirith)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Run it in CI](#run-it-in-ci)
+- [Exit codes](#exit-codes)
+- [Evaluating against your StackGuardian organization](#evaluating-against-your-stackguardian-organization)
 - [Example Tirith policies](#example-tirith-policies)
+    - [error_tolerance](#error_tolerance-and-the-third-outcome)
     - [Terraform Plan](#terraform-plan-provider)
     - [Infracost](#infracost-provider)
     - [StackGuardian Workflow Policy](#stackguardian-workflow-policy-using-sg-workflow-provider)
@@ -43,7 +52,10 @@ Tirith scans declarative Infrastructure as Code (IaC) configurations like Terraf
 
 ## What is Tirith?
 
-Tirith is a policy framework developed by StackGuardian for enforcing policies on infrastructure configurations such as Terraform, CloudFormation, Kubernetes etc. It simplifies policy creation and enforcement ensuring compliance with infrastructure policies through a user-friendly approach.
+Tirith turns a declarative policy — a JSON file, not a program — into a pass or fail verdict on a
+concrete infrastructure change. Point it at a terraform plan, a terraform state file, a Kubernetes
+manifest, an Infracost breakdown or any JSON document, and it reports which rules passed, which
+failed, and on which resource and value.
 
 ## Who is the project for?
 - DevSecOps engineers
@@ -66,13 +78,6 @@ Tirith is a policy framework developed by StackGuardian for enforcing policies o
 - Easily evaluate inputs against policy using pre-defined evaluators like ContainedIn, Equals, RegexMatch etc.
 - Write your own provider (plugin) by leveraging a highly extensible and pluggable architecture to support any input formats.
 
-<!-- ## Feature Road-map
-
-This is only a list of approved features that will be included in Tirith over the next iterations.
-
-- Extended support for Terraform Plan
-- Support for Cloudformation and ARM
-- Extended library of evaluator functions -->
 
 ## Installation
 
@@ -82,6 +87,16 @@ This is only a list of approved features that will be included in Tirith over th
 pip install git+https://github.com/StackGuardian/tirith.git
 ```
 
+Pin a tag rather than tracking the default branch, so a CI job cannot change behaviour underneath you:
+
+```
+pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+```
+
+`1.0.5` is the newest tag; `git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists
+them. Tirith is not on PyPI — `pip install tirith` installs an unrelated project of the same name, so
+install from git. Python 3.8 or newer.
+
 ### For developers
 
 #### Running the Dev Container
@@ -89,8 +104,8 @@ pip install git+https://github.com/StackGuardian/tirith.git
 - Clone the repository to your local machine:
 
 ```bash
-   git clone <repository-url>
-   cd <repository-folder>
+   git clone https://github.com/StackGuardian/tirith.git
+   cd tirith
 ```
 
 - Start the Docker Engine using docker desktop or CLI.
@@ -143,8 +158,7 @@ pip install -e .
 
 ```
 tirith --version
-1.0.0-beta.12
-
+tirith 1.2.0
 ```
 
 Congratulations! Tirith has been setup in your system
@@ -152,7 +166,8 @@ Congratulations! Tirith has been setup in your system
 ## Usage
 
 ```
-usage: tirith [-h] [-policy-path PATH] [-input-path PATH] [--json] [--verbose] [--version]
+usage: tirith [-h] [-policy-path PATH] [-input-path PATH] [-var-path PATH]
+              [-var PATH] [--json] [--verbose] [--fail-on-error] [--version]
 
 Tirith (StackGuardian Policy Framework)
 
@@ -160,9 +175,17 @@ options:
   -h, --help         show this help message and exit
   -policy-path PATH  Path containing Tirith policy as code
   -input-path PATH   Input file path
+  -var-path PATH     Variable file path(s)
+  -var PATH          Inline variable(s)
   --json             Only print the result in JSON form (useful for passing output to other programs)
   --verbose          Show detailed logs of from the run
+  --fail-on-error    Exit 3 when a policy fails, instead of 0. Off by default for compatibility.
   --version          show program's version number and exit
+
+Subcommands:
+
+   tirith platform check --help   Evaluate against the policies your StackGuardian
+                                  organization enforces, rather than local files.
 
 About Tirith:
 
@@ -171,15 +194,137 @@ About Tirith:
    * Provide a standard framework for scanning various configurations with granularity.
    * Provide modularity to enable easy extensibility
    * Github - https://github.com/StackGuardian/tirith
-   * Docs - https://docs.stackguardian.io/docs/tirith/overview
+   * Docs - https://github.com/StackGuardian/tirith#readme
 ```
+
+
+## Run it in CI
+
+### GitHub Actions
+
+Use [StackGuardian/tirith-iac-governance-action](https://github.com/StackGuardian/tirith-iac-governance-action).
+It finds the plan, posts a sticky pull-request comment, creates a check run and sets the job's exit
+code:
+
+```yaml
+- run: terraform show -json tfplan > plan.json
+- uses: StackGuardian/tirith-iac-governance-action@v2
+```
+
+With a `plan.json` in the working directory that is the whole integration — no `with:` block. Add
+`with: { fail-on-error: true }` to make a failing policy fail the job, and see the action's own README
+for the rest of its inputs.
+
+### GitLab, or any container-based CI
+
+There is no GitLab-native equivalent of the action, so you invoke the CLI directly — which is all the
+action does underneath. Given an earlier job that saved `plan.json` as an artifact:
+
+```yaml
+policy:
+  image: python:3.12
+  needs: [plan]
+  script:
+    - pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+    - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+```
+
+Swap the last line for `tirith platform check --workflow-id my-repo --input-path plan.json
+--fail-on-error` to use your organization's policies instead of the committed files. Nothing here is
+GitLab-specific: any runner that can execute a container and produce a plan works the same way.
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| 0 | Policies passed, or nothing was in scope to gate on |
+| 1 | Tirith could not complete the evaluation — bad input, a policy it could not evaluate, unreachable API |
+| 2 | Timed out waiting for a StackGuardian run |
+| 3 | A policy failed. Only with `--fail-on-error`, on either surface |
+| 130 | Interrupted |
+
+**Gate a CI job with `--fail-on-error`:**
+
+```
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+echo $?    # 3 a policy failed · 1 nothing could be evaluated · 0 everything passed
+```
+
+Without the flag the exit code is always `0` and the verdict is in the output — that is how the
+command has always behaved, and it is left alone so upgrading cannot turn a passing pipeline red.
+
+**`3` is deliberately not `1`.** `3` means a check ran and said no. `1` means Tirith could not tell you
+either way — an unparseable `eval_expression`, an unresolved variable, or a policy whose every check was
+skipped. A job that treats every non-zero code alike reports an outage as a policy violation, and
+cannot tell a working gate from a broken one.
+
+One limit worth stating plainly: a *misconfigured* policy — an unsupported `condition.type`, an unknown
+`required_provider` — comes back from the engine as an ordinary failed check with no error attached, so
+it is indistinguishable from a real violation and exits `3`. It fails closed, which is the safe
+direction, but it will point at your infrastructure when the fault is in the policy.
+
+## Evaluating against your StackGuardian organization
+
+`tirith platform check` evaluates against the policies your StackGuardian organization enforces,
+instead of policy files committed to your repository — so policy lives in one place rather than being
+copied into every repository that needs gating.
+
+```
+export SG_API_TOKEN=sgo_...        # an organization token
+export SG_ORG=my-org
+
+tirith platform check --workflow-id my-repo --input-path plan.json --fail-on-error
+```
+
+It masks the document on your machine before anything leaves it, packs it with your terraform source,
+uploads it, runs the policies on StackGuardian, and prints the verdict. `--input-path` is optional
+when a `plan.json` or `tfplan.json` is in the working directory.
+
+Common flags:
+
+| | |
+|---|---|
+| `--region {eu,us}` | Which StackGuardian region. Default `eu`, or `$SG_REGION` |
+| `--api-key -` | Read the key from stdin instead of the environment |
+| `--plan-file tfplan` | The binary plan from `terraform plan -out=`, rendered through `terraform show -json` in memory. Use `--input-path` if you already have the JSON |
+| `--state-path` / `--infracost-path` | Add a state document or a cost breakdown to the evaluation |
+| `--no-source` | Do not upload the terraform source. Discovery still looks in `--source-dir` for the plan |
+| `--fail-on-error` | Exit `3` when a policy fails, instead of `0` |
+| `--output-json` / `--output-markdown` | Write the verdict to files for a later CI step |
+
+`--api-url` overrides `--region` for a self-hosted or dedicated host. Every flag is in
+[docs/platform-check.md](docs/platform-check.md) or `tirith platform check --help`.
+
+Running this from GitHub Actions? Use [the action](#github-actions) instead — it wires up the plan
+discovery, the sticky pull-request comment, the check run and the exit codes for you.
 
 ## Example Tirith policies
 
 [Examples using various providers](tests/providers)
 
+### `error_tolerance`, and the third outcome
+
+Every `condition` takes an `error_tolerance`, and it appears in most of the examples below without
+being explained. It is a severity threshold for *problems reading the input*, not for policy failures:
+
+- **`0`** — anything the provider could not read is an error, and the check **fails**.
+- **`1` or higher** — a problem whose severity is at or below the tolerance is *skipped* instead. A
+  missing attribute has severity 2, so `error_tolerance: 2` turns "this key is not in the plan" from a
+  failure into a non-answer.
+
+That third outcome is why some sample output below shows `"passed": null` rather than `true` or
+`false` — the check did not pass and did not fail, it never ran. A skipped check is then **removed from
+`eval_expression`** before it is evaluated, because `None` is falsy in Python and leaving it in would
+silently read as a failure.
+
+One consequence worth knowing before using it: a policy whose every check is skipped has evaluated
+nothing at all, and reports `"final_result": null` rather than `true` or `false`. With
+`--fail-on-error` that exits **1**, not 0 and not 3 — a check that looked at nothing is not a pass, and
+it is not a violation either. Keep the tolerance at `0` if you would rather such a policy fail outright.
+
 ### Terraform plan provider
 <details>
+<summary>Terraform plan provider — example policies and output</summary>
 
 #### Example 1:
 VPC and EC2 instance policy
@@ -311,7 +456,7 @@ Policy:
             }
         }
     ],
-    "eval_expression": "check1 && check11 && check111 & check2 & check22"
+    "eval_expression": "check1 && check22"
 }
 
 ```
@@ -489,7 +634,7 @@ JSON Output:
       }
    ],
    "errors": [],
-   "eval_expression": "check1 && check11 && check111 & check2 & check22"
+   "eval_expression": "check1 && check22"
 }
 
 ```
@@ -497,6 +642,7 @@ JSON Output:
 
 ### Infracost Provider
 <details>
+<summary>Infracost Provider — example policies and output</summary>
 
 Cost control policy
 
@@ -648,6 +794,7 @@ JSON Output:
 
 ### StackGuardian Workflow Policy (using SG workflow provider)
 <details>
+<summary>StackGuardian Workflow Policy (using SG workflow provider) — example policies and output</summary>
 - Terraform Workflow should require an approval to create or destroy resources
 
 ```json
@@ -800,6 +947,7 @@ JSON Output:
 
 ### JSON
 <details>
+<summary>JSON — example policies and output</summary>
 Example Policy
 
 ```json
@@ -995,14 +1143,16 @@ JSON Output
    ],
    "errors": [],
    "eval_expression": "check1 && check2 && check3 && check4 && check5"
+}
 ```
 </details>
 
 ### Kubernetes
 <details>
+<summary>Kubernetes — example policies and output</summary>
 
 Kubernetes (using Kubernetes provider)
-#### Example 1
+#### Example
 - Make sure that all pods have a liveness probe defined
 
 ```json
@@ -1029,71 +1179,9 @@ Kubernetes (using Kubernetes provider)
   "eval_expression": "!kinds_have_null_liveness_probe"
 }
 ```
-#### Example 2
 
-Example Policy:
+Example output:
 
-```json
-{
-  "meta": {
-    "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
-  },
-  "evaluators": [
-    {
-      "id": "kinds_have_null_liveness_probe",
-      "provider_args": {
-        "operation_type": "attribute",
-        "kubernetes_kind": "Pod",
-        "attribute_path": "spec.containers.*.livenessProbe"
-      },
-      "condition": {
-        "type": "Contains",
-        "value": null,
-        "error_tolerance": 2
-      }
-    }
-  ],
-  "eval_expression": "!kinds_have_null_liveness_probe"
-}
-```
-
-Example Input:
-
-```yml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: wfs-demp-wfs-demo
-  labels:
-    helm.sh/chart: wfs-demo-0.1.0
-    app.kubernetes.io/name: wfs-demo
-    app.kubernetes.io/instance: wfs-demp
-    app.kubernetes.io/version: "1.16.0"
-    app.kubernetes.io/managed-by: Helm
----
-# Source: wfs-demo/templates/user-acces.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-...
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['wfs-demp-wfs-demo:80']
-      livenessProbe:
-        exec:
-          command:
-          - cat
-          - /tmp/healthy
-        initialDelaySeconds: 5
-        periodSeconds: 5
-  restartPolicy: Never
-
-```
-
-Output:
-![](docs/kubernetes_example.gif)
-
-JSON Output:
 ```json
 {
    "meta": {
@@ -1121,30 +1209,8 @@ JSON Output:
 ```
 
 </details>
-<!-- ## Local Development Environment
 
-- [Python 3.6 or higher](https://www.python.org/downloads/) is required.
-- [pip](https://pip.pypa.io/en/stable/) is required. -->
 
-<!-- ## Publish Package on test.pypi.org
-* Use the following command to install the latest version of the setuptools package.
-  ```
-    python -m pip install --user --upgrade setuptools
-  ```
-
-* Make sure you are at the same directory where setup.py is located and run this command.
-  ```
-    python setup.py sdist
-  ```
-* Visit <a href="https://test.pypi.org/">test.pypi.org</a> and create a new account if not already.
-* Install Twine package using following command.
-  ```
-    pip install twine
-  ```
-* Upload you package to test.pypi using following command.
-  ```
-    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-  ``` -->
 ## Getting Started
 
 This is a short getting started guide for Tirith. We will take a look on how we can use Tirith to guardrail a JSON input.
@@ -1265,7 +1331,9 @@ Final expression used:
 
 ## Want to contribute?
 
-If you're interested, please email us at team[at]stackguardian.io or get started by reading the [contributing.md](./CONTRIBUTING.md).
+We are calling for contributors to help build out new features, review pull requests, fix bugs, and
+maintain overall code quality. Email us at team[at]stackguardian.io, or get started by reading
+[contributing.md](./CONTRIBUTING.md).
 
 ### Getting an issue assigned
 
@@ -1297,7 +1365,16 @@ Wanna submit a feedback? It's as simple as writing and posting it in the <a href
 
 <p>Your feedback will help us improve</p>
 
+## Maintainers
+
+This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
+
 ## Support
+
+Open an [issue](https://github.com/StackGuardian/tirith/issues) for a bug or a question about policy
+authoring. For anything specific to a StackGuardian organization — enforcement scope, a run that
+errored, an API key — contact StackGuardian support instead, since that needs account context this
+repository has no access to.
 
 ## License
 

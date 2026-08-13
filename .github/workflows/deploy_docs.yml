@@ -21,18 +21,21 @@ jobs:
       with:
         node-version: '18'
 
+    # npm, not yarn: package-lock.json is the lockfile that is committed, and
+    # there is no yarn.lock. `yarn install` would ignore it and resolve fresh,
+    # so the deployed site was not built from the pinned dependency tree.
     - name: Install dependencies
       run: |
         cd documentation
-        yarn install
+        npm ci
 
     - name: Build documentation site
       run: |
         cd documentation
-        yarn build
+        npm run build
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./build
+        publish_dir: ./documentation/build

@@ -1,0 +1,502 @@
+"""
+StackGuardian API client.
+
+stdlib only -- urllib rather than requests -- so this adds no dependency to a package that has
+three, and a CI runner needs nothing installed beyond tirith itself.
+
+  POST /orgs/<org>/wfgrps/                                       create the workflow group
+  POST /orgs/<org>/wfgrps/<grp>/wfs/                              create the workflow
+  GET  /orgs/<org>/wfgrps/<grp>/wfs/<wf>/file_upload_url/          presigned PUT (5 min) + key
+  POST /orgs/<org>/wfgrps/<grp>/wfs/<wf>/wfruns/                  create the run
+  GET  /orgs/<org>/wfgrps/<grp>/wfs/<wf>/wfruns/<run>/            poll
+  GET  /orgs/<org>/wfgrps/<grp>/wfs/<wf>/artifacts/<path>/        fetch the results artifact
+  GET  .../wfruns/<run>/wfrunfacts/<facts>/                       fallback -> PolicyEvalResults
+"""
+
+import gzip
+import json
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+from . import regions
+
+# Signed into the upload URL by the platform, so the PUT must send the same value.
+# The bundle is PUT to a URL the platform signs for application/json regardless of filename, and S3
+# validates the signature against the header the client sends -- not against the body. So the header
+# has to be the signed one even though the body is gzip. Sending application/gzip earns a
+# SignatureDoesNotMatch; the stored object is merely labelled wrongly, which nothing reads.
+ARCHIVE_CONTENT_TYPE = "application/json"
+
+# The bundle's name in the workflow's artifact directory, per commit and tag.
+#
+# Namespaced rather than fixed because a fixed name is shared by every run of the workflow, and two
+# runs overlapping -- two pull requests, which is routine, since the action derives one workflow id per
+# repository -- would leave one run evaluating the other's code and reporting the verdict as its own.
+# Silent, and wrong in the direction that gates a merge. A per-commit name cannot collide, so the race
+# does not exist rather than being detected after the fact.
+#
+# The cost is growth: the artifact directory is synced *down* into every later run of the workflow, the
+# up-sync carries no --delete, and api exposes no artifact DELETE, so bundles accumulate and every run
+# pays to download all of them. Accepted deliberately -- correctness over transfer cost -- and the
+# reason `delete_artifact` below is kept for a retention sweep to use.
+#
+# Flat, because a nested key cannot be deleted correctly: the authorizer's greedy <path:wfGrp>
+# converter swallows it, so `DELETE .../artifacts/<sha>/<name>/` matches the workflow-group delete and
+# is checked against the wrong permission entirely.
+#
+# The name is constrained more than it looks. The down-sync excludes `sg.*`, `*__sg.*`, `*pci_*`,
+# `*_thrifty_*`, `*_gdpr_*`, `*compliance_raw*` and the other compliance globs, so a name matching any
+# of those would be dropped silently and never reach the container. It also must not be
+# `tfstate.json`, which at the artifact root is a managed-state workflow's live state.
+ARCHIVE_NAME_TEMPLATE = "tirith-bundle-{sha}-{tag}.tar.gz"
+
+# What the workflow stores as a fallback, and what the step falls back to if a run names nothing.
+ARCHIVE_DOCUMENT = "tirith-bundle.tar.gz"
+
+# Terminal run states. QUEUED/PENDING/RUNNING are transient; a run can sit in QUEUED for a long
+# while behind the per-workflow concurrency gate, which is why the caller logs each poll.
+#
+# APPROVAL_REQUIRED is terminal *for polling purposes*: it is a resting state, reached when a
+# policy's onFail is APPROVAL_REQUIRED, and nothing further happens without a human. Treating it as
+# transient would spin until the timeout and then report a tool failure for what is actually a
+# completed evaluation. sg-cli treats it the same way.
+TERMINAL_STATUSES = ("COMPLETED", "ERRORED", "CANCELLED", "APPROVAL_REQUIRED")
+
+RETRYABLE_STATUS = (408, 429, 500, 502, 503, 504)
+
+
+class SGError(Exception):
+    """An API call failed in a way the caller cannot recover from."""
+
+
+def _extract_signed_url(payload):
+    """
+    Pull the presigned URL out of an upload-url response.
+
+    The shape varies by endpoint and deployment: the tfstate/file upload endpoints return the URL
+    as a bare string in `msg`, while the newer template-artifact endpoints nest it under
+    `data.signedUrl`. Accept either rather than depending on one.
+    """
+    if not isinstance(payload, dict):
+        return None
+
+    for container_key in ("data", "msg"):
+        container = payload.get(container_key)
+        if isinstance(container, str) and container.startswith("http"):
+            return container
+        if isinstance(container, dict):
+            for url_key in ("signedUrl", "signed_url", "url"):
+                candidate = container.get(url_key)
+                if isinstance(candidate, str) and candidate.startswith("http"):
+                    return candidate
+    return None
+
+
+class SGClient:
+    def __init__(self, api_url, org, api_key, user_agent="tirith-action", timeout=60):
+        # Accepts a base with or without /api/v1, so a SG_BASE_URL exported for sg-cli works here.
+        self.api_url = regions.normalize_api_url(api_url) or regions.normalize_api_url(
+            regions.by_id(regions.DEFAULT_REGION_ID).api_base
+        )
+        self.org = org
+        self.api_key = api_key
+        self.user_agent = user_agent
+        self.timeout = timeout
+
+    # -- plumbing ------------------------------------------------------------------------------
+
+    def _request(self, method, path, body=None, retries=4):
+        url = f"{self.api_url}/orgs/{urllib.parse.quote(self.org)}{path}"
+        data = json.dumps(body).encode() if body is not None else None
+
+        last_error = None
+        for attempt in range(retries + 1):
+            request = urllib.request.Request(url, data=data, method=method)
+            # SG's documented scheme. Must be an sgo_ (org) token: sgu_ tokens are non-functional
+            # for SSO-group-only users and inherit only direct permissions for hybrid SSO users,
+            # which surfaces as a confusing 403.
+            request.add_header("Authorization", f"apikey {self.api_key}")
+            request.add_header("Content-Type", "application/json")
+            request.add_header("X-SG-Client", self.user_agent)
+
+            try:
+                with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                    raw = response.read()
+                    return response.status, (json.loads(raw) if raw else {})
+            except urllib.error.HTTPError as e:
+                raw = e.read()
+                try:
+                    payload = json.loads(raw) if raw else {}
+                except json.JSONDecodeError:
+                    payload = {"msg": raw.decode("utf-8", "replace")[:500]}
+
+                if e.code in RETRYABLE_STATUS and attempt < retries:
+                    last_error = f"HTTP {e.code}: {payload.get('msg', '')}"
+                    time.sleep(min(2**attempt, 8))
+                    continue
+                return e.code, payload
+            except (urllib.error.URLError, TimeoutError) as e:
+                # Never treat a network failure as a pass -- the caller maps this to a red check.
+                last_error = str(e)
+                if attempt < retries:
+                    time.sleep(min(2**attempt, 8))
+                    continue
+                raise SGError(f"Could not reach StackGuardian at {self.api_url}: {last_error}")
+
+        raise SGError(f"StackGuardian request failed after {retries + 1} attempts: {last_error}")
+
+    # -- resources -----------------------------------------------------------------------------
+
+    def ensure_workflow_group(self, name):
+        """
+        Create the workflow group if absent.
+
+        Needed because `createIfNotExists` on run creation auto-creates the *workflow*, not the
+        group -- core's own error for a missing group reads "Workflow Group does not exist and
+        cannot be created". A 409 means someone else already made it, which is success here.
+        """
+        status, payload = self._request(
+            "POST",
+            "/wfgrps/",
+            {"ResourceName": name, "Description": "Created by tirith", "Tags": ["sg-created"]},
+        )
+        if status in (200, 201, 409):
+            return status
+        raise SGError(f"Could not create workflow group '{name}' (HTTP {status}): {payload.get('msg')}")
+
+    @staticmethod
+    def vcs_config(repo_url, repo_ref=None):
+        """
+        Build the workflow's VCSConfig from a repo URL, recording where the code came from.
+
+        `GIT_OTHER` -- singular, the wire value behind the UI's "Git Others" -- is the
+        connector-less provider. With `isPrivate: false` it needs no auth at all, and it skips the
+        GitHub repo-id extraction that rejects anything it cannot parse as an owner/name pair.
+
+        This is display metadata, set on the *workflow* so it shows a repo link instead of a
+        "configure" prompt. It is not a source of code: every run sends `VCSConfig: {}` to suppress
+        the checkout (see `create_run`). Keeping the two apart is deliberate -- the workflow records
+        where the code came from, the run declines to fetch it.
+
+        It cannot be made inert by shape alone. Dropping `useMarketplaceTemplate`, which is what
+        actually arms the runner's clone, is rejected by api: `IACVCSConfig` declares it
+        `BooleanField(required=True)` (`serializers/commons.py:141`). Send `iacVCSConfig` at all and
+        the key comes with it.
+        """
+        if not repo_url:
+            return None
+        config = {"isPrivate": False, "repo": repo_url}
+        if repo_ref:
+            config["ref"] = repo_ref
+        return {
+            "iacVCSConfig": {
+                "useMarketplaceTemplate": False,
+                "customSource": {"sourceConfigDestKind": "GIT_OTHER", "config": config},
+            }
+        }
+
+    def ensure_workflow(self, wfgrp, workflow_id, description, terraform_config, vcs_config=None):
+        """
+        Create the workflow if absent, keyed on `Id`.
+
+        `Id` is the stable slug identity and what goes in the URL; `ResourceName` is a display name
+        and is not unique. Both are set to the same string so there is one name to reason about.
+        Note `Id` is a DRF SlugField, so it cannot contain dots.
+
+        The workflow is `TERRAFORM`, not `CUSTOM`. For a terraform workflow core synthesises the
+        steps from the stored TerraformConfig plus the per-run TerraformAction and *ignores* any
+        WfStepsConfig in the request -- so the step configuration has to live here, once, rather
+        than being sent on every run. It also means the run renders as a real terraform run in the
+        dashboard rather than as opaque custom steps.
+
+        `vcs_config` is set on creation only -- a 409 means the workflow already exists and nothing
+        is updated, so a workflow created before this existed keeps its blank repo field.
+        """
+        body = {
+            "Id": workflow_id,
+            "ResourceName": workflow_id,
+            "Description": description,
+            "Tags": ["sg-created", "tirith"],
+            "WfType": "TERRAFORM",
+            "TerraformConfig": terraform_config,
+        }
+        if vcs_config:
+            body["VCSConfig"] = vcs_config
+
+        status, payload = self._request("POST", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/", body)
+        if status in (200, 201, 409):
+            return status
+        raise SGError(f"Could not create workflow '{workflow_id}' (HTTP {status}): {payload.get('msg')}")
+
+    def manages_terraform_state(self, wfgrp, workflow_id):
+        """
+        Whether the workflow keeps its terraform state on the platform.
+
+        Consulted before writing `artifacts/tfstate.json`, because for a managed-state workflow that
+        object *is* the live state: the step's backend writes it, state locking keys on the literal
+        name, and the state-backends view lists it. Overwriting it with a masked document would be
+        data loss, so this is a hard gate rather than a warning.
+
+        Unreadable answers as True -- the safe direction. Not being able to tell whether an object is
+        live state is not a reason to overwrite it.
+        """
+        status, payload = self._request("GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/")
+        if status != 200:
+            return True
+        body = payload.get("msg") or payload.get("data") or {}
+        if not isinstance(body, dict) or "TerraformConfig" not in body:
+            # A 200 that carries no TerraformConfig is still an answer we cannot read. Absent is not
+            # the same as false.
+            return True
+        return bool((body.get("TerraformConfig") or {}).get("managedTerraformState"))
+
+    # `content` rather than `payload`: the response variable below is already called payload, and
+    # shadowing it sent the JSON response body to S3 in place of the file.
+    def upload_file(self, wfgrp, workflow_id, filename, folder, content, content_type=ARCHIVE_CONTENT_TYPE):
+        r"""
+        Upload one object into the workflow's artifact prefix via a presigned PUT, returning its key.
+
+        The returned key is informational -- a log line, and something to quote in a bug report. It is
+        deliberately not load-bearing: nothing passes it back on the run, and the step finds the bundle
+        by *basename* inside the artifact directory the run controller syncs down for it. That is why
+        an api which returns no key at all is fine here. It comes from the response rather than being
+        rebuilt because the layout is runner-aware (a private runner's own S3 bucket or Azure container
+        rather than the shared bucket), so a client-side guess would be wrong for exactly the customers
+        who are hardest to debug.
+
+        `folder` is optional and must be a flat token -- the endpoint rejects `/`, `\\` and `..` to
+        prevent path traversal. Omitting it puts the object at the artifacts root, which is what both
+        callers want: the archive because a nested key cannot be deleted correctly, and the state
+        document because `artifacts/tfstate.json` is the canonical location the platform reads.
+        """
+        # No `contentType` parameter. The endpoint signs application/json regardless, and asking it to
+        # sign anything else needs an api change this feature deliberately does not make -- so the PUT
+        # below sends application/json to match the signature, and the bundle is merely labelled
+        # wrongly in storage. Nothing reads that label.
+        params = {"filename": filename}
+        if folder:
+            # Only when set. urlencode stringifies None to the literal "None", and the endpoint
+            # treats any non-empty value as a subfolder -- so passing it unconditionally produced a
+            # real `None/` directory in S3, and the archive then sat at a nested key that the
+            # post-run delete could not address.
+            params["folder"] = folder
+        query = urllib.parse.urlencode(params)
+        status, payload = self._request(
+            "GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/file_upload_url/?{query}"
+        )
+        if status != 200:
+            raise SGError(f"Could not get an upload URL for {filename} (HTTP {status}): {payload.get('msg')}")
+
+        # Informational only, and optional. It used to be required, because the caller had to pass the
+        # key back as a run field -- and an api that did not return it produced a run pointing at
+        # nothing. Nothing passes the key anywhere now: the step finds the bundle by name in the
+        # artifacts directory. So an api that does not return a key is fine, and this stays a label for
+        # the log line rather than a hard requirement.
+        key = (payload.get("data") or {}).get("key") or f"{filename} (key not reported)"
+        signed_url = _extract_signed_url(payload)
+        if not signed_url:
+            raise SGError(f"No signed URL in the upload response for {filename}: {payload}")
+
+        # Must match the content type the URL was signed with, or S3 rejects it as a signature
+        # mismatch.
+        put = urllib.request.Request(signed_url, data=content, method="PUT")
+        put.add_header("Content-Type", content_type)
+        try:
+            with urllib.request.urlopen(put, timeout=self.timeout) as response:
+                if response.status not in (200, 204):
+                    raise SGError(f"Upload of {filename} returned HTTP {response.status}")
+        except urllib.error.HTTPError as e:
+            # The signed URL is valid for 5 minutes; an expiry shows up here as a 403.
+            raise SGError(f"Upload of {filename} failed (HTTP {e.code}): {e.read()[:300]!r}")
+        except (urllib.error.URLError, TimeoutError) as e:
+            raise SGError(f"Upload of {filename} failed: {e}")
+
+        return key
+
+    def create_run(self, wfgrp, workflow_id, trigger_details, pre_plan_steps=None, action="plan"):
+        """
+        Create one workflow run. Every invocation makes a new run.
+
+        Deliberately carries no WfStepsConfig: core ignores that for TERRAFORM workflows, synthesising
+        the steps from TerraformConfig and TerraformAction instead. `TerraformConfig` is the field it
+        *does* honour per run -- core merges the run's over the workflow's
+        (`workflowruns/__init__.py:1646`) -- so that is how each run names its own bundle.
+
+        The merge is shallow, so `prePlanWfStepsConfig` replaces the workflow's list wholesale and the
+        caller must send the complete step entry. Keys it does not send, `terraformVersion` and
+        `managedTerraformState`, still come from the workflow.
+
+        Note what is *not* here: any archive field. The bundle reaches the step through the workflow's
+        artifact directory, which the run controller syncs down before any step runs, and the step is
+        told which one to read via that step's `wfStepInputData`. So api needs no new serializer field
+        and no new response key -- `TerraformConfig` is already declared on WorkflowRunSerializer.
+
+        `terraformProjectZip` was the previous carrier and is gone. It worked, but it cost a declared
+        field in api: DRF drops undeclared keys, so without that change a run came back 201 having
+        silently discarded the reference and would have evaluated a VCS checkout instead of the
+        uploaded code.
+
+        A context tag was the other obvious-looking option and is the wrong tool: run context tags are
+        indexed into global search, so an internal storage key would surface in customers' tag
+        typeaheads and could be enumerated by filtering on it.
+
+        `VCSConfig: {}` suppresses the checkout for this run. The workflow keeps its own VCSConfig so
+        the dashboard still shows which repository the runs came from, but core resolves the run's
+        copy as `data.get("VCSConfig", wfDetails.get("VCSConfig", {}))`
+        (`workflowruns/__init__.py:1770`) -- a *present* empty value beats the workflow's, while
+        omitting the key inherits it. The runner then clones only when
+        `vcsConfig.iacVCSConfig` carries a `useMarketplaceTemplate` key (`external.py:2484`), so an
+        empty config skips git entirely.
+
+        Sending it matters for two reasons. A private repository has no credentials here -- the
+        checkout died with "could not read Password for 'https://None@github.com'" before the step
+        ran -- and on a public one the clone quietly placed the *unmasked* source in the workspace,
+        which then reached S3 inside the run snapshot. The bundle is the only source this feature
+        wants on the platform.
+        """
+        body = {
+            "TerraformAction": {"action": action},
+            "TriggerDetails": trigger_details,
+            "VCSConfig": {},
+        }
+        if pre_plan_steps:
+            body["TerraformConfig"] = {"prePlanWfStepsConfig": pre_plan_steps}
+        status, payload = self._request("POST", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/", body)
+        if status not in (200, 201):
+            raise SGError(f"Could not create the workflow run (HTTP {status}): {payload.get('msg')}")
+
+        data = payload.get("data") or {}
+        run_name = data.get("ResourceName")
+        if not run_name:
+            raise SGError(f"No ResourceName in the run-creation response: {payload}")
+
+        return run_name, data
+
+    def get_run(self, wfgrp, workflow_id, run_id):
+        status, payload = self._request(
+            "GET", f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/{run_id}/"
+        )
+        if status != 200:
+            raise SGError(f"Could not read run {run_id} (HTTP {status}): {payload.get('msg')}")
+        # This endpoint returns the run object under "msg" rather than "data".
+        return payload.get("msg") or payload.get("data") or {}
+
+    def wait_for_run(self, wfgrp, workflow_id, run_id, timeout=1800, interval=10, on_poll=None):
+        """
+        Poll until the run reaches a terminal state.
+
+        A timeout is a failure, never a pass: the caller maps it to a red check. `on_poll` exists
+        so the caller can log each status -- a run stuck in QUEUED behind another run on the same
+        workflow looks identical to a hung run otherwise.
+        """
+        deadline = time.time() + timeout
+        last_status = None
+
+        while time.time() < deadline:
+            run = self.get_run(wfgrp, workflow_id, run_id)
+            status = run.get("LatestStatus")
+            if status != last_status and on_poll:
+                on_poll(status)
+            last_status = status
+
+            if status in TERMINAL_STATUSES:
+                return status, run
+            time.sleep(interval)
+
+        raise SGError(
+            f"Run {run_id} did not finish within {timeout}s (last status: {last_status}). "
+            f"Runs on one workflow serialize, so it may be queued behind another run."
+        )
+
+    def get_results_artifact(self, wfgrp, workflow_id, artifact_path):
+        """
+        Read the results artifact the tirith step used to publish next to the inputs.
+
+        Kept only so a newer CLI still reads results from an older step image. Current step images
+        do not write this file: it carried exactly the PolicyEvalResults that the run facts already
+        hold, and it existed only because the facts endpoint used to answer "does not exist" for
+        every run. That was a key mismatch in the run controller, not a missing record.
+
+        Returns None -- not {} -- when absent, so the caller can tell "no such artifact, go ask the
+        facts endpoint" from "the artifact exists and no policies matched".
+        """
+        status, payload = self._request(
+            "GET",
+            f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/artifacts/{artifact_path}/",
+        )
+        if status != 200:
+            return None
+
+        # This endpoint returns the artifact body directly rather than an envelope.
+        if isinstance(payload, dict) and "PolicyEvalResults" in payload:
+            return payload.get("PolicyEvalResults") or {}
+        return None
+
+    def get_run_facts(self, wfgrp, workflow_id, run_id):
+        """
+        Fetch the whole run-facts document.
+
+        One call, because the document carries everything the caller reports on --
+        PolicyEvalResults, the cost breakdown, the plan -- and it embeds the full plan, so it is
+        large enough that fetching it twice is worth avoiding.
+
+        The endpoint hands back a presigned GET rather than the payload inline, for the same reason.
+
+        Raises SGError when the facts could not be *read*, and returns {} only when they were read
+        and were empty. Collapsing both into {} made an unreadable run -- a 403 on the endpoint, a
+        failed presigned GET -- indistinguishable from a run with no policies in scope, so a run
+        whose policies had actually failed reported "no policies in scope" and exited 0.
+        """
+        status, payload = self._request(
+            "GET",
+            f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/wfruns/{run_id}/wfrunfacts/default/",
+        )
+        if status == 404:
+            # Absent, not unreadable. A run that never produced a facts document answers this way,
+            # and that is a legitimate empty result -- treating it as a read failure would turn
+            # healthy runs red, which is the opposite of the mistake being fixed.
+            return {}
+        if status != 200:
+            raise SGError(f"Could not read the run facts for {run_id} (HTTP {status}): {payload.get('msg')}")
+
+        body = payload.get("msg") or payload.get("data") or {}
+        if isinstance(body, dict) and body.get("PolicyEvalResults"):
+            return body
+
+        # Via the shared helper: this endpoint returns `signed_url`, not `signedUrl`. Reading only
+        # the camelCase spelling meant this always fell through to {} -- which went unnoticed for as
+        # long as the results artifact was covering for it.
+        signed_url = _extract_signed_url(payload)
+        if not signed_url:
+            # A 200 carrying neither the facts inline nor a URL to them: the run genuinely has no
+            # facts document, which is what an empty result set looks like.
+            return {}
+
+        try:
+            with urllib.request.urlopen(signed_url, timeout=self.timeout) as response:
+                raw = response.read()
+            if response.info().get("Content-Encoding") == "gzip" or raw[:2] == b"\x1f\x8b":
+                raw = gzip.decompress(raw)
+            return json.loads(raw) or {}
+        except Exception as e:
+            raise SGError(f"Could not fetch the run facts document for {run_id}: {e}")
+
+    def get_policy_results(self, wfgrp, workflow_id, run_id):
+        """Read PolicyEvalResults from the run facts. This is the primary source of the verdict."""
+        return self.get_run_facts(wfgrp, workflow_id, run_id).get("PolicyEvalResults") or {}
+
+    def delete_artifact(self, wfgrp, workflow_id, artifact_name):
+        """
+        Delete one artifact. Best-effort: returns True on success, False otherwise.
+
+        `artifact_name` must be a single path segment. A nested name is swallowed by the greedy
+        <path:wfGrp> converter in the authorizer and matches `DELETE .../wfgrps/<wfGrp>/` -- the
+        workflow-group delete -- so it would be checked against entirely the wrong permission.
+        """
+        status, _payload = self._request(
+            "DELETE",
+            f"/wfgrps/{urllib.parse.quote(wfgrp)}/wfs/{workflow_id}/artifacts/{artifact_name}/",
+        )
+        return status in (200, 204, 404)

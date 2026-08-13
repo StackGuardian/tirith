@@ -12,7 +12,6 @@ from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
 from .policy_parameterization import get_policy_with_vars_replaced
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -50,6 +49,10 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     evaluator_class = EVALUATORS_DICT.get(evaluator_name)
     if evaluator_class is None:
         logger.error(f"{evaluator_name} is not a supported evaluator")
+        # Always populate "result" before returning. Consumers (the pretty printer, the
+        # workflow-step templates, the platform) index into it unconditionally, and an
+        # early return without it used to raise KeyError far away from the real cause.
+        result["result"] = [{"passed": False, "message": f"`{evaluator_name}` is not a supported evaluator"}]
         return result
 
     evaluator_instance = evaluator_class()
@@ -66,6 +69,17 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         has_valid_evaluation = False
 
         for evaluator_input in evaluator_inputs:
+            # A provider reported an error without attaching a ProviderError severity. That means a
+            # malformed provider call -- an unsupported operation_type, a missing required argument --
+            # not a policy violation. Surface the message and fail hard: error_tolerance exists to
+            # tolerate missing data, never to mask a broken policy. Without this branch the error text
+            # is discarded and `None` is evaluated against the condition, so a typo'd operation_type
+            # reads as a genuine violation.
+            if evaluator_input.get("err") and not isinstance(evaluator_input["value"], ProviderError):
+                evaluation_results.append({"passed": False, "message": evaluator_input["err"]})
+                has_evaluation_passed = False
+                continue
+
             if isinstance(evaluator_input["value"], ProviderError) and evaluator_input.get("err", None):
                 severity_value = evaluator_input["value"].severity_value
                 err_result = dict(message=evaluator_input["err"])
@@ -138,6 +152,18 @@ def generate_compiled_code_without_none_and_variables(eval_str: str) -> Tuple[Op
             return node
 
     tree = ast.parse(eval_str, mode="eval")
+
+    # `&` and `|` parse as BinOp, which nothing below handles: the tree stays uncompilable, the retry
+    # loop exhausts, and the caller reports "Could not evaluate the eval expression. Please report this
+    # error" -- telling a user to file a bug against their own typo. The README documented `&` in two
+    # examples, so this was reachable by copying the docs. Name the operator instead.
+    for node in ast.walk(tree):
+        if isinstance(node, ast.BinOp):
+            operators = {ast.BitAnd: ("&", "&&"), ast.BitOr: ("|", "||")}
+            wrong, right = operators.get(type(node.op), (None, None))
+            if wrong:
+                raise ValueError(f"Unsupported operator '{wrong}' in eval_expression. Use '{right}' instead.")
+            raise ValueError("Unsupported operator in eval_expression. Only '&&', '||' and '!' are supported.")
 
     compiled_code = None
     tries_count = 0
@@ -302,8 +328,16 @@ def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict, var_d
         eval_results.append(eval_result)
     final_evaluation_result, errors = final_evaluator(final_evaluation_policy_string, eval_results_obj)
 
+    # Pass policy-declared metadata through to the result, but only the keys that are actually
+    # present. Absent keys are omitted rather than emitted as null, so the output of a policy
+    # that declares none of them is byte-identical to what it was before this was added.
+    final_output_meta = {"version": policy_meta.get("version"), "required_provider": provider_module}
+    for meta_key in ("id", "name", "description", "severity", "enforcement", "tags", "remediation"):
+        if meta_key in policy_meta:
+            final_output_meta[meta_key] = policy_meta[meta_key]
+
     final_output = {
-        "meta": {"version": policy_meta.get("version"), "required_provider": provider_module},
+        "meta": final_output_meta,
         "final_result": final_evaluation_result,
         "evaluators": eval_results,
         "errors": errors,

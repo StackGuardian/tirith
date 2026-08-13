@@ -1,0 +1,666 @@
+"""
+Tests for the StackGuardian client.
+
+The polling contract is the part worth pinning: a run that rests in a state the poller does not
+recognise as terminal spins until the timeout and is then reported as a tool failure -- turning a
+completed evaluation into what looks like an outage.
+"""
+
+import json
+
+import pytest
+
+from tirith.platform import client
+from tirith.platform.client import SGClient, SGError, _extract_signed_url
+
+# --- terminal statuses -------------------------------------------------------------------------
+
+
+def test_approval_required_is_terminal():
+    """
+    A regression test. APPROVAL_REQUIRED is a resting state -- reached when a policy's onFail is
+    APPROVAL_REQUIRED -- and nothing further happens without a human. Treating it as transient
+    made the poller spin to its timeout and report a tool failure for a finished evaluation.
+    """
+    assert "APPROVAL_REQUIRED" in client.TERMINAL_STATUSES
+
+
+@pytest.mark.parametrize("status", ["COMPLETED", "ERRORED", "CANCELLED", "APPROVAL_REQUIRED"])
+def test_terminal_statuses_stop_the_poll(status):
+    assert status in client.TERMINAL_STATUSES
+
+
+@pytest.mark.parametrize("status", ["QUEUED", "PENDING", "RUNNING"])
+def test_transient_statuses_keep_polling(status):
+    """A run can sit in QUEUED behind the per-workflow concurrency gate for a long while."""
+    assert status not in client.TERMINAL_STATUSES
+
+
+def test_wait_for_run_returns_on_a_terminal_status(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    statuses = iter([{"LatestStatus": "QUEUED"}, {"LatestStatus": "RUNNING"}, {"LatestStatus": "COMPLETED"}])
+    monkeypatch.setattr(sg, "get_run", lambda *a, **k: next(statuses))
+    monkeypatch.setattr(client.time, "sleep", lambda _s: None)
+
+    status, _run = sg.wait_for_run("default", "wf", "run", timeout=30)
+
+    assert status == "COMPLETED"
+
+
+def test_wait_for_run_reports_each_status_change(monkeypatch):
+    """Without this a run queued behind another looks identical to a hung one."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    statuses = iter([{"LatestStatus": "QUEUED"}, {"LatestStatus": "QUEUED"}, {"LatestStatus": "COMPLETED"}])
+    monkeypatch.setattr(sg, "get_run", lambda *a, **k: next(statuses))
+    monkeypatch.setattr(client.time, "sleep", lambda _s: None)
+    seen = []
+
+    sg.wait_for_run("default", "wf", "run", timeout=30, on_poll=seen.append)
+
+    assert seen == ["QUEUED", "COMPLETED"], "only changes are reported, not every poll"
+
+
+def test_wait_for_run_timeout_is_an_error_never_a_pass(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "get_run", lambda *a, **k: {"LatestStatus": "RUNNING"})
+    monkeypatch.setattr(client.time, "sleep", lambda _s: None)
+
+    with pytest.raises(SGError):
+        sg.wait_for_run("default", "wf", "run", timeout=-1)
+
+
+# --- signed URL extraction ---------------------------------------------------------------------
+
+
+def test_extract_signed_url_accepts_a_bare_string_in_msg():
+    """What tfstate_upload_url actually returns."""
+    assert _extract_signed_url({"msg": "https://s3.example/put"}) == "https://s3.example/put"
+
+
+def test_extract_signed_url_accepts_a_nested_object():
+    assert _extract_signed_url({"data": {"signedUrl": "https://s3.example/put"}}) == "https://s3.example/put"
+
+
+def test_extract_signed_url_returns_none_when_absent():
+    assert _extract_signed_url({"msg": "some error text"}) is None
+
+
+# --- archive upload ----------------------------------------------------------------------------
+
+
+def _fake_put(recorder):
+    """Stand in for the presigned PUT, recording what was sent."""
+
+    def fake_urlopen(request, timeout=None):
+        recorder["content_type"] = request.get_header("Content-type")
+        recorder["body"] = request.data
+
+        class _R:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return _R()
+
+    return fake_urlopen
+
+
+def test_upload_archive_tolerates_a_response_with_no_storage_key(monkeypatch):
+    """
+    The key used to be mandatory, because the caller passed it back as a run field and an api that did
+    not return it produced a run pointing at nothing. Nothing passes it anywhere now -- the step finds
+    the bundle by name in the artifacts directory -- so an api that omits it must not fail the upload.
+
+    This is what lets the feature ship against an unmodified api.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"msg": "https://s3.example/put"}))
+    monkeypatch.setattr(client.urllib.request, "urlopen", _fake_put({}))
+
+    key = sg.upload_file("default", "wf", "a.tar.gz", None, b"x")
+
+    assert "a.tar.gz" in key
+
+
+def _upload_response():
+    """What file_upload_url returns: the URL as a bare string in msg, the key alongside in data."""
+    return (200, {"msg": "https://s3.example/put", "data": {"key": "orgs/acme/wfs/K/artifacts/abc1234/a.tar.gz"}})
+
+
+def test_upload_archive_returns_the_key_from_the_response(monkeypatch):
+    """
+    Never rebuilt client-side: the layout depends on ArtifactsUnderKSUID, ResourceKSUID and
+    OriginalArtifactPath, so a guess is wrong for exactly the customers hardest to debug.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: _upload_response())
+    uploaded = {}
+
+    def fake_urlopen(request, timeout=None):
+        uploaded["content_type"] = request.get_header("Content-type")
+        uploaded["body"] = request.data
+
+        class _R:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return _R()
+
+    monkeypatch.setattr(client.urllib.request, "urlopen", fake_urlopen)
+
+    key = sg.upload_file("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
+
+    assert key == "orgs/acme/wfs/K/artifacts/abc1234/a.tar.gz"
+    assert uploaded["body"] == b"tarbytes"
+    # application/json even though the body is gzip: the endpoint signs application/json whatever
+    # the filename, and S3 validates the signature against the header the client sends. Asking for
+    # application/gzip would need an api change, and sending it unasked earns SignatureDoesNotMatch.
+    assert uploaded["content_type"] == "application/json"
+
+
+def test_upload_archive_uses_the_shared_artifact_endpoint(monkeypatch):
+    """
+    Not a bespoke endpoint. The bundle has to land in the workflow's own artifact prefix, because
+    that prefix is what the runner syncs down into the step -- so it uploads through the same route
+    every other artifact uses.
+
+    And it must ask for nothing the endpoint does not already offer: no contentType parameter, since
+    signing anything other than application/json would need an api change this feature avoids.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    seen = {}
+
+    def fake_request(method, path, *a, **k):
+        seen["method"] = method
+        seen["path"] = path
+        return _upload_response()
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+    monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
+
+    sg.upload_file("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
+
+    assert seen["method"] == "GET"
+    assert "/file_upload_url/" in seen["path"]
+    assert "configuration_upload_url" not in seen["path"]
+    assert "contentType" not in seen["path"], "asking for a signed content type needs an api change"
+    assert "filename=a.tar.gz" in seen["path"]
+
+
+def _ok_urlopen():
+    def fake_urlopen(request, timeout=None):
+        class _R:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return _R()
+
+    return fake_urlopen
+
+
+# --- run creation ------------------------------------------------------------------------------
+
+
+def test_create_run_sends_no_step_config(monkeypatch):
+    """
+    core ignores WfStepsConfig for TERRAFORM workflows and synthesises the steps from the stored
+    TerraformConfig plus this TerraformAction. Sending one would be dead weight that reads as if
+    it were doing something.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+
+    def fake_request(method, path, body=None, **kwargs):
+        captured["body"] = body
+        return 200, {"data": {"ResourceName": "wfrun-1"}}
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+
+    run_id, _data = sg.create_run("default", "wf", {"type": "tirith"})
+
+    assert run_id == "wfrun-1"
+    assert "WfStepsConfig" not in captured["body"]
+    # `plan` is a dummy: the policy step is spliced in ahead of the plan step and exits 12, so the
+    # plan never runs. `plan` is simply the action whose synthesis splices pre-plan steps in.
+    assert captured["body"]["TerraformAction"] == {"action": "plan"}
+    # No archive field of any kind. The bundle reaches the step through the workflow's artifact
+    # directory, which is what lets this run against an unmodified api -- so a field appearing here
+    # again would mean the api dependency had come back.
+    assert "terraformProjectZip" not in captured["body"]
+    assert "CodeZipWfArtifactPath" not in captured["body"]
+    assert "ContextTags" not in captured["body"]
+
+
+def test_create_run_does_not_depend_on_the_platform_echoing_an_archive_field(monkeypatch):
+    """
+    There used to be a guard here: the run body carried `terraformProjectZip`, an api that did not
+    declare it dropped it silently during validation, and the run then evaluated a VCS checkout instead
+    of the uploaded code. The guard asserted the field back out of RuntimeParameters.
+
+    It is gone because the cause is gone -- nothing is sent for the platform to drop. A run whose
+    RuntimeParameters mention no archive at all is now completely normal, and must not fail.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(
+        sg,
+        "_request",
+        lambda *a, **k: (200, {"data": {"ResourceName": "wfrun-1", "RuntimeParameters": {"vcsConfig": {}}}}),
+    )
+
+    run_id, _data = sg.create_run("default", "wf", {"type": "tirith"})
+
+    assert run_id == "wfrun-1"
+
+
+def test_create_run_accepts_a_response_that_carries_no_runtime_parameters(monkeypatch):
+    """
+    A response shape without RuntimeParameters is not evidence the field was dropped, and failing on
+    it would break the client against a platform that is behaving correctly.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"data": {"ResourceName": "wfrun-1"}}))
+
+    run_id, _data = sg.create_run("default", "wf", {"type": "tirith"})
+
+    assert run_id == "wfrun-1"
+
+
+def test_create_run_passes_when_the_platform_stored_the_archive_reference(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(
+        sg,
+        "_request",
+        lambda *a, **k: (
+            200,
+            {"data": {"ResourceName": "wfrun-1", "RuntimeParameters": {"terraformProjectZip": "orgs/acme/a.tar.gz"}}},
+        ),
+    )
+
+    run_id, _data = sg.create_run("default", "wf", {"type": "tirith"})
+
+    assert run_id == "wfrun-1"
+
+
+def test_ensure_workflow_creates_a_terraform_workflow(monkeypatch):
+    """
+    TERRAFORM rather than CUSTOM: it is what makes core synthesise the steps from TerraformConfig,
+    and what makes the run render as a real terraform run in the dashboard.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+
+    def fake_request(method, path, body=None, **kwargs):
+        captured["body"] = body
+        return 201, {}
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+
+    sg.ensure_workflow("default", "wf", "desc", {"terraformVersion": "1.5.7"})
+
+    assert captured["body"]["WfType"] == "TERRAFORM"
+    assert captured["body"]["TerraformConfig"] == {"terraformVersion": "1.5.7"}
+    assert captured["body"]["Id"] == captured["body"]["ResourceName"] == "wf"
+
+
+def test_conflict_on_create_is_success(monkeypatch):
+    """Re-running the action against an existing workflow must not be an error."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (409, {"msg": "already exists"}))
+
+    assert sg.ensure_workflow("default", "wf", "d", {}) == 409
+    assert sg.ensure_workflow_group("default") == 409
+
+
+# --- auth --------------------------------------------------------------------------------------
+
+
+def test_auth_header_uses_the_apikey_scheme(monkeypatch):
+    """Matches sg-cli: `Authorization: apikey <token>`, not Bearer."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_secret")
+    captured = {}
+
+    def fake_urlopen(request, timeout=None):
+        captured["auth"] = request.get_header("Authorization")
+
+        class _R:
+            status = 200
+
+            def read(self):
+                return json.dumps({"msg": "ok"}).encode()
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return _R()
+
+    monkeypatch.setattr(client.urllib.request, "urlopen", fake_urlopen)
+
+    sg._request("GET", "/wfgrps/")
+
+    assert captured["auth"] == "apikey sgo_secret"
+
+
+# --- run facts and cleanup ----------------------------------------------------------------------
+
+
+def test_policy_results_follow_the_snake_case_signed_url(monkeypatch):
+    """
+    The facts endpoint returns `signed_url`; this used to read only `signedUrl` and so always
+    returned {}. It went unnoticed for as long as the results artifact was covering for it.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (200, {"msg": {"signed_url": "https://s3.example/facts"}}))
+
+    class _R:
+        def read(self):
+            return json.dumps({"PolicyEvalResults": {"p": [{"result": "PASS"}]}}).encode()
+
+        def info(self):
+            return {}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(client.urllib.request, "urlopen", lambda *a, **k: _R())
+
+    assert sg.get_policy_results("default", "wf", "run-1") == {"p": [{"result": "PASS"}]}
+
+
+def test_policy_results_accept_an_inline_payload(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(
+        sg, "_request", lambda *a, **k: (200, {"msg": {"PolicyEvalResults": {"p": [{"result": "FAIL"}]}}})
+    )
+
+    assert sg.get_policy_results("default", "wf", "run-1") == {"p": [{"result": "FAIL"}]}
+
+
+def test_missing_results_artifact_is_none_not_empty(monkeypatch):
+    """
+    The caller distinguishes "no such artifact, the facts are authoritative" from "the artifact
+    exists and no policies matched". Collapsing both to {} would hide a real no-policies verdict.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (404, {"msg": "not found"}))
+
+    assert sg.get_results_artifact("default", "wf", "run-1/tirith-results.json") is None
+
+
+@pytest.mark.parametrize("status", [200, 204, 404])
+def test_delete_artifact_treats_absence_as_success(monkeypatch, status):
+    """404 means someone already removed it, which is the state we wanted."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (status, {}))
+
+    assert sg.delete_artifact("default", "wf", "__sg.abc1234-default.tar.gz") is True
+
+
+def test_delete_artifact_reports_failure_rather_than_raising(monkeypatch):
+    """Cleanup runs after the verdict is known, so a failure must not change the outcome."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (403, {"msg": "denied"}))
+
+    assert sg.delete_artifact("default", "wf", "__sg.abc1234-default.tar.gz") is False
+
+
+def test_delete_artifact_targets_a_single_path_segment(monkeypatch):
+    """
+    A nested name is swallowed by the greedy <path:wfGrp> converter in the authorizer and matches
+    `DELETE .../wfgrps/<wfGrp>/` -- the workflow-group delete -- so it would be checked against
+    entirely the wrong permission.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    seen = {}
+    monkeypatch.setattr(sg, "_request", lambda m, p, *a, **k: (seen.update(method=m, path=p), (200, {}))[1])
+
+    sg.delete_artifact("default", "wf", "__sg.abc1234-default.tar.gz")
+
+    assert seen["method"] == "DELETE"
+    tail = seen["path"].split("/artifacts/", 1)[1].rstrip("/")
+    assert "/" not in tail, f"artifact name must be one segment, got {tail!r}"
+
+
+@pytest.mark.parametrize("folder", [None, ""])
+def test_upload_archive_omits_an_unset_folder(monkeypatch, folder):
+    """
+    urlencode stringifies None to the literal "None", and the endpoint treats any non-empty value
+    as a subfolder -- so passing it unconditionally created a real `None/` directory in S3 and left
+    the archive at a nested key the post-run delete could not address. Caught in QA.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    seen = {}
+    monkeypatch.setattr(sg, "_request", lambda m, p, *a, **k: (seen.update(path=p), _upload_response())[1])
+    monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
+
+    sg.upload_file("default", "wf", "__sg.abc1234-default.tar.gz", folder, b"tarbytes")
+
+    assert "folder=" not in seen["path"], seen["path"]
+    assert "None" not in seen["path"], seen["path"]
+
+
+def test_upload_archive_sends_a_folder_when_one_is_given(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    seen = {}
+    monkeypatch.setattr(sg, "_request", lambda m, p, *a, **k: (seen.update(path=p), _upload_response())[1])
+    monkeypatch.setattr(client.urllib.request, "urlopen", _ok_urlopen())
+
+    sg.upload_file("default", "wf", "a.tar.gz", "abc1234", b"tarbytes")
+
+    assert "folder=abc1234" in seen["path"]
+
+
+# --- publishing the state document ---------------------------------------------------------------
+
+
+def test_upload_file_honours_a_json_content_type(monkeypatch):
+    """
+    The state document is JSON, not a gzip. S3 signs the content type into the URL, so sending the
+    archive's type with a JSON body is a signature mismatch.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+
+    def fake_request(method, path, **kwargs):
+        captured["path"] = path
+        return _upload_response()
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+    uploaded = {}
+
+    def fake_urlopen(request, timeout=None):
+        uploaded["content_type"] = request.get_header("Content-type")
+        uploaded["body"] = request.data
+
+        class _R:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return _R()
+
+    monkeypatch.setattr(client.urllib.request, "urlopen", fake_urlopen)
+
+    sg.upload_file("default", "wf", "tfstate.json", None, b'{"version": 4}', content_type="application/json")
+
+    assert uploaded["content_type"] == "application/json"
+    assert uploaded["body"] == b'{"version": 4}'
+    # The endpoint already signs application/json, so nothing has to be asked for.
+    assert "contentType" not in captured["path"]
+
+
+def test_manages_terraform_state_reads_the_workflow_config(monkeypatch):
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+
+    monkeypatch.setattr(
+        sg, "_request", lambda *a, **k: (200, {"msg": {"TerraformConfig": {"managedTerraformState": True}}})
+    )
+    assert sg.manages_terraform_state("default", "wf") is True
+
+    monkeypatch.setattr(
+        sg, "_request", lambda *a, **k: (200, {"msg": {"TerraformConfig": {"managedTerraformState": False}}})
+    )
+    assert sg.manages_terraform_state("default", "wf") is False
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        (404, {"msg": "not found"}),
+        (500, {"msg": "boom"}),
+        (200, {"msg": "a string, not a dict"}),
+        (200, {}),
+    ],
+)
+def test_an_unreadable_workflow_is_treated_as_managing_its_own_state(monkeypatch, response):
+    """
+    Fails safe. Not being able to tell whether `artifacts/tfstate.json` is live terraform state is
+    not a reason to overwrite it with a masked document.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: response)
+
+    assert sg.manages_terraform_state("default", "wf") is True
+
+
+def test_an_absent_facts_document_is_not_a_read_failure(monkeypatch):
+    """
+    404 means the run produced no facts document, which is a legitimate empty result. Treating it
+    as unreadable would turn healthy runs red -- the opposite of the mistake the raise exists to fix.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    monkeypatch.setattr(sg, "_request", lambda *a, **k: (404, {"msg": "not found"}))
+
+    assert sg.get_run_facts("default", "wf", "run-1") == {}
+
+
+def test_an_unreadable_facts_document_raises_rather_than_reading_as_empty(monkeypatch):
+    """
+    A 403 or a 500 means we could not read the verdict, not that there was none. Returning {} made
+    that indistinguishable from "no policies in scope", so a run whose policies had failed reported
+    a clean scope and exited 0.
+    """
+    for status in (403, 500, 502):
+        sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+        monkeypatch.setattr(sg, "_request", lambda *a, **k: (status, {"msg": "nope"}))
+
+        with pytest.raises(SGError, match="Could not read the run facts"):
+            sg.get_run_facts("default", "wf", "run-1")
+
+
+def test_create_run_sends_the_bundle_name_in_terraform_config(monkeypatch):
+    """
+    The per-run channel, and the only one that works for a TERRAFORM workflow.
+
+    core ignores a run's `WfStepsConfig` for TERRAFORM and synthesises the steps from TerraformConfig
+    instead, so a step entry has to travel inside `TerraformConfig.prePlanWfStepsConfig` to reach the
+    run at all. Verified against QA: the same entry sent as top-level WfStepsConfig was silently
+    discarded and the step kept the workflow's stored path.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+
+    def fake_request(method, path, body=None, **kwargs):
+        captured["body"] = body
+        return 200, {"data": {"ResourceName": "wfrun-1"}}
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+    step = {
+        "name": "tirith-iac-governance",
+        "wfStepInputData": {"data": {"bundlePath": "tirith-bundle-a1b2c3d-plan.tar.gz"}},
+    }
+
+    sg.create_run("default", "wf", {"type": "tirith"}, pre_plan_steps=[step])
+
+    sent = captured["body"]["TerraformConfig"]["prePlanWfStepsConfig"]
+    assert sent[0]["wfStepInputData"]["data"]["bundlePath"] == "tirith-bundle-a1b2c3d-plan.tar.gz"
+    # Only prePlanWfStepsConfig: core's merge is shallow, so sending terraformVersion or
+    # managedTerraformState here would override what the workflow stores rather than inherit it.
+    assert set(captured["body"]["TerraformConfig"]) == {"prePlanWfStepsConfig"}
+
+
+def test_create_run_without_steps_sends_no_terraform_config(monkeypatch):
+    """A caller that names no bundle must not blank the workflow's stored configuration."""
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+    monkeypatch.setattr(
+        sg,
+        "_request",
+        lambda m, p, body=None, **k: (captured.setdefault("body", body), (200, {"data": {"ResourceName": "r"}}))[1],
+    )
+
+    sg.create_run("default", "wf", {"type": "tirith"})
+
+    assert "TerraformConfig" not in captured["body"]
+
+
+def test_every_run_suppresses_the_vcs_checkout(monkeypatch):
+    """
+    The run must send an *empty* VCSConfig, and must send it even when nothing else is set.
+
+    core resolves the run's config as `data.get("VCSConfig", wfDetails.get("VCSConfig", {}))`, so a
+    present empty value beats the workflow's and an omitted key inherits it. Inheriting is what broke
+    private repositories: the runner cloned with no credentials and the run ERRORED before the step
+    ran. Asserting `== {}` rather than truthiness is the point -- `None` would also read as "no
+    checkout" here but flows into core's config-policy payload as a null.
+    """
+    for kwargs in ({}, {"pre_plan_steps": [{"name": "tirith-iac-governance"}]}):
+        sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+        captured = {}
+
+        def fake_request(method, path, body=None, **kw):
+            captured["body"] = body
+            return 200, {"data": {"ResourceName": "r"}}
+
+        monkeypatch.setattr(sg, "_request", fake_request)
+        sg.create_run("default", "wf", {"type": "tirith"}, **kwargs)
+
+        assert "VCSConfig" in captured["body"], "an omitted key inherits the workflow's repo"
+        assert captured["body"]["VCSConfig"] == {}
+
+
+def test_the_workflow_still_records_its_repository(monkeypatch):
+    """
+    Suppressing the checkout per run must not cost the workflow its repo link -- that is the whole
+    reason the config is set on creation, and the two live at different levels for that reason.
+    """
+    sg = SGClient("https://api.example/api/v1", "acme", "sgo_x")
+    captured = {}
+
+    def fake_request(method, path, body=None, **kw):
+        captured["body"] = body
+        return 201, {}
+
+    monkeypatch.setattr(sg, "_request", fake_request)
+    vcs = SGClient.vcs_config("https://github.com/acme/repo", "main")
+    sg.ensure_workflow("default", "wf", "d", {"terraformVersion": "1.5.7"}, vcs_config=vcs)
+
+    source = captured["body"]["VCSConfig"]["iacVCSConfig"]["customSource"]
+    assert source["config"]["repo"] == "https://github.com/acme/repo"
+    assert source["sourceConfigDestKind"] == "GIT_OTHER"
+    # api rejects iacVCSConfig without it, so it is always present at this level -- which is exactly
+    # why the run has to send an empty config rather than a trimmed one.
+    assert captured["body"]["VCSConfig"]["iacVCSConfig"]["useMarketplaceTemplate"] is False

@@ -15,7 +15,6 @@ from tirith import __version__
 
 from .core import start_policy_evaluation
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -27,6 +26,23 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
+# Subcommands are dispatched before the flat parser sees anything. argparse cannot express an
+# optional subcommand alongside options like `-policy-path` (a single dash and a long name), and the
+# local-evaluation surface is a contract: tests/core/test_output_compatibility.py asserts its --json
+# output is byte-identical to a golden file. An explicit pre-dispatch leaves that untouched.
+#
+# Named `platform` because that is what it evaluates against: the policies your StackGuardian
+# organization enforces, run on the platform, rather than policy files in your repository.
+#
+# It was briefly `remote` on this branch, on the argument that "platform check" can read as *a check of
+# the platform*. Reverted -- the vagueness is minor next to having one name, and the concern that
+# prompted the rename was really that the open-source surface could not gate at all, which
+# `--fail-on-error` fixed. No alias in either direction: nothing is released, so there is no caller to
+# keep working.
+SUBCOMMAND = "platform"
+SUBCOMMANDS = {SUBCOMMAND}
+
+
 def main(args=None) -> ExitStatus:
     """
     The main function.
@@ -36,6 +52,13 @@ def main(args=None) -> ExitStatus:
 
     Return exit status code.
     """
+    argv = list(sys.argv[1:] if args is None else args)
+
+    if argv and argv[0] in SUBCOMMANDS:
+        from tirith.platform import cli as platform_cli
+
+        return platform_cli.main(argv)
+
     try:
 
         class _WidthFormatter(argparse.RawTextHelpFormatter):
@@ -47,6 +70,11 @@ def main(args=None) -> ExitStatus:
             formatter_class=_WidthFormatter,
             epilog=textwrap.dedent(
                 """\
+         Subcommands:
+
+            tirith platform check --help   Evaluate against the policies your StackGuardian
+                                           organization enforces, rather than local files.
+
          About Tirith:
          
             * Abstract away the implementation complexity of policy engine underneath.
@@ -54,7 +82,7 @@ def main(args=None) -> ExitStatus:
             * Provide a standard framework for scanning various configurations with granularity.
             * Provide modularity to enable easy extensibility
             * Github - https://github.com/StackGuardian/tirith
-            * Docs - https://docs.stackguardian.io/docs/tirith/overview
+            * Docs - https://github.com/StackGuardian/tirith#readme
         """
             ),
         )
@@ -102,11 +130,17 @@ def main(args=None) -> ExitStatus:
             action="store_true",
             help="Show detailed logs of from the run",
         )
+        parser.add_argument(
+            "--fail-on-error",
+            dest="failOnError",
+            action="store_true",
+            help="Exit 3 when a policy fails, instead of 0. Off by default for compatibility.",
+        )
         parser.add_argument("--version", action="version", version=__version__)
 
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
 
-        if len(sys.argv) == 1:
+        if not argv:
             parser.print_help()
             sys.exit(0)
 
@@ -135,6 +169,49 @@ def main(args=None) -> ExitStatus:
                 print(formatted_result)
             else:
                 pretty_print_result_dict(result)
+
+            # Without --fail-on-error this returns 0 whether the policy passed or failed, which is
+            # what it has always done: the verdict is in the output, and changing that silently would
+            # turn every existing green CI job red on upgrade.
+            #
+            # But a gate that cannot fail is not a gate, and this was the only way to run tirith
+            # without an account -- so the honest answer was an opt-in flag rather than pointing
+            # people at the hosted path when they need an exit code that means something.
+            #
+            # 3, not 1, and the distinction is the point: 3 says the infrastructure violates a policy,
+            # 1 says tirith could not tell you. The same split `platform check` uses, because a caller
+            # scripting both should not have to learn two vocabularies.
+            #
+            # `final_result` is tri-state, and that is what decides:
+            #
+            #   True    every check that ran passed              -> 0
+            #   False   a check ran and said no                  -> 3
+            #   None    nothing ran; every check was skipped     -> 1
+            #   absent  the policy could not be loaded at all    -> 1
+            #
+            # None is not a pass. A policy whose every check was skipped -- `error_tolerance` swallowing
+            # a provider that found nothing -- checked precisely nothing, and reporting that as green is
+            # the failure this whole flag exists to prevent. `absent` is the missing-variables path,
+            # which returns `errors` and no result at all.
+            #
+            # `errors` is deliberately NOT consulted. It reads like a tool-failure signal and is not: it
+            # is populated only by the eval-expression pass, and the one thing that puts a message there
+            # beside a real verdict is the informational "these ids are not defined and have been
+            # removed" note. Gating on it inverted both halves of this contract -- a genuine violation
+            # whose expression mentioned a typo'd id exited 1, while a policy naming an unknown provider
+            # exited 3.
+            #
+            # Known limit, worth stating rather than pretending otherwise: a *misconfigured* policy -- an
+            # unsupported `condition.type`, an unknown `required_provider` -- surfaces from the engine as
+            # an ordinary failed evaluator with no error attached, so it is indistinguishable from a
+            # violation here and exits 3. Fixing that means the engine reporting it distinctly, not this
+            # branch guessing from free text.
+            if args.failOnError:
+                final_result = result.get("final_result")
+                if "final_result" not in result or final_result is None:
+                    return ExitStatus.ERROR
+                if final_result is not True:
+                    return ExitStatus.ERROR_POLICY_FAILED
             return ExitStatus.SUCCESS
         except Exception as e:
             # TODO:write an exception class for all provider exceptions.

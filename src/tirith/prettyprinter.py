@@ -97,7 +97,7 @@ def pretty_print_result_dict(final_result_dict: Dict) -> None:
             print(f"  {TermStyle.fail('FAILED')}")
             num_failed_checks += 1
 
-        for result_num, result_dict in enumerate(check_dict["result"]):
+        for result_num, result_dict in enumerate(check_dict.get("result", [])):
             result_message = result_dict["message"]
             if result_dict["passed"]:
                 print(TermStyle.green(f"    {result_num+1}. PASSED: {result_message}"))
