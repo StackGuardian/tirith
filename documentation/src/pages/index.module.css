@@ -1,23 +1,89 @@
 /**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
+ * Landing page styles. Kept deliberately small: this page is a placeholder, and
+ * it should not grow a design system that the real rebuild would have to undo.
+ *
+ * Colours come from Docusaurus theme variables so light and dark mode both work
+ * without a second palette being defined here.
  */
 
-.heroBanner {
-  padding: 4rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+.page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 5rem;
+}
+
+.hero {
+  margin-bottom: 1rem;
+}
+
+.heroTitle {
+  font-size: 2.25rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.tagline {
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+}
+
+.muted {
+  color: var(--ifm-color-emphasis-700);
+}
+
+.section {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.sectionHeading {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.list li {
+  margin-bottom: 0.75rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.action,
+.actionPrimary {
+  display: inline-block;
+  padding: 0.5rem 1.1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--ifm-color-primary);
+}
+
+.action {
+  color: var(--ifm-color-primary);
+}
+
+.actionPrimary {
+  background: var(--ifm-color-primary);
+  color: var(--ifm-background-color);
+}
+
+.action:hover,
+.actionPrimary:hover {
+  text-decoration: none;
+  opacity: 0.85;
 }
 
 @media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
+  .page {
+    padding: 2rem 1rem 3rem;
   }
-}
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .heroTitle {
+    font-size: 1.75rem;
+  }
 }

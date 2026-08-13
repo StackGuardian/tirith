@@ -5,10 +5,10 @@ const config = {
   title: 'Tirith',
   favicon: 'img/tirith.png',
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  url: 'https://stackguardian.github.io',
+  // Set the /<baseUrl>/ pathname under which your site is served.
+  // This is a GitHub Pages project site, so it is served under /<projectName>/.
+  baseUrl: '/tirith/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
