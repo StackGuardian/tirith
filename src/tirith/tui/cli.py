@@ -11,10 +11,22 @@ import json
 import os
 import sys
 
+from .. import __version__
 from ..status import ExitStatus
 from . import TUI_EXTRA_HINT
 
 DEFAULT_PORT = 8000
+
+# The startup wordmark for `--serve`, drawn in the same three-row style the serving library
+# uses for its own, so the terminal announces Tirith rather than the machinery behind it.
+# Interpolates the version, which is the thing a reader actually wants from a banner.
+# Every row is 21 characters wide. The first draft had the second T one column short, which
+# ran its stem into the H beside it -- rows of 21/22/22 rather than 21/21/21.
+SERVE_LOGO = (
+    "[bold cyan]___ _ ____ _ ___ _  _\n"
+    " |  | |__/ |  |  |__|\n"
+    " |  | |  \\ |  |  |  |[not bold]  v" + __version__ + "\n"
+)
 
 
 def _load(path, label):
@@ -194,9 +206,24 @@ def _serve(opts, has_result):
         )
         return ExitStatus.ERROR
 
-    command = _rebuild_command(opts, has_result)
-    server = Server(command, host=opts.host, port=opts.port)
-    print(f"Serving the Tirith UI at http://{opts.host}:{opts.port}")
+    class TirithServer(Server):
+        """A server that announces Tirith rather than the library serving it."""
+
+        async def on_startup(self, app):
+            """
+            Replace the serving library's startup banner with our own.
+
+            The default prints a large TEXTUAL-SERVE wordmark and the full `python -m` command
+            line, which tells the reader about our implementation rather than about the thing
+            they just started. Overriding this method is the supported way to change it -- the
+            base class documents it as such -- so there is nothing to monkey-patch.
+            """
+            del app
+            self.console.print(SERVE_LOGO, highlight=False)
+            self.console.print(f"Policy playground on [link]{self.public_url}[/link]")
+            self.console.print("\n[cyan]Press Ctrl+C to quit")
+
+    server = TirithServer(_rebuild_command(opts, has_result), host=opts.host, port=opts.port)
     try:
         server.serve()
     except KeyboardInterrupt:

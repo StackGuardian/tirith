@@ -13,6 +13,7 @@ import sys
 
 from pytest import importorskip, mark, raises
 
+from tirith import __version__
 from tirith.status import ExitStatus
 from tirith.tui import cli as ui_cli
 
@@ -115,6 +116,30 @@ def test_piping_into_serve_is_refused(monkeypatch, capsys):
 
     assert status == ExitStatus.ERROR
     assert "stdin" in capsys.readouterr().err
+
+
+@mark.passing
+def test_the_serve_banner_rows_are_the_same_width():
+    """
+    The wordmark is drawn by hand, and a row one character short runs one letter into the next
+    -- which is exactly what happened: the second T collided with the H, at 21/22/22.
+
+    Compared by width rather than by eye, because that is the property that was actually wrong
+    and the one nobody notices by rereading the string literal.
+    """
+    rows = ui_cli.SERVE_LOGO.split("\n")
+    # Strip the markup that opens the first row and the version that closes the last.
+    rows[0] = rows[0].replace("[bold cyan]", "")
+    rows[2] = rows[2].split("[not bold]")[0]
+
+    widths = {len(row) for row in rows[:3]}
+    assert len(widths) == 1, f"rows are ragged: {[len(r) for r in rows[:3]]}"
+
+
+@mark.passing
+def test_the_serve_banner_names_tirith_and_its_version():
+    """The banner exists to say what this is; the version is what a reader wants from it."""
+    assert __version__ in ui_cli.SERVE_LOGO
 
 
 @mark.passing
