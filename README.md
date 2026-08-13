@@ -232,7 +232,6 @@ policy:
 Swap the last line for `tirith platform check --workflow-id my-repo --input-path plan.json
 --fail-on-error` to use your organization's policies instead of the committed files. Nothing here is
 GitLab-specific: any runner that can execute a container and produce a plan works the same way.
-Azure DevOps has no integration and is not supported today.
 
 ## Exit codes
 
