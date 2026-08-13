@@ -1,9 +1,9 @@
-"""
+r"""
 The Explorer: navigate an evaluation's checks, results, and the resources behind them.
 
 The view this whole package was written for. `pretty_print_result_dict` prints a flat list of
 messages, which on a wildcard policy over a real plan is hundreds of lines reading
-"`\"product-456\"` is not empty" with nothing to say which resource each came from -- while
+`"product-456"` is not empty, with nothing to say which resource each came from -- while
 the result document has carried the resource's full address, planned action and before/after
 values all along.
 

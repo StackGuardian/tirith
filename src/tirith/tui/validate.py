@@ -36,6 +36,7 @@ class Finding(NamedTuple):
     message: str
 
     def __str__(self) -> str:
+        """Render as `where: message`, which is how findings appear in test failures."""
         return f"{self.where}: {self.message}"
 
 
@@ -304,11 +305,11 @@ def _check_eval_expression(policy: Dict, declared_ids: List[str], findings: List
 
 
 def _names_in_expression(expression: str, declared: set) -> List[str]:
-    """
+    r"""
     The identifiers an eval_expression refers to.
 
     Mirrors what core actually does, which is *not* a parse. core substitutes each declared id
-    into the string by regex (`\\bid\\b`) before compiling, so ids that are not valid Python
+    into the string by regex (`\bid\b`) before compiling, so ids that are not valid Python
     names -- `eval-id-1`, used by several shipped policies -- are resolved fine when declared
     and only reach the parser when they are not. Parsing first would therefore read `eval-id-1`
     as `eval - id - 1` and report three phantom undefined names.
