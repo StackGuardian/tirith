@@ -9,6 +9,7 @@ an instruction rather than a traceback. That also means these run on CI's Python
 import io
 import json
 import os
+import shlex
 import sys
 
 from pytest import importorskip, mark, raises
@@ -150,14 +151,68 @@ def test_the_missing_extra_is_reported_with_instructions(capsys, monkeypatch):
     ImportError traceback.
     """
 
-    # Setting the module to None makes `from .app import ...` raise ImportError, which is what
-    # a missing extra does.
-    monkeypatch.setitem(sys.modules, "tirith.tui.app", None)
+    # Raised from the import itself, naming textual, which is what a missing extra produces.
+    # Evicting `tirith.tui.*` from sys.modules to force a real re-import would work too, but
+    # leaves the package to be re-imported under a broken textual by whichever test runs next
+    # -- which hung the suite rather than failing it.
+    # A stand-in module whose `build_app` attribute raises on access, so `from .app import
+    # build_app` fails with the ImportError a missing toolkit produces -- named textual, which
+    # is what the narrowed handler looks for.
+    #
+    # Patching sys.modules rather than __import__: blocking imports by name caught pytest's own
+    # machinery, and evicting tirith.tui.* left the package to be re-imported under a broken
+    # textual by whichever test ran next, which hung the suite instead of failing it.
+    class RaisesOnAccess:
+        def __getattr__(self, name):
+            raise ImportError("No module named 'textual'", name="textual")
+
+    monkeypatch.setitem(sys.modules, "tirith.tui.app", RaisesOnAccess())
 
     status = ui_cli.main(["ui"])
 
     assert status == ExitStatus.ERROR
     assert "pip install" in capsys.readouterr().err
+
+
+@mark.passing
+def test_served_paths_are_quoted_for_a_shell():
+    """
+    textual-serve launches with create_subprocess_shell, so this command really is parsed by
+    sh. Double quotes left `$`, backticks and backslashes live: a path like
+    `/tmp/my $work/policy.json` had `$work` expanded to nothing, and every browser session
+    started against a path that did not exist -- with nothing in the serving terminal to say
+    why.
+    """
+    parser = ui_cli.build_parser()
+    opts = parser.parse_args(["--policy", "/tmp/my $work/policy.json"])
+
+    command = ui_cli._rebuild_command(opts, has_result=False)
+
+    # The dangerous characters survive a round trip through the shell's own parser.
+    assert "/tmp/my $work/policy.json" in shlex.split(command)
+
+
+@mark.passing
+@mark.parametrize(
+    "module,is_missing",
+    [
+        ("textual", True),
+        ("textual.widgets", True),
+        ("textual_serve", True),
+        ("tirith.tui.views.playground", False),
+        ("", False),
+    ],
+)
+def test_only_the_missing_toolkit_gets_the_install_message(module, is_missing):
+    """
+    `from .app import build_app` pulls in four views, the schema, the validator and the engine.
+    A blanket `except ImportError` told someone whose toolkit is installed to install it again,
+    and threw away the traceback for the real fault.
+    """
+    error = ImportError(f"no module named {module}")
+    error.name = module or None
+
+    assert ui_cli._is_missing_toolkit(error) is is_missing
 
 
 @mark.passing

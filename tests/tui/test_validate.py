@@ -434,6 +434,63 @@ def test_summarize_counts_errors_and_warnings():
 
 
 @mark.passing
+@mark.parametrize("bad", [["stackguardian/json"], {"name": "x"}], ids=["list", "dict"])
+def test_an_unhashable_provider_is_reported_not_raised(bad):
+    """
+    A list or an object here is unhashable, so `x not in PROVIDERS_DICT` raised TypeError
+    instead of returning False -- and check_policy is called outside any try in the Playground,
+    so the exception escaped and killed the app mid-edit. That is the one thing this module
+    exists to prevent.
+
+    Reachable by an ordinary mistake: the neighbouring resource_type argument really is a list.
+    """
+    policy = _valid_policy()
+    policy["meta"]["required_provider"] = bad
+
+    assert any("Must be a string" in f.message for f in _errors(policy))
+
+
+@mark.passing
+@mark.parametrize("bad", [["Equals"], {"type": "Equals"}], ids=["list", "dict"])
+def test_an_unhashable_evaluator_type_is_reported_not_raised(bad):
+    """The same unhashable-key hazard at condition.type."""
+    policy = _valid_policy()
+    policy["evaluators"][0]["condition"]["type"] = bad
+
+    assert any("Must be a string" in f.message for f in _errors(policy))
+
+
+@mark.passing
+def test_exclude_resource_types_is_accepted_by_count_and_action():
+    """
+    terraform_plan reads exclude_resource_types once and honours it in the attribute, count and
+    action branches alike. Described against attribute only, the validator told the author of a
+    correct count policy that the argument "will be ignored" -- the opposite of true.
+    """
+    for operation, condition in (
+        ("count", {"type": "GreaterThan", "value": 0}),
+        ("action", {"type": "NotContains", "value": "delete"}),
+    ):
+        policy = {
+            "meta": {"version": "v1", "required_provider": "stackguardian/terraform_plan"},
+            "evaluators": [
+                {
+                    "id": "check",
+                    "provider_args": {
+                        "operation_type": operation,
+                        "terraform_resource_type": "*",
+                        "exclude_resource_types": ["aws_iam_policy"],
+                    },
+                    "condition": condition,
+                }
+            ],
+            "eval_expression": "check",
+        }
+
+        assert validate.check_policy(policy) == [], operation
+
+
+@mark.passing
 def test_errors_sort_before_warnings():
     """A UI showing only the first finding must show a blocking one."""
     policy = _valid_policy()

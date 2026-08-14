@@ -76,7 +76,11 @@ class TirithApp(App):
             with TabPane("Builder", id="builder"):
                 yield BuilderView(on_policy_built=self._open_policy_in_playground, id="builder-view")
             with TabPane("Playground", id="playground"):
-                yield PlaygroundView(on_report=self._adopt_report, id="playground-view")
+                yield PlaygroundView(
+                    on_report=self._adopt_report,
+                    on_user_action=self._release_explorer,
+                    id="playground-view",
+                )
         yield Footer()
 
     def on_mount(self) -> None:
@@ -100,15 +104,22 @@ class TirithApp(App):
         """
         Keep the Explorer showing whatever the Playground last evaluated.
 
-        Except when the user opened a specific result with `--result`: the Playground loads an
-        example as it mounts, and adopting that would silently replace the evaluation they
-        asked to look at with an unrelated one. The first playground run after that is the
-        user's own doing, so it takes over from then on.
+        Except when the user opened a specific result with `--result`, which stays on screen
+        until they run something themselves. The Playground evaluates while mounting -- once
+        for the example it loads, and again if the command line supplied an --input -- so
+        anything that unpins on the first adopt is defeated by the second: the Explorer ended
+        up holding example 01 evaluated against the user's plan.
+
+        Released by _release_explorer, called from the deliberate actions (Run, Re-run, an
+        edit, opening a document) rather than counted down here.
         """
         if self._explorer_is_pinned:
-            self._explorer_is_pinned = False
             return
         self.query_one("#explorer-view", ExplorerView).refresh_report(report)
+
+    def _release_explorer(self) -> None:
+        """The user has run something of their own, so the Explorer follows the Playground again."""
+        self._explorer_is_pinned = False
 
     def _open_policy_in_playground(self, policy) -> None:
         self.query_one("#playground-view", PlaygroundView).load_policy(policy)

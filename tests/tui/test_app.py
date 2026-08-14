@@ -40,6 +40,7 @@ def drives_the_app(test):
 
 # Imported after the importorskip above, so this module is skipped rather than failing to
 # import when textual is absent.
+from rich.text import Text  # noqa: E402
 from textual.widgets import Button, Input, Select, Tabs  # noqa: E402
 
 from tirith.core.core import start_policy_evaluation_from_dict  # noqa: E402
@@ -204,6 +205,74 @@ async def test_explorer_accepts_a_report_before_it_has_mounted(failing_report):
     view.refresh_report(failing_report)
 
     assert view._report is failing_report
+
+
+@mark.passing
+@drives_the_app
+async def test_a_result_survives_an_input_given_alongside_it(failing_report):
+    """
+    `--result r.json --input plan.json` is accepted, and two evaluations run while mounting:
+    the Playground's own example, then the supplied input. A pin consumed by the first was
+    defeated by the second, so the Explorer ended up holding example 01 evaluated against the
+    user's plan rather than the result they asked to explore.
+    """
+    other_input = json.load(
+        open(os.path.join(REPO_ROOT, "src", "tirith", "tui", "examples", "01-required-tags", "input.json"))
+    )
+    app = build_app(report=failing_report, input_document=other_input)
+
+    async with app.run_test(size=TERMINAL_SIZE) as pilot:
+        await pilot.pause()
+
+        labels = " ".join(str(node.label) for node in app.query_one("#check-tree").root.children)
+        assert "database_not_destroyed" in labels, labels
+
+
+@mark.passing
+@drives_the_app
+async def test_a_user_run_hands_the_explorer_over(failing_report):
+    """The pin protects the opening view, not the whole session: a deliberate Run takes over."""
+    app = build_app(report=failing_report)
+
+    async with app.run_test(size=TERMINAL_SIZE) as pilot:
+        await pilot.pause()
+        app.query_one("#run-now", Button).press()
+        await pilot.pause()
+
+        labels = " ".join(str(node.label) for node in app.query_one("#check-tree").root.children)
+        assert "costcenter_tag_present" in labels, labels
+
+
+@mark.passing
+@drives_the_app
+async def test_a_message_without_a_resource_is_not_double_escaped():
+    """
+    The fallback was escaped twice, so every result without a resource label -- which is every
+    json and sg_workflow result -- showed a literal backslash before any bracket.
+    """
+    report = results.parse_report(
+        {
+            "evaluators": [
+                {"id": "a", "passed": False, "result": [{"passed": False, "message": "bucket[0] is not empty"}]}
+            ],
+            "final_result": False,
+            "errors": [],
+        }
+    )
+    app = build_app(report=report)
+
+    async with app.run_test(size=TERMINAL_SIZE) as pilot:
+        await pilot.pause()
+        tree = app.query_one("#check-tree")
+        tree.select_node(tree.root.children[0])
+        await pilot.pause()
+
+        # Asserted on the *rendered* text, not the markup: one backslash in the markup is
+        # escaping working correctly, and only Rich's output shows whether it survives to the
+        # screen. Checking the markup would fail on a correct implementation.
+        rendered = Text.from_markup(str(app.query_one("#detail-content").content)).plain
+        assert "bucket[0] is not empty" in rendered
+        assert "\\" not in rendered
 
 
 @mark.passing

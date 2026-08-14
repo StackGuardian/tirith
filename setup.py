@@ -87,8 +87,12 @@ setup(
         # get nothing rather than an error. And tirith's main use is as a CI gate, where every
         # dependency is install time on every run -- people gating a pipeline should not pay
         # for an interface they never open.
+        # textual>=8.0 rather than a looser floor: `Select.NULL` (the unselected sentinel the
+        # Playground and Builder both test against) only exists from 8.0. Before that it was
+        # named Select.BLANK, so on 0.60-7.x the example picker raises AttributeError the first
+        # time the prompt row is chosen. `Select(compact=...)` is likewise newer than 0.60.
         "tui": [
-            'textual>=0.60; python_version >= "3.9"',
+            'textual>=8.0; python_version >= "3.9"',
             'textual-serve>=1.0; python_version >= "3.9"',
         ],
     },

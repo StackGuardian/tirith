@@ -105,6 +105,38 @@ def test_described_args_appear_in_their_handler():
 
 
 @mark.passing
+def test_terraform_operations_that_honour_exclude_resource_types_all_declare_it():
+    """
+    The reverse direction: handler -> table.
+
+    Every other check here asks whether what the table describes exists. Nothing asked whether
+    what the handler *reads* is described, which is how exclude_resource_types came to be
+    attached to `attribute` alone while provide() honours it in three branches -- so the
+    validator reported a correct `count` policy as using an ignored argument.
+
+    Counted from the source: each branch that consults the name needs it in the table.
+    """
+    # Code lines only: each branch carries a comment naming the argument as well, so counting
+    # every mention doubles the real figure.
+    source = _handler_source("terraform_plan")
+    honouring = sum(
+        1 for line in source.splitlines() if "in exclude_resource_types" in line and not line.strip().startswith("#")
+    )
+
+    declared = [
+        operation.name
+        for operation in schema.PROVIDERS["stackguardian/terraform_plan"].operations
+        if any(arg.name == "exclude_resource_types" for arg in operation.args)
+    ]
+
+    assert len(declared) == honouring, (
+        f"terraform_plan consults exclude_resource_types in {honouring} branches but the table "
+        f"declares it for {len(declared)}: {declared}. A policy using it on an undeclared "
+        f"operation is reported as ignoring the argument, which is wrong."
+    )
+
+
+@mark.passing
 def test_sg_workflow_attribute_choices_are_all_handled():
     """
     sg_workflow raises KeyError on an attribute it does not branch on, so offering one that is

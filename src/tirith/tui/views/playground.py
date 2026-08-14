@@ -33,10 +33,14 @@ class PlaygroundView(Vertical):
 
     DESCRIPTION = "Edit a policy or its input and watch the verdict change. Pick an example to start."
 
-    def __init__(self, on_report=None, **kwargs):
+    def __init__(self, on_report=None, on_user_action=None, **kwargs):
         super().__init__(**kwargs)
         # Called with each new report so the Explorer tab can show the same evaluation.
         self._on_report = on_report
+        # Called when the user does something deliberate here -- edits a document, presses Run,
+        # opens a file, picks an example. It tells the app that a report opened with --result
+        # is no longer what they are looking at. Mount-time evaluation does not call it.
+        self._on_user_action = on_user_action
         self._examples = examples_module.load_examples()
         self._timer = None
         self._current_example = None
@@ -167,6 +171,7 @@ class PlaygroundView(Vertical):
         """
         if event.select.id != "example-select":
             return
+        self._note_user_action()
 
         if event.value is Select.NULL:
             # Choosing the prompt means "none of these": empty both editors, so it is a way to
@@ -196,7 +201,13 @@ class PlaygroundView(Vertical):
         }
         action = actions.get(event.button.id or "")
         if action:
+            self._note_user_action()
             action()
+
+    def _note_user_action(self) -> None:
+        """Tell the app the user has taken over, so a --result report stops being pinned."""
+        if self._on_user_action:
+            self._on_user_action()
 
     # ------------------------------------------------------------- toolbars
 
@@ -285,6 +296,8 @@ class PlaygroundView(Vertical):
 
     def on_text_area_changed(self, event: TextArea.Changed) -> None:
         del event
+        # Typing here is a user action; programmatic writes suppress this event entirely.
+        self._note_user_action()
         # Typing makes a previous confirmation ("Loaded plan.json") stale. Programmatic writes
         # do not reach here at all -- load_documents suppresses their Changed events -- so this
         # only ever runs for a real edit.

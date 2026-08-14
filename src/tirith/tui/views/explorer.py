@@ -142,7 +142,10 @@ class ExplorerView(Vertical):
             lines.append("")
             lines.append("[bold]Failing resources[/bold]")
             for result in failing:
-                name = result.resource.label or render.escape(result.message)
+                # Escaped once, on the next line. Escaping the fallback here too put a literal
+                # backslash on screen for every result without a resource label -- which is
+                # every json and sg_workflow result.
+                name = result.resource.label or result.message
                 lines.append(f"  ✘ {render.escape(name)}")
 
         self._detail().update("\n".join(lines))

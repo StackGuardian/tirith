@@ -64,6 +64,17 @@ _RESOURCE_TYPE = Arg(
     placeholder="aws_s3_bucket",
 )
 
+# Read once at the top of terraform_plan's provide() and honoured by the `attribute`, `action`
+# and `count` branches alike -- so it belongs to all three. Listed against `attribute` only, it
+# made the validator report a correct `count` policy as using an argument that "will be
+# ignored", which is the opposite of true.
+_EXCLUDE_RESOURCE_TYPES = Arg(
+    "exclude_resource_types",
+    False,
+    "Resource types to skip. Only consulted when the type is '*'.",
+    placeholder='["aws_iam_policy"]',
+)
+
 # infracost takes a *list*, not a string, and `["*"]` is how you ask for the whole plan rather
 # than by omitting the key -- `provide` raises KeyError when it is absent. So this is required
 # with a wildcard default, where terraform_plan's equivalent is a plain string.
@@ -91,23 +102,18 @@ PROVIDERS: Dict[str, Provider] = {
                         "Attribute to read from change.after. Supports dots and '*' for nesting.",
                         placeholder="tags.costcenter",
                     ),
-                    Arg(
-                        "exclude_resource_types",
-                        False,
-                        "Resource types to skip. Only consulted when the type is '*'.",
-                        placeholder='["aws_iam_policy"]',
-                    ),
+                    _EXCLUDE_RESOURCE_TYPES,
                 ],
             ),
             Operation(
                 "count",
                 "How many resources of a type the plan changes.",
-                [_RESOURCE_TYPE],
+                [_RESOURCE_TYPE, _EXCLUDE_RESOURCE_TYPES],
             ),
             Operation(
                 "action",
                 "The planned actions (create / update / delete / no-op) per resource.",
-                [_RESOURCE_TYPE],
+                [_RESOURCE_TYPE, _EXCLUDE_RESOURCE_TYPES],
             ),
             Operation(
                 "direct_dependencies",

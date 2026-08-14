@@ -9,6 +9,7 @@ this file is not having the extra installed.
 import argparse
 import json
 import os
+import shlex
 import sys
 
 from .. import __version__
@@ -54,6 +55,18 @@ def _load(path, label):
         return json.loads(text)
     except json.JSONDecodeError as e:
         raise ValueError(f"{label} - is not valid JSON: {e.msg} (line {e.lineno}, column {e.colno})")
+
+
+def _is_missing_toolkit(error):
+    """
+    Whether an ImportError is the optional extra being absent, rather than a real fault.
+
+    `ImportError.name` is the module that could not be found, so this distinguishes "textual is
+    not installed" from "views/playground.py imports a symbol that no longer exists" -- which
+    arrives as the same exception type from the same import statement.
+    """
+    module = getattr(error, "name", None) or ""
+    return module.split(".")[0] in ("textual", "textual_serve")
 
 
 def _reattach_stdin():
@@ -157,11 +170,15 @@ def main(argv):
 
     try:
         from .app import build_app
-    except ImportError:
-        # The expected failure for anyone who installed plain `py-tirith`, so it gets an
-        # instruction rather than a traceback.
-        print(TUI_EXTRA_HINT, file=sys.stderr)
-        return ExitStatus.ERROR
+    except ImportError as e:
+        # Only the missing toolkit gets the install instruction. This import pulls in the whole
+        # package -- four views, the schema, the validator, the engine -- and a blanket except
+        # told someone whose textual is installed to install it again, discarding the traceback
+        # for the real fault (a typo'd symbol, an API removed in a later release).
+        if _is_missing_toolkit(e):
+            print(TUI_EXTRA_HINT, file=sys.stderr)
+            return ExitStatus.ERROR
+        raise
 
     from . import results
 
@@ -199,7 +216,10 @@ def _serve(opts, has_result):
     """
     try:
         from textual_serve.server import Server
-    except ImportError:
+    except ImportError as e:
+        # Narrowed for the same reason as the .app import above.
+        if not _is_missing_toolkit(e):
+            raise
         print(
             "Serving needs the optional 'tui' extra:\n    pip install 'py-tirith[tui]'",
             file=sys.stderr,
@@ -249,4 +269,12 @@ def _rebuild_command(opts, has_result):
 
 
 def _quote(part):
-    return f'"{part}"' if " " in part else part
+    """
+    Quote one argument for a shell.
+
+    textual-serve launches with `asyncio.create_subprocess_shell`, so this string really is
+    interpreted by sh. Wrapping in double quotes was not enough -- they leave `$`, backticks
+    and backslashes live, so a path like `/tmp/my $work/policy.json` had `$work` expanded to
+    nothing and every browser session started with a path that did not exist.
+    """
+    return shlex.quote(part)
