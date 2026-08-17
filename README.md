@@ -8,6 +8,20 @@
 
 # Tirith — IaC Governance plugin
 
+> [!NOTE]
+> **New — `tirith ui`, an interactive interface. In beta, and we want your input.**
+>
+> Explore a failing evaluation down to the resource that caused it, assemble policies from a
+> form, and experiment in a playground with worked examples. Try it with
+> `pip install 'py-tirith[tui]'` and then `tirith ui` — see
+> [The interactive interface](#the-interactive-interface).
+>
+> It is new, so the rough edges are still being found. Tell us what is confusing, what is
+> missing, or what you would rather it did:
+> [open an issue](https://github.com/StackGuardian/tirith/issues) or say so in
+> [Slack](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ).
+> Nothing about the existing CLI changes: same flags, same `--json` output, same exit codes.
+
 **Plugin IaC Governance for any pipeline, running anywhere.** Evaluate plans with Tirith, protect
 sensitive values, enforce centralised governance, and surface actionable results before
 infrastructure changes are applied.
@@ -206,6 +220,12 @@ About Tirith:
 
 
 ## The interactive interface
+
+> [!NOTE]
+> **Beta.** Everything below works and is covered by tests, but the interface is new and the
+> shape of it is still open. Feedback is genuinely wanted — especially on what is missing.
+> [Open an issue](https://github.com/StackGuardian/tirith/issues) or find us in
+> [Slack](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ).
 
 `tirith ui` opens a terminal interface with three tabs: an **Explorer** for reading results, a
 **Builder** for assembling policies, and a **Playground** for experimenting.

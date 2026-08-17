@@ -21,6 +21,7 @@ module.exports = {
       label: "Using Tirith",
       items: [
         "tirith-usage/cli-reference",
+        "tirith-usage/interactive-interface",
         "tirith-usage/exit-codes",
         "tirith-usage/ci-integration",
         "tirith-usage/platform-check",
