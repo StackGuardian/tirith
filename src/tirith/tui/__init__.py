@@ -13,7 +13,7 @@ run() rather than here, so that:
 
 TUI_EXTRA_HINT = (
     "The Tirith interactive interface needs the optional 'tui' extra:\n"
-    "    pip install 'py-tirith[tui]'\n"
+    "    pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'\n"
     "It is optional so that using tirith as a CI gate stays dependency-light. It needs "
     "Python 3.9 or newer; tirith itself supports 3.8."
 )

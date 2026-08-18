@@ -81,3 +81,49 @@
     font-size: 1.75rem;
   }
 }
+
+/*
+ * The announcement strip above the hero title. A link rather than a static banner: the whole
+ * row is the target, since a one-line notice about a new feature is only useful if it is also
+ * the way to reach it.
+ *
+ * Colours come from Infima's own variables so it follows the site's light and dark themes
+ * rather than pinning a background that only works in one of them.
+ */
+.announcement {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 2rem;
+  background: var(--ifm-color-emphasis-100);
+  color: var(--ifm-font-color-base);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.announcement:hover {
+  border-color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.announcementLabel {
+  padding: 0.05rem 0.5rem;
+  border-radius: 1rem;
+  background: #006ee6;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.announcementLink {
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+  white-space: nowrap;
+}

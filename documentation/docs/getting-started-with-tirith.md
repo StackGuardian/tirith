@@ -15,8 +15,9 @@ import TabItem from '@theme/TabItem';
 :::note New — `tirith ui`, an interactive interface. In beta, and we want your input.
 
 Explore a failing evaluation down to the resource that caused it, assemble policies from a form, and
-experiment in a playground with worked examples. Install it with `pip install 'py-tirith[tui]'` and
-run `tirith ui` — see
+experiment in a playground with worked examples. Install it with
+`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'` and run
+`tirith ui` — see
 [the interactive interface](tirith-usage/interactive-interface.md).
 
 It is new, so the rough edges are still being found. Tell us what is confusing, what is missing, or
