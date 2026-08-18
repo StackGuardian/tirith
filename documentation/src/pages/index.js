@@ -28,6 +28,17 @@ const content = {
       'Tirith reads the plan your pipeline already produces, checks it against your policies, and ' +
       'exits non-zero so a violating change never reaches apply. Apache-2.0, and no account needed.',
     install: 'pip install git+https://github.com/StackGuardian/tirith.git',
+    announcement: {
+      label: 'New',
+      // No backticks: this is plain JSX text, not markdown, so they would render literally.
+      // The command is set in <code> by the renderer instead.
+      command: 'tirith ui',
+      text:
+        '— an interactive interface. Explore a failing evaluation down to the resource that ' +
+        'caused it, build policies from a form, and experiment in a playground.',
+      to: '/docs/tirith-usage/interactive-interface/',
+      linkLabel: 'Read more',
+    },
     actions: [
       {label: 'Get started', to: '/docs/getting-started-with-tirith/', primary: true},
       {label: 'GitHub', href: 'https://github.com/StackGuardian/tirith'},
@@ -167,9 +178,16 @@ function Action({label, to, href, primary}) {
 }
 
 function Hero() {
-  const {title, tagline, body, install, actions} = content.hero;
+  const {title, tagline, body, install, actions, announcement} = content.hero;
   return (
     <header className={styles.hero}>
+      <Link className={styles.announcement} to={announcement.to}>
+        <span className={styles.announcementLabel}>{announcement.label}</span>
+        <span>
+          <code>{announcement.command}</code> {announcement.text}
+        </span>
+        <span className={styles.announcementLink}>{announcement.linkLabel} →</span>
+      </Link>
       <Heading as="h1" className={styles.heroTitle}>
         {title}
       </Heading>
