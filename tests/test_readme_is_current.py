@@ -117,6 +117,33 @@ def test_the_flag_reference_page_lists_every_flag_the_command_accepts():
     assert not missing, f"flags accepted by `platform check` but absent from docs/platform-check.md: {missing}"
 
 
+def test_the_local_check_reference_page_lists_every_flag_it_accepts():
+    """
+    The sibling of the check above, for the same reason: docs/local-check.md embeds the flag list, and
+    a flag added without touching it silently stops being documented.
+    """
+    with open(os.path.join(ROOT, "docs", "local-check.md")) as f:
+        page = f.read()
+
+    flags = set(re.findall(r"(?<![\w-])--[a-z][a-z0-9-]+", _help("local", "check")))
+    missing = sorted(f for f in flags if f not in page)
+
+    assert not missing, f"flags accepted by `local check` but absent from docs/local-check.md: {missing}"
+
+
+def test_the_local_subcommand_is_documented():
+    """
+    Dispatched before argparse sees anything, exactly like `platform`, so it cannot appear in the
+    top-level usage line automatically -- which is how `platform` stayed undocumented for a while.
+    """
+    text = _readme()
+    assert "tirith local check" in text
+    assert os.path.exists(os.path.join(ROOT, "docs", "local-check.md")), "the reference page is linked but missing"
+    assert os.path.exists(
+        os.path.join(ROOT, "docs", "output-contract.md")
+    ), "the result-document contract is linked but missing"
+
+
 def test_the_documented_exit_codes_are_the_real_ones():
     """
     The reason to document them at all is that 3 is not 1 -- "a policy said no" versus "could not

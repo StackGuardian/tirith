@@ -255,8 +255,94 @@ def render_cost(breakdown):
     return ["", f"<sub>{line}</sub>"]
 
 
+def result_document(
+    mode,
+    status,
+    policy_results,
+    wfrun_id=None,
+    wfrun_url=None,
+    monthly_cost=None,
+    archive_key=None,
+    source_packed=False,
+    source_skipped_reason=None,
+    policies_evaluated=None,
+    policies_errored=None,
+    policy_path=None,
+    policy_errors=None,
+    policy_warnings=None,
+):
+    """
+    The machine-readable result document, for --output-json.
+
+    Built here, for both modes, so the two cannot drift. Every key is present in every mode: a key
+    with no meaning on one path is None (or [] for the lists), never omitted and never invented.
+    Omitting them would force every consumer -- the GitHub Action, the GitLab component -- to write
+    two parsers, and inventing a `wfrun_url` in local mode would point at a run that does not exist.
+
+    `mode` is the discriminator: "platform" or "local". Consumers should read it from here rather
+    than infer it from which keys are populated.
+    """
+    counts, _findings = summarize(policy_results)
+    verdict_value = verdict(counts, status)
+
+    return {
+        "mode": mode,
+        "status": status,
+        "verdict": verdict_value,
+        "counts": {
+            "passed": counts.get(PASS, 0),
+            "failed": counts.get(FAIL, 0),
+            "warned": counts.get(WARN, 0),
+            "approval_required": counts.get(APPROVAL_REQUIRED, 0),
+            "skipped": counts.get("SKIPPED", 0),
+            # Published so a consumer can tell "nothing failed" from "we could not read part of
+            # it". Without it an errored run reported failed: 0, which the action copies straight
+            # to its `failed` output.
+            "unknown": counts.get(UNKNOWN, 0),
+        },
+        "headline": headline(counts, verdict_value),
+        "policy_results": policy_results or {},
+        # Platform mode only: nothing is recorded on the platform in local mode.
+        "wfrun_id": wfrun_id,
+        "wfrun_url": wfrun_url,
+        # Surfaced for a caller aggregating several units into one report of their own. Cost needs a
+        # second document, which local mode does not evaluate, so it is None there.
+        "monthly_cost": monthly_cost,
+        # Where the evaluated source lives. The autofix system reads this to fetch what produced
+        # the findings; it is also recorded on the run itself as SGCustomWorkflowRunFacts, so a
+        # consumer holding only a run id can find it without seeing this document.
+        "archive_key": archive_key,
+        # Whether that archive actually contains the source. Normally true in platform mode, and
+        # false when the tree was too large and got dropped so the check could still run. A consumer
+        # must not assume: "no code in the bundle" and "no code was wanted" need to be
+        # distinguishable. Derived from what the archive actually holds, not from what was asked
+        # for: a tree whose every file was excluded packs nothing, and this must not then claim
+        # otherwise while metadata.json says `present: false`. Always false in local mode, which
+        # packs nothing at all.
+        "source_packed": source_packed,
+        # Left None rather than a sentinel string in local mode. A consumer's "the source was not
+        # uploaded" warning keys on truthiness, so a value like "not_applicable" would fire it on
+        # every local run.
+        "source_skipped_reason": source_skipped_reason,
+        # Local mode only.
+        "policies_evaluated": policies_evaluated,
+        "policies_errored": policies_errored,
+        "policy_path": policy_path,
+        # Structured rather than log-only, so a front end can annotate without scraping stderr.
+        "policy_errors": policy_errors or [],
+        "policy_warnings": policy_warnings or [],
+    }
+
+
 def render_markdown(
-    policy_results, run_status, run_url, marker=None, limit=COMMENT_LIMIT, cost_breakdown=None, commit=None
+    policy_results,
+    run_status,
+    run_url,
+    marker=None,
+    limit=COMMENT_LIMIT,
+    cost_breakdown=None,
+    commit=None,
+    notes=None,
 ):
     """
     Render the results as markdown, truncating detail before the summary table.
@@ -269,6 +355,11 @@ def render_markdown(
     place* across runs: without it a reader has no way to tell whether the verdict they are looking
     at is about the head of the branch or about a push from an hour ago. Rendered here rather than
     appended by the caller so the check-run summary and the job summary carry it too.
+
+    `notes` are lines rendered under the header, in place of the generic narrative, when a caller
+    knows *why* there is no verdict. Without it a local evaluation that could not read its input
+    reported "the workflow run finished as ERRORED", which is untrue -- local mode has no run -- and
+    told the reader nothing about the actual cause.
     """
     counts, findings = summarize(policy_results)
     verdict_value = verdict(counts, run_status)
@@ -285,7 +376,12 @@ def render_markdown(
         # a run that produced NOTHING, and a run whose results included one this tool cannot read.
         # The second renders a populated table, under which "without producing policy results"
         # reads as a plain contradiction.
-        if counts.get(UNKNOWN):
+        #
+        # A caller that knows the real reason says so instead. Neither generic narrative fits a
+        # local evaluation, which has no workflow run to report the status of.
+        if notes:
+            header += [_html(str(note)) for note in notes] + [""]
+        elif counts.get(UNKNOWN):
             header += [
                 f"{counts[UNKNOWN]} policy result(s) could not be read, so this run has no verdict.",
                 "This is reported as a failure rather than a pass: partial results are not a clean bill of health.",

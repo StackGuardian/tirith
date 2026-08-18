@@ -503,6 +503,64 @@ def upload_state_document(client, opts, state):
     )
 
 
+def write_output_markdown(path, body):
+    """Best-effort, mirroring write_output_json: a report we could not write is not a failed check."""
+    if not path:
+        return
+    try:
+        with open(path, "w") as f:
+            f.write(body)
+    except OSError as e:
+        log(f"WARNING: could not write {path}: {e}")
+
+
+def write_failure_report(opts, message):
+    """
+    Write both output files for a check that produced no verdict.
+
+    These paths used to return having written nothing, so a caller fell through to a body of its own
+    with no marker in it -- and PATCHing that over a good sticky comment orphans it permanently.
+    Writing both keeps the comment findable and puts the reason on the pull request rather than only
+    in the job log.
+
+    Any run identity already recorded is preserved: the pre-poll write puts it there precisely so a
+    timeout leaves the run discoverable, and replacing it with nulls would throw that away.
+    """
+    run_id = run_url = None
+    if opts.output_json and os.path.exists(opts.output_json):
+        try:
+            with open(opts.output_json) as f:
+                previous = json.load(f)
+            run_id = previous.get("wfrun_id")
+            run_url = previous.get("wfrun_url")
+        except (json.JSONDecodeError, OSError, AttributeError):
+            pass
+
+    result = report.result_document(
+        "platform",
+        "ERRORED",
+        {},
+        wfrun_id=run_id,
+        wfrun_url=run_url,
+        policy_errors=[{"policy": None, "reason": message}],
+    )
+    write_output_json(opts.output_json, result)
+
+    if opts.output_markdown:
+        body = report.render_markdown(
+            {},
+            "ERRORED",
+            run_url,
+            marker=opts.comment_marker,
+            limit=opts.markdown_limit,
+            commit=opts.sha,
+            notes=[message],
+        )
+        write_output_markdown(opts.output_markdown, body)
+
+    return result
+
+
 def run_check(opts):
     """
     Execute the check. Returns the result document.
@@ -599,8 +657,13 @@ def run_check(opts):
     )
     log(f"Run created: {run_url}")
 
-    # Written before polling so a timeout still leaves the run discoverable.
-    write_output_json(opts.output_json, {"status": "RUNNING", "wfrun_id": run_id, "wfrun_url": run_url})
+    # Written before polling so a timeout still leaves the run discoverable. A full document rather
+    # than the three keys it used to carry: a consumer must not have to special-case a partial shape,
+    # and `verdict` is honestly `errored` until a run has produced one.
+    write_output_json(
+        opts.output_json,
+        report.result_document("platform", "RUNNING", {}, wfrun_id=run_id, wfrun_url=run_url),
+    )
 
     try:
         status, _run = client.wait_for_run(
@@ -659,42 +722,17 @@ def run_check(opts):
     # a view that serves only GET and POST.
     log(f"Retained the project archive for autofix: {key}")
 
-    counts, _findings = report.summarize(policy_results)
-    verdict_value = report.verdict(counts, status)
-
-    result = {
-        "status": status,
-        "verdict": verdict_value,
-        "counts": {
-            "passed": counts.get(report.PASS, 0),
-            "failed": counts.get(report.FAIL, 0),
-            "warned": counts.get(report.WARN, 0),
-            "approval_required": counts.get(report.APPROVAL_REQUIRED, 0),
-            "skipped": counts.get("SKIPPED", 0),
-            # Published so a consumer can tell "nothing failed" from "we could not read part of
-            # it". Without it an errored run reported failed: 0, which the action copies straight
-            # to its `failed` output.
-            "unknown": counts.get(report.UNKNOWN, 0),
-        },
-        "headline": report.headline(counts, verdict_value),
-        "wfrun_id": run_id,
-        "wfrun_url": run_url,
-        "policy_results": policy_results or {},
-        # Surfaced for a caller aggregating several units into one comment of their own.
-        "monthly_cost": (cost_breakdown or {}).get("totalMonthlyCost"),
-        # Where the evaluated source lives. The autofix system reads this to fetch what produced
-        # the findings; it is also recorded on the run itself as SGCustomWorkflowRunFacts, so a
-        # consumer holding only a run id can find it without seeing this document.
-        "archive_key": key,
-        # Whether that archive actually contains the source. Normally true, and false when the tree
-        # was too large and got dropped so the check could still run. A consumer must not assume:
-        # "no code in the bundle" and "no code was wanted" need to be distinguishable.
-        # Derived from what the archive actually holds, not from what was asked for: a tree whose
-        # every file was excluded packs nothing, and this must not then claim otherwise while
-        # metadata.json says `present: false`.
-        "source_packed": bool(manifest.get("files")),
-        "source_skipped_reason": source_skipped,
-    }
+    result = report.result_document(
+        "platform",
+        status,
+        policy_results,
+        wfrun_id=run_id,
+        wfrun_url=run_url,
+        monthly_cost=(cost_breakdown or {}).get("totalMonthlyCost"),
+        archive_key=key,
+        source_packed=bool(manifest.get("files")),
+        source_skipped_reason=source_skipped,
+    )
 
     write_output_json(opts.output_json, result)
 
@@ -708,11 +746,7 @@ def run_check(opts):
             cost_breakdown=cost_breakdown,
             commit=opts.sha,
         )
-        try:
-            with open(opts.output_markdown, "w") as f:
-                f.write(body)
-        except OSError as e:
-            log(f"WARNING: could not write {opts.output_markdown}: {e}")
+        write_output_markdown(opts.output_markdown, body)
 
     log(result["headline"])
     return result

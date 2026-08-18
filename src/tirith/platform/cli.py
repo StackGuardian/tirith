@@ -14,7 +14,7 @@ import sys
 
 from ..status import ExitStatus
 from . import discover, regions
-from .check import DEFAULT_WORKFLOW_GROUP, INPUT_KINDS, CheckError, log, run_check
+from .check import DEFAULT_WORKFLOW_GROUP, INPUT_KINDS, CheckError, log, run_check, write_failure_report
 
 # `Id` is a DRF SlugField on the platform, and the value is interpolated into every API path.
 WORKFLOW_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,100}$")
@@ -259,8 +259,10 @@ def main(argv):
         result = run_check(opts)
     except CheckError as e:
         # Fails closed: a run that produced no verdict must never look like a pass, whatever
-        # --fail-on-error says.
+        # --fail-on-error says. Both output files are still written, so a caller editing a sticky
+        # comment in place has a marker-first body to write and does not orphan the comment.
         log(f"ERROR: {e}")
+        write_failure_report(opts, str(e))
         return ExitStatus.ERROR
     except KeyboardInterrupt:
         log("Interrupted")

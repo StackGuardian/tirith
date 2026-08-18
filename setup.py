@@ -22,7 +22,7 @@ def read(*names, **kwargs):
 
 setup(
     name="py-tirith",
-    version="1.2.0",
+    version="1.3.0",
     license="Apache",
     description="Tirith simplifies defining Policy as Code.",
     long_description_content_type="text/markdown",

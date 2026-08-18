@@ -7,10 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-18
+
 ### Added
+- `tirith local check`: evaluate the policy files committed in your repository, with no credentials
+  and no network calls. It writes the *same* result document and markdown report as
+  `tirith platform check`, so a CI integration built against one works unchanged against the other,
+  and adding a StackGuardian organization later changes which policies apply rather than how
+  anything is wired. Moved in from the GitHub Action, which owned the only implementation, so that a
+  second front end does not fork it.
+  - Two behaviours that fail closed: no policy files found is an error rather than a skip, and a
+    policy that could not be evaluated exits 1 regardless of `--fail-on-error`, because "could not
+    evaluate" is tool health rather than a policy decision.
+  - Never entered implicitly. `tirith platform check` with no credentials stays an error rather than
+    falling back, because a fallback evaluates whatever happens to be committed and reports green
+    when a token was misspelled.
 - `tirith ui`: an interactive interface with three tabs.
   - **Explorer** — read an evaluation's results down to the resource behind each one. The result
     document has always carried the resource address, the planned action and the before/after
@@ -31,9 +44,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a provider argument the operation does not read, an id referenced in `eval_expression` but
   never defined, a single `&` where `&&` was meant, an evaluator that does not exist.
 
+### Changed
+- The `--output-json` document now carries a `mode` key (`platform` or `local`), and every key exists
+  in both modes -- one with no meaning on a path is `null` rather than omitted, so a consumer needs
+  one parser rather than two. Additive: no key was removed or retyped. Specified in
+  [docs/output-contract.md](docs/output-contract.md).
+- `tirith platform check` writes `--output-json` and `--output-markdown` on its failure paths too,
+  rather than returning having written nothing. A caller editing a sticky comment in place needs a
+  marker-first body on that path, or it orphans the comment it was updating.
+
 ### Notes
-- The local evaluation surface is untouched. `ui` is dispatched before the flat parser, like
-  `platform`, so `--json` output remains byte-identical to the golden file.
+- The local evaluation surface is untouched. `ui` and `local` are dispatched before the flat parser,
+  like `platform`, so `--json` output remains byte-identical to the golden file.
 - No new runtime dependencies for anyone who does not install the extra.
 
 ## [1.2.0] - 2026-08-03

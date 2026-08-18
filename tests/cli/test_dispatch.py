@@ -101,10 +101,11 @@ def test_the_subcommand_names_are_exactly_these(capsys):
     `remote` is not quietly still accepted.
 
     `ui` was added alongside it later, on the same terms: dispatched before the flat parser so the
-    local surface and its golden-file output are untouched. The set is pinned rather than merely
-    checked for membership, so a new subcommand has to be a deliberate edit here.
+    local surface and its golden-file output are untouched. `local` joined on the same terms again.
+    The set is pinned rather than merely checked for membership, so a new subcommand has to be a
+    deliberate edit here.
     """
-    assert cli.SUBCOMMANDS == {"platform", "ui"}
+    assert cli.SUBCOMMANDS == {"platform", "ui", "local"}
 
     status = cli.main(["remote"])
 

@@ -53,6 +53,7 @@ verdict, same exit codes. That mode is optional and is the only part that talks 
 - [Run it in CI](#run-it-in-ci)
 - [Exit codes](#exit-codes)
 - [Evaluating against your StackGuardian organization](#evaluating-against-your-stackguardian-organization)
+- [Evaluating committed policy files, in CI](#evaluating-committed-policy-files-in-ci)
 - [Example Tirith policies](#example-tirith-policies)
     - [error_tolerance](#error_tolerance-and-the-third-outcome)
     - [Terraform Plan](#terraform-plan-provider)
@@ -177,7 +178,7 @@ pip install -e .
 
 ```
 tirith --version
-tirith 1.2.0
+tirith 1.3.0
 ```
 
 Congratulations! Tirith has been setup in your system
@@ -205,6 +206,8 @@ Subcommands:
 
    tirith platform check --help   Evaluate against the policies your StackGuardian
                                   organization enforces, rather than local files.
+   tirith local check --help      Evaluate policy files committed in your repository,
+                                  with no credentials, and report the same verdict.
    tirith ui --help               Explore results, build policies and experiment in
                                   an interactive interface. Needs the 'tui' extra.
 
@@ -385,7 +388,7 @@ GitLab-specific: any runner that can execute a container and produce a plan work
 | 0 | Policies passed, or nothing was in scope to gate on |
 | 1 | Tirith could not complete the evaluation — bad input, a policy it could not evaluate, unreachable API |
 | 2 | Timed out waiting for a StackGuardian run |
-| 3 | A policy failed. Only with `--fail-on-error`, on either surface |
+| 3 | A policy failed. Only with `--fail-on-error`, on any of the three surfaces |
 | 130 | Interrupted |
 
 **Gate a CI job with `--fail-on-error`:**
@@ -442,6 +445,45 @@ Common flags:
 
 Running this from GitHub Actions? Use [the action](#github-actions) instead — it wires up the plan
 discovery, the sticky pull-request comment, the check run and the exit codes for you.
+
+## Evaluating committed policy files, in CI
+
+`tirith local check` is the credential-free counterpart. It evaluates the policy files in your
+repository and writes the *same* report `tirith platform check` writes — so a CI integration built on
+one works unchanged on the other, and adding a StackGuardian organization later changes which
+policies apply, not how anything is wired.
+
+```
+tirith local check --policy-path .tirith/policies --input-path plan.json --fail-on-error
+```
+
+Nothing leaves the machine. What you give up against platform mode is run history, the dashboard,
+enforcing one policy set across every repository from one place, and cost policies — those need a
+second document, so `--infracost-path` is accepted and reported as ignored.
+
+| | |
+|---|---|
+| `--policy-path` | A file, a directory, or a glob. A directory is searched recursively for `*.tirith.json`, or failing that for any `.json` file shaped like a policy. Default `.tirith/policies` |
+| `--input-path` / `--plan-file` | The document to evaluate, or a binary plan to render. Defaults to `plan.json` or `tfplan.json` |
+| `--output-json` / `--output-markdown` | The machine-readable verdict and a markdown report, in the same shape both modes produce |
+| `--comment-marker` | An opaque first line for the markdown, so a CI job can find and edit its own comment |
+| `--fail-on-error` | Exit `3` when a policy fails, instead of `0` |
+
+Two behaviours worth knowing, both of which fail closed:
+
+- **No policy files is an error, not a skip.** Pointed at a path with nothing in it, the command exits
+  `1` rather than reporting a pass — a green result for a change nothing was evaluated against is the
+  one outcome this mode must never produce.
+- **A policy that could not be evaluated exits `1` regardless of `--fail-on-error`.** "Could not
+  evaluate" is tool health, not a policy decision, so the flag does not apply to it.
+
+It is not entered implicitly: `tirith platform check` with no credentials stays an error rather than
+quietly falling back here, because a fallback would evaluate whatever happens to be committed and
+report green when a token was simply misspelled. A CI integration that wants "no credentials therefore
+local" chooses that itself, deliberately.
+
+Every flag is in [docs/local-check.md](docs/local-check.md) or `tirith local check --help`, and the
+result document both modes write is in [docs/output-contract.md](docs/output-contract.md).
 
 ## Example Tirith policies
 

@@ -7,6 +7,10 @@ The [GitHub Action](https://github.com/StackGuardian/tirith-iac-governance-actio
 around this command. Use the action on GitHub; use this directly anywhere else — GitLab CI, a
 Makefile, a local shell.
 
+No StackGuardian organization? [`tirith local check`](local-check.md) evaluates policy files committed
+in your repository instead, with no credentials, and writes the same report. The document both
+commands write is specified in [the result document](output-contract.md).
+
 ## What it does
 
 1. **Masks the document on your machine**, before anything is uploaded. Values terraform marked

@@ -19,9 +19,15 @@ tirith -policy-path policy.json -input-path plan.json
 
 Run with no arguments, `tirith` prints its help text and exits `0`.
 
-There is one subcommand, `tirith platform check`, which evaluates against the policies a
-StackGuardian organization enforces instead of local files. It has its own flags and its own page:
-[Platform Check](platform-check.md).
+There are two policy-evaluation subcommands, each with its own flags and its own page.
+[`tirith platform check`](platform-check.md) evaluates against the policies a StackGuardian
+organization enforces; [`tirith local check`](local-check.md) evaluates policy files committed in
+your repository, with no credentials. Both write the same report, so a CI integration built against
+one works unchanged against the other.
+
+The flags below are the flat surface — `tirith -policy-path … -input-path …` — which evaluates one
+policy path and prints the engine's own output. `local check` is the CI-shaped version of the same
+idea: it discovers many policies, masks the input, renders a report and gates on the result.
 
 ## Flags
 

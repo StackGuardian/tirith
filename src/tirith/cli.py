@@ -46,7 +46,14 @@ SUBCOMMAND = "platform"
 # 3.9 and tirith supports 3.8 -- so tui/cli.py reports the missing extra rather than failing on
 # an import here.
 UI_SUBCOMMAND = "ui"
-SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND}
+
+# `local` is the credential-free sibling of `platform`: policy files committed in the repository,
+# evaluated here, reported identically. It is a separate subcommand rather than a flag on
+# `platform check` -- see tirith/local/cli.py for why -- and `platform check` with no credentials
+# stays a hard error, so neither mode is ever entered by accident.
+LOCAL_SUBCOMMAND = "local"
+
+SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND, LOCAL_SUBCOMMAND}
 
 
 def main(args=None) -> ExitStatus:
@@ -64,6 +71,11 @@ def main(args=None) -> ExitStatus:
         from tirith.tui import cli as tui_cli
 
         return tui_cli.main(argv)
+
+    if argv and argv[0] == LOCAL_SUBCOMMAND:
+        from tirith.local import cli as local_cli
+
+        return local_cli.main(argv)
 
     if argv and argv[0] in SUBCOMMANDS:
         from tirith.platform import cli as platform_cli
@@ -85,6 +97,8 @@ def main(args=None) -> ExitStatus:
 
             tirith platform check --help   Evaluate against the policies your StackGuardian
                                            organization enforces, rather than local files.
+            tirith local check --help      Evaluate policy files committed in your repository,
+                                           with no credentials, and report the same verdict.
             tirith ui --help               Explore results, build policies and experiment in
                                            an interactive interface. Needs the 'tui' extra.
 
