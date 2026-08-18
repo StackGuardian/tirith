@@ -1,0 +1,50 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.5.7",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.private_data",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "private_data",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "acme-private-data",
+          "acl": "private",
+          "server_side_encryption_configuration": [
+            {
+              "rule": [
+                {
+                  "apply_server_side_encryption_by_default": [
+                    { "sse_algorithm": "AES256" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "after_unknown": { "arn": true }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.public_site",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "public_site",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "bucket": "acme-public-site",
+          "acl": "public-read",
+          "server_side_encryption_configuration": []
+        },
+        "after_unknown": { "arn": true }
+      }
+    }
+  ]
+}

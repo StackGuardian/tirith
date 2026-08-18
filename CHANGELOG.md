@@ -8,6 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [Unreleased]
+
+### Added
+- `tirith ui`: an interactive interface with three tabs.
+  - **Explorer** — read an evaluation's results down to the resource behind each one. The result
+    document has always carried the resource address, the planned action and the before/after
+    values; the pretty printer prints only the message, so this detail was reachable only by
+    piping `--json` into another tool. Opens on the first failure, names replacements by their
+    ordering (destroy-first and create-first mean different things), and shows the attributes
+    that changed, flagging the ones that are unknown until apply.
+  - **Builder** — assemble a policy from a form whose fields follow the chosen provider and
+    operation. Values keep their JSON types, so `Equals: true` and `Equals: "true"` stay
+    distinguishable.
+  - **Playground** — edit a policy and an input side by side and watch the verdict move, with
+    five worked examples that mostly fail on purpose and explain why.
+  - `--serve` runs the same interface over HTTP for a browser.
+- Optional extra: `pip install 'py-tirith[tui]'`. Not a hard dependency — the interface needs
+  Python 3.9 while tirith supports 3.8, and using tirith as a CI gate should stay
+  dependency-light. Without it, `tirith ui` prints how to install it and exits 1.
+- A policy validator behind the interface, reporting the mistakes that are otherwise silent:
+  a provider argument the operation does not read, an id referenced in `eval_expression` but
+  never defined, a single `&` where `&&` was meant, an evaluator that does not exist.
+
+### Notes
+- The local evaluation surface is untouched. `ui` is dispatched before the flat parser, like
+  `platform`, so `--json` output remains byte-identical to the golden file.
+- No new runtime dependencies for anyone who does not install the extra.
+
 ## [1.2.0] - 2026-08-03
 
 ### Added

@@ -12,6 +12,20 @@ slug: getting-started-with-tirith/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+:::note New — `tirith ui`, an interactive interface. In beta, and we want your input.
+
+Explore a failing evaluation down to the resource that caused it, assemble policies from a form, and
+experiment in a playground with worked examples. Install it with `pip install 'py-tirith[tui]'` and
+run `tirith ui` — see
+[the interactive interface](tirith-usage/interactive-interface.md).
+
+It is new, so the rough edges are still being found. Tell us what is confusing, what is missing, or
+what you would rather it did: [open an issue](https://github.com/StackGuardian/tirith/issues) or say
+so in
+[Slack](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ).
+Nothing about the existing CLI changes.
+:::
+
 Tirith is a robust policy framework designed to automate and enforce security, governance, and compliance across infrastructure-as-code (IaC) platforms like Terraform, CloudFormation, and Kubernetes. It simplifies policy creation and management, ensuring infrastructure adheres to industry regulations and best practices.
 
 ## Key Benefits of Tirith

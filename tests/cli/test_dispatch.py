@@ -94,15 +94,37 @@ def test_a_bare_word_is_not_mistaken_for_a_subcommand(capsys):
     assert "check" not in cli.SUBCOMMANDS
 
 
-def test_there_is_exactly_one_subcommand_name(capsys):
+def test_the_subcommand_names_are_exactly_these(capsys):
     """
     `platform` was briefly renamed to `remote` and then reverted. Neither direction kept an alias --
-    nothing is released, so there was never a caller to keep working -- and this pins the outcome: one
-    name, and `remote` is not quietly still accepted.
+    nothing is released, so there was never a caller to keep working -- and this pins the outcome:
+    `remote` is not quietly still accepted.
+
+    `ui` was added alongside it later, on the same terms: dispatched before the flat parser so the
+    local surface and its golden-file output are untouched. The set is pinned rather than merely
+    checked for membership, so a new subcommand has to be a deliberate edit here.
     """
-    assert cli.SUBCOMMANDS == {"platform"}
+    assert cli.SUBCOMMANDS == {"platform", "ui"}
 
     status = cli.main(["remote"])
 
     assert status != ExitStatus.SUCCESS
     assert "tirith platform" not in capsys.readouterr().out
+
+
+def test_ui_dispatches_to_its_own_parser(capsys):
+    """
+    `ui` must reach its own parser rather than the flat one, which would reject it for having no
+    -policy-path.
+
+    Asserted through a bad flag, so the interface itself never starts and this stays runnable
+    without the optional extra installed. argparse exits rather than returning on an unknown
+    flag -- the same thing `tirith platform --nope` does -- so the SystemExit is the pass
+    condition; what matters is *which* parser produced the complaint.
+    """
+    with pytest.raises(SystemExit):
+        cli.main(["ui", "--no-such-flag"])
+
+    error = capsys.readouterr().err
+    assert "tirith ui" in error, error
+    assert "-policy-path" not in error

@@ -40,7 +40,13 @@ def eprint(*args, **kwargs):
 # `--fail-on-error` fixed. No alias in either direction: nothing is released, so there is no caller to
 # keep working.
 SUBCOMMAND = "platform"
-SUBCOMMANDS = {SUBCOMMAND}
+
+# `ui` joins it on the same terms: dispatched before the flat parser, so the local-evaluation
+# surface and its golden-file output are untouched. It is an optional extra -- it needs Python
+# 3.9 and tirith supports 3.8 -- so tui/cli.py reports the missing extra rather than failing on
+# an import here.
+UI_SUBCOMMAND = "ui"
+SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND}
 
 
 def main(args=None) -> ExitStatus:
@@ -53,6 +59,11 @@ def main(args=None) -> ExitStatus:
     Return exit status code.
     """
     argv = list(sys.argv[1:] if args is None else args)
+
+    if argv and argv[0] == UI_SUBCOMMAND:
+        from tirith.tui import cli as tui_cli
+
+        return tui_cli.main(argv)
 
     if argv and argv[0] in SUBCOMMANDS:
         from tirith.platform import cli as platform_cli
@@ -74,6 +85,8 @@ def main(args=None) -> ExitStatus:
 
             tirith platform check --help   Evaluate against the policies your StackGuardian
                                            organization enforces, rather than local files.
+            tirith ui --help               Explore results, build policies and experiment in
+                                           an interactive interface. Needs the 'tui' extra.
 
          About Tirith:
          
