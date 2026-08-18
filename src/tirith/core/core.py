@@ -245,7 +245,7 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]])
 
 
 def start_policy_evaluation(
-    policy_path: str, input_path: str, var_paths: List[str] = [], inline_vars: List[str] = []
+    policy_path: str, input_path: str, var_paths: Optional[List[str]] = None, inline_vars: Optional[List[str]] = None
 ) -> Dict:
     """
     Start Tirith policy evaluation from policy file, input file, and optional variable files.
@@ -255,6 +255,8 @@ def start_policy_evaluation(
     :param var_paths: List of paths to the variable files
     :return: Policy evaluation result
     """
+    var_paths = var_paths or []
+    inline_vars = inline_vars or []
     with open(policy_path) as f:
         policy_data = json.load(f)
     # TODO: validate policy_data against schema
@@ -304,8 +306,8 @@ def _merge_var_dicts(var_dicts: List[dict]) -> dict:
     return merged_var_dict
 
 
-def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict, var_dict: Dict = {}) -> Dict:
-    policy_dict, not_found_vars = get_policy_with_vars_replaced(policy_dict, var_dict)
+def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict, var_dict: Optional[Dict] = None) -> Dict:
+    policy_dict, not_found_vars = get_policy_with_vars_replaced(policy_dict, var_dict or {})
     if not_found_vars:
         return {"errors": [f"Variables not found: {', '.join(not_found_vars)}"]}
 
