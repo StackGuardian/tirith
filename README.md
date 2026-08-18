@@ -13,7 +13,8 @@
 >
 > Explore a failing evaluation down to the resource that caused it, assemble policies from a
 > form, and experiment in a playground with worked examples. Try it with
-> `pip install 'py-tirith[tui]'` and then `tirith ui` — see
+> `pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'`, then
+> `tirith ui` — see
 > [The interactive interface](#the-interactive-interface).
 >
 > It is new, so the rough edges are still being found. Tell us what is confusing, what is
@@ -235,8 +236,11 @@ nobody gating a pipeline should pay to install an interface they never open. It 
 3.9 or newer, while tirith itself still supports 3.8:
 
 ```bash
-pip install 'py-tirith[tui]'
+pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
 ```
+
+Tirith is not on PyPI — `pip install py-tirith` finds nothing and `pip install tirith` installs an
+unrelated project of the same name — so the extra is requested against the git URL.
 
 ```bash
 tirith ui                                          # playground, with worked examples

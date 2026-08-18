@@ -221,7 +221,8 @@ def _serve(opts, has_result):
         if not _is_missing_toolkit(e):
             raise
         print(
-            "Serving needs the optional 'tui' extra:\n    pip install 'py-tirith[tui]'",
+            "Serving needs the optional 'tui' extra:\n"
+            "    pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'",
             file=sys.stderr,
         )
         return ExitStatus.ERROR
