@@ -46,14 +46,7 @@ SUBCOMMAND = "platform"
 # 3.9 and tirith supports 3.8 -- so tui/cli.py reports the missing extra rather than failing on
 # an import here.
 UI_SUBCOMMAND = "ui"
-
-# `local` is the credential-free sibling of `platform`: policy files committed in the repository,
-# evaluated here, reported identically. It is a separate subcommand rather than a flag on
-# `platform check` -- see tirith/local/cli.py for why -- and `platform check` with no credentials
-# stays a hard error, so neither mode is ever entered by accident.
-LOCAL_SUBCOMMAND = "local"
-
-SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND, LOCAL_SUBCOMMAND}
+SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND}
 
 
 def main(args=None) -> ExitStatus:
@@ -71,11 +64,6 @@ def main(args=None) -> ExitStatus:
         from tirith.tui import cli as tui_cli
 
         return tui_cli.main(argv)
-
-    if argv and argv[0] == LOCAL_SUBCOMMAND:
-        from tirith.local import cli as local_cli
-
-        return local_cli.main(argv)
 
     if argv and argv[0] in SUBCOMMANDS:
         from tirith.platform import cli as platform_cli
@@ -97,8 +85,6 @@ def main(args=None) -> ExitStatus:
 
             tirith platform check --help   Evaluate against the policies your StackGuardian
                                            organization enforces, rather than local files.
-            tirith local check --help      Evaluate policy files committed in your repository,
-                                           with no credentials, and report the same verdict.
             tirith ui --help               Explore results, build policies and experiment in
                                            an interactive interface. Needs the 'tui' extra.
 
@@ -165,6 +151,74 @@ def main(args=None) -> ExitStatus:
         )
         parser.add_argument("--version", action="version", version=__version__)
 
+        # Everything below is additive, and off unless asked for. With none of it, this command
+        # behaves exactly as it always has -- which matters because its `--json` stdout is a frozen
+        # contract, pinned byte-for-byte by tests/core/test_output_compatibility.py.
+        #
+        # What they add is the shape a CI integration needs: many policies rather than one, the input
+        # masked before its values reach a report, and the verdict written out as a document and a
+        # markdown body for a front end to publish. Those are the same four files
+        # `tirith platform check` writes, so a GitHub Action or a GitLab component can drive either
+        # with one argv and one parser.
+        reporting = parser.add_argument_group(
+            "reporting", "Write the verdict out for a CI job to publish. All optional."
+        )
+        reporting.add_argument(
+            "--input-kind",
+            dest="inputKind",
+            # A metavar, because the formatter aligns every option to the widest one and spelling the
+            # choices out here pushed the whole help block far to the right.
+            metavar="KIND",
+            choices=("terraform_plan", "terraform_state", "kubernetes", "json"),
+            default=None,
+            # Masking is opt-in because it changes the evaluator messages, and those messages are
+            # the frozen --json output. Omitted, the file is read exactly as it always has been.
+            help="terraform_plan, terraform_state, kubernetes or json. Masks the input before evaluating",
+        )
+        reporting.add_argument(
+            "--state-path",
+            metavar="PATH",
+            dest="statePath",
+            default=None,
+            help="Terraform state, when --input-kind is terraform_state",
+        )
+        reporting.add_argument(
+            "--sha",
+            metavar="SHA",
+            dest="sha",
+            default=None,
+            help="Revision these findings describe, recorded in the report",
+        )
+        reporting.add_argument(
+            "--output-json",
+            metavar="PATH",
+            dest="outputJson",
+            default=None,
+            help="Write the result document here (same shape as `tirith platform check`)",
+        )
+        reporting.add_argument(
+            "--output-markdown",
+            metavar="PATH",
+            dest="outputMarkdown",
+            default=None,
+            help="Write a markdown report here, for a comment or a note",
+        )
+        reporting.add_argument(
+            "--comment-marker",
+            metavar="TEXT",
+            dest="commentMarker",
+            default=None,
+            help="Opaque first line of the markdown, for comment stickiness",
+        )
+        reporting.add_argument(
+            "--markdown-limit",
+            metavar="N",
+            type=int,
+            dest="markdownLimit",
+            default=60000,
+            help="Truncate the markdown to this length. Default: 60000",
+        )
+
         args = parser.parse_args(argv)
 
         if not argv:
@@ -187,6 +241,14 @@ def main(args=None) -> ExitStatus:
             logging.disable(logging.CRITICAL)
         else:
             setup_logging(verbose=args.verbose)
+
+        # The aggregate path: many policies, or any of the reporting flags. A single policy file with
+        # none of them falls through to the original code below, byte-for-byte -- which is what keeps
+        # the frozen --json contract frozen, and every existing caller unaffected.
+        from tirith.local import check as local_check
+
+        if local_check.wanted(args):
+            return local_check.run(args)
 
         try:
             result = start_policy_evaluation(args.policyPath, args.inputPath, args.varPaths, args.inlineVars)

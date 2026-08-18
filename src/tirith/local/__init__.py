@@ -1,5 +1,5 @@
 """
-Local policy evaluation -- the credential-free path.
+The aggregate path behind `tirith -policy-path ...` -- many policies, masked input, one report.
 
 Everything here runs on the machine it is invoked from and talks to nothing. Policy files committed
 in the repository are evaluated against a document, and the same report the platform path produces
@@ -21,6 +21,7 @@ copy of anything:
     argv is pinned by a test so that becomes a deliberate change rather than a silent one.
 
 This began life in the GitHub Action, which needed to be usable before anyone had a StackGuardian
-account. It moved here so a second front end (GitLab CI) drives one implementation rather than
-forking it.
+account. It moved here so a second front end (GitLab CI) drives one implementation rather than forking
+it -- and onto the existing flat command rather than a subcommand of its own, so there is one way to
+evaluate committed policy files rather than two that drift.
 """

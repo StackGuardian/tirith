@@ -1,7 +1,7 @@
 # The result document
 
 `--output-json` writes one document, in one shape, from both
-[`tirith platform check`](platform-check.md) and [`tirith local check`](local-check.md). This page is
+[`tirith platform check`](platform-check.md) and [`tirith -policy-path …`](evaluating-policy-files.md). This page is
 the contract, because two integrations read it — the
 [GitHub Action](https://github.com/StackGuardian/tirith-iac-governance-action) and the GitLab CI
 component — and turn it into comments, statuses and job outputs.

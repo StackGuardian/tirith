@@ -126,9 +126,12 @@ def prepare_input(input_path, plan_file, terraform_bin, input_kind, source_dir, 
     `json` and `kubernetes` documents are passed through untouched: they carry no sensitivity
     markers to mask by, and tirith reads YAML for them, which a JSON round-trip here would break.
     """
+    # `raw` is what the flat command does with no --input-kind: read the named file, mask nothing.
+    # `json` and `kubernetes` are passed through for a different reason -- they carry no sensitivity
+    # markers to mask by, and tirith reads YAML for them, which a JSON round-trip here would break.
     if input_kind not in ("terraform_plan", "terraform_state"):
         if not input_path:
-            raise LocalError(f"--input-path is required when --input-kind is '{input_kind}'.")
+            raise LocalError("-input-path is required.")
         if not os.path.exists(input_path):
             raise LocalError(f"input document not found: {input_path}")
         return input_path, 0
@@ -173,7 +176,7 @@ def prepare_input(input_path, plan_file, terraform_bin, input_kind, source_dir, 
     return masked_path, redactions
 
 
-def engine_argv(policy_path, input_path):
+def engine_argv(policy_path, input_path, var_paths=(), inline_vars=()):
     """
     The argv used to evaluate one policy.
 
@@ -181,11 +184,20 @@ def engine_argv(policy_path, input_path):
     the one whose renderer was imported above -- a `tirith` on PATH could be a different
     installation entirely. Factored out so a test can pin it: see the package docstring for why this
     must stay a subprocess against the frozen `--json` contract.
+
+    `-var-path` and `-var` are passed through because they are flags of the same command. Dropping
+    them when several policies are evaluated instead of one would make a parameterised policy work
+    against a file and fail against the directory holding it, for no reason a user could see.
     """
-    return [sys.executable, "-m", "tirith", "-policy-path", policy_path, "-input-path", input_path]
+    argv = [sys.executable, "-m", "tirith", "-policy-path", policy_path, "-input-path", input_path]
+    for var_path in var_paths or ():
+        argv += ["-var-path", var_path]
+    for inline_var in inline_vars or ():
+        argv += ["-var", inline_var]
+    return argv
 
 
-def _evaluate_one(policy_path, input_path):
+def _evaluate_one(policy_path, input_path, var_paths=(), inline_vars=()):
     """
     Run one policy. Returns (document, error_message); exactly one is set.
 
@@ -193,7 +205,7 @@ def _evaluate_one(policy_path, input_path):
     is not on either stream. When that happens the policy is re-run without `--json` purely to
     recover a message worth showing -- one extra subprocess, only ever on the error path.
     """
-    argv = engine_argv(policy_path, input_path)
+    argv = engine_argv(policy_path, input_path, var_paths, inline_vars)
 
     try:
         completed = subprocess.run(argv + ["--json"], capture_output=True, text=True, timeout=EVALUATION_TIMEOUT)
@@ -290,7 +302,7 @@ def _failure_result(document, on_unknown_enforcement):
     return report.FAIL
 
 
-def evaluate(policy_paths, input_path, on_unknown_enforcement=lambda _: None):
+def evaluate(policy_paths, input_path, on_unknown_enforcement=lambda _: None, var_paths=(), inline_vars=()):
     """
     Evaluate every policy and build the PolicyEvalResults document the renderer consumes.
 
@@ -304,7 +316,7 @@ def evaluate(policy_paths, input_path, on_unknown_enforcement=lambda _: None):
     errored = []
 
     for policy_path in policy_paths:
-        document, error = _evaluate_one(policy_path, input_path)
+        document, error = _evaluate_one(policy_path, input_path, var_paths, inline_vars)
 
         if error is not None:
             policy_id, rule_name = _identity({}, policy_path)

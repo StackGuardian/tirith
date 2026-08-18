@@ -90,17 +90,32 @@ def workspace(tmp_path):
             return path
 
         def argv(self, *extra):
+            """
+            The flat command, with the reporting flags a CI front end passes.
+
+            Note `-policy-path` with one dash and `--output-json` with two: that asymmetry is the flat
+            surface's, inherited rather than chosen, and a caller has to get it right.
+            """
             return [
-                "local",
-                "check",
-                "--policy-path",
+                "-policy-path",
                 str(self.policies),
-                "--input-path",
+                "-input-path",
                 str(self.root / "plan.json"),
+                "--input-kind",
+                "terraform_plan",
                 "--output-json",
                 str(self.root / "out.json"),
                 "--output-markdown",
                 str(self.root / "out.md"),
+            ] + list(extra)
+
+        def bare_argv(self, *extra):
+            """The same evaluation with none of the reporting flags -- the original code path."""
+            return [
+                "-policy-path",
+                str(self.policies),
+                "-input-path",
+                str(self.root / "plan.json"),
             ] + list(extra)
 
         def result(self):

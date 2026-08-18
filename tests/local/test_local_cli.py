@@ -1,9 +1,11 @@
 """
-`tirith local check`, end to end through the real CLI.
+The aggregate path behind `tirith -policy-path ...`, end to end through the real CLI.
 
-The exit-code matrix is the point of this file. Local mode is a *gate*, and the only thing that
-gates is the exit code, so every branch of it is pinned here rather than inferred from the result
-document.
+The exit-code matrix is the point of this file. This is a *gate*, and the only thing that gates is the
+exit code, so every branch of it is pinned here rather than inferred from the result document.
+
+The routing is pinned too: a single policy file with none of the reporting flags must keep reaching the
+original code path, because its `--json` stdout is a frozen contract.
 """
 
 import json
@@ -165,19 +167,59 @@ def test_the_masked_document_is_what_gets_evaluated(workspace):
     assert "hunter2-should-never-appear" not in workspace.markdown()
 
 
-def test_infracost_path_is_accepted_and_reported_as_ignored(workspace, capsys):
+def test_without_input_kind_the_document_is_not_masked(workspace):
     """
-    Cost policies need a second document, which this mode does not evaluate. Saying so beats
-    evaluating the plan and reporting a cost policy as unevaluated with no explanation.
+    No --input-kind means "read the file as this command always has". Masking is opt-in because it
+    changes the evaluator messages, and those messages are the frozen --json output.
     """
     workspace.policy()
+    workspace.plan(secret="hunter2-visible-without-input-kind")
+
+    main(workspace.bare_argv("--output-json", str(workspace.root / "out.json")))
+
+    assert "hunter2-visible-without-input-kind" not in workspace.result()["headline"]
+    # And with it, the value is masked out of the document that was evaluated.
+    main(workspace.argv())
+    assert "hunter2-visible-without-input-kind" not in json.dumps(workspace.result())
+
+
+def test_a_single_policy_file_with_no_reporting_flags_takes_the_original_path(workspace):
+    """
+    The routing guard. That path prints the engine's own document to stdout, pinned byte-for-byte by
+    tests/core/test_output_compatibility.py, so it must not be reached by the aggregate code.
+    """
+    from tirith.local import check as local_check
+
+    policy = workspace.policy()
     workspace.plan()
 
-    main(workspace.argv("--infracost-path", str(workspace.root / "infracost.json")))
+    class Args:
+        policyPath = str(policy)
+        inputKind = None
+        statePath = None
+        sha = None
+        outputJson = None
+        outputMarkdown = None
+        commentMarker = None
 
-    assert "--infracost-path is ignored in local mode" in capsys.readouterr().err
+    assert local_check.wanted(Args) is False
+
+    # One reporting flag is enough to switch, and so is a directory.
+    Args.outputJson = "out.json"
+    assert local_check.wanted(Args) is True
+
+    Args.outputJson = None
+    Args.policyPath = str(workspace.policies)
+    assert local_check.wanted(Args) is True
 
 
-def test_local_check_with_no_subcommand_prints_help(capsys):
-    assert main(["local"]) == ExitStatus.SUCCESS
-    assert "tirith local" in capsys.readouterr().out
+def test_a_directory_of_policies_is_evaluated_rather_than_erroring(workspace):
+    """
+    `-policy-path` used to reach `open()` on a directory and fail with a bare "ERROR". Evaluating every
+    policy in it is new capability, not changed behaviour.
+    """
+    workspace.policy(name="one.tirith.json")
+    workspace.policy(name="two.tirith.json")
+    workspace.plan()
+
+    assert main(workspace.bare_argv()) == ExitStatus.SUCCESS

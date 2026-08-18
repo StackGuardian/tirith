@@ -186,32 +186,44 @@ Congratulations! Tirith has been setup in your system
 ## Usage
 
 ```
-usage: tirith [-h] [-policy-path PATH] [-input-path PATH] [-var-path PATH]
-              [-var PATH] [--json] [--verbose] [--fail-on-error] [--version]
+usage: tirith [-h] [-policy-path PATH] [-input-path PATH] [-var-path PATH] [-var PATH] [--json]
+              [--verbose] [--fail-on-error] [--version] [--input-kind KIND] [--state-path PATH]
+              [--sha SHA] [--output-json PATH] [--output-markdown PATH] [--comment-marker TEXT]
+              [--markdown-limit N]
 
 Tirith (StackGuardian Policy Framework)
 
 options:
-  -h, --help         show this help message and exit
-  -policy-path PATH  Path containing Tirith policy as code
-  -input-path PATH   Input file path
-  -var-path PATH     Variable file path(s)
-  -var PATH          Inline variable(s)
-  --json             Only print the result in JSON form (useful for passing output to other programs)
-  --verbose          Show detailed logs of from the run
-  --fail-on-error    Exit 3 when a policy fails, instead of 0. Off by default for compatibility.
-  --version          show program's version number and exit
+  -h, --help              show this help message and exit
+  -policy-path PATH       Path containing Tirith policy as code
+  -input-path PATH        Input file path
+  -var-path PATH          Variable file path(s)
+  -var PATH               Inline variable(s)
+  --json                  Only print the result in JSON form (useful for passing output to other programs)
+  --verbose               Show detailed logs of from the run
+  --fail-on-error         Exit 3 when a policy fails, instead of 0. Off by default for compatibility.
+  --version               show program's version number and exit
+
+reporting:
+  Write the verdict out for a CI job to publish. All optional.
+
+  --input-kind KIND       terraform_plan, terraform_state, kubernetes or json. Masks the input before evaluating
+  --state-path PATH       Terraform state, when --input-kind is terraform_state
+  --sha SHA               Revision these findings describe, recorded in the report
+  --output-json PATH      Write the result document here (same shape as `tirith platform check`)
+  --output-markdown PATH  Write a markdown report here, for a comment or a note
+  --comment-marker TEXT   Opaque first line of the markdown, for comment stickiness
+  --markdown-limit N      Truncate the markdown to this length. Default: 60000
 
 Subcommands:
 
    tirith platform check --help   Evaluate against the policies your StackGuardian
                                   organization enforces, rather than local files.
-   tirith local check --help      Evaluate policy files committed in your repository,
-                                  with no credentials, and report the same verdict.
    tirith ui --help               Explore results, build policies and experiment in
                                   an interactive interface. Needs the 'tui' extra.
 
 About Tirith:
+
 
    * Abstract away the implementation complexity of policy engine underneath.
    * Simplify creation of declarative policies that are easy to read and interpret.
@@ -448,42 +460,39 @@ discovery, the sticky pull-request comment, the check run and the exit codes for
 
 ## Evaluating committed policy files, in CI
 
-`tirith local check` is the credential-free counterpart. It evaluates the policy files in your
-repository and writes the *same* report `tirith platform check` writes — so a CI integration built on
-one works unchanged on the other, and adding a StackGuardian organization later changes which
-policies apply, not how anything is wired.
+`tirith -policy-path … -input-path …` has always evaluated the policies in your repository. Three
+additions make it usable as a CI gate rather than only at a terminal:
 
 ```
-tirith local check --policy-path .tirith/policies --input-path plan.json --fail-on-error
+tirith -policy-path .tirith/policies -input-path plan.json \
+       --input-kind terraform_plan --output-json result.json --output-markdown report.md \
+       --fail-on-error
 ```
 
-Nothing leaves the machine. What you give up against platform mode is run history, the dashboard,
-enforcing one policy set across every repository from one place, and cost policies — those need a
-second document, so `--infracost-path` is accepted and reported as ignored.
+**`-policy-path` accepts a directory or a glob**, not just one file, and evaluates every policy it
+finds — a directory is searched for `*.tirith.json`, or failing that for any `.json` file shaped like a
+policy. Pointing it at a directory previously failed with a bare `ERROR`.
 
-| | |
-|---|---|
-| `--policy-path` | A file, a directory, or a glob. A directory is searched recursively for `*.tirith.json`, or failing that for any `.json` file shaped like a policy. Default `.tirith/policies` |
-| `--input-path` / `--plan-file` | The document to evaluate, or a binary plan to render. Defaults to `plan.json` or `tfplan.json` |
-| `--output-json` / `--output-markdown` | The machine-readable verdict and a markdown report, in the same shape both modes produce |
-| `--comment-marker` | An opaque first line for the markdown, so a CI job can find and edit its own comment |
-| `--fail-on-error` | Exit `3` when a policy fails, instead of `0` |
+**`--input-kind` masks the document** before evaluation. That matters even though nothing is uploaded:
+evaluator messages embed the values they compared, and those messages end up in whatever comment your
+CI job posts. It is opt-in because masking changes those messages, and they are this command's `--json`
+output, which is a frozen contract — with no `--input-kind` the file is read exactly as before.
+
+**`--output-json` / `--output-markdown` / `--comment-marker`** write the verdict out for a job to
+publish, in the [same shape](docs/output-contract.md) `tirith platform check` writes. So a CI
+integration works against either, and adding a StackGuardian organization later changes which policies
+apply rather than how anything is wired.
 
 Two behaviours worth knowing, both of which fail closed:
 
-- **No policy files is an error, not a skip.** Pointed at a path with nothing in it, the command exits
-  `1` rather than reporting a pass — a green result for a change nothing was evaluated against is the
-  one outcome this mode must never produce.
-- **A policy that could not be evaluated exits `1` regardless of `--fail-on-error`.** "Could not
-  evaluate" is tool health, not a policy decision, so the flag does not apply to it.
+- **No policy files found is an error, not a skip** — exit `1`, whether or not `--fail-on-error` was
+  passed. A green result for a change nothing was evaluated against is the one outcome this must never
+  produce.
+- **A policy that could not be evaluated exits `1` regardless of `--fail-on-error`**, as does a run
+  where every check was skipped. "Could not evaluate" and "nothing was examined" are tool health, not
+  policy decisions.
 
-It is not entered implicitly: `tirith platform check` with no credentials stays an error rather than
-quietly falling back here, because a fallback would evaluate whatever happens to be committed and
-report green when a token was simply misspelled. A CI integration that wants "no credentials therefore
-local" chooses that itself, deliberately.
-
-Every flag is in [docs/local-check.md](docs/local-check.md) or `tirith local check --help`, and the
-result document both modes write is in [docs/output-contract.md](docs/output-contract.md).
+Full reference: [docs/evaluating-policy-files.md](docs/evaluating-policy-files.md).
 
 ## Example Tirith policies
 

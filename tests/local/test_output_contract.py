@@ -17,6 +17,7 @@ from conftest import POLICY, plan
 
 from tirith.cli import main
 from tirith.platform import report
+from tirith.status import ExitStatus
 
 # Keys read by the GitHub Action and the GitLab component. Adding one is fine; removing or renaming
 # one breaks a released consumer, which is what this list is for.
@@ -126,23 +127,35 @@ def test_the_document_is_json_serialisable_in_both_modes(workspace):
     json.dumps(_local_document(workspace))
 
 
-def test_every_skipped_policy_still_reports_a_verdict_of_passed(workspace):
+def test_a_run_of_nothing_but_skips_fails_rather_than_passing(workspace):
     """
-    A deliberate divergence, recorded rather than fixed here.
+    The flat surface has always treated `final_result is None` -- every check swallowed by its
+    error_tolerance -- as a failure rather than a pass: nothing was examined, so green would be a lie.
+    Extending it to many policies must not quietly reverse that, which is what would have happened had
+    the aggregate verdict been taken from `report.verdict` alone.
 
-    A policy whose every check was skipped (`final_result` is None) counts as SKIPPED, and a run of
-    nothing-but-skips reports `passed` -- matching platform mode, which also counts skips separately
-    rather than failing on them. The *flat* surface disagrees: `tirith -policy-path ... -input-path
-    ... --fail-on-error` exits 1 for the same policy, on the grounds that "nothing ran" is not a pass
-    (see tests/cli/test_local_gating.py).
-
-    Both readings are defensible -- the policies genuinely did not apply, and the report says "N
-    skipped" rather than hiding it -- so this is pinned to make the inconsistency visible instead of
-    letting either surface drift into the other by accident. It needs a decision across all three
-    surfaces, not a quiet change in one.
+    This is a deliberate difference from `platform check`, which counts skips separately and reports
+    them as a pass. Both readings are defensible; a single surface disagreeing with itself depending on
+    how many policies you pointed it at is not.
     """
+    # A policy naming a resource type this document does not contain, with the error_tolerance that
+    # turns "not found" into a skip rather than a failure.
+    document = json.loads(json.dumps(POLICY))
+    document["evaluators"][0]["provider_args"]["terraform_resource_type"] = "aws_nonexistent"
+    document["evaluators"][0]["condition"]["error_tolerance"] = 2
+    workspace.policy(document=document)
+    workspace.plan()
+
+    assert main(workspace.argv()) == ExitStatus.ERROR
+
+    result = workspace.result()
+    assert result["verdict"] == "errored"
+    assert result["counts"]["skipped"] == 1
+    assert "nothing was evaluated" in workspace.markdown()
+
+    # The reducer itself still answers `passed` for an all-skipped set -- that is platform mode's
+    # answer and it is not changed here. The difference is made by this path, deliberately.
     counts, _ = report.summarize({"p": [{"rule_name": "r", "skip": True}]})
-
     assert report.verdict(counts, "COMPLETED") == "passed"
 
 

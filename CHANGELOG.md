@@ -12,18 +12,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2026-08-18
 
 ### Added
-- `tirith local check`: evaluate the policy files committed in your repository, with no credentials
-  and no network calls. It writes the *same* result document and markdown report as
-  `tirith platform check`, so a CI integration built against one works unchanged against the other,
-  and adding a StackGuardian organization later changes which policies apply rather than how
-  anything is wired. Moved in from the GitHub Action, which owned the only implementation, so that a
-  second front end does not fork it.
-  - Two behaviours that fail closed: no policy files found is an error rather than a skip, and a
-    policy that could not be evaluated exits 1 regardless of `--fail-on-error`, because "could not
-    evaluate" is tool health rather than a policy decision.
-  - Never entered implicitly. `tirith platform check` with no credentials stays an error rather than
-    falling back, because a fallback evaluates whatever happens to be committed and reports green
-    when a token was misspelled.
+- `tirith -policy-path …` can be used as a CI gate, not only at a terminal. Three additions, all
+  optional and all off unless asked for, so an existing invocation behaves exactly as before -- which
+  matters because this command's `--json` output is a frozen contract:
+  - **`-policy-path` accepts a directory or a glob**, evaluating every policy it finds. A directory is
+    searched recursively for `*.tirith.json`, or failing that for any `.json` file shaped like a policy.
+    Pointing it at a directory previously failed with a bare `ERROR`. `-var-path` and `-var` apply to
+    every policy, so a parameterised policy behaves the same whether you name the file or its directory.
+  - **`--input-kind`** masks the document before evaluation. It matters even though nothing is uploaded:
+    evaluator messages embed the values they compared, and those messages are copied into whatever
+    comment a CI job posts. Opt-in because masking changes those messages, and they are the frozen
+    `--json` output.
+  - **`--output-json`, `--output-markdown`, `--comment-marker`, `--markdown-limit`, `--sha`** write the
+    verdict out for a job to publish, in the same shape `tirith platform check` writes. So one CI
+    integration drives either, and adding a StackGuardian organization later changes which policies
+    apply rather than how anything is wired.
+
+  Two paths fail closed regardless of `--fail-on-error`, because both are tool health rather than policy
+  decisions: no policy files found at `-policy-path`, and a policy that could not be evaluated. A run
+  where every check was skipped also exits 1 -- nothing was examined, and this command has always
+  treated that as a failure rather than a pass. That last one is a deliberate difference from
+  `platform check`, which counts skips separately and reports them as a pass.
+
+  This capability came from the GitHub Action, which owned the only implementation of it. It moved here
+  so a second front end -- the GitLab CI component -- drives one implementation rather than forking it.
 - `tirith ui`: an interactive interface with three tabs.
   - **Explorer** — read an evaluation's results down to the resource behind each one. The result
     document has always carried the resource address, the planned action and the before/after

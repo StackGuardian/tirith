@@ -98,6 +98,9 @@ def test_a_json_document_is_passed_through_unmasked(tmp_path):
     """
     `json` and `kubernetes` carry no sensitivity markers to mask by, and tirith reads YAML for them,
     which a JSON round-trip here would break. So the original path is returned, not a copy.
+
+    `raw` -- no --input-kind at all, which is what the flat command has always done -- takes the same
+    branch, for the different reason that the caller has not said what the document is.
     """
     document = tmp_path / "anything.json"
     document.write_text(json.dumps({"hello": "world"}))
@@ -109,7 +112,7 @@ def test_a_json_document_is_passed_through_unmasked(tmp_path):
 
 
 def test_a_json_document_must_be_named(tmp_path):
-    with pytest.raises(LocalError, match="--input-path is required"):
+    with pytest.raises(LocalError, match="-input-path is required"):
         evaluate.prepare_input(None, None, None, "json", str(tmp_path), str(tmp_path))
 
 

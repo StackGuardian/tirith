@@ -25,7 +25,7 @@ module.exports = {
         "tirith-usage/exit-codes",
         "tirith-usage/ci-integration",
         "tirith-usage/platform-check",
-        "tirith-usage/local-check",
+        "tirith-usage/evaluating-policy-files",
         "tirith-usage/output-contract",
       ]
     },

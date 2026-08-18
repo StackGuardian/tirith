@@ -101,11 +101,14 @@ def test_the_subcommand_names_are_exactly_these(capsys):
     `remote` is not quietly still accepted.
 
     `ui` was added alongside it later, on the same terms: dispatched before the flat parser so the
-    local surface and its golden-file output are untouched. `local` joined on the same terms again.
-    The set is pinned rather than merely checked for membership, so a new subcommand has to be a
-    deliberate edit here.
+    local surface and its golden-file output are untouched. The set is pinned rather than merely
+    checked for membership, so a new subcommand has to be a deliberate edit here.
+
+    A `local` subcommand was written and then removed: evaluating committed policy files belongs on the
+    flat surface that already does it, as flags, rather than as a second way to do the same thing. That
+    is why `-policy-path` accepts a directory and takes `--output-json`.
     """
-    assert cli.SUBCOMMANDS == {"platform", "ui", "local"}
+    assert cli.SUBCOMMANDS == {"platform", "ui"}
 
     status = cli.main(["remote"])
 
