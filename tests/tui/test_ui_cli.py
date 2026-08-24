@@ -147,7 +147,7 @@ def test_an_unreadable_file_is_reported_not_raised(capsys, monkeypatch):
 @mark.passing
 def test_the_missing_extra_is_reported_with_instructions(capsys, monkeypatch):
     """
-    The expected failure for anyone who installed plain `py-tirith`: an instruction, not an
+    The expected failure for anyone who installed plain `tirith-iac-governance`: an instruction, not an
     ImportError traceback.
     """
 

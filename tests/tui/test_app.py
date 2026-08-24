@@ -18,7 +18,7 @@ from pathlib import Path
 
 from pytest import fixture, mark, importorskip
 
-importorskip("textual", reason="the TUI is an optional extra (pip install 'py-tirith[tui]')")
+importorskip("textual", reason="the TUI is an optional extra (pip install 'tirith-iac-governance[tui]')")
 
 
 def drives_the_app(test):

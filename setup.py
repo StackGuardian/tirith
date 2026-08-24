@@ -5,11 +5,8 @@ from __future__ import print_function
 
 import io
 import re
-from glob import glob
-from os.path import basename
 from os.path import dirname
 from os.path import join
-from os.path import splitext
 
 from setuptools import find_packages
 from setuptools import setup
@@ -20,10 +17,26 @@ def read(*names, **kwargs):
         return file_handle.read()
 
 
+def read_version():
+    """
+    Single source of truth: `src/tirith/__init__.py`.
+
+    Read rather than imported, because importing the package at build time would execute its
+    imports before its dependencies are installed. `tirith --version` reports this same value
+    (`cli.py` reads `tirith.__version__`), so a duplicate literal here is a version the CLI can
+    contradict -- which is exactly what a hardcoded copy invites, and nothing asserted otherwise.
+    """
+    match = re.search(r'^__version__ = "([^"]+)"', read("src", "tirith", "__init__.py"), re.M)
+    if not match:
+        raise RuntimeError("could not find __version__ in src/tirith/__init__.py")
+    return match.group(1)
+
+
 setup(
-    name="py-tirith",
-    version="1.2.0",
-    license="Apache",
+    name="tirith-iac-governance",
+    version=read_version(),
+    license="Apache-2.0",
+    license_files=["LICENSE"],
     description="Tirith simplifies defining Policy as Code.",
     long_description_content_type="text/markdown",
     long_description="%s\n%s"
@@ -36,7 +49,6 @@ setup(
     url="https://github.com/stackguardian/tirith",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
     # Declared explicitly as well as in MANIFEST.in: MANIFEST governs the sdist, but a wheel
     # built straight from the tree takes its data files from here. Without this the TUI
@@ -48,28 +60,26 @@ setup(
     },
     zip_safe=False,
     classifiers=[
-        # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
-        "Development Status :: 2 - Pre-Alpha",
+        # The matrix in .github/workflows/build_test.yml is the source of truth for what is
+        # actually supported; these must not claim less than it tests, which they did -- 3.10
+        # through 3.12 were tested on every push and advertised nowhere.
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
+        "Intended Audience :: System Administrators",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: Unix",
         "Operating System :: POSIX",
-        # 'Operating System :: Microsoft :: Windows',
+        "Operating System :: MacOS",
         "Programming Language :: Python",
-        # 'Programming Language :: Python :: 2.7',
-        # 'Programming Language :: Python :: 3',
-        # 'Programming Language :: Python :: 3.5',
-        # 'Programming Language :: Python :: 3.6',
-        # 'Programming Language :: Python :: 3.7',
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: Implementation :: CPython",
-        # 'Programming Language :: Python :: Implementation :: PyPy',
-        # uncomment if you test on these interpreters:
-        # 'Programming Language :: Python :: Implementation :: IronPython',
-        # 'Programming Language :: Python :: Implementation :: Jython',
-        # 'Programming Language :: Python :: Implementation :: Stackless',
-        "Topic :: System",
+        "Topic :: System :: Systems Administration",
+        "Topic :: Software Development :: Quality Assurance",
     ],
     project_urls={
         "Changelog": "https://github.com/stackguardian/tirith/blob/main/CHANGELOG.md",
@@ -79,7 +89,7 @@ setup(
     python_requires=">=3.8",
     install_requires=["simplejson==3.17.2", "pydash==6.0.0", "PyYAML==6.0.1"],
     extras_require={
-        # `pip install py-tirith[tui]` adds the interactive interface (`tirith ui`).
+        # `pip install tirith-iac-governance[tui]` adds the interactive interface (`tirith ui`).
         #
         # An extra rather than a dependency, for two reasons. The UI toolkit requires Python
         # >=3.9 while tirith supports >=3.8, so a hard dependency would drop 3.8 support for
@@ -96,9 +106,6 @@ setup(
             'textual-serve>=1.0; python_version >= "3.9"',
         ],
     },
-    setup_requires=[
-        "pytest-runner",
-    ],
     entry_points={
         "console_scripts": [
             "tirith=tirith.__main__:main",

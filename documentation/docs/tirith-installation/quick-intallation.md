@@ -37,15 +37,14 @@ If you simply want to install and start using Tirith, this option provides a fas
 
 ## Prerequisite
 - Make sure your machine has [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) installed.
-- Install [Git](https://git-scm.com/downloads) on your machine.
 
 ## Steps to Install Tirith
 
 ### Step 1: Install using the `pip` command
-Run the following command in your terminal to download Tirith directly from the GitHub repository and install it on your local system. This command ensures that you have the latest version.
+Run the following command in your terminal to install Tirith from PyPI. This gives you the latest release.
 
 ```bash
-pip install git+https://github.com/StackGuardian/tirith.git
+pip install tirith-iac-governance
 ```
     
 

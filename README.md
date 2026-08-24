@@ -1,5 +1,5 @@
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://raw.githubusercontent.com/StackGuardian/tirith/main/LICENSE)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](https://raw.githubusercontent.com/StackGuardian/tirith/main/CODE_OF_CONDUCT.md)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=alert_status&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=sqale_rating&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
@@ -13,7 +13,7 @@
 >
 > Explore a failing evaluation down to the resource that caused it, assemble policies from a
 > form, and experiment in a playground with worked examples. Try it with
-> `pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'`, then
+> `pip install 'tirith-iac-governance[tui]'`, then
 > `tirith ui` — see
 > [The interactive interface](#the-interactive-interface).
 >
@@ -104,18 +104,18 @@ failed, and on which resource and value.
 ### For users
 
 ```
-pip install git+https://github.com/StackGuardian/tirith.git
+pip install tirith-iac-governance
 ```
 
-Pin a tag rather than tracking the default branch, so a CI job cannot change behaviour underneath you:
+Pin the version in CI, so a release cannot change behaviour underneath you:
 
 ```
-pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+pip install "tirith-iac-governance==1.3.0"
 ```
 
-`1.0.5` is the newest tag; `git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists
-them. Tirith is not on PyPI — `pip install tirith` installs an unrelated project of the same name, so
-install from git. Python 3.8 or newer.
+The distribution is **`tirith-iac-governance`**; the import and the command are both `tirith`. Note that
+`pip install tirith` installs an unrelated project of the same name — that name has belonged to
+someone else on PyPI since 2016. Python 3.8 or newer.
 
 ### For developers
 
@@ -178,7 +178,7 @@ pip install -e .
 
 ```
 tirith --version
-tirith 1.2.0
+tirith 1.3.0
 ```
 
 Congratulations! Tirith has been setup in your system
@@ -236,11 +236,11 @@ nobody gating a pipeline should pay to install an interface they never open. It 
 3.9 or newer, while tirith itself still supports 3.8:
 
 ```bash
-pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
+pip install 'tirith-iac-governance[tui]'
 ```
 
-Tirith is not on PyPI — `pip install py-tirith` finds nothing and `pip install tirith` installs an
-unrelated project of the same name — so the extra is requested against the git URL.
+The interface is an extra rather than a dependency, so a CI gate does not pay to install a UI it
+never opens.
 
 ```bash
 tirith ui                                          # playground, with worked examples
@@ -374,7 +374,7 @@ policy:
   image: python:3.12
   needs: [plan]
   script:
-    - pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+    - pip install "tirith-iac-governance==1.3.0"
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
@@ -442,7 +442,7 @@ Common flags:
 | `--output-json` / `--output-markdown` | Write the verdict to files for a later CI step |
 
 `--api-url` overrides `--region` for a self-hosted or dedicated host. Every flag is in
-[docs/platform-check.md](docs/platform-check.md) or `tirith platform check --help`.
+[docs/platform-check.md](https://raw.githubusercontent.com/StackGuardian/tirith/main/docs/platform-check.md) or `tirith platform check --help`.
 
 Running this from GitHub Actions? Use [the action](#github-actions) instead — it wires up the plan
 discovery, the sticky pull-request comment, the check run and the exit codes for you.
@@ -650,7 +650,7 @@ Input:
 
 
 Output:
-![](docs/tf_plan_example.gif)
+![](https://raw.githubusercontent.com/StackGuardian/tirith/main/docs/tf_plan_example.gif)
 
 JSON Output:
 ```json
@@ -899,7 +899,7 @@ Input:
 ```
 
 Output:
-![](docs/infracost_example.gif)
+![](https://raw.githubusercontent.com/StackGuardian/tirith/main/docs/infracost_example.gif)
 
 JSON Output:
 ```json
@@ -1044,7 +1044,7 @@ Example Input:
 ```
 
 Output:
-![](docs/sg_workflow_example.gif)
+![](https://raw.githubusercontent.com/StackGuardian/tirith/main/docs/sg_workflow_example.gif)
 
 
 JSON Output:
@@ -1202,7 +1202,7 @@ Example Input
 ```
 
 Output:
-![](docs/json_example.gif)
+![](https://raw.githubusercontent.com/StackGuardian/tirith/main/docs/json_example.gif)
 
 JSON Output
 ```json
@@ -1482,7 +1482,7 @@ Final expression used:
 
 We are calling for contributors to help build out new features, review pull requests, fix bugs, and
 maintain overall code quality. Email us at team[at]stackguardian.io, or get started by reading
-[contributing.md](./CONTRIBUTING.md).
+[contributing.md](https://raw.githubusercontent.com/StackGuardian/tirith/main/CONTRIBUTING.md).
 
 ### Getting an issue assigned
 

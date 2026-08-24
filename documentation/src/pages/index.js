@@ -27,7 +27,7 @@ const content = {
     body:
       'Tirith reads the plan your pipeline already produces, checks it against your policies, and ' +
       'exits non-zero so a violating change never reaches apply. Apache-2.0, and no account needed.',
-    install: 'pip install git+https://github.com/StackGuardian/tirith.git',
+    install: 'pip install tirith-iac-governance',
     announcement: {
       label: 'New',
       // No backticks: this is plain JSX text, not markdown, so they would render literally.

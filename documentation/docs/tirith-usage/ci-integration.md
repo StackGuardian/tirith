@@ -107,14 +107,13 @@ policy:
   image: python:3.12
   needs: [plan]
   script:
-    - pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+    - pip install "tirith-iac-governance==1.3.0"
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
-Tirith is **not on PyPI** — `pip install tirith` installs an unrelated project of the same name.
-Install from git, and pin a tag rather than tracking the default branch so a CI job cannot change
-behaviour underneath you. `1.0.5` is the newest tag;
-`git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists them. Python 3.8 or newer.
+The distribution is **`tirith-iac-governance`**; the import and the command are both `tirith`. Pin the
+version in CI so a release cannot change behaviour underneath you. Note that `pip install tirith`
+installs an unrelated project of the same name. Python 3.8 or newer.
 
 To evaluate your organization's policies instead of the committed files, swap the last line for
 `tirith platform check` and supply credentials as CI variables:
@@ -126,7 +125,7 @@ policy:
   variables:
     SG_ORG: my-org       # SG_API_TOKEN comes from a masked CI/CD variable
   script:
-    - pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+    - pip install "tirith-iac-governance==1.3.0"
     - tirith platform check --workflow-id my-repo --input-path plan.json --fail-on-error
 ```
 
@@ -138,7 +137,7 @@ Nothing above is GitLab-specific: any runner that can execute a container and pr
 the same way. The recipe is always the same three steps —
 
 1. produce the input document (`terraform show -json tfplan > plan.json`);
-2. `pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"`;
+2. `pip install "tirith-iac-governance==1.3.0"`;
 3. `tirith -policy-path <policies> -input-path plan.json --fail-on-error`
 
 — and gate the job on the exit code, which every CI system does by default for a non-zero exit.

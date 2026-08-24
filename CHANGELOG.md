@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [Unreleased]
+
+## [1.3.0] - 2026-08-24
 
 ### Added
 - `tirith ui`: an interactive interface with three tabs.
@@ -24,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Playground** — edit a policy and an input side by side and watch the verdict move, with
     five worked examples that mostly fail on purpose and explain why.
   - `--serve` runs the same interface over HTTP for a browser.
-- Optional extra: `pip install 'py-tirith[tui]'`. Not a hard dependency — the interface needs
+- Optional extra: `pip install 'tirith-iac-governance[tui]'`. Not a hard dependency — the interface needs
   Python 3.9 while tirith supports 3.8, and using tirith as a CI gate should stay
   dependency-light. Without it, `tirith ui` prints how to install it and exits 1.
 - A policy validator behind the interface, reporting the mistakes that are otherwise silent:
@@ -35,6 +36,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The local evaluation surface is untouched. `ui` is dispatched before the flat parser, like
   `platform`, so `--json` output remains byte-identical to the golden file.
 - No new runtime dependencies for anyone who does not install the extra.
+
+### Packaging
+- **Published to PyPI as `tirith-iac-governance`.** `pip install tirith-iac-governance`,
+  or `pip install 'tirith-iac-governance[tui]'` for the interface. Previously the only way in
+  was a git URL, which needed git and the network at build time and could not resolve wheels.
+  The import and the command are still `tirith`; `pip install tirith` remains an unrelated
+  project that has held that name since 2016.
+- The version is now read from `src/tirith/__init__.py` alone, rather than being duplicated in
+  `setup.py` and kept in step by hand.
+- `pyproject.toml` declares a `[build-system]`, so builds no longer depend on whatever
+  setuptools happens to be present.
+- Metadata corrected: SPDX `Apache-2.0` with an explicit `license_files`, Python 3.10-3.12
+  classifiers to match the tested matrix, and `Development Status :: 5 - Production/Stable`.
 
 ## [1.2.0] - 2026-08-03
 
