@@ -1,3 +1,10 @@
+# Without this table, pip falls back to legacy setup.py semantics and builds against whatever
+# setuptools happens to be in the environment. Declaring it is what makes `python -m build`
+# reproducible and PEP 517 compliant -- the package metadata itself still lives in setup.py.
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [tool.black]
 line-length = 120
 target-version = ['py38']

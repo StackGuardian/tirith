@@ -16,7 +16,7 @@ import TabItem from '@theme/TabItem';
 
 Explore a failing evaluation down to the resource that caused it, assemble policies from a form, and
 experiment in a playground with worked examples. Install it with
-`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'` and run
+`pip install 'tirith-iac-governance[tui]'` and run
 `tirith ui` — see
 [the interactive interface](tirith-usage/interactive-interface.md).
 

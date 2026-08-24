@@ -8,7 +8,7 @@ evaluate, edit it and watch the verdict move.
 The examples live in `examples/` beside this module rather than being read out of `tests/`.
 Reusing the test fixtures was tempting since there are ~30 of them, but tests/ is not shipped
 in the wheel (MANIFEST.in packages `src/*.json`, and the test tree only reaches an sdist), so
-an installed `pip install py-tirith[tui]` would have found an empty playground. They are also
+an installed `pip install tirith-iac-governance[tui]` would have found an empty playground. They are also
 written to demonstrate the engine, not to teach it: several exist precisely because they are
 malformed, and `policy.json` uses a `&` the engine rejects outright.
 

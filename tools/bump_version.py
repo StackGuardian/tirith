@@ -27,17 +27,16 @@ class VersionBumper:
     def __init__(self, root_dir=None):
         # If no root_dir provided, use parent directory of the script (project root)
         self.root_dir = Path(root_dir) if root_dir else Path(__file__).parent.parent
-        self.setup_py = self.root_dir / "setup.py"
         self.init_py = self.root_dir / "src" / "tirith" / "__init__.py"
         self.changelog = self.root_dir / "CHANGELOG.md"
 
     def get_current_version(self):
-        """Extract current version from setup.py"""
-        content = self.setup_py.read_text()
-        match = re.search(r'version="([^"]+)"', content)
+        """Extract current version from src/tirith/__init__.py, the single source of truth."""
+        content = self.init_py.read_text()
+        match = re.search(r'^__version__ = "([^"]+)"', content, re.M)
         if match:
             return match.group(1)
-        raise ValueError("Could not find version in setup.py")
+        raise ValueError("Could not find __version__ in src/tirith/__init__.py")
 
     def validate_version(self, version):
         """Validate version format (semantic versioning)"""
@@ -45,13 +44,6 @@ class VersionBumper:
         if not re.match(pattern, version):
             raise ValueError(f"Invalid version format: {version}. Expected format: X.Y.Z or X.Y.Z-beta.N")
         return True
-
-    def update_setup_py(self, new_version):
-        """Update version in setup.py"""
-        content = self.setup_py.read_text()
-        updated = re.sub(r'version="[^"]+"', f'version="{new_version}"', content)
-        self.setup_py.write_text(updated)
-        print(f"✓ Updated {self.setup_py.relative_to(self.root_dir)}")
 
     def update_init_py(self, new_version):
         """Update version in src/tirith/__init__.py"""
@@ -94,7 +86,6 @@ class VersionBumper:
         print(f"New version: {new_version}\n")
 
         # Update all files
-        self.update_setup_py(new_version)
         self.update_init_py(new_version)
         self.update_changelog(new_version, change_type, description)
 
@@ -102,7 +93,7 @@ class VersionBumper:
         print("\nNext steps:")
         print("1. Review the changes")
         print("2. Commit with: git add -A && git commit -m 'Bump version'")
-        print("3. Create a tag: git tag -a v{} -m 'Release v{}'".format(new_version, new_version))
+        print("3. Create a tag: git tag -a {} -m 'Release {}'".format(new_version, new_version))
         print("4. Push: git push && git push --tags")
 
 

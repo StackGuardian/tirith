@@ -1,0 +1,126 @@
+name: Release to PyPI
+
+# Publishing is deliberately split from `Build & test`, which triggers on bare `push:` and so
+# already fires on a tag -- but nothing gates on it, so a tag push would otherwise publish in
+# parallel with the tests rather than after them. Here `publish` needs `build` needs `test`.
+#
+# Authentication is Trusted Publishing (OIDC): PyPI verifies a short-lived token bound to this
+# repository, this workflow filename and the named environment. There is no API token to store,
+# rotate, or leak -- which is why the `id-token: write` permission is granted to the publish job
+# alone and nowhere else.
+
+on:
+  push:
+    # Bare semver, because that is what every tag since 1.0.0-beta.2 uses. The two `v`-prefixed
+    # tags are from 2022 and abandoned. The trailing `*` catches prereleases like 1.3.0-beta.1.
+    tags: ["[0-9]+.[0-9]+.[0-9]+*"]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to publish. Rehearse on TestPyPI before tagging for real."
+        type: choice
+        options: [testpypi, pypi]
+        default: testpypi
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: Check the tag matches the shipped version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # A PyPI version is immutable: a wrong one can be yanked but never replaced, and the fix is
+      # always a new number. Nothing else in this repository asserts that the tag, setup.py and
+      # `tirith --version` agree, so it is asserted here, before anything is built.
+      - name: Tag == tirith.__version__
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          set -euo pipefail
+          shipped=$(python -c "import re;print(re.search(r'^__version__ = \"([^\"]+)\"', open('src/tirith/__init__.py').read(), re.M).group(1))")
+          tag="${GITHUB_REF_NAME}"
+          echo "tag=$tag shipped=$shipped"
+          if [ "$tag" != "$shipped" ]; then
+            echo "::error::tag $tag does not match src/tirith/__init__.py ($shipped)"
+            exit 1
+          fi
+
+  test:
+    name: Test before publishing
+    needs: guard
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: Pipfile.lock
+      - run: pip install . && pip install pipenv && pipenv install --system -d
+      - run: pytest
+
+  build:
+    name: Build sdist and wheel
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build twine
+      - run: python -m build
+      # `twine check` validates that the README renders as a PyPI description. Catching that here
+      # rather than after upload matters, because the description cannot be corrected in place.
+      - run: twine check dist/*
+      # The TUI ships a stylesheet and five bundled examples as package data. A wheel missing them
+      # still installs and still starts -- it renders unstyled with an empty playground, which is a
+      # worse failure than not starting, and one no import check would catch.
+      - name: The wheel carries its data files
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob, sys, zipfile
+          names = zipfile.ZipFile(glob.glob("dist/*.whl")[0]).namelist()
+          css = [n for n in names if n.endswith("tui/app.css")]
+          examples = [n for n in names if "/tui/examples/" in n and n.endswith(("about.md", "policy.json", "input.json"))]
+          print(f"stylesheet={css} example files={len(examples)}")
+          if not css or len(examples) < 3:
+              sys.exit("wheel is missing TUI package data")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'pypi' }}
+    permissions:
+      id-token: write        # the OIDC token PyPI verifies; nothing else needs it
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      # Two steps rather than one with a computed `repository-url`: the action defaults that input
+      # to the real PyPI endpoint, and passing an empty string to mean "use the default" is not a
+      # contract it documents.
+      - name: Publish to TestPyPI
+        if: github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+      - name: Publish to PyPI
+        if: github.event_name != 'workflow_dispatch' || inputs.target == 'pypi'
+        uses: pypa/gh-action-pypi-publish@release/v1

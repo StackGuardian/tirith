@@ -33,11 +33,11 @@ pipeline should pay to install an interface they never open. It needs Python 3.9
 Tirith itself still supports 3.8.
 
 ```bash
-pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
+pip install 'tirith-iac-governance[tui]'
 ```
 
-Tirith is not on PyPI — `pip install py-tirith` finds nothing and `pip install tirith` installs an
-unrelated project of the same name — so the extra is requested against the git URL.
+The interface is an extra rather than a dependency, so a CI gate does not pay to install a UI it
+never opens.
 
 ## Opening it
 
