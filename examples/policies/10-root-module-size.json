@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "This root module holds no more than 200 resources",
+    "severity": "low"
+  },
+  "evaluators": [
+    {
+      "id": "under_two_hundred",
+      "description": "Named for what it measures. `count` counts every entry in resource_changes, and Terraform includes unchanged resources as no-op entries -- so this is the SIZE OF THE ROOT MODULE, not the size of the change. A ceiling on module size is still worth having: a 900-resource root module means every plan is slow, every apply is high-stakes, and every lock contends. For a ceiling on what a change TOUCHES, see policies-pending/blast-radius.json.",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "*"
+      },
+      "condition": { "type": "LessThanEqualTo", "value": 200 }
+    }
+  ],
+  "eval_expression": "under_two_hundred"
+}

@@ -1,0 +1,45 @@
+{
+  "_comment": [
+    "Check-catalogue coverage, summarised for a public page.",
+    "",
+    "Counts and category names ONLY. The catalogue's individual check IDs,",
+    "titles, detection methods and rationale are deliberately not in this",
+    "repository and must not be added to it -- they are the substance of the",
+    "commercial offer, and a public JSON file is the fastest possible way to",
+    "give them away. The `focus` strings below are written from scratch to",
+    "describe a category's territory; none of them quote a check.",
+    "",
+    "`available` is the number the platform's repository scanner can evaluate",
+    "from its own inputs. `catalogue` is the number of checks written for that",
+    "category, including those whose evidence lives somewhere the scanner",
+    "cannot reach (a plan, a state file, a live cloud account, a customer's",
+    "own convention)."
+  ],
+  "totals": {
+    "available": 382,
+    "catalogue": 519,
+    "shippedToday": 15,
+    "categories": 19
+  },
+  "categories": [
+    {"code": "GHA", "name": "GitHub Actions pipeline engineering", "focus": "Plan and apply gating, workflow permissions, action pinning, secret exposure, concurrency and timeouts.", "available": 43, "catalogue": 45},
+    {"code": "MOD", "name": "Reusable module API and lifecycle", "focus": "Module interfaces, documentation accuracy, semantic versioning, deprecation and who still consumes it.", "available": 35, "catalogue": 39},
+    {"code": "TEST", "name": "Tests, examples, documentation and releases", "focus": "Whether tests exist and what they cover, example hygiene, documentation drift, release discipline.", "available": 25, "catalogue": 30},
+    {"code": "GL", "name": "GitLab CI pipeline engineering", "focus": "The same gating, artefact and credential questions, asked of GitLab pipelines.", "available": 24, "catalogue": 25},
+    {"code": "SEC", "name": "Secrets, supply chain and code execution", "focus": "Hard-coded credentials, untrusted sources, pipeline injection and unverified downloads.", "available": 23, "catalogue": 25},
+    {"code": "TG", "name": "Terragrunt structure and governance", "focus": "Dependency graphs, inheritance depth, generated blocks and what hooks are allowed to run.", "available": 23, "catalogue": 25},
+    {"code": "ORG", "name": "Organisation-wide standardisation", "focus": "Divergence measured across the whole estate: versions, backends, tagging, duplicated modules.", "available": 23, "catalogue": 30},
+    {"code": "API", "name": "Variables, locals, outputs and interfaces", "focus": "Input and output hygiene, tfvars correctness, and whether sensitive values are marked as such.", "available": 21, "catalogue": 25},
+    {"code": "ARCH", "name": "Root architecture and scalability", "focus": "Root sizing, environment separation, cross-environment coupling and ownership.", "available": 20, "catalogue": 25},
+    {"code": "LIFE", "name": "Resource lifecycle and safe refactoring", "focus": "Destroy protection, moved and import blocks, unstable addressing, provisioner safety.", "available": 20, "catalogue": 25},
+    {"code": "PROVIDER", "name": "Kubernetes, Helm, VMware and generic providers", "focus": "Chart and image pinning, secret material, placement constraints, provider-specific sensitivity.", "available": 20, "catalogue": 25},
+    {"code": "GOV", "name": "Governance, ownership and policy lifecycle", "focus": "Code ownership, review requirements, and how suppressions and exceptions are handled.", "available": 20, "catalogue": 30},
+    {"code": "PROV", "name": "Provider configuration and dependency integrity", "focus": "Provider sourcing, version constraints, lock files and credentials in configuration.", "available": 19, "catalogue": 25},
+    {"code": "REP", "name": "Repository discovery and lifecycle", "focus": "What each repository is for, whether it is dormant, and what should not be committed to it.", "available": 18, "catalogue": 20},
+    {"code": "VER", "name": "Versions and portability", "focus": "Version pinning, Terraform and OpenTofu portability, deprecated language syntax.", "available": 17, "catalogue": 20},
+    {"code": "STATE", "name": "Backend state and workspaces", "focus": "Backend strategy, encryption, locking, state key boundaries and workspace use.", "available": 16, "catalogue": 30},
+    {"code": "STYLE", "name": "Formatting, naming and readability", "focus": "Canonical formatting, file organisation, expression complexity and commented-out code.", "available": 14, "catalogue": 20},
+    {"code": "TFC", "name": "Terraform Cloud workspaces and runs", "focus": "Policy enforcement levels, where a customer keeps their policy sets in Git.", "available": 1, "catalogue": 25},
+    {"code": "RUN", "name": "Plan, apply and cloud maturity", "focus": "Questions only a plan or a live account can answer: destructive changes, drift, unmanaged resources.", "available": 0, "catalogue": 30}
+  ]
+}

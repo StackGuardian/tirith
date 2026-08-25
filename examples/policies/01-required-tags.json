@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "Every taggable resource declares an owner",
+    "severity": "low"
+  },
+  "evaluators": [
+    {
+      "id": "owner_tag_present",
+      "description": "tags.Owner is present and not blank. Sub-resources that AWS does not accept tags on are excluded by name -- without that list every aws_s3_bucket_versioning in the plan fails a rule it cannot satisfy.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "tags.Owner",
+        "exclude_resource_types": [
+          "aws_s3_bucket_acl",
+          "aws_s3_bucket_lifecycle_configuration",
+          "aws_s3_bucket_policy",
+          "aws_s3_bucket_public_access_block",
+          "aws_s3_bucket_server_side_encryption_configuration",
+          "aws_s3_bucket_versioning",
+          "aws_iam_policy_attachment",
+          "aws_iam_role_policy",
+          "aws_iam_role_policy_attachment",
+          "aws_route_table_association",
+          "aws_security_group_rule",
+          "aws_lambda_permission",
+          "null_resource",
+          "terraform_data",
+          "random_id",
+          "random_password",
+          "random_string"
+        ]
+      },
+      "condition": {
+        "type": "IsNotEmpty"
+      }
+    }
+  ],
+  "eval_expression": "owner_tag_present"
+}

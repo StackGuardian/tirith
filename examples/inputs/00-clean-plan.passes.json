@@ -1,0 +1,131 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.11.4",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.artifacts",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "artifacts",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "acme-artifacts",
+          "tags": {
+            "Owner": "platform-team",
+            "Name": "acme",
+            "Environment": "prod"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_public_access_block.artifacts",
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "artifacts",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "acme-artifacts",
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "ignore_public_acls": true,
+          "restrict_public_buckets": true
+        }
+      }
+    },
+    {
+      "address": "aws_db_instance.orders",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "orders",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "identifier": "orders",
+          "engine": "postgres",
+          "storage_encrypted": true,
+          "deletion_protection": true,
+          "tags": {
+            "Owner": "platform-team",
+            "Name": "acme",
+            "Environment": "prod"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_vpc_security_group_ingress_rule.api",
+      "mode": "managed",
+      "type": "aws_vpc_security_group_ingress_rule",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "from_port": 443,
+          "to_port": 443,
+          "ip_protocol": "tcp",
+          "cidr_ipv4": "10.0.0.0/8",
+          "tags": {
+            "Owner": "platform-team",
+            "Name": "acme",
+            "Environment": "prod"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_instance.web",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "web",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "instance_type": "t3.small",
+          "tags": {
+            "Owner": "platform-team",
+            "Name": "acme",
+            "Environment": "prod"
+          },
+          "user_data": "#!/bin/bash\nsystemctl start app\n"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0",
+        "expressions": {
+          "region": {
+            "constant_value": "us-east-1"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "PENDING ENGINE SUPPORT -- No single change touches more than 10 resources",
+    "severity": "high"
+  },
+  "evaluators": [
+    {
+      "id": "changes_under_ceiling",
+      "description": "REQUIRES an `actions` filter on the count operation, which Tirith does not have today: count matches on terraform_resource_type only, and Terraform includes unchanged resources in resource_changes as no-op entries, so count(*) returns the size of the root module rather than the size of the change. Tracked in ROADMAP.md. This file is here so the policy and the change that enables it can be reviewed together -- it does NOT run yet, which is why it is not in policies/.",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "*",
+        "actions": ["create", "update", "delete"]
+      },
+      "condition": { "type": "LessThanEqualTo", "value": 10 }
+    },
+    {
+      "id": "destructions_under_ceiling",
+      "description": "The number that actually matters. Two deletions is a Tuesday; forty is an incident.",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "*",
+        "actions": ["delete"]
+      },
+      "condition": { "type": "LessThanEqualTo", "value": 2 }
+    }
+  ],
+  "eval_expression": "changes_under_ceiling && destructions_under_ceiling"
+}

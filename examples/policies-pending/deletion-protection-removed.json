@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "PENDING ENGINE SUPPORT -- Deletion protection is never turned off",
+    "severity": "critical"
+  },
+  "evaluators": [
+    {
+      "id": "protection_not_removed",
+      "description": "REQUIRES reading change.before, which Tirith cannot do: the attribute operation reads change.after only. The dangerous pattern is a transition -- deletion_protection true becoming false, usually in the PR before the one that deletes the thing. after=false alone cannot distinguish 'was already off' from 'someone just turned it off', and only the second is an incident in progress. Tracked in ROADMAP.md. It is the largest single gap in what a policy can currently express.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "attribute_source": "delta",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "deletion_protection"
+      },
+      "condition": { "type": "Equals", "value": { "before": true, "after": false }, "error_tolerance": 2 }
+    }
+  ],
+  "eval_expression": "!protection_not_removed"
+}

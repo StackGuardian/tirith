@@ -17,8 +17,7 @@ slug: interactive-interface/
 interface is still open, and the rough edges are still being found.
 
 Tell us what is confusing, what is missing, or what you would rather it did:
-[open an issue](https://github.com/StackGuardian/tirith/issues) or say so in
-[Slack](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ).
+[open an issue](https://github.com/StackGuardian/tirith/issues/new/choose).
 
 Nothing about the existing CLI changes: same flags, same `--json` output, same exit codes.
 :::

@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/infracost",
+    "name": "Planned monthly cost stays under 500 USD -- REQUIRES an Infracost breakdown as input, not a plan",
+    "severity": "medium"
+  },
+  "evaluators": [
+    {
+      "id": "total_under_budget",
+      "description": "Run against `infracost breakdown --format json`, not against plan.json. In the GitHub Action's local mode Infracost is ignored with a warning, so this rule only reports when you generate the breakdown yourself.",
+      "provider_args": { "operation_type": "total_monthly_cost", "resource_type": ["*"] },
+      "condition": { "type": "LessThanEqualTo", "value": 500 }
+    },
+    {
+      "id": "compute_under_budget",
+      "provider_args": { "operation_type": "total_monthly_cost", "resource_type": ["aws_instance"] },
+      "condition": { "type": "LessThanEqualTo", "value": 200 }
+    }
+  ],
+  "eval_expression": "total_under_budget && compute_under_budget"
+}

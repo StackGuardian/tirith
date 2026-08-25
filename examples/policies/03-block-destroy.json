@@ -1,0 +1,216 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "Stateful resources are never destroyed or replaced",
+    "severity": "critical"
+  },
+  "evaluators": [
+    {
+      "id": "db_instance_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_db_instance"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      },
+      "description": "No aws_db_instance is deleted. Terraform plans a replacement as [\"delete\",\"create\"], so checking for delete catches replacement too -- which is the case that surprises people, because the diff reads like an edit. error_tolerance 1 on every evaluator so a plan containing none of a given type skips rather than failing."
+    },
+    {
+      "id": "rds_cluster_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_rds_cluster"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "dynamodb_table_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_dynamodb_table"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "s3_bucket_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_s3_bucket"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "efs_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_efs_file_system"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "elasticache_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_elasticache_cluster"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "elasticache_replication_group_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_elasticache_replication_group"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "opensearch_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_opensearch_domain"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "redshift_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_redshift_cluster"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "neptune_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_neptune_cluster"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "docdb_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_docdb_cluster"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "ebs_volume_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_ebs_volume"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "fsx_lustre_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_fsx_lustre_file_system"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "kms_key_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_kms_key"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "log_group_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_cloudwatch_log_group"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "secret_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_secretsmanager_secret"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "efs_backup_kept",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "aws_backup_vault"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "delete",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "db_instance_kept && rds_cluster_kept && dynamodb_table_kept && s3_bucket_kept && efs_kept && elasticache_kept && elasticache_replication_group_kept && opensearch_kept && redshift_kept && neptune_kept && docdb_kept && ebs_volume_kept && fsx_lustre_kept && kms_key_kept && log_group_kept && secret_kept && efs_backup_kept"
+}

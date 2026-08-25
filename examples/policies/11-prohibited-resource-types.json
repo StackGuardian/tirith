@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "Resource types the organisation has retired do not appear",
+    "severity": "medium"
+  },
+  "evaluators": [
+    {
+      "id": "no_iam_users",
+      "description": "count == 0 is an assertion about the whole plan rather than about any resource in it -- a shape a per-resource policy engine has nowhere to put, because there is no resource to attach the finding to when the answer is 'none, correctly'. Long-lived IAM users are the standard example: roles and OIDC federation replaced them, and the rule that keeps them gone has to be able to say 'zero'.",
+      "provider_args": { "operation_type": "count", "terraform_resource_type": "aws_iam_user" },
+      "condition": { "type": "Equals", "value": 0 }
+    },
+    {
+      "id": "no_iam_access_keys",
+      "provider_args": { "operation_type": "count", "terraform_resource_type": "aws_iam_access_key" },
+      "condition": { "type": "Equals", "value": 0 }
+    },
+    {
+      "id": "no_inline_bucket_objects",
+      "description": "aws_s3_bucket_object was deprecated in favour of aws_s3_object.",
+      "provider_args": { "operation_type": "count", "terraform_resource_type": "aws_s3_bucket_object" },
+      "condition": { "type": "Equals", "value": 0 }
+    },
+    {
+      "id": "no_default_vpc_adoption",
+      "provider_args": { "operation_type": "count", "terraform_resource_type": "aws_default_vpc" },
+      "condition": { "type": "Equals", "value": 0 }
+    }
+  ],
+  "eval_expression": "no_iam_users && no_iam_access_keys && no_inline_bucket_objects && no_default_vpc_adoption"
+}

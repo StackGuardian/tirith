@@ -95,6 +95,17 @@ setup(
             'textual>=8.0; python_version >= "3.9"',
             'textual-serve>=1.0; python_version >= "3.9"',
         ],
+        # `pip install py-tirith[mcp]` adds the MCP server (`tirith mcp`), which lets a coding
+        # agent evaluate, lint and explain policies against the real engine instead of guessing
+        # at the schema.
+        #
+        # An extra for the same two reasons as `tui`. The SDK requires Python >=3.10 while tirith
+        # supports >=3.8, so the environment marker lets 3.8 and 3.9 users install the extra and
+        # get nothing rather than an error -- mcp/cli.py then reports the missing extra. And a CI
+        # gate should not pay install time for a server it never starts.
+        "mcp": [
+            'mcp>=1.2; python_version >= "3.10"',
+        ],
     },
     setup_requires=[
         "pytest-runner",

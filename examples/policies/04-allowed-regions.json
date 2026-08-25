@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "The AWS provider deploys only to approved regions",
+    "severity": "medium"
+  },
+  "evaluators": [
+    {
+      "id": "aws_region_approved",
+      "description": "provider_config reads the region straight off the provider block. error_tolerance 2 is deliberate: Tirith reads expressions.region.constant_value, so a repository setting region = var.region reports severity 2 and this SKIPS rather than fails -- a rule that cannot see the value must not pretend to have judged it. Severity 1 covers the AWS provider being absent entirely.",
+      "provider_args": {
+        "operation_type": "provider_config",
+        "terraform_provider_full_name": "registry.terraform.io/hashicorp/aws",
+        "attribute": "region"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": ["us-east-1", "eu-central-1"],
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "aws_region_approved"
+}

@@ -1,0 +1,4580 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.11.4",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.b0",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b0",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b0",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b1",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b1",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b1",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b2",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b2",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b2",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b3",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b3",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b3",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b4",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b4",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b4",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b5",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b5",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b5",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b6",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b6",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b6",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b7",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b7",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b7",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b8",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b8",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b8",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b9",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b9",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b9",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b10",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b10",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b10",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b11",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b11",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b11",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b12",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b12",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b12",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b13",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b13",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b13",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b14",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b14",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b14",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b15",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b15",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b15",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b16",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b16",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b16",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b17",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b17",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b17",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b18",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b18",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b18",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b19",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b19",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b19",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b20",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b20",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b20",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b21",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b21",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b21",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b22",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b22",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b22",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b23",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b23",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b23",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b24",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b24",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b24",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b25",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b25",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b25",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b26",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b26",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b26",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b27",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b27",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b27",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b28",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b28",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b28",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b29",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b29",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b29",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b30",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b30",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b30",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b31",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b31",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b31",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b32",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b32",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b32",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b33",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b33",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b33",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b34",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b34",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b34",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b35",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b35",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b35",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b36",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b36",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b36",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b37",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b37",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b37",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b38",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b38",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b38",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b39",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b39",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b39",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b40",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b40",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b40",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b41",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b41",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b41",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b42",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b42",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b42",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b43",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b43",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b43",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b44",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b44",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b44",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b45",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b45",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b45",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b46",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b46",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b46",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b47",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b47",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b47",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b48",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b48",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b48",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b49",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b49",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b49",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b50",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b50",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b50",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b51",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b51",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b51",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b52",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b52",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b52",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b53",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b53",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b53",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b54",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b54",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b54",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b55",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b55",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b55",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b56",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b56",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b56",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b57",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b57",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b57",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b58",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b58",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b58",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b59",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b59",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b59",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b60",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b60",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b60",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b61",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b61",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b61",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b62",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b62",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b62",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b63",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b63",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b63",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b64",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b64",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b64",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b65",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b65",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b65",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b66",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b66",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b66",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b67",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b67",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b67",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b68",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b68",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b68",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b69",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b69",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b69",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b70",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b70",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b70",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b71",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b71",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b71",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b72",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b72",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b72",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b73",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b73",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b73",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b74",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b74",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b74",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b75",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b75",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b75",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b76",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b76",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b76",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b77",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b77",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b77",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b78",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b78",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b78",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b79",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b79",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b79",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b80",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b80",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b80",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b81",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b81",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b81",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b82",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b82",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b82",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b83",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b83",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b83",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b84",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b84",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b84",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b85",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b85",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b85",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b86",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b86",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b86",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b87",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b87",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b87",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b88",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b88",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b88",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b89",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b89",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b89",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b90",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b90",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b90",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b91",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b91",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b91",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b92",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b92",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b92",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b93",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b93",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b93",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b94",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b94",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b94",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b95",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b95",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b95",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b96",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b96",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b96",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b97",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b97",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b97",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b98",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b98",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b98",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b99",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b99",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b99",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b100",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b100",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b100",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b101",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b101",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b101",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b102",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b102",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b102",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b103",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b103",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b103",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b104",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b104",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b104",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b105",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b105",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b105",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b106",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b106",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b106",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b107",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b107",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b107",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b108",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b108",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b108",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b109",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b109",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b109",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b110",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b110",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b110",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b111",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b111",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b111",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b112",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b112",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b112",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b113",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b113",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b113",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b114",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b114",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b114",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b115",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b115",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b115",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b116",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b116",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b116",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b117",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b117",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b117",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b118",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b118",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b118",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b119",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b119",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b119",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b120",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b120",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b120",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b121",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b121",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b121",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b122",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b122",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b122",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b123",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b123",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b123",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b124",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b124",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b124",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b125",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b125",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b125",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b126",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b126",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b126",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b127",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b127",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b127",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b128",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b128",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b128",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b129",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b129",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b129",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b130",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b130",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b130",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b131",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b131",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b131",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b132",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b132",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b132",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b133",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b133",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b133",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b134",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b134",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b134",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b135",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b135",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b135",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b136",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b136",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b136",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b137",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b137",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b137",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b138",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b138",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b138",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b139",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b139",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b139",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b140",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b140",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b140",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b141",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b141",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b141",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b142",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b142",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b142",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b143",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b143",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b143",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b144",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b144",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b144",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b145",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b145",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b145",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b146",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b146",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b146",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b147",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b147",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b147",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b148",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b148",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b148",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b149",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b149",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b149",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b150",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b150",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b150",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b151",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b151",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b151",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b152",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b152",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b152",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b153",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b153",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b153",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b154",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b154",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b154",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b155",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b155",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b155",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b156",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b156",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b156",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b157",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b157",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b157",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b158",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b158",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b158",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b159",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b159",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b159",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b160",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b160",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b160",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b161",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b161",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b161",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b162",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b162",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b162",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b163",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b163",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b163",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b164",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b164",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b164",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b165",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b165",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b165",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b166",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b166",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b166",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b167",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b167",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b167",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b168",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b168",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b168",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b169",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b169",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b169",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b170",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b170",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b170",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b171",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b171",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b171",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b172",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b172",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b172",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b173",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b173",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b173",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b174",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b174",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b174",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b175",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b175",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b175",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b176",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b176",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b176",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b177",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b177",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b177",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b178",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b178",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b178",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b179",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b179",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b179",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b180",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b180",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b180",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b181",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b181",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b181",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b182",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b182",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b182",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b183",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b183",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b183",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b184",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b184",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b184",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b185",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b185",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b185",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b186",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b186",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b186",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b187",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b187",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b187",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b188",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b188",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b188",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b189",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b189",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b189",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b190",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b190",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b190",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b191",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b191",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b191",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b192",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b192",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b192",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b193",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b193",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b193",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b194",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b194",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b194",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b195",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b195",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b195",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b196",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b196",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b196",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b197",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b197",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b197",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b198",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b198",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b198",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b199",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b199",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b199",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b200",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b200",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b200",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b201",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b201",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b201",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b202",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b202",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b202",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b203",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b203",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b203",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b204",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b204",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b204",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b205",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b205",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b205",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b206",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b206",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b206",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b207",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b207",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b207",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b208",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b208",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b208",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b209",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b209",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b209",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b210",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b210",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b210",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b211",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b211",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b211",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b212",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b212",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b212",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b213",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b213",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b213",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b214",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b214",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b214",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b215",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b215",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b215",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b216",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b216",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b216",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b217",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b217",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b217",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b218",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b218",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b218",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b219",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b219",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b219",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b220",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b220",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b220",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b221",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b221",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b221",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b222",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b222",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b222",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b223",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b223",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b223",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b224",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b224",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b224",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b225",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b225",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b225",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b226",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b226",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b226",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b227",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b227",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b227",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b228",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b228",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b228",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b229",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b229",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b229",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b230",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b230",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b230",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b231",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b231",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b231",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b232",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b232",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b232",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b233",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b233",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b233",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b234",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b234",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b234",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b235",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b235",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b235",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b236",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b236",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b236",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.b237",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "b237",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "b237",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.new",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "new",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "new",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    },
+    {
+      "address": "aws_kms_key.k",
+      "mode": "managed",
+      "type": "aws_kms_key",
+      "name": "k",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "before": null,
+        "after": {
+          "description": "k",
+          "tags": {
+            "Owner": "platform"
+          }
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 5.0",
+        "expressions": {
+          "region": {
+            "constant_value": "us-east-1"
+          }
+        }
+      }
+    }
+  }
+}

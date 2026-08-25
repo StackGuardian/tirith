@@ -1,0 +1,25 @@
+{
+  "version": "0.2",
+  "currency": "USD",
+  "projects": [
+    {
+      "name": "acme",
+      "breakdown": {
+        "resources": [
+          {
+            "name": "aws_instance.batch",
+            "resourceType": "aws_instance",
+            "monthlyCost": "612.40"
+          },
+          {
+            "name": "aws_s3_bucket.artifacts",
+            "resourceType": "aws_s3_bucket",
+            "monthlyCost": "1.15"
+          }
+        ],
+        "totalMonthlyCost": "613.55"
+      }
+    }
+  ],
+  "totalMonthlyCost": "613.55"
+}

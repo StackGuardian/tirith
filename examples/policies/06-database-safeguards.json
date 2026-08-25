@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "Databases are encrypted and protected from deletion",
+    "severity": "high"
+  },
+  "evaluators": [
+    {
+      "id": "deletion_protection_on",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_db_instance",
+        "terraform_resource_attribute": "deletion_protection"
+      },
+      "condition": { "type": "Equals", "value": true, "error_tolerance": 1 }
+    },
+    {
+      "id": "storage_encrypted",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_db_instance",
+        "terraform_resource_attribute": "storage_encrypted"
+      },
+      "condition": { "type": "Equals", "value": true, "error_tolerance": 1 }
+    }
+  ],
+  "eval_expression": "deletion_protection_on && storage_encrypted"
+}

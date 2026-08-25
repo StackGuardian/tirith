@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "Security group rules do not open to the whole internet",
+    "severity": "high"
+  },
+  "evaluators": [
+    {
+      "id": "legacy_rule_not_open",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_security_group_rule",
+        "terraform_resource_attribute": "cidr_blocks"
+      },
+      "condition": { "type": "NotContains", "value": "0.0.0.0/0", "error_tolerance": 1 }
+    },
+    {
+      "id": "vpc_ingress_rule_not_open",
+      "description": "aws_vpc_security_group_ingress_rule is the current resource and takes a single cidr_ipv4 string rather than a list.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_vpc_security_group_ingress_rule",
+        "terraform_resource_attribute": "cidr_ipv4"
+      },
+      "condition": { "type": "NotEquals", "value": "0.0.0.0/0", "error_tolerance": 1 }
+    }
+  ],
+  "eval_expression": "legacy_rule_not_open && vpc_ingress_rule_not_open"
+}

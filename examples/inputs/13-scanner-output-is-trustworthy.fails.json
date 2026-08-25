@@ -1,0 +1,34 @@
+{
+  "summary": {
+    "passed": 0,
+    "failed": 3,
+    "skipped": 1,
+    "parsing_errors": 2,
+    "resource_count": 41
+  },
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_18",
+        "check_name": "Ensure the S3 bucket has access logging enabled",
+        "resource": "aws_s3_bucket.analytics",
+        "file_path": "/main.tf",
+        "severity": "LOW"
+      },
+      {
+        "check_id": "CKV_AWS_21",
+        "check_name": "Ensure all data stored in the S3 bucket have versioning enabled",
+        "resource": "aws_s3_bucket.analytics",
+        "file_path": "/main.tf",
+        "severity": "LOW"
+      },
+      {
+        "check_id": "CKV_AWS_145",
+        "check_name": "Ensure that S3 buckets are encrypted with KMS by default",
+        "resource": "aws_s3_bucket.analytics",
+        "file_path": "/main.tf",
+        "severity": "HIGH"
+      }
+    ]
+  }
+}

@@ -1,11 +1,40 @@
+/**
+ * Site-wide theme.
+ *
+ * The palette is deliberately neutral: greyscale surfaces and type, with a
+ * single accent used only for interaction (links, focus rings, the primary
+ * button). That accent is the StackGuardian icon blue, kept as an accent and
+ * nothing more -- Tirith is an Apache-2.0 project that people are meant to
+ * adopt without an account, and a page painted in a vendor's brand colour
+ * argues against that before a word is read.
+ *
+ * The blue is #007aff in the icon, which fails 4.5:1 against white (4.02:1).
+ * The light-mode scale is therefore built from #006ee6 (4.80:1). Dark mode
+ * inverts to a light tint, because the same blue on a near-black surface is
+ * too dim to read.
+ */
+
 :root {
-  --ifm-color-primary: #040084;
+  --ifm-color-primary: #006ee6;
+  --ifm-color-primary-dark: #0063cf;
+  --ifm-color-primary-darker: #005dc4;
+  --ifm-color-primary-darkest: #004da1;
+  --ifm-color-primary-light: #0d7bf5;
+  --ifm-color-primary-lighter: #1a83f7;
+  --ifm-color-primary-lightest: #3d97f9;
+
   --ifm-code-font-size: 100%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #847cc4;
+  --ifm-color-primary: #6cb6ff;
+  --ifm-color-primary-dark: #4da4ff;
+  --ifm-color-primary-darker: #3d9bff;
+  --ifm-color-primary-darkest: #0f7fff;
+  --ifm-color-primary-light: #8bc8ff;
+  --ifm-color-primary-lighter: #9bd0ff;
+  --ifm-color-primary-lightest: #cce6ff;
+
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }

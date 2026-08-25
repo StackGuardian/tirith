@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "The plan was produced by Terraform 1.10 or newer",
+    "severity": "low"
+  },
+  "evaluators": [
+    {
+      "id": "version_at_least_1_10",
+      "description": "RegexMatch, NOT GreaterThanEqualTo. Version comparison here is a plain Python >= on strings, which is lexicographic -- '1.9.0' >= '1.11.4' evaluates true and the rule would silently pass everything. The pattern matches 1.10 through 1.99 and any 2.x or later. Note this is the version that RAN the plan, a runtime fact, not the required_version constraint in the source.",
+      "provider_args": { "operation_type": "terraform_version" },
+      "condition": { "type": "RegexMatch", "value": "^(1\\.[1-9][0-9]|[2-9])" }
+    }
+  ],
+  "eval_expression": "version_at_least_1_10"
+}

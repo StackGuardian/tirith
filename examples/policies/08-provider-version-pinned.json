@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "The AWS provider is pinned to a bounded version range",
+    "severity": "medium"
+  },
+  "evaluators": [
+    {
+      "id": "aws_provider_bounded",
+      "description": "version_constraint must carry an upper bound -- '~> 5.0' or an explicit '< 6.0'. A bare '>= 5.0' lets a major release in on a Monday morning, and provider majors rewrite resource schemas: the plan that follows is full of replacements nobody asked for. This is a fact about the provider block, not about any one resource, which is why a per-resource policy engine has nowhere to put it.",
+      "provider_args": {
+        "operation_type": "provider_config",
+        "terraform_provider_full_name": "registry.terraform.io/hashicorp/aws",
+        "attribute": "version_constraint"
+      },
+      "condition": {
+        "type": "RegexMatch",
+        "value": "(~>|<=|<|==|^=?[0-9])",
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "aws_provider_bounded"
+}

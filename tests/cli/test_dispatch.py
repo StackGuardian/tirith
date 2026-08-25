@@ -101,10 +101,11 @@ def test_the_subcommand_names_are_exactly_these(capsys):
     `remote` is not quietly still accepted.
 
     `ui` was added alongside it later, on the same terms: dispatched before the flat parser so the
-    local surface and its golden-file output are untouched. The set is pinned rather than merely
-    checked for membership, so a new subcommand has to be a deliberate edit here.
+    local surface and its golden-file output are untouched. `mcp` joined them on those same terms.
+    The set is pinned rather than merely checked for membership, so a new subcommand has to be a
+    deliberate edit here.
     """
-    assert cli.SUBCOMMANDS == {"platform", "ui"}
+    assert cli.SUBCOMMANDS == {"platform", "ui", "mcp"}
 
     status = cli.main(["remote"])
 
@@ -128,3 +129,40 @@ def test_ui_dispatches_to_its_own_parser(capsys):
     error = capsys.readouterr().err
     assert "tirith ui" in error, error
     assert "-policy-path" not in error
+
+
+def test_mcp_dispatches_to_its_own_parser(capsys):
+    """
+    `mcp` must reach its own parser rather than the flat one, which would reject it for having no
+    -policy-path.
+
+    Asserted through a bad flag, so the server never starts and this stays runnable without the
+    optional extra installed -- the same shape as the `ui` test above, and for the same reason:
+    the commonest state of a machine running this test is not having the extra.
+    """
+    with pytest.raises(SystemExit):
+        cli.main(["mcp", "--nope"])
+
+    assert "tirith mcp" in capsys.readouterr().err
+
+
+def test_mcp_without_the_extra_reports_the_extra(capsys):
+    """
+    Missing optional dependency is a message, not a traceback.
+
+    `tirith mcp` on a machine without the SDK is the commonest way to reach that code path, and
+    an ImportError stack there tells the reader nothing about what to install.
+    """
+    import tirith.mcp.cli as mcp_cli
+
+    try:
+        import mcp  # noqa: F401
+    except ImportError:
+        pass
+    else:
+        pytest.skip("the mcp extra is installed, so the missing-extra path cannot be exercised")
+
+    status = mcp_cli.main(["mcp"])
+
+    assert status == ExitStatus.ERROR
+    assert "'mcp' extra" in capsys.readouterr().err

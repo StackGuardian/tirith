@@ -3,10 +3,25 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=alert_status&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=StackGuardian_policy-framework&metric=sqale_rating&token=4a4d06e73940505edb7fc9d27a7f03b35fbbf23d)](https://sonarcloud.io/summary/new_code?id=StackGuardian_policy-framework)
-[![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ)
 [![codecov](https://codecov.io/gh/StackGuardian/tirith/branch/main/graph/badge.svg)](https://codecov.io/gh/StackGuardian/tirith)
 
-# Tirith — IaC Governance plugin
+# Tirith — open-source IaC governance
+
+Put governance in front of the Terraform or OpenTofu plan your pipeline already produces. Tirith
+evaluates readable JSON policies on your own runner, reports the rule, resource and value behind
+every verdict, and can stop a non-compliant change before apply.
+
+**Apache-2.0 · no account · no network in local mode · works with any CI**
+
+```yaml
+- run: terraform show -json tfplan > plan.json
+- uses: StackGuardian/tirith-iac-governance-action@v2
+  with: {fail-on-error: true}
+```
+
+[Quick start](#credential-free-quick-start) · [Example policies](#example-tirith-policies) ·
+[Run it in CI](#run-it-in-ci) · [The interactive interface](#the-interactive-interface) ·
+[Star the project](https://github.com/StackGuardian/tirith)
 
 > [!NOTE]
 > **New — `tirith ui`, an interactive interface. In beta, and we want your input.**
@@ -14,34 +29,55 @@
 > Explore a failing evaluation down to the resource that caused it, assemble policies from a
 > form, and experiment in a playground with worked examples. Try it with
 > `pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'`, then
-> `tirith ui` — see
-> [The interactive interface](#the-interactive-interface).
+> `tirith ui` — see [The interactive interface](#the-interactive-interface).
 >
 > It is new, so the rough edges are still being found. Tell us what is confusing, what is
 > missing, or what you would rather it did:
-> [open an issue](https://github.com/StackGuardian/tirith/issues) or say so in
-> [Slack](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ).
+> [open an issue](https://github.com/StackGuardian/tirith/issues/new/choose).
 > Nothing about the existing CLI changes: same flags, same `--json` output, same exit codes.
 
-**Plugin IaC Governance for any pipeline, running anywhere.** Evaluate plans with Tirith, protect
-sensitive values, enforce centralised governance, and surface actionable results before
-infrastructure changes are applied.
+## What you get from the first run
 
-Tirith reads the plan your pipeline already produces — the output of `terraform show -json tfplan` —
-checks it against your policies, and exits non-zero so a violating change never reaches `apply`. The
-reason it is a plugin rather than an integration is that one policy set then covers every pipeline
-you run it from: the same policy files gate a GitHub Actions job, a GitLab job and a laptop, and in
-platform mode Tirith rules and Checkov findings come back in one verdict instead of two tools you
-have to reconcile by hand.
+- **A verdict on the plan you already generate.** No new job, no change to Terraform, no policy
+  language to program. Tirith reads the output of `terraform show -json tfplan`.
+- **The rule, the resource, the action and the value** behind every pass and every failure — not a
+  job log that says a job failed.
+- **An exit code your pipeline can act on.** `3` means a policy said no; `1` means Tirith could not
+  tell you either way. A job that treats every non-zero code alike cannot tell a working gate from
+  a broken one.
+- **Nothing leaving your machine.** Policies are JSON files in your repository and evaluation
+  happens on your runner. There is no account, and local mode makes no network call.
 
-It is Apache-2.0 and needs no account. Policies are JSON files in your repository, evaluation happens
-on your own runner, and nothing is sent anywhere. If you would rather keep policy in one place across
-many repositories, `tirith platform check` evaluates against the policies a
-[StackGuardian](https://www.stackguardian.io/) organization enforces instead — same document, same
-verdict, same exit codes. That mode is optional and is the only part that talks to a network.
+Policies also cover Terraform state, Kubernetes manifests, Infracost breakdowns and arbitrary
+JSON — the same schema and the same verdict for each.
+
+## Credential-free quick start
+
+Two lines on GitHub Actions, with policies committed under `.tirith/policies`:
+
+```yaml
+permissions:
+  contents: read
+  pull-requests: write   # sticky comment
+  checks: write          # check run
+
+steps:
+  - run: |
+      terraform plan -out=tfplan -input=false
+      terraform show -json tfplan > plan.json
+
+  - uses: StackGuardian/tirith-iac-governance-action@v2
+    with: {fail-on-error: true}
+```
+
+No credentials anywhere: without them the action evaluates your repository's policy files on the
+runner and uploads nothing. GitLab CI and any other container-based CI invoke the CLI directly —
+see [Run it in CI](#run-it-in-ci).
 
 ## Content
 
+- [What you get from the first run](#what-you-get-from-the-first-run)
+- [Credential-free quick start](#credential-free-quick-start)
 - [What is Tirith?](#what-is-tirith)
 - [Features](#features)
 - [Installation](#installation)
@@ -51,8 +87,10 @@ verdict, same exit codes. That mode is optional and is the only part that talks 
     - [Builder](#builder)
     - [Playground](#playground)
     - [Serving it on a port](#serving-it-on-a-port)
+- [Use it with a coding agent](#use-it-with-a-coding-agent)
 - [Run it in CI](#run-it-in-ci)
 - [Exit codes](#exit-codes)
+- [How Tirith differs from a scanner](#how-tirith-differs-from-a-scanner)
 - [Evaluating against your StackGuardian organization](#evaluating-against-your-stackguardian-organization)
 - [Example Tirith policies](#example-tirith-policies)
     - [error_tolerance](#error_tolerance-and-the-third-outcome)
@@ -63,11 +101,8 @@ verdict, same exit codes. That mode is optional and is the only part that talks 
     - [Kubernetes](#kubernetes)
 - [Getting Started](#getting-started)
 - [Want to contribute?](#want-to-contribute)
-  - [Getting an issue assigned](#getting-an-issue-assigned)
-  - [A bug report](#a-bug-report)
-  - [Opening a Pull Request and getting it merged](#opening-a-pull-request-and-getting-it-merged)
-- [Submitting a feedback](#submitting-a-feedback)
 - [Support](#support)
+- [Project and governance](#project-and-governance)
 - [License](#license)
 
 ## What is Tirith?
@@ -110,10 +145,10 @@ pip install git+https://github.com/StackGuardian/tirith.git
 Pin a tag rather than tracking the default branch, so a CI job cannot change behaviour underneath you:
 
 ```
-pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
 ```
 
-`1.0.5` is the newest tag; `git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists
+`1.2.0` is the newest tag; `git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists
 them. Tirith is not on PyPI — `pip install tirith` installs an unrelated project of the same name, so
 install from git. Python 3.8 or newer.
 
@@ -225,8 +260,7 @@ About Tirith:
 > [!NOTE]
 > **Beta.** Everything below works and is covered by tests, but the interface is new and the
 > shape of it is still open. Feedback is genuinely wanted — especially on what is missing.
-> [Open an issue](https://github.com/StackGuardian/tirith/issues) or find us in
-> [Slack](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ).
+> [Open an issue](https://github.com/StackGuardian/tirith/issues/new/choose).
 
 `tirith ui` opens a terminal interface with three tabs: an **Explorer** for reading results, a
 **Builder** for assembling policies, and a **Playground** for experimenting.
@@ -347,6 +381,43 @@ behaves identically and there is nothing extra to keep in sync.
 Bind address and port are yours to choose, but note the served interface can read any file path
 the serving process can. Keep it on `localhost` unless you have a reason not to.
 
+## Use it with a coding agent
+
+Ask any agent for "a policy requiring an Owner tag" and it will write plausible JSON against a
+schema it is guessing at — usually inventing a `condition.type` that does not exist. That mistake
+is expensive because the engine reports an unknown condition type as an ordinary **failed check**
+with no error attached: it reads as a real violation, and somebody debugs infrastructure that was
+fine.
+
+Tirith ships an MCP server so the agent reads the real registries and gets a real verdict:
+
+```bash
+pip install 'py-tirith[mcp] @ git+https://github.com/StackGuardian/tirith.git'
+
+claude mcp add tirith -- tirith mcp
+```
+
+Four tools, all local — no network call, nothing written to disk:
+
+| Tool | What it does |
+|---|---|
+| `evaluate` | Runs a policy against a document and returns the real verdict and exit code |
+| `lint_policy` | Catches unknown condition types, a missing `eval_expression`, unreferenced evaluators |
+| `describe_provider` | The providers, their `operation_type` values and every condition type, read from the engine's registries |
+| `explain_result` | Turns a result document into which rule failed, on which resource, and why |
+
+Needs Python 3.10 or newer; it is an optional extra so a CI gate stays dependency-light.
+
+Prefer not to run a server? The vocabulary is just a file:
+[`.claude/skills/tirith-policies/SKILL.md`](.claude/skills/tirith-policies/SKILL.md) is
+self-contained and can be copied into any repository,
+[`AGENTS.md`](AGENTS.md) covers working on Tirith itself, and
+[`.cursor/rules/tirith-policies.mdc`](.cursor/rules/tirith-policies.mdc) attaches automatically
+in Cursor when a policy file is open.
+
+One-click install for Cursor and VS Code, and configuration for Claude Desktop and Codex, are on
+the [AI page](https://stackguardian.github.io/tirith/ai).
+
 ## Run it in CI
 
 ### GitHub Actions
@@ -374,7 +445,7 @@ policy:
   image: python:3.12
   needs: [plan]
   script:
-    - pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+    - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
@@ -411,6 +482,30 @@ One limit worth stating plainly: a *misconfigured* policy — an unsupported `co
 `required_provider` — comes back from the engine as an ordinary failed check with no error attached, so
 it is indistinguishable from a real violation and exits `3`. It fails closed, which is the safe
 direction, but it will point at your infrastructure when the fault is in the policy.
+
+## How Tirith differs from a scanner
+
+Tirith is a policy engine, but its job is not to replace every scanner or policy language. It turns
+the plan your pipeline already produces and the policies you choose into one enforceable decision
+before apply. The comparison below is meant to be fair rather than flattering — pick whichever of
+these fits the job.
+
+| | Primary job | Authoring | Runtime | Where it is strong |
+|---|---|---|---|---|
+| **Tirith** | The governance gate between plan and apply | JSON declarative policy plus providers | Local runner; optional central platform | Adoption from one repository outward, verdict semantics, an optional path to centrally governed execution |
+| **Checkov** | Broad IaC scanning | Large built-in library; Python/YAML custom policies | CLI/CI; optional platform | Breadth, graph checks, many IaC formats, established checks |
+| **OPA / Rego** | General-purpose policy decision engine | Rego | Embedded, CLI, service or platform integration | Expressiveness, portability, a mature policy ecosystem |
+| **Sentinel** | Policy as code for HashiCorp integrations | Sentinel language | Sentinel-enabled products and CLI | Terraform/HCP integration, enforcement levels, testing |
+
+Two things worth saying plainly. Checkov already scans Terraform plan JSON and has far broader
+built-in coverage than Tirith; OPA and Sentinel are mature and more expressive than a JSON schema
+can be. Tirith did not invent plan-time policy.
+
+Where it earns its place is the shape of the result and the cost of adopting it: policies are data
+rather than programs, the same policy and exit-code contract works on a laptop and in every CI
+system, and a check that could not run is reported as `1` rather than quietly passing. In platform
+mode, Tirith rules and Checkov findings come back as one verdict instead of two tools to reconcile
+by hand.
 
 ## Evaluating against your StackGuardian organization
 
@@ -1480,50 +1575,61 @@ Final expression used:
 
 ## Want to contribute?
 
-We are calling for contributors to help build out new features, review pull requests, fix bugs, and
-maintain overall code quality. Email us at team[at]stackguardian.io, or get started by reading
-[contributing.md](./CONTRIBUTING.md).
+Contributions are welcome, and the project is run in public: bugs, feature proposals and
+disagreements about design all go through GitHub. Start with
+[CONTRIBUTING.md](./CONTRIBUTING.md).
 
-### Getting an issue assigned
+- **Report a bug or request a policy** —
+  [open an issue](https://github.com/StackGuardian/tirith/issues/new/choose) and pick the template
+  that fits. No secrets, plan files or private source in the issue, please.
+- **Pick something up** — issues labelled
+  [good first issue](https://github.com/StackGuardian/tirith/labels/good%20first%20issue) carry
+  enough context to start on. Ask to be assigned before you begin, and take one at a time.
+- **Propose a design change** — open an RFC issue before writing the pull request. It is cheaper to
+  disagree about an approach in a paragraph than in a diff, and changes to the policy schema, the
+  CLI contract or what leaves the machine need two maintainer approvals either way.
 
-Go to the <a href="https://github.com/StackGuardian/tirith">Tirith Repository</a> and in the <a href="https://github.com/stackguardian/tirith/issues">issues</a> tab describe any bug or feature you want to add. If found relevant, the maintainers will assign the issue to you and you may start working on it as mentioned in the next section.
+### Opening a pull request
 
-<p>The kinds of issues a contributor can open:</p>
- <ul>
-	<li>Report Bugs</li>
-	<li>Feature Enhancement</li>
-	<li>If any "help" is needed with using Tirith</li>
- </ul>
+1. Fork the repository and create a branch named for the change
+   (`git switch -c fix-equals-evaluator`).
+2. Make the change, and add a test that fails without it.
+3. Run the test suite and the linters.
+4. Push and open a pull request against `main`, linking the issue it closes.
 
-### A bug report
-
-Head over to the <a href="https://github.com/StackGuardian/tirith">Tirith repository</a> and in the <a href="https://github.com/stackguardian/tirith/issues">issues</a> tab describe the bug you encountered and we will be happy to take a look into it.
-
-### Opening a Pull Request and getting it merged?
-
-1.  Go to the <a href ="https://github.com/StackGuardian/tirith">repository</a> and fork it.
-2.  Clone the repository in your local machine.
-3.  Open your terminal and `cd tirith`
-4.  Create your own branch to work on the changes you intend to perform. For e.g. if you want some changes or bug fix to any function in the evaluators, name your branch with something relevant like, `git branch bug-fix-equals-evaluator`
-5.  After necessary changes, `git push --set-upstream origin bug-fix-equals-evaluator`, `git checkout main` and `git merge bug-fix-equals-evaluator` or use the GUI to create a "Pull Request" after pushing it in the respective branch.
-6.  A review request will be sent to the repository maintainers and your changes will be merged if found relevant.
-
-## Submitting a Feedback
-
-Wanna submit a feedback? It's as simple as writing and posting it in the <a href="https://github.com/StackGuardian/feedback/discussions/8">feedback section</a>.
-
-<p>Your feedback will help us improve</p>
-
-## Maintainers
-
-This project is maintained by [StackGuardian](https://www.linkedin.com/company/stackguardian/).
+A maintainer will review it. Approval rules and how contested changes are decided are in
+[GOVERNANCE.md](./GOVERNANCE.md).
 
 ## Support
 
-Open an [issue](https://github.com/StackGuardian/tirith/issues) for a bug or a question about policy
-authoring. For anything specific to a StackGuardian organization — enforcement scope, a run that
-errored, an API key — contact StackGuardian support instead, since that needs account context this
-repository has no access to.
+**[GitHub Issues](https://github.com/StackGuardian/tirith/issues/new/choose) is the support
+channel** — for bugs, policy authoring questions, and help getting a first pipeline gated. Public
+by default is deliberate: a question answered in an issue is findable by the next person with the
+same problem. [SUPPORT.md](./SUPPORT.md) says which template to use.
+
+Suspected vulnerabilities go through the private route in [SECURITY.md](./SECURITY.md), not through
+issues.
+
+For anything specific to a StackGuardian organization — enforcement scope, a run that errored, an
+API key — contact StackGuardian support instead, since that needs account context this repository
+has no access to. You never need it for local mode.
+
+## Project and governance
+
+Tirith is an Apache-2.0 project governed by its maintainers. StackGuardian contributes engineering
+time, infrastructure and production experience; using, forking or contributing to Tirith requires
+no StackGuardian account and no commercial relationship.
+
+| | |
+|---|---|
+| [GOVERNANCE.md](./GOVERNANCE.md) | How decisions are made, what the project commits to, and the relationship to StackGuardian |
+| [MAINTAINERS.md](./MAINTAINERS.md) | Who maintains what, and how that changes |
+| [ROADMAP.md](./ROADMAP.md) | Now / next / later, and what is deliberately not planned |
+| [SECURITY.md](./SECURITY.md) | Supported versions and the private vulnerability route |
+| [SUPPORT.md](./SUPPORT.md) | Where to ask, and the community/commercial boundary |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | How to contribute |
+| [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) | Expected conduct, and how to report |
+| [ADOPTERS.md](./ADOPTERS.md) | Add your team, if you would like to |
 
 ## License
 

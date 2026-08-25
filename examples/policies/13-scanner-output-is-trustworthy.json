@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json",
+    "name": "The resource scanner ran completely and reported nothing failing",
+    "severity": "high"
+  },
+  "evaluators": [
+    {
+      "id": "scanner_parsed_everything",
+      "description": "Run against your resource scanner's own JSON output, not against a plan. This first check is the reason the policy exists: a scanner that silently failed to parse half the repository reports a clean run, and almost nobody asserts otherwise. Governing another tool's output with the same policy language, the same severity vocabulary and the same exit codes means four tools can behave like one gate.",
+      "provider_args": { "operation_type": "get_value", "key_path": "summary.parsing_errors" },
+      "condition": { "type": "Equals", "value": 0 }
+    },
+    {
+      "id": "no_failing_checks",
+      "provider_args": { "operation_type": "get_value", "key_path": "summary.failed" },
+      "condition": { "type": "LessThanEqualTo", "value": 0 }
+    },
+    {
+      "id": "scanner_actually_checked_something",
+      "description": "A run that evaluated nothing at all passes every other assertion here.",
+      "provider_args": { "operation_type": "get_value", "key_path": "summary.passed" },
+      "condition": { "type": "GreaterThan", "value": 0 }
+    }
+  ],
+  "eval_expression": "scanner_parsed_everything && no_failing_checks && scanner_actually_checked_something"
+}

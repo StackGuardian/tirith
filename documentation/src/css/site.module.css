@@ -1,0 +1,1141 @@
+/**
+ * The shared design system for every non-docs page: Home, Learn, Playground,
+ * Policies, Traction and Fleet.
+ *
+ * One stylesheet rather than one per page, because the brief asks the site to
+ * read as a system -- a visitor moving Home -> Learn -> Playground should not
+ * feel handed between three different websites. Page-specific rules live at
+ * the bottom under a clear heading; everything above is shared.
+ *
+ * Colours are Infima theme variables wherever one exists, so light and dark
+ * mode both work without maintaining a second palette. The exceptions are the
+ * accent blue and the TODO chip, which need a fixed contrast ratio.
+ */
+
+.page {
+  --tirith-gutter: 1.5rem;
+  --tirith-radius: 0.65rem;
+  --tirith-surface: var(--ifm-color-emphasis-100);
+  --tirith-border: var(--ifm-color-emphasis-200);
+  --tirith-accent: #006ee6;
+
+  /*
+   * One content width, and everything obeys it -- prose, headings, hero, card
+   * grids, tables and code all start and end on the same two vertical lines.
+   * 54rem is wide enough for a three-card grid and narrow enough that a
+   * paragraph at the enlarged base size below stays near 90 characters.
+   */
+  max-width: 54rem;
+  margin: 0 auto;
+  padding: 3.5rem var(--tirith-gutter) 6rem;
+  font-size: 1.05rem;
+}
+
+[data-theme='dark'] .page {
+  --tirith-accent: #6cb6ff;
+}
+
+/* ---------------------------------------------------------------- hero --- */
+
+.hero {
+  padding-bottom: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.6rem;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin-bottom: 1rem;
+}
+
+.tagline {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-800);
+  margin-bottom: 1.75rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+/*
+ * The primary button uses the accent blue rather than the site primary. The
+ * StackGuardian icon's #007aff fails 4.5:1 against white (4.02:1), so the fill
+ * is the same hue darkened to #006ee6 (4.80:1), darker again on hover. The
+ * label is pinned to opaque white because --ifm-button-color resolves
+ * differently per theme.
+ */
+.heroPrimary {
+  --ifm-button-background-color: #006ee6;
+  --ifm-button-border-color: #006ee6;
+  --ifm-button-color: #fff;
+}
+
+.heroPrimary:hover,
+.heroPrimary:active {
+  --ifm-button-background-color: #0062cc;
+  --ifm-button-border-color: #0062cc;
+}
+
+.trustLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.9rem;
+}
+
+.trustLine li + li::before {
+  content: '•';
+  margin-right: 1.25rem;
+  color: var(--ifm-color-emphasis-500);
+}
+
+/* --------------------------------------------------------- structure --- */
+
+.section {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--tirith-border);
+}
+
+.sectionHeading {
+  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin-bottom: 1rem;
+}
+
+.kicker {
+  margin: 0 0 0.4rem;
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/*
+ * `quiet` marks sections that are about someone else's product or someone
+ * else's proof -- the enterprise strip, platform mode, the Fleet offer. They
+ * sit on a recessed surface so a reader scanning the page can see at a glance
+ * which parts are not the open-source promise.
+ */
+.quiet {
+  background: var(--tirith-surface);
+  border: 1px solid var(--tirith-border);
+  border-radius: var(--tirith-radius);
+  padding: 2rem 1.75rem;
+  margin-top: 4rem;
+}
+
+.finale {
+  border-top-width: 2px;
+}
+
+.muted {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.95rem;
+}
+
+.pullQuote {
+  border-left: 3px solid var(--tirith-accent);
+  padding-left: 1rem;
+  font-size: 1.05rem;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.details {
+  margin: 0 0 1rem;
+}
+
+.details summary {
+  cursor: pointer;
+  color: var(--ifm-color-primary);
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ------------------------------------------------------------- cards --- */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+  margin: 1.75rem 0;
+}
+
+.card {
+  border: 1px solid var(--tirith-border);
+  border-radius: var(--tirith-radius);
+  padding: 1.25rem;
+  background: var(--ifm-background-color);
+}
+
+.card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.cardNumber {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.cardPlatform {
+  background: var(--tirith-surface);
+  border-style: dashed;
+}
+
+/*
+ * A full-width call-out that routes to a companion page. Distinct from .card
+ * so the landing page's Learn/Playground/Fleet invitations read as doors
+ * rather than as more feature copy.
+ */
+.doorway {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2rem 0 0;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: var(--tirith-radius);
+  background: var(--tirith-surface);
+}
+
+.doorway h3 {
+  font-size: 1rem;
+  margin: 0 0 0.3rem;
+}
+
+.doorway p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.doorwayBody {
+  flex: 1 1 22rem;
+}
+
+/*
+ * The commercial doorway is deliberately the quietest thing on the page. The
+ * brief requires the commercial CTA never to outrank `Use Tirith OSS`, so it
+ * gets no fill and a plain text link rather than a button.
+ */
+.doorwaySubdued {
+  background: none;
+  border-style: dashed;
+}
+
+.optionalTag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: 1rem;
+  background: var(--ifm-background-color);
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+/* ------------------------------------------------------------ tables --- */
+
+.table {
+  display: table;
+  width: 100%;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+  vertical-align: top;
+}
+
+.table thead th {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.table tbody th {
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ ladder --- */
+
+.ladder {
+  list-style: none;
+  margin: 1.75rem 0;
+  padding: 0;
+}
+
+.ladder li {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--tirith-border);
+}
+
+.ladder li:last-child {
+  border-bottom: none;
+}
+
+.ladderStage {
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------- stats --- */
+
+/*
+ * minmax(12rem) gives four columns at the page width. That is the right
+ * rhythm for the four counters on the home page, and lays the six on Traction
+ * out as four plus two rather than squeezing all six onto one cramped row --
+ * `Merged community PRs` needs the width.
+ */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.stats div {
+  border-left: 2px solid var(--tirith-border);
+  padding-left: 0.9rem;
+}
+
+.stats dd {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.88rem;
+}
+
+.statValue {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* -------------------------------------------------------------- misc --- */
+
+.inlineLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+.inlineLinks li + li::before {
+  content: '•';
+  margin-right: 1.25rem;
+  color: var(--ifm-color-emphasis-500);
+}
+
+/*
+ * minmax(12rem) rather than 16rem so the four integrations sit on one row at
+ * the page width instead of wrapping three-plus-one.
+ */
+.integrations {
+  list-style: none;
+  margin: 1.5rem 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
+.integrations li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: var(--tirith-radius);
+  padding: 0.75rem 0.9rem;
+  font-size: 0.95rem;
+}
+
+/* --------------------------------------------------------- unfinished --- */
+
+/*
+ * Deliberately loud. These mark copy the page cannot ship with, and a
+ * placeholder that blends in is a placeholder that survives review. Amber
+ * rather than red: this is unfinished work, not an error.
+ */
+.todo {
+  display: block;
+  margin: 1rem 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px dashed #b45309;
+  border-radius: var(--tirith-radius);
+  background: rgba(180, 83, 9, 0.07);
+  color: var(--ifm-font-color-base);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+[data-theme='dark'] .todo {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.todoTag {
+  display: inline-block;
+  margin-right: 0.6rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 0.25rem;
+  background: #b45309;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+[data-theme='dark'] .todoTag {
+  background: #fbbf24;
+  color: #1c1200;
+}
+
+/*
+ * An empty media well, sized like the asset that belongs in it.
+ *
+ * The earlier version was a dashed box of caption text, which read as a note
+ * rather than as a hole in the page. Reserving the actual aspect ratio does
+ * two useful things: the layout does not jump when a real GIF replaces the
+ * placeholder, and a reviewer can see at a glance how much of the page is
+ * still missing.
+ */
+.visualSlot {
+  display: block;
+  margin: 2rem 0 0;
+}
+
+.assetFrame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  border: 1px dashed var(--ifm-color-emphasis-400);
+  border-radius: var(--tirith-radius);
+  background-color: var(--tirith-surface);
+  /* A faint hatch, so an empty well is never mistaken for a blank card. */
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 9px,
+    rgba(128, 128, 128, 0.07) 9px,
+    rgba(128, 128, 128, 0.07) 18px
+  );
+}
+
+.visualSlot figcaption {
+  max-width: 38rem;
+  margin: 0.75rem auto 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+/* The in-card variant, for the demo pull-request cards. */
+.visualSlotCompact {
+  margin: 0.9rem 0 0;
+}
+
+.visualSlotCompact .assetFrame {
+  aspect-ratio: 16 / 10;
+  border-radius: 0.4rem;
+}
+
+.visualSlotCompact figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+/*
+ * Two-up for the platform screenshots on Fleet: these are views of a separate
+ * product, and showing them as a set makes the boundary between it and the OSS
+ * tool easier to hold in mind than four scattered single frames would.
+ */
+.assetGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0 0;
+}
+
+.assetGrid .visualSlot {
+  margin: 0;
+}
+
+.assetGrid figcaption {
+  text-align: left;
+  max-width: none;
+}
+
+/* ------------------------------------------------- verdict rendering --- */
+
+/*
+ * Shared by Learn and Playground. Every one of these verdicts is real output
+ * from the Tirith engine, generated by
+ * documentation/scripts/generate-fixtures.py -- so the shape rendered here has
+ * to follow the engine rather than an idealised version of it.
+ */
+
+.verdict {
+  border: 1px solid var(--tirith-border);
+  border-radius: var(--tirith-radius);
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+.verdictHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--tirith-surface);
+  border-bottom: 1px solid var(--tirith-border);
+}
+
+/*
+ * Outcome is never signalled by colour alone: each badge carries a distinct
+ * glyph and an explicit word, and the screen-reader label spells out the
+ * meaning. Required by the brief, and correct regardless.
+ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 1rem;
+  border: 1px solid;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badgePass {
+  border-color: #1a7f37;
+  color: #1a7f37;
+  background: rgba(26, 127, 55, 0.08);
+}
+
+.badgeFail {
+  border-color: #b42318;
+  color: #b42318;
+  background: rgba(180, 35, 24, 0.08);
+}
+
+.badgeUnknown {
+  border-color: #b45309;
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.08);
+}
+
+[data-theme='dark'] .badgePass {
+  border-color: #4ac26b;
+  color: #4ac26b;
+}
+
+[data-theme='dark'] .badgeFail {
+  border-color: #ff8880;
+  color: #ff8880;
+}
+
+[data-theme='dark'] .badgeUnknown {
+  border-color: #fbbf24;
+  color: #fbbf24;
+}
+
+.verdictExit {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.verdictBody {
+  padding: 0.5rem 1rem 1rem;
+}
+
+.evaluator {
+  border-top: 1px solid var(--tirith-border);
+  padding-top: 0.85rem;
+  margin-top: 0.85rem;
+}
+
+.evaluator:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+
+.evaluatorId {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.evidence {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.evidence li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.4rem;
+  background: var(--tirith-surface);
+  font-size: 0.9rem;
+}
+
+.evidenceGlyph {
+  font-weight: 700;
+}
+
+.evidencePass {
+  color: #1a7f37;
+}
+
+.evidenceFail {
+  color: #b42318;
+}
+
+[data-theme='dark'] .evidencePass {
+  color: #4ac26b;
+}
+
+[data-theme='dark'] .evidenceFail {
+  color: #ff8880;
+}
+
+.resourceAddress {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.85rem;
+}
+
+.actionTag {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border-radius: 0.25rem;
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-800);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------- playground workbench --- */
+
+.panes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.paneFull {
+  grid-column: 1 / -1;
+}
+
+.pane {
+  border: 1px solid var(--tirith-border);
+  border-radius: var(--tirith-radius);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.paneHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--tirith-surface);
+  border-bottom: 1px solid var(--tirith-border);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.paneHint {
+  font-weight: 400;
+  color: var(--ifm-color-emphasis-700);
+}
+
+/*
+ * Code inside a pane scrolls within the pane rather than stretching it, so a
+ * long plan cannot force the page into horizontal scroll.
+ */
+.paneBody {
+  max-height: 22rem;
+  overflow: auto;
+}
+
+.paneBody :global(.theme-code-block) {
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/*
+ * The embedded builder. A fixed viewport height rather than a fixed pixel
+ * height, so the frame is usable on a laptop without swallowing a phone
+ * screen -- and a floor, so it never collapses to nothing if the embedded app
+ * reports no height.
+ */
+.embed {
+  width: 100%;
+  height: min(78vh, 46rem);
+  min-height: 26rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: var(--tirith-radius);
+  background: var(--tirith-surface);
+  display: block;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: 1.5rem;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.chip:hover {
+  border-color: var(--ifm-color-primary);
+}
+
+.chipActive {
+  border-color: var(--tirith-accent);
+  background: var(--tirith-surface);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------ learn lessons --- */
+
+.lessons {
+  list-style: none;
+  counter-reset: lesson;
+  margin: 1.75rem 0;
+  padding: 0;
+}
+
+.lessons li {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--tirith-border);
+}
+
+.lessons li:last-child {
+  border-bottom: none;
+}
+
+.lessonNumber {
+  color: var(--ifm-color-emphasis-600);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.lessonTitle {
+  font-weight: 600;
+}
+
+.lessonTask {
+  grid-column: 2 / -1;
+  font-size: 0.92rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+/* ------------------------------------------------------------- forms --- */
+
+.form {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  max-width: 34rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.field label,
+.field legend {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: 0.4rem;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  font: inherit;
+  font-size: 0.95rem;
+}
+
+.field small {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.82rem;
+}
+
+.checkboxRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.checkboxRow label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 400;
+  font-size: 0.92rem;
+}
+
+.formNote {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+/* ------------------------------------------------------- narrow view --- */
+
+@media screen and (max-width: 996px) {
+  .page {
+    padding: 2rem 1rem 3.5rem;
+  }
+
+  .quiet {
+    padding: 1.5rem 1.1rem;
+  }
+
+  .ladder li,
+  .lessons li {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .lessonTask {
+    grid-column: 1;
+  }
+
+  .panes {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------- announcement --- */
+
+/*
+ * The announcement strip above the hero title. A link rather than a static
+ * banner: the whole row is the target, since a one-line notice about a new
+ * feature is only useful if it is also the way to reach it.
+ */
+.announcement {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: 2rem;
+  background: var(--tirith-surface);
+  color: var(--ifm-font-color-base);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.announcement:hover {
+  border-color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.announcementLabel {
+  padding: 0.05rem 0.5rem;
+  border-radius: 1rem;
+  background: #006ee6;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.announcementLink {
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------- utilities --- */
+
+/*
+ * Visually hidden but announced. Used to spell out an outcome for screen
+ * readers where sighted users get a glyph plus a colour, so that colour is
+ * never the only carrier of meaning.
+ */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ------------------------------------------------ policy card gallery --- */
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.filterBar .chips {
+  margin: 0;
+}
+
+.chipCount {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0 0.35rem;
+  border-radius: 0.75rem;
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-800);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.searchInput {
+  flex: 1 1 12rem;
+  min-width: 10rem;
+  max-width: 18rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: 1.5rem;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  font: inherit;
+  font-size: 0.92rem;
+}
+
+.searchInput:focus {
+  outline: 2px solid var(--tirith-accent);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.policyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+  /*
+   * align-items:start so a card that has been expanded to show its policy and
+   * verdict grows on its own instead of stretching every sibling in its row.
+   */
+  align-items: start;
+}
+
+.policyCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.1rem 1.15rem 1rem;
+  border: 1px solid var(--tirith-border);
+  border-radius: var(--tirith-radius);
+  background: var(--ifm-background-color);
+  transition: border-color 120ms ease, transform 120ms ease;
+}
+
+.policyCard:hover {
+  border-color: var(--ifm-color-emphasis-400);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .policyCard {
+    transition: none;
+  }
+  .policyCard:hover {
+    transform: none;
+  }
+}
+
+.policyCard h3 {
+  font-size: 1.02rem;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.policyCard p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ifm-color-emphasis-800);
+}
+
+/*
+ * The platform cards sit on the same recessed surface used everywhere else on
+ * this site for "this part is the commercial product", so the two populations
+ * are distinguishable at a glance and not only by reading the badge.
+ */
+.policyCardPlatform {
+  background: var(--tirith-surface);
+  border-style: dashed;
+}
+
+.policyBadges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sourceTag {
+  padding: 0.1rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+
+.sourceOss {
+  border-color: #1a7f37;
+  color: #1a7f37;
+  background: rgba(26, 127, 55, 0.08);
+}
+
+.sourcePlatform {
+  border-color: var(--tirith-accent);
+  color: var(--tirith-accent);
+  background: rgba(0, 110, 230, 0.08);
+}
+
+[data-theme='dark'] .sourceOss {
+  border-color: #4ac26b;
+  color: #4ac26b;
+}
+
+.metaTag {
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.3rem;
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-800);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.72rem;
+}
+
+.policyFacts {
+  font-size: 0.85rem !important;
+  color: var(--ifm-color-emphasis-700) !important;
+}
+
+.countPill {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ifm-font-color-base);
+}
+
+.policyActions {
+  margin-top: auto;
+  padding-top: 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/*
+ * An expanded card breaks out of the grid's column width for its code block,
+ * which would otherwise force the whole row wider. Contain it.
+ */
+.policyCard .details :global(.theme-code-block) {
+  max-height: 18rem;
+  overflow: auto;
+}

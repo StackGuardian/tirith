@@ -46,7 +46,12 @@ SUBCOMMAND = "platform"
 # 3.9 and tirith supports 3.8 -- so tui/cli.py reports the missing extra rather than failing on
 # an import here.
 UI_SUBCOMMAND = "ui"
-SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND}
+
+# `mcp` joins them on the same terms: dispatched before the flat parser, and an optional extra --
+# the MCP SDK needs Python 3.10 while tirith supports 3.8 -- so mcp/cli.py reports the missing
+# extra rather than failing on an import here.
+MCP_SUBCOMMAND = "mcp"
+SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND, MCP_SUBCOMMAND}
 
 
 def main(args=None) -> ExitStatus:
@@ -64,6 +69,11 @@ def main(args=None) -> ExitStatus:
         from tirith.tui import cli as tui_cli
 
         return tui_cli.main(argv)
+
+    if argv and argv[0] == MCP_SUBCOMMAND:
+        from tirith.mcp import cli as mcp_cli
+
+        return mcp_cli.main(argv)
 
     if argv and argv[0] in SUBCOMMANDS:
         from tirith.platform import cli as platform_cli
@@ -87,6 +97,9 @@ def main(args=None) -> ExitStatus:
                                            organization enforces, rather than local files.
             tirith ui --help               Explore results, build policies and experiment in
                                            an interactive interface. Needs the 'tui' extra.
+
+            tirith mcp --help              Serve Tirith to a coding agent over MCP: evaluate,
+                                           lint and explain policies. Needs the 'mcp' extra.
 
          About Tirith:
          

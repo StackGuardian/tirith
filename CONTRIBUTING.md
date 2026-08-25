@@ -1,91 +1,115 @@
-# Contributing to Tirith (StackGuardian Policy Framework)
+# Contributing to Tirith
 
-Thank you for taking the time to contribute! 🎉
-Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given.
+Thank you for taking the time to contribute. Every bit helps, and credit is always given.
 
-The following is a set of guidelines for contributing to Tirith on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+These are guidelines rather than rules. Use your judgement, and propose changes to this document in
+a pull request if something here is wrong or unhelpful.
 
-## Join the StackGuardian Community
-We'd love for you to join our community! Join our [Slack](https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ) to ask questions, share ideas, and connect with other contributors. Follow us on [LinkedIn](https://www.linkedin.com/company/stackguardian/posts/?feedView=all) to stay updated on the latest news and announcements.
+## Where the project lives
 
-## Contribution types
+**Everything happens on GitHub, in public.** Bugs, feature requests, policy questions, design
+disagreements and help getting a first pipeline gated all go through
+[Issues](https://github.com/StackGuardian/tirith/issues/new/choose). There is no private channel
+you need to be in to participate, and no account anywhere but GitHub.
 
-### Report Bugs
+Public by default is deliberate: a question answered in an issue is findable by the next person
+with the same problem.
 
-We use GitHub issues to track bugs at [https://github.com/stackguardian/tirith/issues](https://github.com/stackguardian/tirith/issues). Please use Bug report issue template.
+- **How decisions are made** — [GOVERNANCE.md](GOVERNANCE.md)
+- **Who maintains what** — [MAINTAINERS.md](MAINTAINERS.md)
+- **What is planned** — [ROADMAP.md](ROADMAP.md)
+- **Where to ask for help** — [SUPPORT.md](SUPPORT.md)
+- **Reporting a vulnerability** — [SECURITY.md](SECURITY.md), which is a private route. Not an
+  issue.
 
-### Fix Bugs and implement features
+The [Code of Conduct](CODE_OF_CONDUCT.md) applies everywhere in the project.
 
-All contributions to solve GitHub issues tagged with "bug", "enhancement" and "help wanted" are most welcome and greatly appreciated.
+## Ways to contribute
 
-### Documentation
+### Report a bug
 
-Trith could always use more documentation, whether as part of the
-official Tirith docs, in docstrings, or even on the web in blog posts,
-articles, and such.
+[Open a bug report](https://github.com/StackGuardian/tirith/issues/new/choose). A reproduction —
+even a rough one — is the difference between a fix this week and a fix eventually.
 
-### Submit Feedback
+**Do not include secrets, plan files or private source code.** Redact them, or reduce the case to
+a minimal public example. This applies to every issue and every pull request.
 
-Please use GitHub Discussions to submit feedback and engage with community [https://github.com/StackGuardian/feedback/discussions/8](https://github.com/StackGuardian/feedback/discussions/8).
+### Request a policy you cannot express
 
-## Basic guidelines
+Use the policy request template. Say the rule in plain words, show what you tried, and show what
+happened instead. A rule that is awkward to write is usually a missing provider operation rather
+than a missing language feature, and that is worth knowing.
 
-### Commits
+### Fix bugs and implement features
 
--  Use the imperative, present tense («change», not «changed» or «changes») to be consistent with generated messages from commands like git merge.
-- Describe the changes you have made
+Issues labelled `bug`, `enhancement` and `help wanted` are all fair game. Issues labelled
+[good first issue](https://github.com/StackGuardian/tirith/labels/good%20first%20issue) carry
+enough maintainer context and acceptance criteria to start on without asking.
 
-#### Examples
-**Good example**: 
- - Commit Message:\
-  `Add feature to calculate total monthly cost for AWS resources`
+### Improve the documentation
 
-- Description:\
-`Implement a function that calculates the total monthly cost for AWS resources. Update the documentation to reflect this new feature.`
+Docs count as contributions, and are frequently the highest-leverage ones. That includes
+docstrings, the documentation site under `documentation/`, and worked policy examples.
 
-  Why it’s Good:
-    > **Clarity**: Clearly states the action and the feature.\
-    >**Specificity**: Specifies what the feature is and what it affects (AWS resources).\
-    >**Consistency**: Uses imperative, present tense, aligning with best practices.
+### Propose a design change
 
+Substantial changes should start as an RFC issue describing the problem, before a pull request
+describing the solution — it is cheaper to disagree about an approach in a paragraph than in a
+diff. Changes to the policy schema, the CLI contract, the action's behaviour, or what leaves the
+machine need two maintainer approvals; see [GOVERNANCE.md](GOVERNANCE.md).
 
-**Bad Example**:  
-- Commit Message:\
-  `Fixed some stuff`
-- Description:\
-`Made changes to the code to fix issues. Updated a few things here and there.`
-  Why it’s Bad:
-    > **Vague**: Does not explain what was fixed.\
-    > **Lacks Detail**: Provides no insight into what "stuff" refers to or how it was changed.\
-    > Does not use imperitve present tense.
+## Getting an issue assigned
 
-### Pull Requests
+Ask on the issue before you start, and a maintainer will assign it. Then:
 
-- **Stay Updated**: Make sure your PR is based on the latest code from the `main` branch.
-- **Clear Title and Description**: Try to include a clear, descriptive title and a detailed explanation of your changes.
-- **Reference Issues**: If applicable, link to related issues and PRs.
-- **Pass Tests**: Ensure all tests pass before submitting your PR.
-- **Be Open to Feedback**: We're all here to help each other improve, so please be open to feedback and ready to make adjustments.
+- Work on one issue at a time.
+- Limit yourself to four `good first issue` items in total; after that, please move on to other
+  kinds of issue so the easy ones stay available to newcomers.
+- If an issue assigned to you goes quiet for about a week, the assignee is removed so somebody else
+  can pick it up. Say so on the issue if you are still on it — that is enough.
 
-### Creating Issues
+## Opening a pull request
 
-- **Search First**: It helps to check if your problem or feature request has already been discussed before opening a new issue.
-- **Be Detailed**: When you open a new issue, providing as much detail as possible really helps. Feel free to use our templates for bugs and feature requests.
-- **Be Respectful**: Let's all be kind and considerate in our communication.
+1. Fork the repository and clone your fork.
+2. Create a branch named for the change: `git switch -c fix-equals-evaluator`.
+3. Make the change, and **add a test that fails without it**.
+4. Run the test suite and the linters.
+5. Push, and open a pull request against `main`.
 
-### Solving Issues
+What makes a pull request easy to merge:
 
-- Limit yourself to solving a maximum of four `good first issues`. Once you've reached this limit, consider tackling other types of issues.
-- Please work on only one issue at a time.
-- Please ask for assignee before working, and if there's no update for about a week on a particular issue, we'll remove the assignee.
+- **Based on current `main`.** Rebase rather than merging `main` into your branch.
+- **A clear title and description.** Say what changed and why; link the issue it closes.
+- **Green CI.**
+- **Openness to review.** Review comments are about the change, not about you.
 
-Thank you for taking the time to help improve our project!
+### Commit messages
 
+Use the imperative, present tense — «change», not «changed» or «changes» — so your messages read
+the same way as the ones git generates itself. Describe what the change does, and why if it is not
+obvious.
 
+**Good:**
 
-### If you have commit access:
+> `Add support for calculating total monthly cost of AWS resources`
+>
+> Implement a function that sums the monthly cost of the resources an Infracost breakdown would
+> create, so a policy can gate on the total. Update the provider documentation.
 
-- Do NOT use git push --force.
-- Do NOT commit to other contributor's branches without their consent.
-- Use Pull Requests if you are unsure and to suggest changes to other maintainers.
+Clear about the action, specific about what it affects, and consistent with the rest of the log.
+
+**Bad:**
+
+> `Fixed some stuff`
+>
+> Made changes to the code to fix issues. Updated a few things here and there.
+
+Vague, no detail about what "stuff" was, and the wrong tense.
+
+## If you have commit access
+
+- Do **not** use `git push --force` on shared branches.
+- Do **not** commit to another contributor's branch without their consent.
+- Use a pull request when you are unsure, or when suggesting changes to another maintainer's work.
+
+Thank you for taking the time to help improve Tirith.
