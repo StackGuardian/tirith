@@ -1,7 +1,6 @@
 import pytest
 from tirith.providers.common import format_context_prefix, get_path_value_from_input
 
-
 # Test data for simple path access
 simple_path_cases = [
     ({"user": {"name": "Alice", "age": 30}}, "user.name", ["Alice"]),

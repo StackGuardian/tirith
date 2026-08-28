@@ -3,7 +3,6 @@ import logging
 from .base_evaluator import BaseEvaluator
 from tirith.utils import sort_collections, json_format_value
 
-
 logger = logging.getLogger(__name__)
 
 # Checks if :attr: `evaluator_input` does not contain :attr:`evaluator_data`.

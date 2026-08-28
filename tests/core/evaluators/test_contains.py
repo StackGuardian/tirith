@@ -1,7 +1,6 @@
 from tirith.core.evaluators import Contains
 from pytest import mark
 
-
 checks_passing = [
     (["a", "b", "c", "d"], "a"),
     ("a", "a"),

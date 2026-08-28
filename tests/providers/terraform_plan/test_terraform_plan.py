@@ -3,7 +3,6 @@ import pytest
 from tirith.providers.terraform_plan import handler
 from utils import load_terraform_plan_json
 
-
 input_data = load_terraform_plan_json("input.json")
 
 #  1 and 2 -----> To check output of the attribute that if the functionality is active or not

@@ -2,6 +2,7 @@
 """
 Entrypoint module when invoked like `python -m tirith`.
 """
+
 import sys
 
 

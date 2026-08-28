@@ -15,7 +15,6 @@ from tirith import __version__
 
 from .core import start_policy_evaluation
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -45,8 +44,7 @@ def main(args=None) -> ExitStatus:
         parser = argparse.ArgumentParser(
             description="Tirith (StackGuardian Policy Framework)",
             formatter_class=_WidthFormatter,
-            epilog=textwrap.dedent(
-                """\
+            epilog=textwrap.dedent("""\
          About Tirith:
          
             * Abstract away the implementation complexity of policy engine underneath.
@@ -55,8 +53,7 @@ def main(args=None) -> ExitStatus:
             * Provide modularity to enable easy extensibility
             * Github - https://github.com/StackGuardian/tirith
             * Docs - https://docs.stackguardian.io/docs/tirith/overview
-        """
-            ),
+        """),
         )
         parser.add_argument(
             "-policy-path",
