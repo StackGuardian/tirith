@@ -28,6 +28,16 @@ def evaluate(input_json, policy_json):
     )
 
 
+def evaluate_provider_args(provider_args, condition, input_json):
+    """Evaluate a single set of provider args, so a test does not need a policy fixture."""
+    policy = {
+        "meta": {"version": "v1", "required_provider": "stackguardian/terraform_plan"},
+        "evaluators": [{"id": "check", "provider_args": provider_args, "condition": condition}],
+        "eval_expression": "check",
+    }
+    return start_policy_evaluation_from_dict(policy, load_terraform_plan_json(input_json))
+
+
 def messages_of(result, evaluator_index=0):
     return [item["message"] for item in result["evaluators"][evaluator_index]["result"]]
 
@@ -112,24 +122,31 @@ def test_attribute_not_found_names_each_resource_separately():
 
 
 @mark.passing
-def test_count_and_action_messages():
-    result = evaluate("input.json", "policy.json")
-    evaluators = {evaluator["id"]: evaluator for evaluator in result["evaluators"]}
+def test_count_message_is_labelled_with_the_resource_type():
+    # A count belongs to a resource type rather than to any one resource, so it is labelled with
+    # the type and has no planned action
+    result = evaluate_provider_args(
+        {"operation_type": "count", "terraform_resource_type": "aws_vpc"},
+        {"type": "GreaterThan", "value": 10},
+        "input.json",
+    )
 
-    # A count belongs to a resource type rather than to any one resource, so it is labelled
-    # with the type and has no planned action
-    assert [item["message"] for item in evaluators["check111"]["result"]] == [
-        "[aws_vpc] count: `2` is not greater than `10`"
+    assert messages_of(result) == ["[aws_vpc] count: `2` is not greater than `10`"]
+    assert contexts_of(result) == [
+        {"operation_type": "count", "resource_type": "aws_vpc", "label": "aws_vpc", "attribute": "count"}
     ]
-    assert evaluators["check111"]["result"][0]["context"] == {
-        "operation_type": "count",
-        "resource_type": "aws_vpc",
-        "label": "aws_vpc",
-        "attribute": "count",
-    }
 
-    # The evaluated value already is the action, so the action is not repeated next to the address
-    assert [item["message"] for item in evaluators["check11"]["result"]] == [
+
+@mark.passing
+def test_action_message_does_not_repeat_the_action():
+    # The evaluated value already is the action, so it is not also shown next to the address
+    result = evaluate_provider_args(
+        {"operation_type": "action", "terraform_resource_type": "aws_vpc"},
+        {"type": "ContainedIn", "value": ["create", "update"]},
+        "input.json",
+    )
+
+    assert messages_of(result) == [
         '[aws_vpc.this[0]] action: Found `"create"` inside `["create", "update"]`',
         '[aws_vpc.this[0]] action: Found `"create"` inside `["create", "update"]`',
     ]
@@ -137,16 +154,6 @@ def test_count_and_action_messages():
 
 @mark.passing
 def test_provider_config_and_terraform_version_messages():
-    plan = load_terraform_plan_json("input_instance_deps_s3.json")
-
-    def evaluate_provider_args(provider_args, condition):
-        policy = {
-            "meta": {"version": "v1", "required_provider": "stackguardian/terraform_plan"},
-            "evaluators": [{"id": "check", "provider_args": provider_args, "condition": condition}],
-            "eval_expression": "check",
-        }
-        return start_policy_evaluation_from_dict(policy, plan)
-
     result = evaluate_provider_args(
         {
             "operation_type": "provider_config",
@@ -154,18 +161,22 @@ def test_provider_config_and_terraform_version_messages():
             "attribute": "region",
         },
         {"type": "Equals", "value": "us-east-1"},
+        "input_instance_deps_s3.json",
     )
     assert messages_of(result) == [
         '[provider registry.terraform.io/hashicorp/aws] region: `"eu-central-1"` is not equal to `"us-east-1"`'
     ]
 
     # There is no resource to name, so the attribute leads the message on its own
-    result = evaluate_provider_args({"operation_type": "terraform_version"}, {"type": "Equals", "value": "9.9.9"})
+    result = evaluate_provider_args(
+        {"operation_type": "terraform_version"}, {"type": "Equals", "value": "9.9.9"}, "input_instance_deps_s3.json"
+    )
     assert messages_of(result) == ['terraform_version: `"1.4.5"` is not equal to `"9.9.9"`']
 
     result = evaluate_provider_args(
         {"operation_type": "direct_dependencies", "terraform_resource_type": "aws_instance"},
         {"type": "Contains", "value": "aws_kms_key"},
+        "input_instance_deps_s3.json",
     )
     assert messages_of(result) == [
         '[aws_instance.example_c] depends_on: Failed to find `"aws_kms_key"` inside `["aws_s3_bucket"]`'
@@ -174,23 +185,8 @@ def test_provider_config_and_terraform_version_messages():
 
 @mark.passing
 def test_provider_argument_errors_stay_uncontextualised():
-    # These errors are about the policy rather than about a resource, so there is nothing to name
-    result = evaluate("input.json", "policy.json")
-    unsupported = start_policy_evaluation_from_dict(
-        {
-            "meta": {"version": "v1", "required_provider": "stackguardian/terraform_plan"},
-            "evaluators": [
-                {
-                    "id": "check",
-                    "provider_args": {"operation_type": "nope"},
-                    "condition": {"type": "Equals", "value": 1},
-                }
-            ],
-            "eval_expression": "check",
-        },
-        load_terraform_plan_json("input.json"),
-    )
+    # This error is about the policy rather than about a resource, so there is nothing to name
+    result = evaluate_provider_args({"operation_type": "nope"}, {"type": "Equals", "value": 1}, "input.json")
 
-    assert messages_of(unsupported) == ["operation_type: 'nope' is not supported (severity_value: 99)"]
-    assert contexts_of(unsupported) == [None]
-    assert result["evaluators"][0]["result"][0]["context"] is not None
+    assert messages_of(result) == ["operation_type: 'nope' is not supported (severity_value: 99)"]
+    assert contexts_of(result) == [None]
