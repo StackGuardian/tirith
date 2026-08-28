@@ -15,6 +15,12 @@ def test_get_value():
     result = start_policy_evaluation_from_dict(policy, input_data)
     assert result["final_result"] is True
 
+    # This provider does not attach a result context, so its messages carry no prefix
+    for evaluator in result["evaluators"]:
+        for item in evaluator["result"]:
+            assert "context" not in item
+            assert not item["message"].startswith("[")
+
 
 def test_get_value_playbook():
     """Test get_value with playbook YAML data using wildcard path"""

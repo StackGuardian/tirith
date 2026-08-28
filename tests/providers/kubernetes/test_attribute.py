@@ -10,3 +10,8 @@ def test_get_value():
 
     result = start_policy_evaluation(policy_path=policy_path, input_path=input_path)
     assert result["final_result"] is False
+
+    # This provider does not attach a result context, so its messages carry no prefix
+    for item in result["evaluators"][0]["result"]:
+        assert "context" not in item
+        assert item["message"].startswith("Found ")
