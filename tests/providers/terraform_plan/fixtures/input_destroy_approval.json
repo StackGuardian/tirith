@@ -1,0 +1,204 @@
+{
+  "format_version": "1.1",
+  "terraform_version": "1.5.7",
+  "resource_changes": [
+    {
+      "address": "aws_vpc.main",
+      "mode": "managed",
+      "type": "aws_vpc",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "cidr_block": "10.0.0.0/16"
+        },
+        "after": {
+          "cidr_block": "10.0.0.0/16"
+        }
+      }
+    },
+    {
+      "address": "aws_subnet.private[0]",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "private",
+      "index": 0,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "cidr_block": "10.0.1.0/24"
+        },
+        "after": {
+          "cidr_block": "10.0.1.0/24"
+        }
+      }
+    },
+    {
+      "address": "aws_subnet.private[1]",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "private",
+      "index": 1,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "cidr_block": "10.0.2.0/24"
+        },
+        "after": {
+          "cidr_block": "10.0.2.0/24"
+        }
+      }
+    },
+    {
+      "address": "aws_internet_gateway.main",
+      "mode": "managed",
+      "type": "aws_internet_gateway",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {},
+        "after": {}
+      }
+    },
+    {
+      "address": "aws_route_table.private",
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "private",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {},
+        "after": {}
+      }
+    },
+    {
+      "address": "aws_iam_role.app",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "app",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "name": "app"
+        },
+        "after": {
+          "name": "app"
+        }
+      }
+    },
+    {
+      "address": "aws_security_group.app",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "app",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "app-sg"
+        }
+      }
+    },
+    {
+      "address": "aws_instance.app[0]",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "app",
+      "index": 0,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "instance_type": "t3.small"
+        }
+      }
+    },
+    {
+      "address": "aws_instance.app[1]",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "app",
+      "index": 1,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "instance_type": "t3.small"
+        }
+      }
+    },
+    {
+      "address": "aws_cloudwatch_log_group.app",
+      "mode": "managed",
+      "type": "aws_cloudwatch_log_group",
+      "name": "app",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "/aws/app"
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.legacy_state",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "legacy_state",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "before": {
+          "bucket": "legacy-state"
+        },
+        "after": null
+      }
+    },
+    {
+      "address": "aws_kms_key.app",
+      "mode": "managed",
+      "type": "aws_kms_key",
+      "name": "app",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {},
+        "after": {}
+      }
+    }
+  ]
+}

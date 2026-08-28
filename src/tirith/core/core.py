@@ -7,13 +7,25 @@ from types import CodeType
 
 from typing import Any, Dict, List, Tuple, Optional
 
-from tirith.providers.common import ProviderError
+from tirith.providers.common import ProviderError, format_context_prefix
 from ..providers import PROVIDERS_DICT
 from .evaluators import EVALUATORS_DICT
 from .policy_parameterization import get_policy_with_vars_replaced
 
 
 logger = logging.getLogger(__name__)
+
+# Provider arguments named in the "could not find input value" message, in the order they
+# are rendered. Providers use different argument names, so only the present ones are used.
+_NO_INPUT_VALUE_DESCRIBED_ARGS = (
+    "operation_type",
+    "terraform_resource_type",
+    "terraform_resource_attribute",
+    "terraform_provider_full_name",
+    "kubernetes_kind",
+    "attribute_path",
+    "attribute",
+)
 
 
 def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, input_data):
@@ -24,6 +36,34 @@ def get_evaluator_inputs_from_provider_inputs(provider_inputs, provider_module, 
         logger.error(f"Provider '{provider_module}' is not found")
         return []
     return provider_func(provider_inputs, input_data)
+
+
+def _no_input_value_message(provider_inputs: Optional[Dict]) -> str:
+    """
+    Build the message used when a provider returns no inputs at all.
+
+    The bare "Could not find input value" says nothing about what was looked for, so name
+    the provider arguments that produced no value whenever they are available.
+
+    :param provider_inputs: The `provider_args` of the evaluator
+    :type provider_inputs: Optional[Dict]
+
+    :returns: The message to report against the failed evaluation
+    :rtype: str
+    """
+    BASE_MESSAGE = "Could not find input value"
+
+    if not provider_inputs:
+        return BASE_MESSAGE
+
+    described_args = ", ".join(
+        f"{key}: '{provider_inputs[key]}'" for key in _NO_INPUT_VALUE_DESCRIBED_ARGS if provider_inputs.get(key)
+    )
+
+    if not described_args:
+        return BASE_MESSAGE
+
+    return f"{BASE_MESSAGE} for {described_args}"
 
 
 def generate_evaluator_result(evaluator_obj, input_data, provider_module):
@@ -60,7 +100,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     # In this case, the evaluation should fail
     if not evaluator_inputs:
         has_evaluation_passed = False
-        evaluation_results = [{"passed": False, "message": "Could not find input value"}]
+        evaluation_results = [{"passed": False, "message": _no_input_value_message(provider_inputs)}]
     else:
         # Track if we've had at least one valid evaluation (not skipped)
         has_valid_evaluation = False
@@ -68,7 +108,10 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         for evaluator_input in evaluator_inputs:
             if isinstance(evaluator_input["value"], ProviderError) and evaluator_input.get("err", None):
                 severity_value = evaluator_input["value"].severity_value
-                err_result = dict(message=evaluator_input["err"])
+                context = evaluator_input.get("context")
+                err_result = dict(message=format_context_prefix(context) + evaluator_input["err"])
+                if context:
+                    err_result["context"] = context
 
                 if severity_value > evaluator_error_tolerance:
                     err_result.update(dict(passed=False))
@@ -82,6 +125,12 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
                 continue
 
             evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
+            context = evaluator_input.get("context")
+            if context:
+                # Say which resource and attribute the evaluated value came from, both in the
+                # message and as structured fields for whoever reads the result document
+                evaluation_result["message"] = format_context_prefix(context) + evaluation_result["message"]
+                evaluation_result["context"] = context
             evaluation_result["meta"] = evaluator_input.get("meta")
             evaluation_results.append(evaluation_result)
             has_valid_evaluation = True

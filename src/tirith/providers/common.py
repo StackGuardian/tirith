@@ -1,6 +1,6 @@
 import pydash
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 def create_result_dict(value=None, meta=None, err=None) -> Dict:
@@ -167,3 +167,67 @@ class ProviderError:
 
     def __init__(self, severity_value: int) -> None:
         self.severity_value = severity_value
+
+
+def format_context_prefix(context: Optional[Dict]) -> str:
+    """
+    Render a provider result ``context`` dictionary as a message prefix.
+
+    Providers may attach a ``context`` dictionary to each of their outputs to describe where
+    the evaluated value came from. The core prepends the rendered prefix to the evaluator
+    message, so that a result reads ``[aws_s3_bucket.example (create)] acl: `"public-read"` is
+    not equal to `"private"``` instead of just ```"public-read"` is not equal to `"private"```.
+
+    Recognised keys:
+
+    ``resource_address``
+        Address of the resource the value belongs to. Rendered as the bracketed subject.
+    ``label``
+        Fallback subject when there is no single resource address (for example a resource
+        count). Only used when ``resource_address`` is absent.
+    ``action``
+        Planned action(s) for the resource. Rendered next to the subject.
+    ``attribute``
+        Name of the attribute being evaluated.
+
+    Any other key is ignored here but is still carried into the result document, so providers
+    can supply structured detail without it showing up in the message.
+
+    :param context: The context dictionary attached by the provider, or None
+    :type context: Optional[Dict]
+
+    :returns: The prefix to prepend to a message, or an empty string when there is no context
+    :rtype: str
+
+    **Examples:**
+
+    >>> format_context_prefix({"resource_address": "aws_vpc.main", "action": "create", "attribute": "cidr_block"})
+    '[aws_vpc.main (create)] cidr_block: '
+    >>> format_context_prefix({"resource_address": "aws_vpc.main", "attribute": "action"})
+    '[aws_vpc.main] action: '
+    >>> format_context_prefix({"label": "aws_vpc", "attribute": "count"})
+    '[aws_vpc] count: '
+    >>> format_context_prefix({"attribute": "terraform_version"})
+    'terraform_version: '
+    >>> format_context_prefix({"resource_address": "aws_vpc.main", "action": "create"})
+    '[aws_vpc.main (create)] '
+    >>> format_context_prefix(None)
+    ''
+    """
+    if not context:
+        return ""
+
+    subject = context.get("resource_address") or context.get("label")
+    action = context.get("action")
+    attribute = context.get("attribute")
+
+    subject_prefix = ""
+    if subject:
+        subject_prefix = "[{} ({})] ".format(subject, action) if action else "[{}] ".format(subject)
+
+    if not attribute:
+        # Without an attribute to name, the message that follows reads as a sentence of its
+        # own, so the subject is left as a bare lead-in rather than being followed by a colon
+        return subject_prefix
+
+    return "{}{}: ".format(subject_prefix, attribute)
