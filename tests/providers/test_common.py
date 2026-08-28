@@ -1,5 +1,5 @@
 import pytest
-from tirith.providers.common import get_path_value_from_input
+from tirith.providers.common import format_context_prefix, get_path_value_from_input
 
 
 # Test data for simple path access
@@ -242,3 +242,42 @@ def test_wildcard_primitive_no_remaining_paths(data, path, expected):
     """Test wildcard applied to primitive value with no remaining paths - covers lines 42-43"""
     result = get_path_value_from_input(path, data)
     assert result == expected
+
+
+# Test data for the message prefix rendered out of a provider result context
+context_prefix_cases = [
+    # A resource attribute: the most common case
+    (
+        {"resource_address": "aws_s3_bucket.example", "action": "create", "attribute": "acl"},
+        "[aws_s3_bucket.example (create)] acl: ",
+    ),
+    # A replacement names both of its actions, in the order they happen
+    (
+        {"resource_address": "aws_instance.web", "action": "delete/create", "attribute": "instance_type"},
+        "[aws_instance.web (delete/create)] instance_type: ",
+    ),
+    # The action is left out when the evaluated value already is the action
+    ({"resource_address": "aws_vpc.main", "attribute": "action"}, "[aws_vpc.main] action: "),
+    # `label` stands in for the subject when there is no single resource address
+    ({"label": "aws_vpc", "attribute": "count"}, "[aws_vpc] count: "),
+    # An address always wins over a label
+    (
+        {"resource_address": "aws_vpc.main", "label": "aws_vpc", "attribute": "cidr_block"},
+        "[aws_vpc.main] cidr_block: ",
+    ),
+    # No subject at all, just the attribute
+    ({"attribute": "terraform_version"}, "terraform_version: "),
+    # No attribute to name, so no colon either
+    ({"resource_address": "aws_vpc.main", "action": "update"}, "[aws_vpc.main (update)] "),
+    ({"label": "aws_vpc"}, "[aws_vpc] "),
+    # Unrecognised keys are carried in the result document but never rendered
+    ({"operation_type": "attribute", "resource_type": "aws_vpc"}, ""),
+    # Nothing to render
+    ({}, ""),
+    (None, ""),
+]
+
+
+@pytest.mark.parametrize("context,expected", context_prefix_cases)
+def test_format_context_prefix(context, expected):
+    assert format_context_prefix(context) == expected

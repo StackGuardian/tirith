@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Added
+- `core`: Provider results can now carry a `context` object saying where the evaluated value came
+  from. It is rendered into the front of the result `message` and kept as structured fields in the
+  result document
+- `terraform_plan`: Result messages now name the resource address, its planned action and the
+  attribute being evaluated, e.g. ``[aws_s3_bucket.example (create)] acl: `"public-read"` is not
+  equal to `"private"` `` instead of just ``` `"public-read"` is not equal to `"private"` ```
+
+### Changed
+- `terraform_plan`: A wildcard attribute now reports the index it resolved to
+  (`ebs_block_device.0.tags.application_acronym`), so results from the same resource can be told
+  apart
+- `terraform_plan`: An "attribute is not found" error now names the resource it is about, instead
+  of repeating the same text once per resource
+- `core`: "Could not find input value" now names the provider arguments that produced no value
+
 ## [1.0.5] - 2025-11-19
 
 ### Fixed

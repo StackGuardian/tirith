@@ -14,6 +14,15 @@
                 { // comes from provider and evaluator combination
                     "error": "",
                     "message": "",
+                    // Optional. Set when the provider says where the value came from,
+                    // and rendered into the front of "message"
+                    "context": {
+                        "operation_type": "",
+                        "resource_type": "",
+                        "resource_address": "",
+                        "action": "",
+                        "attribute": ""
+                    },
                     "meta": {},
                     "passed": true
                     // ...
