@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "destroy-operation",
+      "description": "destroy-operation-detected-stop-and-approve",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "*"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "delete"
+      }
+    }
+  ],
+  "eval_expression": "destroy-operation"
+}

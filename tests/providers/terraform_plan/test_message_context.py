@@ -153,6 +153,58 @@ def test_action_message_does_not_repeat_the_action():
 
 
 @mark.passing
+def test_destroy_approval_names_the_resource_being_destroyed():
+    """
+    A destroy-approval gate is one `action` evaluator over `*`, so it emits a result per resource
+    and every one of them reads `"no-op"` is not equal to `"delete"`. The single line that matters
+    used to be buried in a wall of identical lines that named nothing, and finding the resource
+    behind it meant counting to the same position in `resource_changes`.
+    """
+    result = evaluate("input_destroy_approval.json", "policy_destroy_approval.json")
+
+    assert result["final_result"] is False
+
+    failed = [item for item in result["evaluators"][0]["result"] if not item["passed"]]
+    assert [item["message"] for item in failed] == [
+        '[aws_s3_bucket.legacy_state] action: `"delete"` is equal to `"delete"`'
+    ]
+    assert failed[0]["context"] == {
+        "operation_type": "action",
+        "resource_type": "aws_s3_bucket",
+        "resource_address": "aws_s3_bucket.legacy_state",
+        "attribute": "action",
+    }
+
+
+@mark.passing
+def test_every_action_result_names_its_own_resource():
+    result = evaluate("input_destroy_approval.json", "policy_destroy_approval.json")
+    messages = messages_of(result)
+
+    # Twelve resources, seven of them untouched and four created - so eleven of these twelve lines
+    # were byte-identical to another one before the context was added
+    assert len(messages) == 12
+    assert len(set(messages)) == 12
+    assert sum(1 for message in messages if message.endswith('`"no-op"` is not equal to `"delete"`')) == 7
+
+
+@mark.passing
+def test_destroy_approval_passes_when_nothing_is_being_destroyed():
+    # The same policy over a plan that destroys nothing: it passes, and the results stay readable
+    # instead of being a dozen copies of one line
+    input_data = load_terraform_plan_json("input_destroy_approval.json")
+    for resource_change in input_data["resource_changes"]:
+        if resource_change["change"]["actions"] == ["delete"]:
+            resource_change["change"]["actions"] = ["no-op"]
+
+    result = start_policy_evaluation_from_dict(load_policy_from_fixtures("policy_destroy_approval.json"), input_data)
+
+    assert result["final_result"] is True
+    assert all(item["passed"] for item in result["evaluators"][0]["result"])
+    assert '[aws_s3_bucket.legacy_state] action: `"no-op"` is not equal to `"delete"`' in messages_of(result)
+
+
+@mark.passing
 def test_provider_config_and_terraform_version_messages():
     result = evaluate_provider_args(
         {
