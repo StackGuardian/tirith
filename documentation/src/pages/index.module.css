@@ -1,129 +1,2939 @@
 /**
- * Landing page styles. Kept deliberately small: this page is a placeholder, and
- * it should not grow a design system that the real rebuild would have to undo.
+ * TIRITH LANDING — "Policy Specimen Sheet"
  *
- * Colours come from Docusaurus theme variables so light and dark mode both work
- * without a second palette being defined here.
+ * The direction contract lives in the shipped <body> (see docusaurus.config.js).
+ *
+ * The world in one line: a specimen sheet. Paper ground, ink type, one accent, one
+ * alarm. Mono throughout — this page is made of code, data and measurement, which is
+ * the only thing mono is for. Hairline rules instead of cards, square corners, no
+ * shadows and no gradients anywhere. Hierarchy comes from scale contrast.
+ *
+ * The alarm colour is the second and last hue. A page whose subject is a verdict needs
+ * a negative that the UI accent cannot carry; everything else is ink, paper and rules.
+ * Pass is deliberately NOT green: colour never carries the verdict on its own, the word
+ * does, so the grid stays readable for a colour-blind reader.
  */
+
+/* ---------------------------------------------------------------- tokens ---- */
 
 .page {
-  max-width: 46rem;
+  --tp-paper: #fafaf8;
+  --tp-surface: #f0f0ee;
+  --tp-sunk: #e8e8e5;
+  --tp-ink: #0d0d0d;
+  --tp-soft: #56575b;
+  --tp-faint: #6c6d72;
+  --tp-rule: #d8d8d6;
+  --tp-accent: #1e40af;
+  --tp-alarm: #a5332a;
+  --tp-alarm-wash: #f8ecea;
+  --tp-alarm-edge: #e6cdc9;
+  --tp-display: 'Martian Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --tp-text: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tp-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --tp-gut: 2.5rem;
+  --tp-pad: clamp(1.25rem, 4vw, 4.5rem);
+
+  background: var(--tp-paper);
+  color: var(--tp-ink);
+  /* Prose is set in the text face. Mono is re-asserted below on the things that
+     genuinely are code, data or measurement -- the only thing it is for. */
+  font-family: var(--tp-text);
+  /* Every <pre> on this page is a flex or grid item, and those default to
+     min-width:auto -- so without the min-width:0 rules elsewhere, the widest
+     code line stretches the whole document and the page scrolls sideways on a
+     phone. This is the belt to those braces. */
+  overflow-x: clip;
+  font-size: 16px;
+  line-height: 1.6;
+  /* JetBrains Mono ligates `--` into an en-dash-looking glyph, which turns
+     `--fail-on-error` into a flag that does not exist. Off, everywhere. */
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0, 'dlig' 0;
+}
+
+:global([data-theme='dark']) .page {
+  --tp-paper: #0d0d0d;
+  --tp-surface: #17171a;
+  --tp-sunk: #202024;
+  --tp-ink: #f2f2f0;
+  --tp-soft: #9c9ca3;
+  --tp-faint: #8f8f97;
+  --tp-rule: #2b2b2f;
+  --tp-accent: #7c9bff;
+  --tp-alarm: #e59084;
+  --tp-alarm-wash: #231614;
+  --tp-alarm-edge: #452e2a;
+}
+
+.page code,
+.page pre,
+.page input,
+.page textarea {
+  font-family: var(--tp-mono);
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0, 'dlig' 0;
+}
+
+/* Data and measurement keep the mono. */
+.cellAddr,
+.cellVal,
+.cellNum,
+.controlName,
+.controlHint,
+.stageMeta,
+.stageFoot,
+.sliderEnds,
+.presetSub,
+.termVerdict,
+.methodInertNote {
+  font-family: var(--tp-mono);
+}
+
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------- the page --- */
+
+.page {
+  /* <main> is a flex item of Docusaurus's .main-wrapper, so an auto width
+     resolves against its own content and the widest code line pushed the whole
+     document 19px past a 390px viewport. Pinned, so the <pre> children scroll
+     inside their own boxes instead of widening the page. */
+  width: 100%;
+  max-width: 96rem;
   margin: 0 auto;
-  padding: 3rem 1.25rem 5rem;
+  /* The colophon is the end of the sheet; there is nothing to leave room for
+     below it. */
+  padding: 0;
 }
 
+.page :is(h1, h2, h3) {
+  font-family: var(--tp-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------------------------ hero ---- */
+
+/*
+ * The hero is the sheet's title plate and nothing else. The interactive specimen
+ * used to sit beside it in a third pane, which split the opening three ways and
+ * left the headline and the install command competing for the same attention.
+ * The instrument now has its own plate below (§01), where it can be as dense as
+ * it likes without taxing the first viewport.
+ */
 .hero {
-  margin-bottom: 1rem;
+  padding: clamp(3rem, 6vw, 5.5rem) var(--tp-pad) 0;
+  border-bottom: 1px solid var(--tp-rule);
 }
 
-.heroTitle {
-  font-size: 2.25rem;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.75rem;
-}
-
-.tagline {
-  font-size: 1.15rem;
-  margin-bottom: 1rem;
-}
-
-.muted {
-  color: var(--ifm-color-emphasis-700);
-}
-
-.section {
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--ifm-color-emphasis-300);
-}
-
-.sectionHeading {
-  font-size: 1.25rem;
-  margin-bottom: 0.75rem;
-}
-
-.list li {
-  margin-bottom: 0.75rem;
-}
-
-.actions {
+/*
+ * The letterhead row: mark, name, rule, note. The rule is a flexible spacer that
+ * draws itself, so the note sits hard against the right edge at every width and the
+ * row reads as one ruled line rather than three floating items.
+ */
+.letterhead {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 0.75rem;
-  margin-top: 1.5rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
-/*
- * The primary hero button uses the StackGuardian icon blue rather than the
- * site primary. The icon's #007aff fails 4.5:1 against white (4.02:1), so the
- * fill is the same hue darkened to #006ee6 (4.80:1), and darker again on
- * hover. The label is pinned to opaque white because --ifm-button-color
- * resolves differently per theme.
- */
-.heroPrimary {
-  --ifm-button-background-color: #006ee6;
-  --ifm-button-border-color: #006ee6;
-  --ifm-button-color: #fff;
+/* currentColor, inherited from .page's --tp-ink, so the mark flips with the theme
+   without a second asset. See components/brand/TirithMark.js. */
+.letterheadMark {
+  display: block;
+  flex: none;
+  color: var(--tp-ink);
 }
 
-.heroPrimary:hover,
-.heroPrimary:active {
-  --ifm-button-background-color: #0062cc;
-  --ifm-button-border-color: #0062cc;
-}
-
-@media screen and (max-width: 996px) {
-  .page {
-    padding: 2rem 1rem 3rem;
-  }
-
-  .heroTitle {
-    font-size: 1.75rem;
-  }
-}
-
-/*
- * The announcement strip above the hero title. A link rather than a static banner: the whole
- * row is the target, since a one-line notice about a new feature is only useful if it is also
- * the way to reach it.
- *
- * Colours come from Infima's own variables so it follows the site's light and dark themes
- * rather than pinning a background that only works in one of them.
- */
-.announcement {
-  display: inline-flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  padding: 0.5rem 0.9rem;
-  border: 1px solid var(--ifm-color-emphasis-300);
-  border-radius: 2rem;
-  background: var(--ifm-color-emphasis-100);
-  color: var(--ifm-font-color-base);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  text-decoration: none;
-}
-
-.announcement:hover {
-  border-color: var(--ifm-color-primary);
-  text-decoration: none;
-}
-
-.announcementLabel {
-  padding: 0.05rem 0.5rem;
-  border-radius: 1rem;
-  background: #006ee6;
-  color: #fff;
-  font-size: 0.78rem;
+.letterheadName {
+  font-family: var(--tp-display);
+  font-size: 1.05rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
+}
+
+.letterheadRule {
+  flex: 1 1 auto;
+  height: 1px;
+  min-width: 1rem;
+  background: var(--tp-rule);
+}
+
+.letterheadNote {
+  flex: none;
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.announcementLink {
-  color: var(--ifm-color-primary);
+/* The largest thing on the page by a wide margin -- the scale ladder is
+   headline, then the axis numeral in the specimen, then section titles. */
+.h1 {
+  max-width: 18ch;
+  margin: 0 0 clamp(2.5rem, 5vw, 3.75rem);
+  font-size: clamp(2.4rem, 6.4vw, 5.6rem);
+  line-height: 1.01;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  font-variation-settings: 'wdth' 100;
+}
+
+.h1Dim {
+  display: block;
+  color: var(--tp-soft);
+}
+
+.heroPlate {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  border-top: 1px solid var(--tp-rule);
+}
+
+.heroLede {
+  min-width: 0;
+  padding: 2rem var(--tp-gut) 2.75rem 0;
+  border-right: 1px solid var(--tp-rule);
+}
+
+.lede {
+  max-width: 62ch;
+  margin: 0 0 2rem;
+  color: var(--tp-ink);
+  font-size: clamp(1.02rem, 1.15vw, 1.15rem);
+  line-height: 1.6;
+}
+
+/*
+ * The cost of entry, stated instead of left to be inferred from the length of the
+ * page. Ruled rather than coloured: the accent belongs to the copy button, which is
+ * the action this sentence exists to argue for.
+ */
+.heroLede .lede {
+  margin-bottom: 1.25rem;
+}
+
+.cost {
+  max-width: 52ch;
+  margin: 0 0 2rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--tp-accent);
+  color: var(--tp-ink);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.heroAction {
+  min-width: 0;
+  padding: 2rem 0 2.75rem var(--tp-gut);
+}
+
+.actionTabs {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.actionTab {
+  margin: 0 0 -1px;
+  padding: 0 0 0.55rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.actionTab:hover {
+  color: var(--tp-ink);
+}
+
+.actionTab[data-active='true'] {
+  border-bottom-color: var(--tp-accent);
+  color: var(--tp-accent);
+}
+
+.actionTab:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: 3px;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
   font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/*
+ * The assurance band. Same hairline-ruled cells as .defs, but seated inside the hero
+ * so it is read as part of the offer rather than as the first section of the
+ * argument. It answers the question the StackGuardian mark in the navbar provokes.
+ */
+.assure {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.assure li {
+  min-width: 0;
+  padding: 1.15rem var(--tp-gut) 1.4rem 0;
+  border-right: 1px solid var(--tp-rule);
+}
+
+.assure li:last-child {
+  border-right: 0;
+  padding-right: 0;
+}
+
+.assure li:not(:first-child) {
+  padding-left: var(--tp-gut);
+}
+
+.assureK {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: var(--tp-display);
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.assureV {
+  display: block;
+  max-width: 36ch;
+  color: var(--tp-soft);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+/* ------------------------------------------------------- the copy field ----- */
+
+.copyField,
+.copyFieldQuiet {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--tp-ink);
+  background: var(--tp-paper);
+}
+
+.copyFieldQuiet {
+  border-color: var(--tp-rule);
+}
+
+.copyField:focus-within,
+.copyFieldQuiet:focus-within {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: 2px;
+}
+
+.copyCommand {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 0.6rem;
+  /* The prompt marks the start of the command, so it sits on the first line
+     rather than floating to the middle of a wrapped one. */
+  align-items: flex-start;
+  padding: 0.7rem 0.85rem;
+  border: 0;
+  background: none;
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  /* Wraps rather than scrolls. A half-visible install command reads as broken,
+     and this one is the page's primary action. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.copyPrompt {
+  flex: none;
+  color: var(--tp-accent);
+  user-select: none;
+}
+
+.copyButton {
+  flex: none;
+  align-self: stretch;
+  min-width: 5.5rem;
+  padding: 0 0.9rem;
+  border: 0;
+  border-left: 1px solid var(--tp-rule);
+  background: var(--tp-ink);
+  color: var(--tp-paper);
+  font-family: var(--tp-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition: background 120ms ease-out;
+}
+
+.copyField .copyButton {
+  background: var(--tp-accent);
+  color: #fff;
+}
+
+.copyButton:hover {
+  background: var(--tp-ink);
+  color: var(--tp-paper);
+}
+
+.copyButton:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: -4px;
+}
+
+.copyFieldQuiet .copyButton {
+  background: transparent;
+  color: var(--tp-soft);
+}
+
+.copyFieldQuiet .copyButton:hover {
+  background: var(--tp-ink);
+  color: var(--tp-paper);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.1rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--tp-soft);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.facts li + li {
+  position: relative;
+}
+
+.facts li + li::before {
+  content: '·';
+  position: absolute;
+  left: -0.68rem;
+  color: var(--tp-faint);
+}
+
+.caveat {
+  max-width: 48ch;
+  margin: 0.9rem 0 0;
+  color: var(--tp-soft);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.caveat code {
+  padding: 0.05em 0.3em;
+  border: 0;
+  border-radius: 0;
+  background: var(--tp-surface);
+  color: var(--tp-soft);
+  font-size: 0.95em;
+  vertical-align: baseline;
+}
+
+.heroLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 2rem;
+}
+
+/* --------------------------------------------------------------- buttons ---- */
+
+.btnPrimary,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.62rem 1.05rem;
+  border: 1px solid var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+.btnPrimary {
+  background: var(--tp-accent);
+  color: #fff;
+}
+
+[data-theme='dark'] .btnPrimary {
+  color: #0d0d0d;
+}
+
+.btnPrimary:hover {
+  background: var(--tp-ink);
+  border-color: var(--tp-ink);
+  color: var(--tp-paper);
+  text-decoration: none;
+}
+
+.btnGhost {
+  border-color: var(--tp-rule);
+  color: var(--tp-ink);
+}
+
+.btnGhost:hover {
+  border-color: var(--tp-ink);
+  background: var(--tp-ink);
+  color: var(--tp-paper);
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------ specimen: stage ----- */
+
+/*
+ * Input on the left, output on the right.
+ *
+ * The controls used to be a 18.5rem column on the right and the output a full-width
+ * band underneath, which meant the slider and the stdout it rewrites were never on
+ * screen together: you dragged the threshold and then scrolled to find out what it
+ * did. Two columns instead — dials and document on one side, terminal and resource
+ * list on the other — and the loop closes inside one viewport.
+ *
+ * Not an even split. The policy is the widest thing here — its longest line runs 62
+ * characters — while the output column's widest line is the command, which wraps,
+ * and the report lines under it are barely half that. An even split left the right
+ * pane padding itself out with air while the policy scrolled. 5:3.
+ */
+.specimen {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  border: 1px solid var(--tp-rule);
+}
+
+/* The reading spans both columns: it describes the whole apparatus, not one half. */
+.readingRow {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding: 1.5rem 1.75rem 1.6rem;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.specimenStage {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 0 1.5rem;
+  border-right: 1px solid var(--tp-rule);
+}
+
+.stageHead,
+.stageFoot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--tp-faint);
+  font-size: 0.68rem;
+}
+
+.stageFoot {
+  margin: 1.25rem 1.75rem 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.stageFoot em {
+  color: var(--tp-soft);
+  font-style: normal;
+}
+
+.tag {
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.stageMeta {
+  color: var(--tp-soft);
+  font-size: 0.7rem;
+}
+
+.stageLink {
+  color: var(--tp-accent);
+  font-size: 0.7rem;
+  text-decoration: none;
   white-space: nowrap;
+}
+
+.stageLink:hover {
+  text-decoration: underline;
+}
+
+/*
+ * THE READING — the policy said once, in English, above the JSON.
+ *
+ * Three cells across the top of the stage rather than a paragraph: horizontal space
+ * is the space this layout has spare, and a band costs the page no height. Each cell
+ * is a button so the mapping works by hover, by keyboard focus and by tap, and each
+ * carries the numeral that marks its region of the document below.
+ */
+.reading {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--tp-rule);
+}
+
+.reading li {
+  display: flex;
+  min-width: 0;
+  border-right: 1px solid var(--tp-rule);
+}
+
+.reading li:last-child {
+  border-right: 0;
+}
+
+.readingPart {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0.8rem 1rem 0.9rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.readingPart:hover,
+.readingPart[data-lit='true'] {
+  background: var(--tp-surface);
+}
+
+.readingPart:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: -2px;
+}
+
+.readingLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* The numeral is the whole legend. It appears here and again in the code gutter,
+   and that repetition is what replaces an explanatory sentence. */
+.readingNum {
+  display: grid;
+  place-items: center;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+  border: 1px solid var(--tp-rule);
+  color: var(--tp-faint);
+  font-size: 0.58rem;
+  letter-spacing: 0;
+}
+
+.readingPart[data-lit='true'] .readingNum {
+  border-color: var(--tp-accent);
+  color: var(--tp-accent);
+}
+
+.readingText {
+  display: block;
+  color: var(--tp-ink);
+  font-family: var(--tp-text);
+  font-size: 0.98rem;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+/* The marked region of the document. At rest a hairline on the left edge says
+   "these lines belong together"; lit, it takes the accent and everything outside
+   the region steps back. */
+.codeLine[data-region] {
+  box-shadow: inset 2px 0 0 var(--tp-rule);
+}
+
+.policyCode[data-active] .codeLine {
+  transition: opacity 140ms ease;
+}
+
+.policyCode[data-active='source'] .codeLine:not([data-region='source']),
+.policyCode[data-active='subject'] .codeLine:not([data-region='subject']),
+.policyCode[data-active='test'] .codeLine:not([data-region='test']) {
+  opacity: 0.3;
+}
+
+.policyCode[data-active='source'] .codeLine[data-region='source'],
+.policyCode[data-active='subject'] .codeLine[data-region='subject'],
+.policyCode[data-active='test'] .codeLine[data-region='test'] {
+  box-shadow: inset 2px 0 0 var(--tp-accent);
+}
+
+.codeMark {
+  display: inline-block;
+  width: 1.15rem;
+  color: var(--tp-accent);
+  font-weight: 700;
+  text-align: center;
+  user-select: none;
+}
+
+/* The policy, at display scale. This is the page's biggest object on purpose:
+   it is the thing the product is actually about. */
+.policyCode {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 1.35rem 1.75rem 0;
+  overflow-x: auto;
+  background: none;
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: clamp(0.78rem, 1vw, 1.02rem);
+  line-height: 1.75;
+  tab-size: 2;
+}
+
+.codeLine {
+  display: block;
+  white-space: pre;
+}
+
+.lineNo {
+  display: inline-block;
+  width: 2.1rem;
+  color: var(--tp-rule);
+  text-align: right;
+  padding-right: 1rem;
+  user-select: none;
+}
+
+.jsonKey {
+  color: var(--tp-ink);
+  font-weight: 600;
+}
+
+.jsonStr {
+  color: var(--tp-soft);
+}
+
+.jsonNum,
+.jsonLit {
+  color: var(--tp-accent);
+}
+
+/* The one number the axis owns. */
+.axisMark {
+  padding: 0.05em 0.35em;
+  border-radius: 0;
+  background: var(--tp-accent);
+  color: #fff;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme='dark'] .axisMark {
+  color: #0d0d0d;
+}
+
+/* ---------------------------------------------------- specimen: controls ---- */
+
+/* A bar across the top of the left column rather than a column of its own: the
+   dial belongs with the document it edits, and stacked vertically it was taller
+   than either thing it controlled. */
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 14.5rem);
+  gap: var(--tp-gut);
+  min-width: 0;
+  padding: 1.35rem 1.75rem 1.5rem;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.controlBlock {
+  min-width: 0;
+}
+
+.controlsHead {
+  margin-bottom: 0.9rem;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.controlTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.controlName {
+  color: var(--tp-soft);
+  font-size: 0.72rem;
+}
+
+.controlValue {
+  display: block;
+  margin: 0.15rem 0 0.1rem;
+  color: var(--tp-ink);
+  font-family: var(--tp-display);
+  font-size: clamp(1.9rem, 2.6vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-variation-settings: 'wdth' var(--spec-wdth, 100);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: font-variation-settings 90ms linear;
+}
+
+.controlTop {
+  display: block;
+}
+
+.controlHint {
+  margin-bottom: 0.8rem;
+  color: var(--tp-faint);
+  font-size: 0.66rem;
+}
+
+/* --------------------------------------------------------------- slider ----- */
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 1.1rem;
+  margin: 0;
+  background: none;
+  cursor: ew-resize;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--tp-accent) 0 var(--fill),
+    var(--tp-rule) var(--fill) 100%
+  );
+}
+
+.slider::-moz-range-track {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--tp-accent) 0 var(--fill),
+    var(--tp-rule) var(--fill) 100%
+  );
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tp-accent);
+}
+
+.slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tp-accent);
+}
+
+.slider:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: 4px;
+}
+
+.sliderEnds {
+  display: flex;
+  justify-content: space-between;
+  color: var(--tp-faint);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* -------------------------------------------------------------- presets ----- */
+
+.presets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: -1px;
+  gap: 0;
+}
+
+.preset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--tp-rule);
+  margin: 0 -1px -1px 0;
+  background: none;
+  color: var(--tp-soft);
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+.preset:hover {
+  color: var(--tp-ink);
+  background: var(--tp-surface);
+}
+
+.presetOn {
+  position: relative;
+  z-index: 1;
+  border-color: var(--tp-accent);
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+}
+
+.presetName {
+  font-family: var(--tp-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.presetSub {
+  color: var(--tp-faint);
+  font-size: 0.6rem;
+}
+
+.presetOn .presetSub {
+  color: var(--tp-accent);
+}
+
+.preset:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: 1px;
+}
+
+/* -------------------------------------------------------------- readout ----- */
+
+/*
+ * The policy is paper; the result is a terminal. That material break is the
+ * product's own: a Tirith policy is a document you read and edit, and its
+ * verdict arrives as stdout in a shell. The panel reproduces
+ * prettyprinter.py exactly, green and red included -- those are the colours the
+ * command really prints, which is why the verdict wears them here and the
+ * address list beside it deliberately does not.
+ */
+.resultBlock {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.term {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #121215;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.termBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 1rem;
+  border-bottom: 1px solid #26262b;
+}
+
+.termTitle {
+  color: #71717a;
+  font-family: var(--tp-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.termVerdict {
+  color: #a1a1aa;
+  font-family: var(--tp-mono);
+  font-size: 0.68rem;
+}
+
+.termVerdict strong {
+  color: #f4f4f5;
+  font-weight: 700;
+}
+
+.term[data-verdict='failed'] .termVerdict strong {
+  color: #ff6b60;
+}
+
+.term[data-verdict='passed'] .termVerdict strong {
+  color: #4ade80;
+}
+
+.termBody {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0.9rem 1rem 1.1rem;
+  overflow-x: auto;
+  border-radius: 0;
+  background: none;
+  color: #d4d4d8;
+  font-family: var(--tp-mono);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  white-space: pre;
+  tab-size: 2;
+  /* Bounded so a longer document scrolls inside the panel instead of turning
+     the page into a scroll marathon. */
+  max-height: 26rem;
+  overflow: auto;
+}
+
+.termCmd {
+  display: block;
+  color: #f4f4f5;
+  font-weight: 600;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.termCmd + .termLine {
+  margin-top: 0.15rem;
+}
+
+.termPrompt {
+  color: #6d8bff;
+  user-select: none;
+}
+
+.termLine {
+  display: block;
+}
+
+/* The pretty printer's own palette: LIGHT_GREEN for a passing result line,
+   BRIGHT_RED for a failing one, GREY for the trailing expression. */
+.termLine[data-kind='pass'] {
+  color: #6ee7a0;
+}
+
+.termLine[data-kind='fail'] {
+  color: #ff8074;
+}
+
+.termLine[data-kind='dim'] {
+  color: #8b8b93;
+}
+
+.termLine[data-kind='plain'] {
+  color: #e4e4e7;
+}
+
+.addresses {
+  flex: 1;
+  min-width: 0;
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.addressesHead {
+  margin-bottom: 1rem;
+}
+
+.addressesTitle {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.addressesNote {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--tp-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.addressesNote strong {
+  color: var(--tp-ink);
+}
+
+.cells {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+}
+
+.cell {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.42rem 0.7rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+  font-size: 0.68rem;
+  transition: background 140ms ease-out, color 140ms ease-out;
+}
+
+.cellNum {
+  flex: none;
+  width: 1.4rem;
+  color: var(--tp-faint);
+  font-size: 0.92em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.cellAddr {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  overflow: hidden;
+  min-width: 0;
+  color: var(--tp-soft);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cellVal {
+  color: var(--tp-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cell[data-state='fail'] {
+  background: var(--tp-alarm-wash);
+  box-shadow: inset 0 0 0 1px var(--tp-alarm-edge);
+}
+
+.cell[data-state='fail'] .cellAddr {
+  color: var(--tp-ink);
+  font-weight: 600;
+}
+
+.cell[data-state='fail'] .cellVal {
+  color: var(--tp-alarm);
+  font-weight: 700;
+}
+
+.cellMark {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-right: 0.45rem;
+  flex: none;
+  background: transparent;
+}
+
+.cell[data-state='fail'] .cellMark {
+  background: var(--tp-alarm);
+}
+
+.cell[data-state='na'] {
+  background: var(--tp-surface);
+}
+
+.syntheticNote {
+  margin: 0.9rem 0 0;
+  max-width: 70ch;
+  color: var(--tp-faint);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+/* -------------------------------------------------------------- sections ---- */
+
+.section {
+  padding: clamp(3.5rem, 6vw, 5.5rem) var(--tp-pad) clamp(2.5rem, 4vw, 3.5rem);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.sectionHead {
+  margin-bottom: 2.5rem;
+}
+
+.sectionLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Plate numbering, in the specimen-sheet sense: these are the sheet's plates and
+   they are referred to by number. Not decoration on an unordered list. */
+.sectionNum {
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+  line-height: 1.15;
+}
+
+.sectionLede {
+  max-width: 70ch;
+  margin: 1rem 0 0;
+  color: var(--tp-soft);
+  font-size: 1.06rem;
+  line-height: 1.6;
+}
+
+.betaTag,
+.tagLive,
+.tagPlanned {
+  padding: 0.16rem 0.5rem;
+  border: 1px solid var(--tp-rule);
+  color: var(--tp-soft);
+  font-family: var(--tp-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.betaTag {
+  border-color: var(--tp-accent);
+  color: var(--tp-accent);
+}
+
+.tagPlanned {
+  border-style: dashed;
+  color: var(--tp-faint);
+}
+
+/* ------------------------------------------------------------- 01 the gap --- */
+
+/* Ruled on all four sides, like .cards and .methods, so a set that wraps to a
+   second row keeps its alignment. The earlier one-row-only padding rule left
+   the first item of row two indented against nothing. */
+.defs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+}
+
+/* Six items over four tracks leaves two dead cells on the second row; three
+   tracks divide them evenly. */
+.defsWide {
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+}
+
+.def {
+  min-width: 0;
+  padding: 1.4rem 1.5rem 1.6rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.def dt {
+  margin-bottom: 0.6rem;
+  font-family: var(--tp-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.def dd {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--tp-soft);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------- 02 how it works --- */
+
+.howFlow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+  list-style: none;
+}
+
+.howFlow li {
+  position: relative;
+  min-width: 0;
+  padding: 1.35rem 1.4rem 1.5rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.howFlow li:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  z-index: 1;
+  top: 1.25rem;
+  right: -0.62rem;
+  display: grid;
+  place-items: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  background: var(--tp-paper);
+  color: var(--tp-accent);
+  font-family: var(--tp-mono);
+  font-size: 0.75rem;
+}
+
+.howNum {
+  display: block;
+  margin-bottom: 1.4rem;
+  color: var(--tp-accent);
+  font-family: var(--tp-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.howFlow h3,
+.quickSteps h3 {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.howFlow p,
+.quickSteps p {
+  margin: 0.6rem 0 0;
+  color: var(--tp-soft);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.howFlow .howProduct {
+  border-color: var(--tp-accent);
+  background: var(--tp-accent);
+  color: #fff;
+}
+
+.howFlow .howProduct .howNum,
+.howFlow .howProduct p {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.howFlow .howProduct::after {
+  background: var(--tp-accent);
+  color: #fff;
+}
+
+[data-theme='dark'] .howFlow .howProduct {
+  color: #0d0d0d;
+}
+
+[data-theme='dark'] .howFlow .howProduct .howNum,
+[data-theme='dark'] .howFlow .howProduct p {
+  color: rgba(13, 13, 13, 0.78);
+}
+
+[data-theme='dark'] .howFlow .howProduct::after {
+  color: #0d0d0d;
+}
+
+/* --------------------------------------------------------- 03 quick start --- */
+
+.quickStart {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+}
+
+.quickSteps {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quickSteps li {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
+  gap: 0.85rem;
+  padding: 1.2rem 1.25rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.quickSteps .stepNum {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.quickCode {
+  min-width: 0;
+  padding: 1.3rem 1.4rem 1.4rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+  background: var(--tp-surface);
+}
+
+.quickCode .block {
+  max-height: none;
+  border-color: var(--tp-rule);
+  background: var(--tp-paper);
+  font-size: 0.72rem;
+}
+
+.quickNotes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--tp-rule);
+  list-style: none;
+}
+
+.quickNotes li {
+  min-width: 0;
+  padding: 0.9rem 1.1rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+  color: var(--tp-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.quickNotes li::before {
+  content: '✓';
+  margin-right: 0.55rem;
+  color: var(--tp-accent);
+  font-family: var(--tp-mono);
+}
+
+.quickLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.5rem;
+  margin-top: 1rem;
+  font-family: var(--tp-display);
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.quickLinks a {
+  color: var(--tp-accent);
+  text-decoration: none;
+}
+
+.quickLinks a:hover,
+.quickLinks a:focus-visible {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------- 02 public PR journey ---- */
+
+/*
+ * Five stacked pull requests rendered as one instrument: the left rail keeps the
+ * whole adoption story visible while the right plate opens one real diff and result.
+ * It follows the sheet's existing rule system instead of imitating GitHub chrome.
+ */
+.phaseJourney {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+}
+
+.phaseRail {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.phaseRail li {
+  min-width: 0;
+}
+
+.phaseSelect {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 7.15rem;
+  padding: 1rem 1.15rem;
+  border: 0;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+  background: var(--tp-paper);
+  color: var(--tp-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.phaseSelect::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: transparent;
+}
+
+.phaseSelect:hover,
+.phaseSelect[data-active='true'] {
+  background: var(--tp-surface);
+}
+
+.phaseSelect[data-active='true']::before {
+  background: var(--tp-accent);
+}
+
+.phaseSelect:focus-visible {
+  z-index: 1;
+  outline: 2px solid var(--tp-accent);
+  outline-offset: -4px;
+}
+
+.phaseSelectNum {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--tp-rule);
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.phaseSelect[data-active='true'] .phaseSelectNum {
+  border-color: var(--tp-accent);
+  color: var(--tp-accent);
+}
+
+.phaseSelectCopy {
+  display: grid;
+  min-width: 0;
+  gap: 0.28rem;
+}
+
+.phaseSelectGroup,
+.phaseEyebrow,
+.phaseDelta,
+.phaseOutcomeLabel {
+  font-family: var(--tp-mono);
+  font-size: 0.61rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.phaseSelectGroup,
+.phaseEyebrow,
+.phaseOutcomeLabel {
+  color: var(--tp-faint);
+}
+
+.phaseSelectTitle {
+  font-family: var(--tp-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.phaseSelectSummary {
+  color: var(--tp-soft);
+  font-size: 0.86rem;
+  line-height: 1.42;
+}
+
+.phaseDetail {
+  min-width: 0;
+  padding: clamp(1.4rem, 3vw, 2.4rem);
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+  background: var(--tp-paper);
+}
+
+.phaseDetailHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.phaseTitle {
+  max-width: 24ch;
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.25rem, 2.1vw, 1.85rem);
+  line-height: 1.15;
+}
+
+.phaseTag {
+  flex: none;
+  padding: 0.38rem 0.55rem;
+  border: 1px solid var(--tp-rule);
+  color: var(--tp-soft);
+  font-family: var(--tp-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.phaseBody {
+  max-width: 68ch;
+  margin: 1.2rem 0 1.35rem;
+  color: var(--tp-soft);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.phaseDelta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--tp-rule);
+  color: var(--tp-faint);
+}
+
+.phaseDelta strong {
+  color: var(--tp-ink);
+  font-weight: 600;
+}
+
+.phaseCode {
+  min-width: 0;
+  margin: 0;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  border: 1px solid var(--tp-rule);
+  border-radius: 0;
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: 0.72rem;
+  line-height: 1.65;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.phaseOutcome {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border: 1px solid var(--tp-rule);
+  border-left: 3px solid var(--tp-ink);
+}
+
+.phaseOutcome[data-tone='warn'] {
+  border-left-color: var(--tp-accent);
+}
+
+.phaseOutcome[data-tone='fail'] {
+  border-color: var(--tp-alarm-edge);
+  border-left-color: var(--tp-alarm);
+  background: var(--tp-alarm-wash);
+}
+
+.phaseOutcome[data-tone='neutral'] {
+  border-left-color: var(--tp-faint);
+}
+
+.phaseOutcomeHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.phaseOutcomeHead strong {
+  font-family: var(--tp-display);
+  font-size: 0.86rem;
+}
+
+.phaseOutcome ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.phaseOutcome li {
+  position: relative;
+  padding-left: 1.1rem;
+  color: var(--tp-ink);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.phaseOutcome li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--tp-faint);
+}
+
+.phaseOutcome p {
+  margin: 0.8rem 0 0;
+  color: var(--tp-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.phaseLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.5rem;
+  margin-top: 1rem;
+  font-family: var(--tp-display);
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.phaseLinks a {
+  color: var(--tp-accent);
+  text-decoration: none;
+}
+
+.phaseLinks a:hover,
+.phaseLinks a:focus-visible {
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------- focused routes at close --- */
+
+.exploreCards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+  list-style: none;
+}
+
+.exploreCards li {
+  display: flex;
+  min-width: 0;
+}
+
+.exploreCard {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+  width: 100%;
+  min-width: 0;
+  padding: 1.35rem 1.4rem 1.5rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+  color: var(--tp-ink);
+  text-decoration: none;
+  transition: background-color 120ms ease;
+}
+
+.exploreCard:hover,
+.exploreCard:focus-visible {
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  text-decoration: none;
+}
+
+.exploreGlyph {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--tp-accent);
+  color: var(--tp-accent);
+  font-family: var(--tp-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.exploreBody {
+  display: grid;
+  min-width: 0;
+  gap: 0.55rem;
+}
+
+.exploreTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--tp-display);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.exploreText {
+  color: var(--tp-soft);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+/* -------------------------------------------------------- legacy steps ---- */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.step {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 1.75rem var(--tp-gut) 1.75rem 0;
+  border-right: 1px solid var(--tp-rule);
+}
+
+.step:last-child {
+  border-right: 0;
+}
+
+.step:not(:first-child) {
+  padding-left: var(--tp-gut);
+}
+
+.stepHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+}
+
+.stepNum {
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  flex: none;
+  border: 1px solid var(--tp-accent);
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  align-self: center;
+}
+
+.stepTitle {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.stepBody {
+  margin: 0.85rem 0 1.25rem;
+  max-width: 44ch;
+  color: var(--tp-soft);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.block {
+  min-width: 0;
+  margin: 0;
+  padding: 0.85rem 0.95rem;
+  /* Same rule as .copyCommand: a command shown as a shorter, different command
+     is worse than one that takes two lines. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--tp-rule);
+  border-radius: 0;
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: 0.76rem;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.step .block {
+  margin-top: auto;
+}
+
+/* JSON is structural: a line that wraps loses the indentation that carries the
+   nesting, and the policy in step 2 exists to be read at a glance. Commands still
+   wrap (see .block) because a truncated command is worse than a tall one -- a
+   truncated document is not. */
+.blockPre {
+  white-space: pre;
+  overflow-x: auto;
+  font-size: 0.63rem;
+}
+
+/* A step whose payload is a single command offers to copy it. Steps 1 and 2 are the
+   two commands the visitor actually has to run, and a hover-revealed icon in the
+   corner of a <pre> is not a button. */
+.stepCopy {
+  margin-top: auto;
+}
+
+.step .copyFieldQuiet {
+  background: var(--tp-paper);
+}
+
+/* ------------------------------------------------- 03 the starter policies --- */
+
+/*
+ * The answer to the step everybody stalls on. Step 2 used to say "write a policy";
+ * these five are real files in the installed package (src/tirith/tui/examples/), so
+ * each row links to the policy it names rather than describing one the visitor then
+ * has to go and author.
+ */
+.starter {
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+.starterHead {
+  margin-bottom: 1.25rem;
+}
+
+.starterNote {
+  max-width: 62ch;
+  margin: 0.5rem 0 0;
+  color: var(--tp-soft);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.starterCopy {
+  max-width: 74ch;
+  margin-top: 0.9rem;
+}
+
+.starterCopy .copyFieldQuiet {
+  background: var(--tp-paper);
+}
+
+/* Five items. auto-fit gave whatever the viewport allowed, which on a wide screen
+   was four across and one stranded underneath beside three empty cells. Explicit
+   track counts so every breakpoint divides into rows that look chosen. */
+.starterList {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+}
+
+.starterList li {
+  display: flex;
+  min-width: 0;
+}
+
+.starterItem {
+  display: grid;
+  min-width: 0;
+  width: 100%;
+  align-content: start;
+  gap: 0.45rem;
+  padding: 1.2rem 1.4rem 1.3rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 120ms ease;
+}
+
+.starterItem:hover,
+.starterItem:focus-visible {
+  background: var(--tp-surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+.starterName {
+  font-family: var(--tp-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.starterText {
+  max-width: 42ch;
+  color: var(--tp-soft);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.starterFile {
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.68rem;
+}
+
+/* The local run and the prototype sit side by side: what you can do right now, and
+   what the shortest path would look like if it existed. */
+.setupTail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+}
+
+.localRun,
+.proto {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 1.4rem 1.5rem 1.5rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.localRun .starterNote,
+.proto .starterNote {
+  margin-bottom: 1.15rem;
+}
+
+.localRun .copyFieldQuiet {
+  margin-top: auto;
+  background: var(--tp-paper);
+}
+
+/* Hatched, like the planned install methods in the ways-in plate, so it reads as a
+   shape rather than an offer. `tirith init` does not exist. */
+.proto {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 9px,
+    var(--tp-surface) 9px 18px
+  );
+}
+
+.protoTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+}
+
+.protoTitle {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ------------------------------------------------------------ 03 methods ---- */
+
+.methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+}
+
+.method {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 1.4rem 1.5rem 1.5rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.methodPlanned {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 9px,
+    var(--tp-surface) 9px 18px
+  );
+}
+
+.methodTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+.methodName {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.methodBody {
+  margin: 0 0 1.15rem;
+  max-width: 46ch;
+  color: var(--tp-soft);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.method .copyFieldQuiet {
+  margin-top: auto;
+  background: var(--tp-paper);
+}
+
+/* A planned method shows its command without offering to copy it. There is
+   nothing on the other end of these yet. */
+.methodInert {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: auto;
+  padding: 0.7rem 0.85rem;
+  border: 1px dashed var(--tp-rule);
+  background: var(--tp-paper);
+}
+
+.methodInert code {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+
+.methodInertNote {
+  flex: none;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------- 04 providers ---- */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+  border-left: 1px solid var(--tp-rule);
+}
+
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  height: 100%;
+  padding: 1.3rem 1.4rem;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+  color: inherit;
+  text-decoration: none;
+  transition: background 120ms ease-out;
+}
+
+.card:hover {
+  background: var(--tp-surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The provider mark is set as a specimen glyph, which is this world's own icon
+   system -- letterforms on a sheet, not a stock icon set. */
+.cardGlyph {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid var(--tp-rule);
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.86rem;
+  font-weight: 700;
+  font-variation-settings: 'wdth' 88;
+}
+
+.card:hover .cardGlyph {
+  border-color: var(--tp-accent);
+}
+
+.cardBody {
+  display: block;
+  min-width: 0;
+}
+
+.cardTitle {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--tp-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.cardText {
+  display: block;
+  color: var(--tp-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.cardArrow {
+  flex: none;
+  align-self: center;
+  color: var(--tp-faint);
+  transition: transform 140ms ease-out, color 140ms ease-out;
+}
+
+.card:hover .cardArrow {
+  transform: translateX(3px);
+  color: var(--tp-accent);
+}
+
+/* --------------------------------------------------------- 05 exit codes ---- */
+
+.table {
+  display: table;
+  width: 100%;
+  max-width: 62rem;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table tr {
+  border-top: 1px solid var(--tp-rule);
+  background: none;
+}
+
+.table tr:last-child {
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.table th,
+.table td {
+  padding: 0.7rem 1rem 0.7rem 0;
+  border: 0;
+  text-align: left;
+  vertical-align: baseline;
+}
+
+.table th {
+  width: 4.5rem;
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.table td {
+  color: var(--tp-soft);
+}
+
+.note {
+  max-width: 70ch;
+  margin: 1.5rem 0 0;
+  color: var(--tp-soft);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------- 06 the ui ---- */
+
+.uiGrid {
+  display: grid;
+  gap: 2rem;
+}
+
+.uiTabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.uiTabs li {
+  min-width: 0;
+  padding: 1.4rem var(--tp-gut) 1.5rem 0;
+  border-right: 1px solid var(--tp-rule);
+}
+
+.uiTabs li:last-child {
+  border-right: 0;
+}
+
+.uiTabs li:not(:first-child) {
+  padding-left: var(--tp-gut);
+}
+
+.uiAside {
+  min-width: 0;
+}
+
+.uiAside .block {
+  max-width: 62rem;
+}
+
+.uiTabName {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.uiTabBody {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--tp-soft);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+.uiAside .block {
+  font-size: 0.66rem;
+}
+
+/* -------------------------------------------------------- 07 the numbers ---- */
+
+.metrics {
+  margin: 0;
+  padding: 0;
+  max-width: 62rem;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.metric {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  align-items: baseline;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+/* Numerals as specimen: set at plate scale in the display face's narrow width,
+   the same way the glyph plate sets its letterforms. */
+.metricNum {
+  color: var(--tp-ink);
+  font-family: var(--tp-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A figure nobody has measured yet is rendered as withheld, not as digits that
+   read like a rendering bug. */
+.metricNum[data-withheld='true'] {
+  color: var(--tp-faint);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.metricLabel {
+  font-size: 0.95rem;
+}
+
+.metricSub {
+  color: var(--tp-faint);
+  font-size: 0.68rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------------------- close ---- */
+
+.finale {
+  padding: clamp(3rem, 5vw, 4.5rem) var(--tp-pad) clamp(3rem, 5vw, 4rem);
+  border-top: 1px solid var(--tp-rule);
+}
+
+.finaleGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: var(--tp-gut);
+  align-items: center;
+}
+
+.finaleTitle {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+  line-height: 1.1;
+}
+
+.finaleNote {
+  margin: 0.9rem 0 0;
+  max-width: 48ch;
+  color: var(--tp-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* After the install command there is a next thing to do; the close used to end on
+   the same command as the hero and nothing else. */
+.finaleLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.75rem;
+  margin-top: 1.4rem;
+}
+
+.finaleGrid > .finaleLinks {
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
+.routeLabel {
+  margin: 2.5rem 0 0.8rem;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------- colophon ---- */
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2rem;
+  padding: 1.5rem var(--tp-pad);
+  border-top: 1px solid var(--tp-rule);
+  color: var(--tp-faint);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The mark sits with the name as one item, so the colophon's `gap` still separates
+   the four entries evenly rather than pushing the mark away from the word it labels. */
+.colophonBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 16px is the floor for this mark. The canvas notes Keep reads as two shapes rather
+   than one below roughly that size, which is also why the favicon is the only place
+   it is allowed smaller and why that cut is worth re-drawing before launch. */
+.colophonMark {
+  display: block;
+  flex: none;
+  color: var(--tp-soft);
+}
+
+.colophon a {
+  color: var(--tp-soft);
+  text-decoration: none;
+}
+
+.colophon a:hover {
+  color: var(--tp-accent);
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------ responsive ---- */
+
+@media (max-width: 1500px) {
+  .starterList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .howFlow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .howFlow li:nth-child(2)::after {
+    content: none;
+  }
+
+  .exploreCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .reading li {
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-rule);
+  }
+
+  .reading li:last-child {
+    border-bottom: 0;
+  }
+
+  .starterList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .specimen {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resultBlock {
+    grid-column: 1;
+  }
+
+  .specimenStage {
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-rule);
+  }
+
+  .controls {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 1.5rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .page {
+    font-size: 15px;
+  }
+
+  .h1 {
+    max-width: none;
+    font-size: 2.15rem;
+    font-variation-settings: 'wdth' 86;
+  }
+
+  .heroPlate,
+  .finaleGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .exploreCards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .finaleGrid > .finaleLinks {
+    justify-content: flex-start;
+    margin-top: 1.4rem;
+  }
+
+  .heroLede {
+    padding-right: 0;
+    padding-bottom: 2rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-rule);
+  }
+
+  .heroAction {
+    padding-left: 0;
+  }
+
+  .specimen {
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .readingRow,
+  .policyCode,
+  .controls {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .stageFoot {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  .addresses {
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  .metric {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    row-gap: 0.2rem;
+  }
+
+  .metricSub {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .presets {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .step {
+    padding-right: 0;
+    padding-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-rule);
+  }
+
+  .step:not(:first-child) {
+    padding-left: 0;
+  }
+
+  .howFlow,
+  .quickStart,
+  .quickNotes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .howFlow li::after {
+    content: none !important;
+  }
+
+  .quickSteps li,
+  .quickCode,
+  .quickNotes li,
+  .exploreCard {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .phaseJourney {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .phaseRail {
+    display: flex;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .phaseRail li {
+    flex: 0 0 min(78vw, 18rem);
+  }
+
+  .phaseSelect {
+    min-height: 8rem;
+  }
+
+  .phaseDetail {
+    padding: 1.25rem 1rem 1.4rem;
+  }
+
+  .phaseDetailHead,
+  .phaseOutcomeHead {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .phaseCode {
+    font-size: 0.64rem;
+  }
+
+  .def {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .starterList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .starterItem,
+  .localRun,
+  .proto {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .assure li {
+    padding-right: 0;
+    padding-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-rule);
+  }
+
+  .assure li:not(:first-child) {
+    padding-left: 0;
+  }
+
+  .assure li:last-child {
+    border-bottom: 0;
+  }
+
+  .uiTabs li {
+    padding-right: 0;
+    padding-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-rule);
+  }
+
+  .uiTabs li:not(:first-child) {
+    padding-left: 0;
+  }
+
+  .gridTitle {
+    gap: 0.5rem;
+  }
+
+  .policyCode {
+    font-size: 0.68rem;
+  }
+
+  .block,
+  .uiAside .block {
+    font-size: 0.64rem;
+  }
+
+  .copyCommand {
+    font-size: 0.72rem;
+  }
+
+  .verdictNote {
+    min-width: 0;
+  }
+
+  /* The letterhead note is the first thing to go: on a phone the row has room for
+     the mark and the name, and "Policy as code" is restated in the headline two
+     lines below it anyway. The rule then runs out to the margin on its own. */
+  .letterheadNote {
+    display: none;
+  }
+
+  .letterheadMark {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* ------------------------------------------------------- platform setup ---- */
+
+/*
+ * The same gate on three forges. Tabs rather than three stacked blocks: the whole point is
+ * that almost nothing changes between them, and stacking invites the reader to compare
+ * line by line instead of noticing that.
+ */
+.platformSetup {
+  min-width: 0;
+  border: 1px solid var(--tp-rule);
+}
+
+.platformTabs {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.platformTab {
+  padding: 0.7rem 1.1rem;
+  border: 0;
+  border-right: 1px solid var(--tp-rule);
+  background: var(--tp-surface);
+  color: var(--tp-soft);
+  cursor: pointer;
+  font-family: var(--tp-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.platformTab[data-active='true'] {
+  background: var(--tp-paper);
+  color: var(--tp-ink);
+}
+
+.platformTab:hover {
+  color: var(--tp-accent);
+}
+
+.platformBody {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+
+.platformNote {
+  margin: 0;
+  color: var(--tp-soft);
+  font-size: 0.88rem;
+}
+
+.platformLink {
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.platformLink:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------- integrations ---- */
+
+.integrations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.integrations > li {
+  min-width: 0;
+  border-right: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.integrations > li:nth-child(2n) {
+  border-right: none;
+}
+
+.integration {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.85rem;
+  height: 100%;
+  padding: 1.4rem var(--tp-gut) 1.5rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.integrations > li:not(:first-child) .integration {
+  padding-left: var(--tp-gut);
+}
+
+.integration:hover {
+  background: var(--tp-surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+.integrationGlyph {
+  flex: none;
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.integrationBody {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.integrationTitle {
+  font-family: var(--tp-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.integrationText {
+  color: var(--tp-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .integrations {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .integrations > li {
+    border-right: none;
+  }
+
+  .integration,
+  .integrations > li:not(:first-child) .integration {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

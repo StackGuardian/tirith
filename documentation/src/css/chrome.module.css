@@ -1,0 +1,145 @@
+/**
+ * Site chrome: the navbar, and the width every page is measured against.
+ *
+ * These rules are global rather than scoped to the landing pages. The docs are part of
+ * the same site, and a navbar that changes width and typeface depending on which tab you
+ * are on reads as two sites stitched together.
+ *
+ * ONE NUMBER: 96rem. The navbar's inner row, every landing page's <main>, and the docs
+ * layout are all measured against it, so the logo, the section rules and the docs sidebar
+ * all start on the same vertical line.
+ */
+
+:global(body) {
+  --tl-paper: #fafaf8;
+  --tl-ink: #0d0d0d;
+  --tl-soft: #56575b;
+  --tl-rule: #d8d8d6;
+  --tl-accent: #1e40af;
+  --tl-display: 'Martian Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--tl-paper);
+  /* Tells the browser to draw native controls -- checkboxes, select arrows, scrollbars --
+     to match. Without it they stay light on a dark page, which is what the enquiry form's
+     checkboxes were doing. */
+  color-scheme: light;
+}
+
+/*
+ * Must target `body`, not just `[data-theme='dark']`.
+ *
+ * The light values above are declared ON body. `[data-theme='dark']` is the <html>
+ * element, so a custom property set there is only *inherited* by body -- and body's own
+ * declaration beats anything it inherits. Scoping the dark block to the same element is
+ * what makes it win; without it the navbar keeps its light background on a dark page,
+ * which is exactly what happened when these rules stopped being scoped to a body class.
+ */
+:global([data-theme='dark'] body) {
+  color-scheme: dark;
+  --tl-paper: #0d0d0d;
+  --tl-ink: #f2f2f0;
+  --tl-soft: #9c9ca3;
+  --tl-rule: #2b2b2f;
+  --tl-accent: #7c9bff;
+}
+
+/*
+ * The bar itself is full-bleed -- its rule has to reach both edges -- so the horizontal
+ * inset lives on the inner row instead.
+ */
+:global(.navbar) {
+  height: auto;
+  min-height: 0;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--tl-rule);
+  background: var(--tl-paper);
+  box-shadow: none;
+}
+
+/*
+ * Cap first, pad second -- the same order as .page and the docs wrapper. Padding on the
+ * outside instead would resolve against the viewport rather than the 96rem box, which is
+ * how the logo ended up 32px to the left of the docs sidebar it is supposed to line up
+ * with on a wide screen.
+ */
+:global(.navbar__inner) {
+  max-width: 96rem;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 4.5rem);
+}
+
+:global(.navbar__brand) {
+  margin-right: 1.5rem;
+}
+
+:global(.navbar__title) {
+  color: var(--tl-ink);
+  font-family: var(--tl-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+:global(.navbar__logo) {
+  height: 1.15rem;
+  margin-right: 0.55rem;
+}
+
+/*
+ * 1rem, matching the navbar size the site had before this chrome was applied (Infima's
+ * default). It was 0.62rem, which set the navigation as a micro-label -- consistent with
+ * the rest of the design, but under 10px and hard to read.
+ *
+ * The tracking is pulled in from 0.14em to 0.1em to compensate: Martian Mono is already a
+ * wide face, and letter-spacing tuned for a 10px label is too loose at 16px.
+ *
+ * This is the single place navbar sizing is set, and it is global rather than scoped to a
+ * page, so every route -- landing pages and docs alike -- takes it from here.
+ */
+:global(.navbar__link) {
+  color: var(--tl-soft);
+  font-family: var(--tl-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:global(.navbar__link:hover),
+:global(.navbar__link--active) {
+  color: var(--tl-accent);
+  text-decoration: none;
+}
+
+:global(.navbar .clean-btn) {
+  border-radius: 0;
+  background: none;
+  color: var(--tl-soft);
+}
+
+:global(.navbar .clean-btn:hover) {
+  background: none;
+  color: var(--tl-accent);
+}
+
+:global(.navbar-sidebar) {
+  background: var(--tl-paper);
+}
+
+/*
+ * The docs layout is full-bleed by default: the sidebar sits hard against the viewport
+ * while a landing page's content starts one --tp-pad in, so switching tabs shifted
+ * everything sideways.
+ *
+ * `html.plugin-docs` is the hook rather than a CSS-module class because the wrappers
+ * Docusaurus puts inside (docsWrapper__*, docRoot_*) carry generated hashes that change
+ * between builds. `.main-wrapper` and the plugin class are both stable API.
+ *
+ * A no-op on the landing pages: their <main> is already capped at 96rem and brings its
+ * own padding, so this cannot double up on them.
+ */
+:global(html.plugin-docs .main-wrapper) {
+  width: 100%;
+  max-width: 96rem;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 4.5rem);
+}

@@ -1,0 +1,767 @@
+/**
+ * LEARN — same world as the landing page.
+ *
+ * The tokens and page styles live here so this preview remains isolated from the
+ * existing documentation home page and global stylesheet.
+ */
+
+.page {
+  --tp-paper: #fafaf8;
+  --tp-surface: #f0f0ee;
+  --tp-sunk: #e8e8e5;
+  --tp-ink: #0d0d0d;
+  --tp-soft: #56575b;
+  --tp-faint: #6c6d72;
+  --tp-rule: #d8d8d6;
+  --tp-accent: #1e40af;
+  --tp-alarm: #a5332a;
+  --tp-alarm-wash: #f8ecea;
+  --tp-alarm-edge: #e6cdc9;
+  --tp-display: 'Martian Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --tp-text: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tp-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --tp-gut: 2.5rem;
+  --tp-pad: clamp(1.25rem, 4vw, 4.5rem);
+
+  width: 100%;
+  max-width: 96rem;
+  margin: 0 auto;
+  padding: 0;
+  background: var(--tp-paper);
+  color: var(--tp-ink);
+  font-family: var(--tp-text);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: clip;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0, 'dlig' 0;
+}
+
+:global([data-theme='dark']) .page {
+  --tp-paper: #0d0d0d;
+  --tp-surface: #17171a;
+  --tp-sunk: #202024;
+  --tp-ink: #f2f2f0;
+  --tp-soft: #9c9ca3;
+  --tp-faint: #8f8f97;
+  --tp-rule: #2b2b2f;
+  --tp-accent: #7c9bff;
+  --tp-alarm: #e59084;
+  --tp-alarm-wash: #231614;
+  --tp-alarm-edge: #452e2a;
+}
+
+.page code,
+.page pre,
+.page textarea {
+  font-family: var(--tp-mono);
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0, 'dlig' 0;
+}
+
+.page :is(h1, h2, h3) {
+  font-family: var(--tp-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------------------------ hero ---- */
+
+.hero {
+  padding: clamp(2.75rem, 5vw, 4.5rem) var(--tp-pad) 0;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.h1 {
+  max-width: 20ch;
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2.2rem, 5.4vw, 4.4rem);
+  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+.heroPlate {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  border-top: 1px solid var(--tp-rule);
+}
+
+.heroLede {
+  min-width: 0;
+  padding: 2rem var(--tp-gut) 2.5rem 0;
+  border-right: 1px solid var(--tp-rule);
+}
+
+.lede {
+  max-width: 58ch;
+  margin: 0 0 2rem;
+  color: var(--tp-ink);
+  font-size: clamp(1.02rem, 1.15vw, 1.15rem);
+  line-height: 1.6;
+}
+
+.heroNote {
+  min-width: 0;
+  padding: 2rem 0 2.5rem var(--tp-gut);
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.caveat {
+  max-width: 54ch;
+  margin: 0 0 0.8rem;
+  color: var(--tp-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.caveat strong {
+  color: var(--tp-ink);
+}
+
+.caveat code {
+  padding: 0.05em 0.3em;
+  border: 0;
+  border-radius: 0;
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  font-size: 0.95em;
+  vertical-align: baseline;
+}
+
+.heroLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.btnPrimary,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.62rem 1.05rem;
+  border: 1px solid var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+.btnPrimary {
+  background: var(--tp-accent);
+  color: #fff;
+}
+
+[data-theme='dark'] .btnPrimary {
+  color: #0d0d0d;
+}
+
+.btnPrimary:hover {
+  background: var(--tp-ink);
+  border-color: var(--tp-ink);
+  color: var(--tp-paper);
+  text-decoration: none;
+}
+
+.btnGhost {
+  border-color: var(--tp-rule);
+  color: var(--tp-ink);
+}
+
+.btnGhost:hover {
+  border-color: var(--tp-ink);
+  background: var(--tp-ink);
+  color: var(--tp-paper);
+  text-decoration: none;
+}
+
+/* The finale now offers two onward routes, and inline-flex links sit flush against
+   each other without this. */
+/* Four onward routes now, so they wrap rather than sit on one line. */
+.textLink {
+  margin-right: 1.5rem;
+}
+
+.textLink + .textLink {
+  margin-left: 0;
+}
+
+.textLink {
+  display: inline-flex;
+  gap: 0.5rem;
+  color: var(--tp-accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.textLink:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------- toc --- */
+
+.toc {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.tocItem {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border-right: 1px solid var(--tp-rule);
+  color: var(--tp-soft);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+.tocItem:last-child {
+  border-right: 0;
+}
+
+.tocItem:hover {
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  text-decoration: none;
+}
+
+.tocNum {
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- lesson ---- */
+
+.lesson,
+.playground {
+  padding: clamp(2.5rem, 4.5vw, 4rem) var(--tp-pad) clamp(2.5rem, 4vw, 3.5rem);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.lessonHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.lessonLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.lessonNum {
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.lessonTitle {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+  line-height: 1.15;
+}
+
+.teaches {
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.78rem;
+}
+
+.lessonBody {
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  gap: var(--tp-gut);
+  padding-top: 1.75rem;
+  align-items: start;
+}
+
+.lessonProse {
+  min-width: 0;
+}
+
+.prose {
+  margin: 0 0 1rem;
+  max-width: 60ch;
+  color: var(--tp-ink);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.inlineCode {
+  padding: 0.05em 0.32em;
+  border: 0;
+  border-radius: 0;
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: 0.92em;
+  vertical-align: baseline;
+}
+
+.aside {
+  margin: 0 0 1.25rem;
+  max-width: 56ch;
+  padding-top: 1rem;
+  border-top: 1px solid var(--tp-rule);
+  color: var(--tp-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.tryIt {
+  margin: 0;
+  max-width: 56ch;
+  color: var(--tp-ink);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.tryLabel {
+  display: inline-block;
+  margin-right: 0.6rem;
+  padding: 0.1rem 0.45rem;
+  background: var(--tp-accent);
+  color: #fff;
+  font-family: var(--tp-display);
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  vertical-align: 0.1em;
+}
+
+[data-theme='dark'] .tryLabel {
+  color: #0d0d0d;
+}
+
+.reset {
+  margin-top: 1.25rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--tp-rule);
+  background: none;
+  color: var(--tp-soft);
+  font-family: var(--tp-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.reset:hover {
+  border-color: var(--tp-ink);
+  background: var(--tp-ink);
+  color: var(--tp-paper);
+}
+
+.reset:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: 2px;
+}
+
+.lessonBench {
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- bench ---- */
+
+.bench {
+  border: 1px solid var(--tp-rule);
+}
+
+.benchPanes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.pane {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--tp-rule);
+}
+
+.pane:last-child {
+  border-right: 0;
+}
+
+.paneHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid var(--tp-rule);
+  background: var(--tp-surface);
+}
+
+.paneName {
+  color: var(--tp-ink);
+  font-family: var(--tp-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.paneRo {
+  color: var(--tp-faint);
+  font-size: 0.62rem;
+}
+
+/* A plain textarea, deliberately: it is the most editable, most accessible,
+   most paste-friendly text surface there is, and a syntax-highlighted overlay
+   would buy colour at the cost of all three. */
+.editor {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  padding: 0.85rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--tp-paper);
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: 0.7rem;
+  line-height: 1.65;
+  tab-size: 2;
+  resize: vertical;
+  white-space: pre;
+  overflow: auto;
+}
+
+.editor:focus {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: -2px;
+}
+
+.editor[readonly] {
+  background: var(--tp-surface);
+  color: var(--tp-soft);
+}
+
+/* ------------------------------------------------------------- the run bar -- */
+
+.runBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0.85rem;
+  border-top: 1px solid var(--tp-rule);
+  background: var(--tp-surface);
+}
+
+.runButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--tp-accent);
+  background: var(--tp-accent);
+  color: #fff;
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+[data-theme='dark'] .runButton {
+  color: #0d0d0d;
+}
+
+.runButton:hover:not(:disabled) {
+  background: var(--tp-ink);
+  border-color: var(--tp-ink);
+  color: var(--tp-paper);
+}
+
+.runButton:disabled {
+  border-color: var(--tp-rule);
+  background: none;
+  color: var(--tp-faint);
+  cursor: default;
+}
+
+.runButton:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: 2px;
+}
+
+.runHint {
+  color: var(--tp-faint);
+  font-size: 0.8rem;
+}
+
+/* Output that no longer matches the panes above it says so. */
+.term[data-stale='true'] .termBody {
+  opacity: 0.55;
+}
+
+/* --------------------------------------------------------------- terminal --- */
+
+.term {
+  border-top: 1px solid var(--tp-rule);
+  background: #121215;
+}
+
+.termBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid #26262b;
+}
+
+.termTitle {
+  color: #71717a;
+  font-family: var(--tp-display);
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.termVerdict {
+  color: #a1a1aa;
+  font-family: var(--tp-mono);
+  font-size: 0.66rem;
+}
+
+.termVerdict strong {
+  color: #f4f4f5;
+  font-weight: 700;
+}
+
+.term[data-verdict='failed'] .termVerdict strong {
+  color: #ff8074;
+}
+
+.term[data-verdict='passed'] .termVerdict strong {
+  color: #6ee7a0;
+}
+
+.term[data-verdict='skipped'] .termVerdict strong,
+.term[data-verdict='error'] .termVerdict strong {
+  color: #f5c26b;
+}
+
+.termBody {
+  margin: 0;
+  padding: 0.85rem 0.9rem 1rem;
+  max-height: 24rem;
+  overflow: auto;
+  border-radius: 0;
+  background: none;
+  color: #d4d4d8;
+  font-family: var(--tp-mono);
+  font-size: 0.66rem;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.termCmd {
+  display: block;
+  color: #f4f4f5;
+  font-weight: 600;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.termPrompt {
+  color: #6d8bff;
+  user-select: none;
+}
+
+.termLine {
+  display: block;
+}
+
+/* The pretty printer's palette. */
+.termLine[data-kind='pass'] {
+  color: #6ee7a0;
+}
+
+.termLine[data-kind='fail'] {
+  color: #ff8074;
+}
+
+.termLine[data-kind='skip'] {
+  color: #a1a1aa;
+}
+
+.termLine[data-kind='dim'] {
+  color: #8b8b93;
+}
+
+.termLine[data-kind='plain'] {
+  color: #e4e4e7;
+}
+
+/* ------------------------------------------------------------ playground ---- */
+
+.conditionList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 1.5rem;
+  margin: 1.25rem 0 1.5rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.conditionLabel {
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.conditionNames {
+  color: var(--tp-soft);
+  font-family: var(--tp-mono);
+  font-size: 0.8rem;
+}
+
+.playground .prose {
+  padding-top: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.actions .reset {
+  margin-top: 0;
+}
+
+/* ----------------------------------------------------------------- close ---- */
+
+.finale {
+  padding: clamp(2.5rem, 4.5vw, 4rem) var(--tp-pad);
+}
+
+.finaleGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: var(--tp-gut);
+  align-items: end;
+}
+
+.finaleTitle {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.1;
+}
+
+.finaleNote {
+  margin: 0.8rem 0 0;
+  max-width: 44ch;
+  color: var(--tp-soft);
+  font-size: 0.8rem;
+}
+
+.installBlock {
+  margin: 0 0 0.9rem;
+  padding: 0.75rem 0.9rem;
+  overflow-x: auto;
+  border: 1px solid var(--tp-rule);
+  border-radius: 0;
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: 0.72rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------ responsive ---- */
+
+@media (max-width: 1100px) {
+  .lessonBody {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .page {
+    font-size: 15px;
+  }
+
+  .h1 {
+    max-width: none;
+    font-size: 2rem;
+    font-variation-settings: 'wdth' 86;
+  }
+
+  .heroPlate,
+  .finaleGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .heroLede {
+    padding-right: 0;
+    padding-bottom: 2rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-rule);
+  }
+
+  .heroNote {
+    padding-left: 0;
+  }
+
+  .benchPanes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-rule);
+  }
+
+  .toc {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before {
+    transition-duration: 1ms !important;
+  }
+}

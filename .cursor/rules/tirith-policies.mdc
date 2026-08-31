@@ -1,0 +1,53 @@
+---
+description: Authoring and debugging Tirith IaC governance policies
+globs: ["**/.tirith/policies/**", "**/*.tirith.json"]
+alwaysApply: false
+---
+
+Tirith policies are JSON data, not programs. Do not invent vocabulary — both registries are
+closed, and an unknown `condition.type` reaches the engine as an ordinary failed check with no
+error attached, so it reads as a real infrastructure violation and sends someone to debug
+working infrastructure.
+
+**Condition types** — the complete list:
+`ContainedIn`, `Contains`, `Equals`, `GreaterThan`, `GreaterThanEqualTo`, `IsEmpty`,
+`IsNotEmpty`, `LessThan`, `LessThanEqualTo`, `NotContainedIn`, `NotContains`, `NotEquals`,
+`RegexMatch`. There is no `Exists` — use `IsNotEmpty` for presence.
+
+**`operation_type` by provider:**
+- `stackguardian/terraform_plan` — `action`, `attribute`, `count`, `direct_dependencies`,
+  `direct_references`, `provider_config`, `terraform_version`
+- `stackguardian/infracost` — `total_monthly_cost`, `total_hourly_cost`
+- `stackguardian/kubernetes` — `attribute`
+- `stackguardian/json` — `get_value`
+
+**Structure:** `meta` (`version`, `required_provider`, `name`) · `evaluators[]` (each with `id`,
+`provider_args`, `condition`) · `eval_expression` combining evaluator ids with `and` / `or`. An
+evaluator the expression never references cannot affect the verdict.
+
+**Verdicts:** exit `0` passed · `3` a policy failed · `1` no verdict was reached. `final_result:
+null` means every check was skipped — that is not a pass, and it usually means `provider_args`
+matched nothing.
+
+**Gotchas:** the key naming the value differs per provider — `terraform_resource_attribute`
+for terraform_plan/state, `attribute_path` plus `kubernetes_kind` for kubernetes, `key_path` for
+json. Another provider's key is ignored rather than rejected, so the evaluator reads nothing. `error_tolerance` goes inside
+`condition` — severity `0` = resource being deleted, `1` = type absent, `2` = attribute absent.
+`attribute` reads `change.after` only, so use `action` for destroys. `count(*)` is root-module
+size, not change size. `jmespath` and `jq_query` do not ship despite appearing in test fixtures.
+
+**Always evaluate before claiming a policy works.** A policy that matches nothing looks identical
+to one that works:
+
+```bash
+tirith lint .tirith/policies                                              # check the shape
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error  # check the verdict
+```
+
+**There is no `stackguardian/terraform_state` provider.** Read a state file with
+`stackguardian/json` and `key_path`.
+
+Worked examples: `src/tirith/tui/examples/`. Deeper reference, if the repository has it:
+`.claude/skills/tirith-policies/reference/` covers the schema, linting, verdicts, each provider,
+policy variables, installing Tirith, adding it to a pipeline, and debugging a red CI check.
+Online: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-reference/
