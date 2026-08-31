@@ -18,3 +18,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Docusaurus's package-manager detection writes a yarn.lock here on build.
+# This project installs with npm -- package-lock.json is the committed lockfile
+# and both docs workflows say so explicitly -- so a stray yarn.lock is a side
+# effect to discard, not a lockfile to keep.
+yarn.lock
