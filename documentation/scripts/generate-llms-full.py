@@ -71,7 +71,7 @@ def front_matter(text: str) -> tuple[dict[str, str], str]:
     if not m:
         return {}, text
     fields = dict(re.findall(r"^([a-z_]+): (.+)$", m.group(1), re.M))
-    return fields, text[m.end():]
+    return fields, text[m.end() :]
 
 
 def clean(body: str) -> str:
@@ -98,9 +98,7 @@ def clean(body: str) -> str:
 
 def main() -> int:
     missing = [p for p in ORDER if not (DOCS / p).is_file()]
-    on_disk = {
-        str(p.relative_to(DOCS)) for p in DOCS.rglob("*.md")
-    }
+    on_disk = {str(p.relative_to(DOCS)) for p in DOCS.rglob("*.md")}
     unlisted = sorted(on_disk - set(ORDER))
 
     # Fail loudly rather than silently shipping a partial corpus. A doc added without being
@@ -183,9 +181,7 @@ def main() -> int:
             " * The contents of static/llms.txt, for the landing page's agent mode. Edit\n"
             " * static/llms.txt and re-run documentation/scripts/generate-llms-full.py.\n"
             " */\n\n"
-            "export const AGENT_BRIEF = "
-            + json.dumps(llms.read_text(encoding="utf-8"))
-            + ";\n",
+            "export const AGENT_BRIEF = " + json.dumps(llms.read_text(encoding="utf-8")) + ";\n",
             encoding="utf-8",
         )
         print(f"wrote {brief.relative_to(HERE.parent)}: {llms.stat().st_size / 1024:.1f} KB")
