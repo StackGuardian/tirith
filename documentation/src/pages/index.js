@@ -1,14 +1,17 @@
-import {useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
 import TirithMark from '../components/brand/TirithMark';
+import Colophon from '../components/site/Colophon';
 import CopyField from '../components/landing/CopyField';
 import PhaseJourney from '../components/landing/PhaseJourney';
 import PlatformSetup from '../components/landing/PlatformSetup';
 import Specimen from '../components/landing/Specimen';
 import {INTEGRATIONS} from '../data/demoPhases';
+import {HIGHLIGHTS} from '../data/roadmap';
+import {AGENT_BRIEF} from '../data/agentBrief';
 import styles from './index.module.css';
 import '../css/chrome.module.css';
 
@@ -34,25 +37,77 @@ import '../css/chrome.module.css';
  * ---------------------------------------------------------------------------
  */
 
+const REPO = 'https://github.com/StackGuardian/tirith';
+
+/*
+ * The secondary call to action, and the only ask on the page that is not "install it".
+ *
+ * It sits under the roadmap strip on purpose. Asking for a star next to the install command
+ * competes with the install command; asking for one next to a list of unbuilt things is a
+ * different request, because the reader has just been shown something they might want and
+ * told it does not exist yet. Influence is the offer, and the star is the cheap version of
+ * it rather than the point.
+ *
+ * All three are ghost buttons. A secondary action that looks primary is not secondary, and
+ * the accent on this page belongs to the copy button in the hero.
+ */
+const involve = {
+  note:
+    'The order above is not fixed. A star tells us someone is watching. An issue ' +
+    'describing a plan you could not gate tells us what to build, and several items on ' +
+    'the roadmap are there because somebody wrote one.',
+  links: [
+    {label: 'Star on GitHub', href: REPO},
+    {label: 'Watch for releases', href: `${REPO}/releases`},
+    {label: 'Ask for a feature', href: `${REPO}/issues/new/choose`},
+  ],
+};
+
 const hero = {
   title: ['Stop unsafe IaC', 'before it is applied.'],
+  /*
+   * Four capabilities, each checked against the source before it was written down.
+   *
+   * "Protect sensitive values" was in an earlier draft of this sentence and is not true:
+   * the plan provider has no `sensitive`, `before_sensitive` or `after_sensitive`
+   * handling at all -- that is 09-E8, scheduled for R3. What is true, and is the stronger
+   * claim, is that the document never leaves the runner. Local mode makes no network
+   * call, and that is a published commitment rather than current behaviour.
+   *
+   * "Centralised policies" is `tirith platform check`, which does ship -- but centralised
+   * is the opposite of this project's premise, so it is phrased as the option it is. The
+   * commercial mode must not read as a condition of using the tool.
+   *
+   * The last clause is the one no competitor answers, so it is the one the sentence ends
+   * on rather than a feature any scanner could also claim.
+   */
   lede:
-    'Tirith is an open-source policy gate that checks infrastructure changes before ' +
-    'OpenTofu or Terraform applies them. It reads the plan your pipeline already ' +
-    'produces, tests ' +
-    'it against JSON policies in your repository, and blocks the job when a rule fails.',
-  cost:
-    'Run it on your laptop, in GitHub Actions, or from any pipeline that can call the ' +
-    'CLI. Policies are JSON files in your repository and evaluation happens on your own ' +
-      'runner.',
+    'Plug IaC governance into any IaC pipeline. ' +
+    'Evaluate plans with Tirith, protect sensitive values, enforce centralised policies, ' +
+    'and surface actionable results before infrastructure changes are applied. ',
+  // "On your own runner" is the lede's line now, so this no longer repeats it.
   actions: [
     {
       id: 'github',
       label: 'GitHub Actions',
-      command: `- uses: StackGuardian/tirith-iac-governance-action@v2
+      /*
+       * The plan step leads every one of these, because it is the join to the pipeline
+       * the reader already has. Without it the snippet starts mid-job and plan.json
+       * arrives from nowhere -- the one thing a reader has to wire up themselves is the
+       * one thing the block did not show. `-input=false` because CI has no terminal to
+       * prompt at, and it is the flag whose absence hangs a job rather than failing it.
+       */
+      command: `- run: |
+    terraform plan -out=tfplan -input=false
+    terraform show -json tfplan > plan.json
+
+- uses: StackGuardian/tirith-iac-governance-action@v2
   with: {fail-on-error: true}`,
       prompt: false,
-      facts: ['Apache-2.0', 'Runs on your runner', 'Comments on the pull request'],
+      // Two, specifically: pull-requests: write for the comment, checks: write for the
+      // check run. It is the only setup step the Action cannot do for you, and the one
+      // thing people get wrong on a first install.
+      facts: ['Needs two write permissions', 'Runs on your runner', 'Comments on the pull request'],
       caveat:
         'The Action runs Tirith on the GitHub runner and reports the verdict on the pull ' +
         'request. The setup below adds the policy, plan export, and permissions.',
@@ -60,13 +115,22 @@ const hero = {
     {
       id: 'gitlab',
       label: 'GitLab CI',
-      command: `tirith:
+      // Two jobs, not one: the caveat says the gate consumes the plan as an artifact, and
+      // the producing job is what makes that sentence mean something.
+      command: `plan:
+  script:
+    - terraform plan -out=tfplan -input=false
+    - terraform show -json tfplan > plan.json
+  artifacts: {paths: [plan.json]}
+
+tirith:
   image: python:3.12
+  needs: [plan]
   script:
     - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
       prompt: false,
-      facts: ['Apache-2.0', 'Runs on your runner', 'Plan as an artifact'],
+      facts: ['No wrapper to install', 'Runs on your runner', 'Plan as an artifact'],
       caveat:
         'No wrapper to install — GitLab calls the CLI directly, which is what the GitHub ' +
         'Action does underneath. The job consumes the plan as an artifact.',
@@ -74,13 +138,22 @@ const hero = {
     {
       id: 'bitbucket',
       label: 'Bitbucket',
+      // "Plan in one step, gate in the next" -- the caveat already promised two steps and
+      // the block only ever showed the second one.
       command: `- step:
+    name: Terraform plan
+    script:
+      - terraform plan -out=tfplan -input=false
+      - terraform show -json tfplan > plan.json
+    artifacts: [plan.json]
+
+- step:
     name: Policy gate
     script:
       - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
       - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
       prompt: false,
-      facts: ['Apache-2.0', 'Runs on your runner', 'Two steps'],
+      facts: ['Any Python 3.8 image', 'Runs on your runner', 'Two steps'],
       caveat:
         'Plan in one step, gate in the next, passing plan.json between them as an ' +
         'artifact. The same CLI as every other pipeline.',
@@ -88,26 +161,49 @@ const hero = {
     {
       id: 'anyci',
       label: 'Any CI',
+      // `tirith lint` is commented, not dropped: it is in development and not in 1.2.0,
+      // so a reader pasting this block would get a failing step. A comment is inert in
+      // shell and in YAML, which keeps the block runnable and still shows what is coming.
       command:
         'pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"\n' +
-        'tirith lint .tirith/policies\n' +
+        '# tirith lint .tirith/policies   # in dev, not in 1.2.0\n' +
         'tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error',
       prompt: false,
-      facts: ['Apache-2.0', 'Any runner', 'Three commands'],
+      facts: ['Gate on the exit code', 'Any runner', 'Two commands'],
       caveat:
-        'Three commands on anything that can produce a plan — Jenkins, Azure DevOps, CircleCI, ' +
-        'a cron job. Gate on the exit code, which every CI system already does.',
+        'Two commands on anything that can produce a plan — Jenkins, Azure DevOps, CircleCI, ' +
+        'a cron job. Gate on the exit code, which every CI system already does. The lint step ' +
+        'is commented out because it has not shipped yet.',
     },
     {
       id: 'cli',
       label: 'Local CLI',
+      /*
+       * The install line is here rather than in the caveat, which used to say "install
+       * Tirith first" and then not say how -- the one tab whose whole job is the bare
+       * command was the one that could not be run from what it showed.
+       *
+       * Not PyPI: `py-tirith` is unpublished and the bare `tirith` name belongs to an
+       * unrelated monitoring package, so `pip install tirith` would quietly install
+       * someone else's software. The tag is pinned for the same reason CI pins it.
+       *
+       * No `-input=false` on the plan here, unlike the CI tabs -- that flag exists so a
+       * job fails instead of waiting for a prompt, and a terminal has someone to answer.
+       *
+       * prompt:false because CopyField renders a single `$`, which reads as one command
+       * when there are four. Every other multi-line action does the same.
+       */
       command:
+        'pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"\n' +
+        'terraform plan -out=tfplan\n' +
+        'terraform show -json tfplan > plan.json\n' +
         'tirith --fail-on-error -policy-path .tirith/policies -input-path plan.json',
-      prompt: true,
-      facts: ['Apache-2.0', 'Runs on your machine', 'Works in any pipeline'],
+      prompt: false,
+      facts: ['Nothing leaves your machine', 'Runs on your machine', 'No account'],
       caveat:
-        'Install Tirith first, then point the CLI at a policy or directory of policies ' +
-        'and the document you want to check.',
+        'The same CLI every pipeline above calls. Point it at a policy or a directory of ' +
+        'policies and the document you want to check — any JSON or YAML document, not only ' +
+        'a plan.',
     },
   ],
   assurances: [
@@ -130,31 +226,59 @@ const hero = {
   ],
 };
 
+/*
+ * The announcement slot.
+ *
+ * A reusable row, not a one-off for `tirith ui`. The page's front matter is a React
+ * object rather than markdown, so nothing here changes when a release ships unless
+ * someone edits this file -- which is how the previous announcement went stale and
+ * then disappeared entirely when the page was replaced. Keeping it as one named
+ * object means the next release swaps four strings, and `null` removes the row.
+ *
+ * `tag` announces and `body` qualifies. The interface is genuinely new -- a tag
+ * reading BETA would label it without announcing anything -- but it is also a beta,
+ * and the reference page opens by saying so, so the sentence says so too rather than
+ * setting a second tag a few pixels from the first.
+ */
+const announcement = {
+  tag: 'New',
+  // No backticks: this is JSX text, not markdown, so they would render literally.
+  // The renderer sets the command in <code>.
+  command: 'tirith ui',
+  body:
+    'explores a failing evaluation down to the resource that caused it, builds policies ' +
+    'from a form, and runs a playground.',
+  to: '/docs/tirith-usage/interactive-interface/',
+  linkLabel: 'Read more',
+};
+
+/*
+ * Cut roughly in half. This is the first section after the hero, where a reader is still
+ * deciding whether to keep going, and three points that each took two sentences to make one
+ * argument were the densest thing above the fold.
+ *
+ * Nothing was dropped. Each point kept its concrete example, which is the part that carries
+ * it, and lost the clause restating the heading: "can slip through a busy pull request"
+ * after a heading reading "manual review can miss things" says the same thing twice.
+ */
 const gap = {
   num: '01',
   title: 'Why add a policy gate?',
   lede:
-    'OpenTofu and Terraform can produce a valid plan that still breaks a rule your team ' +
-    'depends on. ' +
-    'That decision needs to happen while the pipeline can still stop the change.',
+    'A valid plan can still break a rule your team depends on, and the pipeline is the ' +
+    'last place that can stop it.',
   points: [
     {
-      k: 'Manual review can miss things',
-      v:
-        'An empty owner tag, an oversized volume, or a destroy hidden inside a ' +
-        'replacement can slip through a busy pull request.',
+      k: 'Review misses things',
+      v: 'An empty owner tag, an oversized volume, a destroy hidden inside a replacement.',
     },
     {
       k: 'After apply is too late',
-      v:
-        'Finding the problem after deployment means cleanup, rollback, and another ' +
-        'round of review. The plan already contained the evidence.',
+      v: 'Cleanup and rollback, for something the plan already showed you.',
     },
     {
-      k: 'Custom scripts are hard to maintain',
-      v:
-        'Every one-off check needs its own parsing, exit codes, error messages, and ' +
-        'upkeep. Tirith keeps the rule in JSON and handles the pipeline behavior.',
+      k: 'Scripts rot',
+      v: 'Every one-off check carries its own parsing, exit codes and upkeep.',
     },
   ],
 };
@@ -207,16 +331,29 @@ const proof = {
     'a one-line fix, then move policy to the organization and publish state.',
 };
 
+/*
+ * Both halves of this section are unshipped. The pre-commit hook needs
+ * .pre-commit-hooks.yaml and the editor loop needs .vscode/tasks.json; neither file is in
+ * this repository, and both drive `tirith lint`, which is not in the released CLI either
+ * -- src/tirith/cli.py dispatches `platform` and `ui` and nothing else.
+ *
+ * Tagged rather than cut: the docs page it links to is written and the work is real. The
+ * tense moves to the conditional so the section describes a plan, not a feature.
+ */
 const anywhere = {
   num: '05',
   title: 'Catch it before you push',
+  tag: 'In dev',
+  planned: true,
   lede:
-    'The gate does not have to wait for CI. The same checks run at commit time and in ' +
-    'your editor, which is where a policy an agent just wrote should be proved.',
+    'The gate will not have to wait for CI. The same checks are being wired into a ' +
+    'pre-commit hook and an editor task, which is where a policy an agent just wrote ' +
+    'should be proved. Neither has shipped yet.',
 };
 
 const specimenPlate = {
-  num: '06',
+  // '06' until the section above it was hidden. See the restore note there before changing.
+  num: '05',
   title: 'See exactly what a policy checks',
   lede:
     'A policy answers three questions: what to read, which values to inspect, and what ' +
@@ -267,7 +404,12 @@ const finale = {
 
 /* --------------------------------------------------------------------------- */
 
-function SectionHead({num, title, lede, tag}) {
+/*
+ * `planned` picks .tagPlanned -- a dashed rule and faint ink -- over .betaTag's solid
+ * accent. The distinction is the point: BETA is shipped and rough, IN DEV is not shipped.
+ * The dashed border was already in the stylesheet for this and had never been used.
+ */
+function SectionHead({num, title, lede, tag, planned}) {
   return (
     <div className={styles.sectionHead}>
       <div className={styles.sectionLabel}>
@@ -275,15 +417,131 @@ function SectionHead({num, title, lede, tag}) {
         <Heading as="h2" className={styles.sectionTitle}>
           {title}
         </Heading>
-        {tag ? <span className={styles.betaTag}>{tag}</span> : null}
+        {tag ? (
+          <span className={planned ? styles.tagPlanned : styles.betaTag}>{tag}</span>
+        ) : null}
       </div>
       {lede ? <p className={styles.sectionLede}>{lede}</p> : null}
     </div>
   );
 }
 
+/*
+ * Agent mode.
+ *
+ * The same page, in the form a machine reads. Everything here already existed as a static
+ * file: this is llms.txt, imported through a generated module so the two cannot disagree,
+ * and shown to whoever asked for it rather than only to crawlers.
+ *
+ * It replaces the page rather than sitting under it. Someone who has switched to this view
+ * has said what they want, and leaving six sections of marketing below it would mean they
+ * still have to scroll past the thing they just opted out of.
+ *
+ * The letterhead and the toggle stay, so the switch is reversible without the back button,
+ * and the colophon stays because the footer is navigation.
+ */
+/*
+ * Copies the brief and says so for a moment. The clipboard call can reject outright in an
+ * insecure context or when permission is denied, so the fallback selects the pane's text
+ * and tells the reader to press the shortcut: failing silently on the one control this view
+ * exists for would be worse than the extra branch.
+ */
+function CopyBrief() {
+  const [state, setState] = useState('idle');
+  const timer = useRef(null);
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const copy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(AGENT_BRIEF);
+      setState('copied');
+    } catch {
+      const pane = document.getElementById('agent-brief-pane');
+      if (pane && window.getSelection) {
+        const range = document.createRange();
+        range.selectNodeContents(pane);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      setState('manual');
+    }
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setState('idle'), 2400);
+  }, []);
+
+  const label =
+    state === 'copied' ? 'Copied' : state === 'manual' ? 'Press copy' : 'Copy the brief';
+
+  return (
+    <div className={styles.agentCopy}>
+      <button type="button" className={styles.btnPrimary} onClick={copy}>
+        {label} <span aria-hidden="true">→</span>
+      </button>
+      <span className={styles.agentCopySize}>
+        {(AGENT_BRIEF.length / 1024).toFixed(1)} KB of plain text
+      </span>
+      <span className={styles.srOnly} role="status">
+        {state === 'copied' ? 'Brief copied to clipboard' : ''}
+      </span>
+    </div>
+  );
+}
+
+function AgentView() {
+  return (
+    <section className={styles.agent}>
+      <div className={styles.agentHead}>
+        <div>
+          <p className={styles.agentTitle}>Everything on this page, as text</p>
+          <p className={styles.agentNote}>
+            Written for a model rather than a reader: what Tirith is, the install command
+            that actually works, and the things answers about it usually get wrong. Paste it
+            into an assistant, or point the assistant at the URL below.
+          </p>
+        </div>
+        {/*
+         * A button, not a CopyField. CopyField's job is to show a command and copy it, which
+         * is right for a one-line install and wrong here: the brief is already shown in the
+         * pane below, and rendering it twice made the control eight kilobytes tall.
+         */}
+        <CopyBrief />
+      </div>
+
+      <pre className={styles.agentPane} id="agent-brief-pane">
+        {AGENT_BRIEF}
+      </pre>
+
+      <ul className={styles.agentLinks}>
+        <li>
+          <Link href="https://stackguardian.github.io/tirith/llms.txt">llms.txt</Link>
+          <span>this text, as a file</span>
+        </li>
+        <li>
+          <Link href="https://stackguardian.github.io/tirith/llms-full.txt">llms-full.txt</Link>
+          <span>every documentation page in one file</span>
+        </li>
+        <li>
+          <Link href="https://stackguardian.github.io/tirith/docs/tirith-usage/exit-codes.md">
+            any page, as markdown
+          </Link>
+          <span>the route plus .md, beside the HTML</span>
+        </li>
+        <li>
+          <Link href="https://github.com/StackGuardian/tirith/tree/main/.claude/skills/tirith-policies">
+            skill pack
+          </Link>
+          <span>drop-in instructions for a coding agent</span>
+        </li>
+      </ul>
+    </section>
+  );
+}
+
 export default function Home() {
   const [heroActionId, setHeroActionId] = useState(hero.actions[0].id);
+  const [agent, setAgent] = useState(false);
   const heroAction = hero.actions.find((action) => action.id === heroActionId);
 
   return (
@@ -295,6 +553,31 @@ export default function Home() {
         'policies before apply. Run it locally or in CI without an account.'
       }>
       <main className={styles.page}>
+        {/*
+         * A band between the navbar and the sheet, not the sheet's first line.
+         *
+         * It began inside <header>, above the letterhead, which read correctly on this
+         * page alone and pushed the letterhead ~66px below where it sits on learn,
+         * skills, at-scale and logo -- so moving between pages made the Tirith row jump.
+         * Out here it is the navbar's neighbour, .hero's top padding opens every page on
+         * the same line, and the strip still precedes the letterhead.
+         *
+         * The whole row is the link -- a reader aiming at "Read more" should not be able
+         * to miss and hit nothing.
+         */}
+        {announcement ? (
+          <Link className={styles.announce} to={announcement.to}>
+            <span className={styles.betaTag}>{announcement.tag}</span>
+            <span className={styles.announceBody}>
+              <code className={styles.announceCommand}>{announcement.command}</code>{' '}
+              {announcement.body}
+            </span>
+            <span className={styles.announceLink}>
+              {announcement.linkLabel} <span aria-hidden="true">→</span>
+            </span>
+          </Link>
+        ) : null}
+
         {/* ================= HERO ================= */}
         <header className={styles.hero}>
           {/*
@@ -311,232 +594,308 @@ export default function Home() {
             <TirithMark className={styles.letterheadMark} size={40} />
             <span className={styles.letterheadName}>Tirith</span>
             <span className={styles.letterheadRule} aria-hidden="true" />
-            <span className={styles.letterheadNote}>Policy as code · Apache-2.0</span>
-          </div>
-
-          <Heading as="h1" className={styles.h1}>
-            {hero.title[0]}
-            <span className={styles.h1Dim}>{hero.title[1]}</span>
-          </Heading>
-
-          <div className={styles.heroPlate}>
-            <div className={styles.heroLede}>
-              <p className={styles.lede}>{hero.lede}</p>
-              <p className={styles.cost}>{hero.cost}</p>
-              <div className={styles.heroLinks}>
-                <a className={styles.btnPrimary} href="#setup">
-                  Add the gate <span aria-hidden="true">→</span>
-                </a>
-                <Link
-                  className={styles.btnGhost}
-                  to="/docs/tirith-installation/quick-installation/">
-                  Other installation paths <span aria-hidden="true">→</span>
-                </Link>
-              </div>
-            </div>
-
-            <div className={styles.heroAction}>
-              <div className={styles.actionTabs} aria-label="Choose how to run Tirith">
-                {hero.actions.map((action) => (
-                  <button
-                    type="button"
-                    key={action.id}
-                    className={styles.actionTab}
-                    data-active={action.id === heroAction.id ? 'true' : undefined}
-                    aria-pressed={action.id === heroAction.id}
-                    onClick={() => setHeroActionId(action.id)}>
-                    {action.label}
-                  </button>
-                ))}
-              </div>
-              <CopyField
-                key={heroAction.id}
-                command={heroAction.command}
-                label={`hero-${heroAction.id}`}
-                prompt={heroAction.prompt}
-              />
-              <ul className={styles.facts}>
-                {heroAction.facts.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </ul>
-              <p className={styles.caveat}>{heroAction.caveat}</p>
+            <span className={styles.letterheadNote}>Open-source IaC governance · Apache-2.0</span>
+            {/*
+             * Two buttons rather than a checkbox or a switch: the states are named, so
+             * nobody has to work out which way "on" points. aria-pressed carries the state
+             * to a screen reader, which a pair of plain buttons otherwise would not.
+             */}
+            <div className={styles.modeToggle} role="group" aria-label="View this page as">
+              <button
+                type="button"
+                className={styles.modeButton}
+                data-active={!agent ? 'true' : undefined}
+                aria-pressed={!agent}
+                onClick={() => setAgent(false)}>
+                Human
+              </button>
+              <button
+                type="button"
+                className={styles.modeButton}
+                data-active={agent ? 'true' : undefined}
+                aria-pressed={agent}
+                onClick={() => setAgent(true)}>
+                Agent
+              </button>
             </div>
           </div>
 
-          {/* What it costs you, before anything asks the visitor to read further. */}
-          <ul className={styles.assure}>
-            {hero.assurances.map((a) => (
-              <li key={a.k}>
-                <span className={styles.assureK}>{a.k}</span>
-                <span className={styles.assureV}>{a.v}</span>
-              </li>
-            ))}
-          </ul>
+          {agent ? null : (
+            <>
+            <Heading as="h1" className={styles.h1}>
+              {hero.title[0]}
+              <span className={styles.h1Dim}>{hero.title[1]}</span>
+            </Heading>
+
+            {/*
+             * Install first, prose second -- in the DOM, not just visually. Reordering with
+             * CSS `order` would leave the tab sequence running right-to-left across the
+             * plate: a keyboard user would reach the copy button before the tabs that decide
+             * what it copies. Both columns hold controls, so source order has to match.
+             */}
+            <div className={styles.heroPlate}>
+              <div className={styles.heroAction}>
+                <div className={styles.actionTabs} aria-label="Choose how to run Tirith">
+                  {hero.actions.map((action) => (
+                    <button
+                      type="button"
+                      key={action.id}
+                      className={styles.actionTab}
+                      data-active={action.id === heroAction.id ? 'true' : undefined}
+                      aria-pressed={action.id === heroAction.id}
+                      onClick={() => setHeroActionId(action.id)}>
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
+                <CopyField
+                  key={heroAction.id}
+                  command={heroAction.command}
+                  label={`hero-${heroAction.id}`}
+                  prompt={heroAction.prompt}
+                />
+                <ul className={styles.facts}>
+                  {heroAction.facts.map((f) => (
+                    <li key={f}>{f}</li>
+                  ))}
+                </ul>
+                <p className={styles.caveat}>{heroAction.caveat}</p>
+              </div>
+
+              <div className={styles.heroLede}>
+                <p className={styles.lede}>{hero.lede}</p>
+                <p className={styles.cost}>{hero.cost}</p>
+                <div className={styles.heroLinks}>
+                  <a className={styles.btnPrimary} href="#setup">
+                    Add the gate <span aria-hidden="true">→</span>
+                  </a>
+                  <Link
+                    className={styles.btnGhost}
+                    to="/docs/tirith-installation/quick-installation/">
+                    Other installation paths <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* What it costs you, before anything asks the visitor to read further. */}
+            <ul className={styles.assure}>
+              {hero.assurances.map((a) => (
+                <li key={a.k}>
+                  <span className={styles.assureK}>{a.k}</span>
+                  <span className={styles.assureV}>{a.v}</span>
+                </li>
+              ))}
+            </ul>
+            </>
+          )}
         </header>
 
-        {/* ================= 01 GAP ================= */}
-        <section className={styles.section}>
-          <SectionHead {...gap} />
-          <dl className={styles.defs}>
-            {gap.points.map((p) => (
-              <div className={styles.def} key={p.k}>
-                <dt>{p.k}</dt>
-                <dd>{p.v}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+        {agent ? (
+          <AgentView />
+        ) : (
+          <>
+          {/* ================= 01 GAP ================= */}
+          <section className={styles.section}>
+            <SectionHead {...gap} />
+            <dl className={styles.defs}>
+              {gap.points.map((p) => (
+                <div className={styles.def} key={p.k}>
+                  <dt>{p.k}</dt>
+                  <dd>{p.v}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
 
-        {/* ================= 02 HOW IT WORKS ================= */}
-        <section className={styles.section}>
-          <SectionHead {...how} />
-          <ol className={styles.howFlow}>
-            {how.steps.map((step) => (
-              <li className={step.product ? styles.howProduct : undefined} key={step.n}>
-                <span className={styles.howNum}>{step.n}</span>
-                <h3>{step.k}</h3>
-                <p>{step.v}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* ================= 03 QUICK START ================= */}
-        <section className={styles.section} id="setup">
-          <SectionHead {...setup} />
-          <div className={styles.quickStart}>
-            <ol className={styles.quickSteps}>
-              {setup.steps.map((step) => (
-                <li key={step.n}>
-                  <span className={styles.stepNum}>{step.n}</span>
-                  <div>
-                    <h3>{step.k}</h3>
-                    <p>{step.v}</p>
-                  </div>
+          {/* ================= 02 HOW IT WORKS ================= */}
+          <section className={styles.section}>
+            <SectionHead {...how} />
+            <ol className={styles.howFlow}>
+              {how.steps.map((step) => (
+                <li className={step.product ? styles.howProduct : undefined} key={step.n}>
+                  <span className={styles.howNum}>{step.n}</span>
+                  <h3>{step.k}</h3>
+                  <p>{step.v}</p>
                 </li>
               ))}
             </ol>
-            <div className={styles.quickCode}>
-              <PlatformSetup />
+          </section>
+
+          {/* ================= 03 QUICK START ================= */}
+          <section className={styles.section} id="setup">
+            <SectionHead {...setup} />
+            <div className={styles.quickStart}>
+              <ol className={styles.quickSteps}>
+                {setup.steps.map((step) => (
+                  <li key={step.n}>
+                    <span className={styles.stepNum}>{step.n}</span>
+                    <div>
+                      <h3>{step.k}</h3>
+                      <p>{step.v}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <div className={styles.quickCode}>
+                <PlatformSetup />
+              </div>
             </div>
-          </div>
-          <ul className={styles.quickNotes}>
-            {setup.notes.map((note) => (
-              <li key={note}>{note}</li>
-            ))}
-          </ul>
-          <div className={styles.quickLinks}>
-            <Link to="/docs/tirith-installation/quick-installation/">
-              Full installation guide <span aria-hidden="true">→</span>
-            </Link>
-            <Link to="/learn/">
-              Start with a worked policy <span aria-hidden="true">→</span>
-            </Link>
-          </div>
-        </section>
-
-        {/* ================= 04 REAL PROOF ================= */}
-        <section className={styles.section}>
-          <SectionHead {...proof} />
-          <PhaseJourney />
-        </section>
-
-        {/* ================= 05 RUNS ANYWHERE ================= */}
-        <section className={styles.section}>
-          <SectionHead {...anywhere} />
-          <ul className={styles.integrations}>
-            {INTEGRATIONS.map((item) => (
-              <li key={item.title}>
-                <Link className={styles.integration} to={item.to}>
-                  <span className={styles.integrationGlyph} aria-hidden="true">
-                    {item.glyph}
-                  </span>
-                  <span className={styles.integrationBody}>
-                    <span className={styles.integrationTitle}>{item.title}</span>
-                    <span className={styles.integrationText}>{item.body}</span>
-                  </span>
-                  <span className={styles.cardArrow} aria-hidden="true">→</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* ================= 05 THE SPECIMEN ================= */}
-        <section className={styles.section}>
-          <SectionHead {...specimenPlate} />
-          <Specimen />
-        </section>
-
-        {/* ================= CLOSE ================= */}
-        <section className={styles.finale}>
-          <div className={styles.finaleGrid}>
-            <div>
-              <Heading as="h2" className={styles.finaleTitle}>
-                {finale.title}
-              </Heading>
-              <p className={styles.finaleNote}>{finale.note}</p>
-            </div>
-            <div className={styles.finaleLinks}>
-              {finale.links.map((l, index) => (
-                <Link
-                  className={index === 0 ? styles.btnPrimary : styles.btnGhost}
-                  key={l.to}
-                  to={l.to}>
-                  {l.label} <span aria-hidden="true">→</span>
-                </Link>
+            <ul className={styles.quickNotes}>
+              {setup.notes.map((note) => (
+                <li key={note}>{note}</li>
               ))}
+            </ul>
+            <div className={styles.quickLinks}>
+              <Link to="/docs/tirith-installation/quick-installation/">
+                Full installation guide <span aria-hidden="true">→</span>
+              </Link>
+              <Link to="/learn/">
+                Start with a worked policy <span aria-hidden="true">→</span>
+              </Link>
             </div>
-          </div>
-          <p className={styles.routeLabel}>Explore the focused guides</p>
-          <ul className={styles.exploreCards}>
-            {explore.items.map((item) => (
-              <li key={item.title}>
-                <Link className={styles.exploreCard} to={item.to}>
-                  <span className={styles.exploreGlyph} aria-hidden="true">
-                    {item.glyph}
-                  </span>
-                  <span className={styles.exploreBody}>
-                    <span className={styles.exploreTitle}>
-                      {item.title}
-                      {item.tag ? <span className={styles.betaTag}>{item.tag}</span> : null}
-                    </span>
-                    <span className={styles.exploreText}>{item.body}</span>
-                  </span>
-                  <span className={styles.cardArrow} aria-hidden="true">→</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+          </section>
 
-        <footer className={styles.colophon}>
-          <span className={styles.colophonBrand}>
-            <TirithMark className={styles.colophonMark} size={16} />
-            Tirith · StackGuardian
-          </span>
-          <span>Apache-2.0</span>
+          {/* ================= 04 REAL PROOF ================= */}
+          <section className={styles.section}>
+            <SectionHead {...proof} />
+            <PhaseJourney />
+          </section>
+
           {/*
-           * The only route to the logo story, deliberately. It is background for
-           * someone who has finished the page, not a step towards installing
-           * anything, so it stays out of the navbar.
+           * ================= RUNS ANYWHERE: HIDDEN =================
+           *
+           * Removed for now. Both halves of it were unshipped anyway: the pre-commit hook
+           * needs .pre-commit-hooks.yaml and the editor loop needs .vscode/tasks.json, and
+           * both drive `tirith lint`, none of which are in the released package. It was
+           * already tagged In dev for that reason, so the page lost a tag rather than a
+           * feature.
+           *
+           * A `false` guard rather than a comment: JSX children cannot take a line comment,
+           * and the guard keeps the markup parsed so it cannot rot while switched off.
+           *
+           * TO RESTORE: change `false` to `true`, and put `specimenPlate.num` back to '06'.
+           * It was moved to '05' to close the gap this left, because the section numerals are
+           * set large on this page and 04 followed by 06 reads as a fault rather than a
+           * choice. `anywhere` and the INTEGRATIONS import are both still in place.
            */}
-          <span>
-            <Link to="/at-scale/">Tirith at scale</Link>
-          </span>
-          <span>
-            <Link to="/logo/">The mark</Link>
-          </span>
-          <span>
-            <Link href="https://github.com/StackGuardian/tirith">Source</Link>
-          </span>
-          <span>
-            <Link href="https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ">
-              Slack
-            </Link>
-          </span>
-        </footer>
+          {false && (
+            <section className={styles.section}>
+              <SectionHead {...anywhere} />
+              <ul className={styles.integrations}>
+                {INTEGRATIONS.map((item) => (
+                  <li key={item.title}>
+                    <Link className={styles.integration} to={item.to}>
+                      <span className={styles.integrationGlyph} aria-hidden="true">
+                        {item.glyph}
+                      </span>
+                      <span className={styles.integrationBody}>
+                        <span className={styles.integrationTitle}>
+                          {item.title}
+                          {item.inDev ? (
+                            <span className={styles.tagPlanned}>In dev</span>
+                          ) : null}
+                        </span>
+                        <span className={styles.integrationText}>{item.body}</span>
+                      </span>
+                      <span className={styles.cardArrow} aria-hidden="true">→</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* ================= 05 THE SPECIMEN ================= */}
+          <section className={styles.section}>
+            <SectionHead {...specimenPlate} />
+            <Specimen />
+          </section>
+
+          {/* ================= CLOSE ================= */}
+          <section className={styles.finale}>
+            <div className={styles.finaleGrid}>
+              <div>
+                <Heading as="h2" className={styles.finaleTitle}>
+                  {finale.title}
+                </Heading>
+                <p className={styles.finaleNote}>{finale.note}</p>
+              </div>
+              <div className={styles.finaleLinks}>
+                {finale.links.map((l, index) => (
+                  <Link
+                    className={index === 0 ? styles.btnPrimary : styles.btnGhost}
+                    key={l.to}
+                    to={l.to}>
+                    {l.label} <span aria-hidden="true">→</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <p className={styles.routeLabel}>Explore the focused guides</p>
+            <ul className={styles.exploreCards}>
+              {explore.items.map((item) => (
+                <li key={item.title}>
+                  <Link className={styles.exploreCard} to={item.to}>
+                    <span className={styles.exploreGlyph} aria-hidden="true">
+                      {item.glyph}
+                    </span>
+                    <span className={styles.exploreBody}>
+                      <span className={styles.exploreTitle}>
+                        {item.title}
+                        {item.tag ? <span className={styles.betaTag}>{item.tag}</span> : null}
+                      </span>
+                      <span className={styles.exploreText}>{item.body}</span>
+                    </span>
+                    <span className={styles.cardArrow} aria-hidden="true">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            {/*
+             * Four lines and a link, inside the existing finale rather than as a section 07.
+             * The home page's job is to say that work is happening and where to read about
+             * it; reproducing the roadmap here would push the shipped material further down
+             * the page to describe things nobody can use yet.
+             *
+             * Every row is tagged, and the tags are the same two the roadmap page uses.
+             */}
+            <p className={styles.routeLabel}>Being built next</p>
+            <ul className={styles.aheadStrip}>
+              {HIGHLIGHTS.map((h) => (
+                <li key={h.title}>
+                  <span className={styles.aheadHead}>
+                    <span className={styles.aheadTitle}>{h.title}</span>
+                    <span className={h.status === 'inDev' ? styles.betaTag : styles.tagPlanned}>
+                      {h.status === 'inDev' ? 'In dev' : 'Planned'}
+                    </span>
+                  </span>
+                  <span className={styles.aheadBody}>{h.body}</span>
+                </li>
+              ))}
+            </ul>
+            <p className={styles.aheadMore}>
+              <Link to="/roadmap/">
+                The whole roadmap, and roughly when <span aria-hidden="true">→</span>
+              </Link>
+            </p>
+
+            <div className={styles.involve}>
+              <p className={styles.involveNote}>{involve.note}</p>
+              <div className={styles.involveLinks}>
+                {involve.links.map((l) => (
+                  <Link className={styles.btnGhost} key={l.label} href={l.href}>
+                    {l.label} <span aria-hidden="true">→</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+          </>
+        )}
+
+        <Colophon styles={styles} />
       </main>
     </Layout>
   );

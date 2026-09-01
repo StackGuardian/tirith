@@ -85,12 +85,18 @@
 }
 
 /*
- * 1rem, matching the navbar size the site had before this chrome was applied (Infima's
- * default). It was 0.62rem, which set the navigation as a micro-label -- consistent with
- * the rest of the design, but under 10px and hard to read.
+ * 0.8rem. This setting has swung twice: 0.62rem set the navigation as a micro-label,
+ * consistent with the rest of the design but under 10px and hard to read; 1rem fixed the
+ * legibility and overshot. Nominal size understates how large these items render --
+ * Martian Mono is a wide face, and uppercase at weight 600 with open tracking reads a
+ * size larger again -- so 16px navigation competed with the page's own headings.
  *
- * The tracking is pulled in from 0.14em to 0.1em to compensate: Martian Mono is already a
- * wide face, and letter-spacing tuned for a 10px label is too loose at 16px.
+ * 0.8rem is 12.8px, above the legibility floor that ruled out 0.62rem and back to the
+ * weight a navigation bar should carry.
+ *
+ * Tracking moves the other way, 0.1em to 0.12em: letter-spacing is relative to the font
+ * size, so holding it constant tightens uppercase as the type shrinks, which is where
+ * uppercase needs it least.
  *
  * This is the single place navbar sizing is set, and it is global rather than scoped to a
  * page, so every route -- landing pages and docs alike -- takes it from here.
@@ -98,9 +104,9 @@
 :global(.navbar__link) {
   color: var(--tl-soft);
   font-family: var(--tl-display);
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 

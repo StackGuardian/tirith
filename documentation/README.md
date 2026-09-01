@@ -12,12 +12,18 @@ The documentation site and the marketing pages, built with
 | --- | --- | --- |
 | `/tirith/` | Landing | `src/pages/index.js` |
 | `/tirith/learn/` | Six lessons and a browser playground | `src/pages/learn.js` |
-| `/tirith/skills/` | Tirith with a coding agent | `src/pages/skills.js` |
+| ~~`/tirith/skills/`~~ | Tirith with a coding agent — **hidden**, see below | `src/pages/skills.js` |
 | `/tirith/docs/…` | The documentation | `docs/`, ordered by `sidebars.js` |
 | `/tirith/at-scale/` | Many repositories, one policy set — the commercial page | `src/pages/at-scale.js` |
-| `/tirith/logo/` | The mark, and where it came from | `src/pages/logo.js` |
+| `/tirith/origins/` | Where the name and the mark come from | `src/pages/origins.js` |
 
-`/logo/` is reachable only from the landing page's footer, by design — it is background for a
+**Skills is hidden, not removed.** `src/pages/skills.js` and `src/pages/skills.module.css`
+are untouched; the route is kept out of the build by the `pages.exclude` entry in
+`docusaurus.config.js`, and the navbar item and the At scale colophon link are commented out
+beside their originals. To restore the page: drop `'skills.js'` from that exclude list and
+uncomment those two links.
+
+`/origins/` is reachable only from the landing page's footer, by design — it is background for a
 reader who has finished the page, not a step towards installing anything, so it is deliberately
 absent from the navbar.
 
@@ -76,7 +82,7 @@ regenerate the social card, and the mark's known small-size limitation.
 must not change.
 
 The idea behind the mark — the city the name comes from, the four moves that reduce it to a
-plan, and why opposed gates are the product — is the `/logo/` page. Its geometry comes from
+plan, and why opposed gates are the product — is the `/origins/` page. Its geometry comes from
 `src/data/logoStory.js`.
 
 The mark is Tirith's own, not StackGuardian's. This is an Apache-2.0 project that works with no

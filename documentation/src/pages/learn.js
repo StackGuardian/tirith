@@ -3,6 +3,8 @@ import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
+import TirithMark from '../components/brand/TirithMark';
+import Colophon from '../components/site/Colophon';
 import Bench from '../components/learn/Bench';
 import {INPUT_DOC, LESSONS, PLAYGROUND_START} from '../data/lessons';
 import {CONDITION_NAMES} from '../data/tirithLite';
@@ -158,6 +160,19 @@ export default function Learn() {
       description="A guided introduction to Tirith policy syntax, with a playground that evaluates in the browser.">
       <main className={styles.page}>
         <header className={styles.hero}>
+          {/*
+           * The letterhead, as on every other page in this set. Learn was the one
+           * route that opened straight onto its headline, so it read as a page from
+           * a different site -- the navbar above it is shared, which made the missing
+           * row look like a rendering fault rather than a design choice.
+           */}
+          <div className={styles.letterhead}>
+            <TirithMark className={styles.letterheadMark} size={40} />
+            <span className={styles.letterheadName}>Tirith</span>
+            <span className={styles.letterheadRule} aria-hidden="true" />
+            <span className={styles.letterheadNote}>Six lessons and a playground</span>
+          </div>
+
           <Heading as="h1" className={styles.h1}>
             Learn to write a Tirith policy.
           </Heading>
@@ -253,6 +268,8 @@ export default function Learn() {
             </div>
           </div>
         </section>
+
+        <Colophon styles={styles} />
       </main>
     </Layout>
   );

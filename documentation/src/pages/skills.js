@@ -30,12 +30,11 @@ const ROUTES = {
 const hero = {
   eyebrow: 'Tirith in your coding agent',
   title: 'Your agent already writes policies.',
-  dim: 'Give it the real vocabulary.',
+  dim: 'Give it the Tirith vocabulary.',
   lede:
     'Ask any agent for a guardrail and it writes plausible JSON against a schema it is ' +
     'guessing at. The Tirith skills give it the actual condition list, the argument key each ' +
     'provider reads, and the commands to check its own work before handing anything back.',
-  facts: ['Apache-2.0', 'Nothing to install', 'Runs on your machine', 'Any agent'],
 };
 
 /*
@@ -206,12 +205,6 @@ export default function Skills() {
                   What it covers <span aria-hidden="true">→</span>
                 </a>
               </div>
-            </div>
-            <div className={styles.heroAside}>
-              <span className={styles.fieldLabel}>What it costs you</span>
-              <ul className={styles.facts}>
-                {hero.facts.map((f) => <li key={f}>{f}</li>)}
-              </ul>
             </div>
           </div>
         </header>

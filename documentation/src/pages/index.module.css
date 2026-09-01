@@ -137,6 +137,102 @@
 }
 
 /*
+ * The announcement row.
+ *
+ * A ruled line, not a card: no radius, no shadow, no fill, and no third hue. The
+ * page states those rules for itself and a banner is exactly the element that
+ * usually breaks them -- a tinted rounded box with its own accent is what every
+ * other site puts here, and it would be the only such object on the sheet.
+ *
+ * The rule sits underneath rather than around, so the strip reads as a masthead
+ * line above the sheet rather than a panel resting on top of it.
+ *
+ * It sits outside <header>, so it carries its own inset -- `var(--tp-pad)`, the same
+ * one .hero uses, which is what keeps its text on the sheet's left margin. The border
+ * is on the element and the padding inside it, so the rule reaches both edges of the
+ * 96rem measure exactly as .hero's does. No bottom margin: .hero's top padding is the
+ * gap to the letterhead, and adding one here would open the page lower than every
+ * other page again.
+ *
+ * `align-items: baseline` and not `center`: the tag, the command and the sentence
+ * are three different sizes, and centring them lines up their boxes while leaving
+ * the type they contain visibly astray.
+ */
+.announce {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.85rem var(--tp-pad);
+  border-bottom: 1px solid var(--tp-rule);
+  color: var(--tp-soft);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* The row is the link, so the underline the theme would add belongs to nothing. */
+.announce:hover {
+  color: var(--tp-ink);
+  text-decoration: none;
+}
+
+.announce .betaTag {
+  flex: none;
+  /* Baseline alignment drops a bordered inline box by its own padding; this puts the
+     tag's cap-height back on the sentence's baseline instead of below it. */
+  transform: translateY(0.1em);
+}
+
+.announceBody {
+  flex: 1 1 auto;
+  text-wrap: pretty;
+}
+
+.announceCommand {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: 0.8rem;
+}
+
+/*
+ * Hard right, on its own, so the eye can find the action without reading the
+ * sentence first -- the same job .letterheadNote does on the row below.
+ */
+.announceLink {
+  flex: none;
+  color: var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/*
+ * Under about 40rem the three parts stop fitting on one line. Wrapping is the whole
+ * fix: the tag keeps the first line with the start of the sentence, and the link
+ * falls to the end of the block rather than being pushed off the right edge.
+ */
+@media (max-width: 40rem) {
+  .announce {
+    flex-wrap: wrap;
+    gap: 0.5rem 0.6rem;
+  }
+
+  .announceBody {
+    flex: 1 1 100%;
+    order: 3;
+  }
+
+  .announceLink {
+    margin-left: auto;
+  }
+}
+
+/*
  * The letterhead row: mark, name, rule, note. The rule is a flexible spacer that
  * draws itself, so the note sits hard against the right edge at every width and the
  * row reads as one ruled line rather than three floating items.
@@ -203,10 +299,19 @@
   border-top: 1px solid var(--tp-rule);
 }
 
+/*
+ * The install column is on the left now, so the seam moves with it: the vertical rule is
+ * always the left column's border-right, never a border-left on the right column, so the
+ * two can never both draw one.
+ *
+ * The 1.05fr slot stays where it is rather than following the prose across. Code cannot
+ * reflow -- `tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`
+ * is as wide as it is -- and prose can, so the wider half now belongs to the half that
+ * cannot make do with a narrower one.
+ */
 .heroLede {
   min-width: 0;
-  padding: 2rem var(--tp-gut) 2.75rem 0;
-  border-right: 1px solid var(--tp-rule);
+  padding: 2rem 0 2.75rem var(--tp-gut);
 }
 
 .lede {
@@ -238,7 +343,8 @@
 
 .heroAction {
   min-width: 0;
-  padding: 2rem 0 2.75rem var(--tp-gut);
+  padding: 2rem var(--tp-gut) 2.75rem 0;
+  border-right: 1px solid var(--tp-rule);
 }
 
 .actionTabs {
@@ -382,11 +488,22 @@
   user-select: none;
 }
 
+/*
+ * A chip at the top, not a slab down the side.
+ *
+ * This was `align-self: stretch`, which was invisible while every command was one line: the
+ * button was the height of one line and read as part of the field. The snippets are now
+ * five lines, so it stretched to 132px and became the largest solid object on the page, a
+ * bright wedge jammed into the left column in dark mode.
+ *
+ * The vertical padding matches .copyCommand's, so the chip sits on the first line of the
+ * command whatever the command's height.
+ */
 .copyButton {
   flex: none;
-  align-self: stretch;
+  align-self: flex-start;
   min-width: 5.5rem;
-  padding: 0 0.9rem;
+  padding: 0.7rem 0.9rem;
   border: 0;
   border-left: 1px solid var(--tp-rule);
   background: var(--tp-ink);
@@ -402,6 +519,15 @@
 .copyField .copyButton {
   background: var(--tp-accent);
   color: #fff;
+}
+
+/*
+ * White on the accent is correct in light, where the accent is #1e40af, and wrong in dark,
+ * where it is #7c9bff: white on that is about 2.3:1 and fails AA on the one control the
+ * hero exists to get clicked. Dark ink instead, the same swap .btnPrimary already makes.
+ */
+:global([data-theme='dark']) .copyField .copyButton {
+  color: #0d0d0d;
 }
 
 .copyButton:hover {
@@ -1270,6 +1396,240 @@
 .tagPlanned {
   border-style: dashed;
   color: var(--tp-faint);
+}
+
+/* The card titles put the tag on the same line as the name, so it needs the gap the
+   section heads get from their flex row. */
+.integrationTitle .tagPlanned {
+  margin-left: 0.5rem;
+  vertical-align: 0.1em;
+}
+
+/*
+ * The "being built next" strip in the finale. Four ruled rows, the same treatment the
+ * explore cards above get, so it reads as one more shelf on the last screen rather than a
+ * new section competing with the shipped material higher up the page.
+ */
+.aheadStrip {
+  display: grid;
+  gap: 0;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.aheadStrip li {
+  display: grid;
+  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+  gap: 0.35rem var(--tp-gut);
+  align-items: baseline;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.aheadHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.aheadTitle {
+  font-family: var(--tp-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.aheadBody {
+  color: var(--tp-soft);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.aheadMore {
+  margin: 1rem 0 0;
+  font-family: var(--tp-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* One column below the breakpoint: 22rem of title plus prose does not fit on a phone. */
+@media (max-width: 48rem) {
+  .aheadStrip li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/*
+ * The secondary call to action, closing the finale. Ruled off from the roadmap strip above
+ * it so it reads as a request rather than one more shelf of links, and set at the strip's
+ * own measure so the two align on the left edge.
+ */
+.involve {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: clamp(1.5rem, 3vw, 2rem);
+  border-top: 1px solid var(--tp-rule);
+}
+
+.involveNote {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--tp-soft);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.involveLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* ------------------------------------------------------- agent mode --- */
+
+/*
+ * The Human / Agent switch, sitting at the end of the letterhead row. Ruled, square, two
+ * hues, like everything else: the active state is ink on paper reversed, not a colour.
+ */
+.modeToggle {
+  display: flex;
+  flex: none;
+  margin-left: 0.9rem;
+  border: 1px solid var(--tp-rule);
+}
+
+.modeButton {
+  padding: 0.3rem 0.6rem;
+  border: 0;
+  background: none;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.modeButton + .modeButton {
+  border-left: 1px solid var(--tp-rule);
+}
+
+.modeButton[data-active='true'] {
+  background: var(--tp-ink);
+  color: var(--tp-paper);
+}
+
+.modeButton:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: -3px;
+}
+
+.agent {
+  padding: clamp(2rem, 4vw, 3rem) var(--tp-pad) clamp(3rem, 5vw, 4rem);
+}
+
+/*
+ * The copy control sits beside the explanation rather than above the pane, so the thing a
+ * reader came here to do is reachable without scrolling the 8KB of text first.
+ */
+.agentHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  gap: var(--tp-gut);
+  align-items: start;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.agentCopy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+}
+
+/* The size, stated. Eight kilobytes is worth knowing before you paste it somewhere with a
+   context window. */
+.agentCopySize {
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
+.agentTitle {
+  margin: 0;
+  font-family: var(--tp-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.agentNote {
+  max-width: 62ch;
+  margin: 0.6rem 0 0;
+  color: var(--tp-soft);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/*
+ * The text itself, wrapped rather than scrolled sideways. It is prose in a mono face, not
+ * code: a horizontal scrollbar on an 8KB document would be unreadable.
+ */
+.agentPane {
+  max-height: 34rem;
+  margin: 1.5rem 0 0;
+  padding: 1.25rem;
+  overflow-y: auto;
+  border: 1px solid var(--tp-rule);
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  font-family: var(--tp-mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+.agentLinks {
+  display: grid;
+  gap: 0;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.agentLinks li {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+  gap: 0.35rem 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--tp-rule);
+  font-size: 0.85rem;
+}
+
+.agentLinks span {
+  color: var(--tp-soft);
+}
+
+@media (max-width: 48rem) {
+  .agentHead,
+  .agentLinks li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .modeToggle {
+    margin-left: 0;
+  }
 }
 
 /* ------------------------------------------------------------- 01 the gap --- */
@@ -2592,14 +2952,14 @@
     margin-top: 1.4rem;
   }
 
-  .heroLede {
+  .heroAction {
     padding-right: 0;
     padding-bottom: 2rem;
     border-right: 0;
     border-bottom: 1px solid var(--tp-rule);
   }
 
-  .heroAction {
+  .heroLede {
     padding-left: 0;
   }
 

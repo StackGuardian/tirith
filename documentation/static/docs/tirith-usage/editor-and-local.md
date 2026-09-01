@@ -1,19 +1,9 @@
----
-id: editor-and-local
-title: In your editor
-sidebar_label: In your editor (in dev)
-description: In development — VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy. The lint half is not in the released package yet.
-keywords:
-  - tirith
-  - vscode
-  - pre-commit
-  - local
-  - agent
-site_name: Tirith
-slug: editor-and-local/
----
+# In your editor
 
-:::warning In development — the lint half has not shipped
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/editor-and-local/
+Summary: In development — VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy. The lint half is not in the released package yet.
+
+[WARNING] In development — the lint half has not shipped
 
 `tirith lint`, the pre-commit hook and the VS Code tasks below are **in development**. They are
 not in the released package: `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"`
@@ -27,7 +17,6 @@ installed version.
 This page is published now so the shape is reviewable. Follow
 [the repository](https://github.com/StackGuardian/tirith) for the release, or
 [tell us what the loop is missing](https://github.com/StackGuardian/tirith/issues/new/choose).
-:::
 
 CI is the last place a policy should fail. This page is about the loop before that — running
 Tirith on your own machine, while the code is still being written.
@@ -57,7 +46,7 @@ evaluate task works today.
 
 Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 
-```json title=".vscode/tasks.json"
+```json
 {
   "version": "2.0.0",
   "tasks": [
@@ -90,7 +79,7 @@ the interactive explorer — is
 **In development.** The `tirith-lint` hook id is not published yet, so this configuration will not
 resolve — `pre-commit` fails with an unknown hook rather than installing anything.
 
-```yaml title=".pre-commit-config.yaml"
+```yaml
 repos:
   - repo: https://github.com/StackGuardian/tirith
     rev: 1.2.0

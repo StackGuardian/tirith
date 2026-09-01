@@ -137,16 +137,19 @@
   color: var(--tp-soft);
 }
 
+/*
+ * One column. This was a two-column plate -- lede on the left, a facts list on the
+ * right -- and the vertical rule was the seam between them. With the aside gone the
+ * rule would hang beside empty space, so it goes with it. .lede keeps its own 62ch
+ * measure, which is what stops the text running the full width of the sheet.
+ */
 .heroPlate {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   border-top: 1px solid var(--tp-rule);
 }
 
 .heroLede {
   min-width: 0;
-  padding: 2rem var(--tp-gut) 2.75rem 0;
-  border-right: 1px solid var(--tp-rule);
+  padding: 2rem 0 2.75rem;
 }
 
 .lede {
@@ -161,40 +164,6 @@
   flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 2rem;
-}
-
-.heroAside {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-  padding: 2rem 0 2.75rem var(--tp-gut);
-}
-
-.facts {
-  display: grid;
-  margin: 0.9rem 0 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--tp-rule);
-}
-
-.facts li {
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--tp-rule);
-  color: var(--tp-soft);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.fieldLabel {
-  color: var(--tp-faint);
-  font-family: var(--tp-mono);
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 /* --------------------------------------------------------------- sections ---- */
@@ -451,20 +420,9 @@
     font-variation-settings: 'wdth' 86;
   }
 
-  .heroPlate,
   .defs,
   .finaleGrid {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .heroLede {
-    padding-right: 0;
-    border-right: none;
-    border-bottom: 1px solid var(--tp-rule);
-  }
-
-  .heroAside {
-    padding-left: 0;
   }
 
   .def,

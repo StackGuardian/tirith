@@ -1,0 +1,318 @@
+/*
+ * Roadmap page.
+ *
+ * The chrome below (tokens, letterhead, hero, section heads, buttons, colophon) is the same
+ * as index/learn/skills/at-scale/origins, repeated here for the same reason those repeat
+ * it: the pages stay separable. If a sixth copy appears, move all of them to
+ * chrome.module.css in one pass rather than leaving some pages on a shared rule.
+ *
+ * Only the status tags and the item list below are this page's own.
+ */
+
+.page {
+  --tp-paper: #fafaf8;
+  --tp-surface: #f0f0ee;
+  --tp-sunk: #e8e8e5;
+  --tp-ink: #0d0d0d;
+  --tp-soft: #56575b;
+  --tp-faint: #6c6d72;
+  --tp-rule: #d8d8d6;
+  --tp-accent: #1e40af;
+  --tp-alarm: #a5332a;
+  --tp-alarm-wash: #f8ecea;
+  --tp-alarm-edge: #e6cdc9;
+  --tp-display: 'Martian Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --tp-text: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tp-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --tp-gut: 2.5rem;
+  --tp-pad: clamp(1.25rem, 4vw, 4.5rem);
+
+  width: 100%;
+  max-width: 96rem;
+  margin: 0 auto;
+  padding: 0;
+  background: var(--tp-paper);
+  color: var(--tp-ink);
+  font-family: var(--tp-text);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: clip;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0, 'dlig' 0;
+}
+
+.hero {
+  padding: clamp(3rem, 6vw, 5.5rem) var(--tp-pad) 0;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.letterhead {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.letterheadMark {
+  display: block;
+  flex: none;
+  color: var(--tp-ink);
+}
+
+.letterheadName {
+  font-family: var(--tp-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.letterheadRule {
+  flex: 1 1 auto;
+  height: 1px;
+  min-width: 1rem;
+  background: var(--tp-rule);
+}
+
+.letterheadNote {
+  flex: none;
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.h1 {
+  max-width: 20ch;
+  margin: 0 0 clamp(2.5rem, 5vw, 3.75rem);
+  font-size: clamp(2.2rem, 5.4vw, 4.6rem);
+  line-height: 1.03;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  font-variation-settings: 'wdth' 100;
+}
+
+.h1Dim {
+  display: block;
+  color: var(--tp-soft);
+}
+
+.lede {
+  max-width: 62ch;
+  margin: 0;
+  font-size: clamp(1.02rem, 1.15vw, 1.15rem);
+  line-height: 1.6;
+}
+
+.heroLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 2rem;
+}
+
+.btnPrimary {
+  background: var(--tp-accent);
+  color: #fff;
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.62rem 1.05rem;
+  border: 1px solid var(--tp-accent);
+  font-family: var(--tp-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+.section {
+  padding: clamp(3rem, 5vw, 4.5rem) var(--tp-pad);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.sectionHead {
+  margin-bottom: 2.25rem;
+}
+
+.sectionLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.sectionNum {
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  letter-spacing: -0.04em;
+}
+
+.sectionLede {
+  max-width: 68ch;
+  margin: 1rem 0 0;
+  color: var(--tp-soft);
+  font-size: 1.02rem;
+}
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2rem;
+  padding: 1.5rem var(--tp-pad);
+  border-top: 1px solid var(--tp-rule);
+  color: var(--tp-faint);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.colophonBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.colophonMark {
+  display: block;
+  flex: none;
+  color: var(--tp-soft);
+}
+
+:global([data-theme='dark']) .page {
+  --tp-paper: #0d0d0d;
+  --tp-surface: #17171a;
+  --tp-sunk: #202024;
+  --tp-ink: #f2f2f0;
+  --tp-soft: #9c9ca3;
+  --tp-faint: #8f8f97;
+  --tp-rule: #2b2b2f;
+  --tp-accent: #7c9bff;
+  --tp-alarm: #e59084;
+  --tp-alarm-wash: #231614;
+  --tp-alarm-edge: #452e2a;
+}
+/* ---------------------------------------------------------- roadmap only --- */
+
+/*
+ * The hero plate is one column here, not two. Every other page puts an install command or
+ * a facts list beside the lede; this page has nothing shipped to put there, and an empty
+ * second column would be the most honest thing on it for the wrong reason.
+ */
+.heroPlate {
+  padding: 2rem 0 2.75rem;
+  border-top: 1px solid var(--tp-rule);
+}
+
+/* The release date sits with the number and the name as one ruled label row. */
+.when {
+  margin-left: auto;
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/*
+ * Two states, two shapes, and neither is the accent used for links and primary buttons.
+ * `In dev` is solid because there is code behind it; `Planned` is dashed because there is
+ * not. A colour-blind reader gets the distinction from the border style, not the ink, which
+ * is the same rule the rest of the site follows for verdicts.
+ */
+.tagDev,
+.tagPlanned {
+  flex: none;
+  padding: 0.16rem 0.5rem;
+  border: 1px solid var(--tp-rule);
+  color: var(--tp-soft);
+  font-family: var(--tp-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tagDev {
+  border-style: solid;
+  border-color: var(--tp-ink);
+  color: var(--tp-ink);
+}
+
+.tagPlanned {
+  border-style: dashed;
+  color: var(--tp-faint);
+}
+
+/*
+ * Ruled rows rather than cards, and the rule is on the top edge of each item so the list
+ * reads as a table of contents for the release rather than a set of tiles.
+ */
+.items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.items li {
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.items li:last-child {
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.itemHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.itemTitle {
+  font-family: var(--tp-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.itemBody {
+  max-width: 74ch;
+  margin: 0.5rem 0 0;
+  color: var(--tp-soft);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 48rem) {
+  .h1 {
+    max-width: none;
+    font-size: 2.15rem;
+    font-variation-settings: 'wdth' 86;
+  }
+
+  .sectionLabel {
+    flex-wrap: wrap;
+  }
+
+  .when {
+    margin-left: 0;
+  }
+}

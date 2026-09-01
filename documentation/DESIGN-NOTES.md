@@ -18,7 +18,7 @@ repository. Sections 2 onwards describe the live pages and still hold.
 | `learn.html` | Learn — six lessons and a playground | `/tirith/learn/` |
 | `ai.html` | Tirith with a coding agent | `/tirith/ai/` |
 | `fleet.html` | Fleet governance (the commercial page) | `/tirith/fleet/` |
-| `logo.html` | The mark — why the logo is what it is | `/tirith/logo/` |
+| `logo.html` | Origins — where the name and the mark come from | `/tirith/origins/` |
 | `docs-example.html` | One representative documentation page | `/tirith/docs/...` |
 
 Each file is self-contained: CSS inlined, images embedded, no build step, no server.
@@ -197,7 +197,7 @@ resource identifiers and run history.
 (repository band, CI systems, primary problem) are ever sent to analytics; the email,
 organisation and free-text box are not, and must not be.
 
-### The mark — `logo.html`
+### Origins — `logo.html`
 
 **Job.** Explain the idea behind the logo. Not a design record — it deliberately carries no
 size specimens, no pixel thresholds, and no account of the candidate marks that were drawn
@@ -233,7 +233,7 @@ Recently trimmed. It used to also carry Install, Providers and Tirith UI as dire
 into the documentation sidebar, which made the bar read as a sitemap rather than a route
 through the product. Those three are reachable from **Docs**.
 
-**The mark page** is intentionally absent from the bar and reachable only from footers.
+**The Origins page** is intentionally absent from the bar and reachable only from footers.
 
 **Footers** are a single ruled colophon strip, not a multi-column sitemap.
 

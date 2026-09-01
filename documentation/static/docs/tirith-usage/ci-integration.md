@@ -1,19 +1,7 @@
----
-id: ci-integration
-title: CI Integration
-sidebar_label: CI Integration
-description: Running Tirith in GitHub Actions, GitLab CI, Bitbucket Pipelines, Jenkins, or any container-based CI, plus a pre-commit hook.
-keywords:
-  - tirith
-  - ci
-  - github actions
-  - gitlab
-  - bitbucket
-  - jenkins
-  - pre-commit
-site_name: Tirith
-slug: ci-integration/
----
+# CI Integration
+
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/ci-integration/
+Summary: Running Tirith in GitHub Actions, GitLab CI, Bitbucket Pipelines, Jenkins, or any container-based CI, plus a pre-commit hook.
 
 Tirith reads the plan your pipeline already produces — the output of
 `terraform show -json tfplan` — checks it against your policies, and exits non-zero so a violating
@@ -167,7 +155,7 @@ Bitbucket has no Tirith-native integration, so the CLI is called directly — wh
 GitHub Action does underneath. Plan in one step, gate in the next, and pass the plan between them
 as an artifact.
 
-```yaml title="bitbucket-pipelines.yml"
+```yaml
 image: python:3.12
 
 pipelines:
@@ -197,7 +185,7 @@ A declarative pipeline with the gate as a stage between plan and apply. The one 
 deliberately is keeping exit `3` and exit `1` apart, so a tooling problem is not reported as a
 policy violation:
 
-```groovy title="Jenkinsfile"
+```groovy
 stage('Policy gate') {
   steps {
     script {
@@ -223,7 +211,7 @@ The full pipeline, including install, lint and artifact archiving, is in
 Catch a broken policy before it is committed, let alone before CI runs it. Tirith publishes a
 `tirith-lint` hook:
 
-```yaml title=".pre-commit-config.yaml"
+```yaml
 repos:
   - repo: https://github.com/StackGuardian/tirith
     rev: 1.2.0
@@ -240,12 +228,11 @@ The hook runs only when a file under `.tirith/policies/` or a `*.tirith.json` ch
 the policy directory rather than the individual changed files, because `tirith lint` takes a
 single path.
 
-:::note Why linting and not evaluation
+[NOTE] Why linting and not evaluation
 Evaluating a policy needs a plan document, and producing one means running `terraform plan` —
 too slow for a commit hook, and it needs cloud credentials a hook has no business holding.
 Linting is pure local computation over JSON: fast, offline, and it catches the class of mistake
 that otherwise reaches CI looking like a real infrastructure violation.
-:::
 
 ## Worked repositories
 

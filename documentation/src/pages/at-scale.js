@@ -1,11 +1,14 @@
 import {useState} from 'react';
+import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
 import {EVENTS, capture, track, usePageView} from '../analytics';
 import TirithMark from '../components/brand/TirithMark';
+import Colophon from '../components/site/Colophon';
 import styles from './at-scale.module.css';
 import '../css/chrome.module.css';
 
@@ -58,22 +61,57 @@ function issueUrl({template = 'general-issue.md', title} = {}) {
 }
 
 const hero = {
-  eyebrow: 'When policy stops fitting in one repository',
+  eyebrow: 'Scale IaC governance across your organisation',
   title: 'Keep Tirith local.',
   // A condition, not a counter-instruction. The previous line pair read "keep it local /
   // run in platform mode", which told the reader to do two opposite things and left them
   // to work out which one they were. Local stays the default; this names the trigger.
-  dim: 'Connect StackGuardian when policy has to stay in step across all of them.',
+  dim: 'Run in platform mode when governing IaC at scale.',
+  /*
+   * The why, not a feature list. The previous lede described what StackGuardian does --
+   * discover, prioritise, open PRs -- which reads as a capability inventory and leaves the
+   * reader to work out why any of it matters. What matters is the shape of the problem: a
+   * gate answers one question about one change, and none of the questions that appear at
+   * fifty repositories are answerable from inside a single run.
+   *
+   * Every clause maps to a row tagged `available` in STAGES below -- continuous evaluation
+   * to Standardise, ranked exposure to Prioritise, the staged fix to Remediate -- so the
+   * argument and the table cannot drift apart.
+   *
+   * Deliberately NOT "auto remediation". The Remediate row says "stage an explainable code
+   * change for human approval", which is a different and better thing to sell to someone
+   * who owns the pipeline: nothing edits their infrastructure code unattended. Calling it
+   * automatic would also contradict the page's own table two screens further down.
+   *
+   * The Apache-2.0 sentence moved out because the headline directly above already says
+   * "Keep Tirith local". The concession is made there, which frees the lede to argue.
+   *
+   * No em dashes, here or anywhere a reader sees. See documentation/scripts/find-dashes.py.
+   */
   lede:
-    'Tirith is Apache-2.0, and that is a published governance commitment rather than a ' +
-    'current convenience. What changes past that point is coordination: StackGuardian can ' +
-    'discover your IaC pipelines, prioritise rollout and open Tirith installation pull ' +
-    'requests for your team to approve.',
+    'The CLI answers one question, once: is this change allowed? At fifty repositories the ' +
+    'questions that matter cannot be answered from inside a single run. StackGuardian ' +
+    'evaluates policy continuously, ranks what is genuinely exposed rather than what merely ' +
+    'failed, and stages each fix as a reviewable pull request with its evidence attached.',
+  /*
+   * Four capabilities, one promise each, and nothing else in the line. This was a list of
+   * reassurances answering "what do I give up?", which is a real objection but a defensive
+   * opening: it argued from what the reader keeps rather than what they get. Those four
+   * points are not lost, they are in the STAGES table and the FAQ below, which is where an
+   * objection belongs.
+   *
+   * Each maps to a row tagged `available` in STAGES: the cloud scan to Detect, the shared
+   * policy set to Standardise, the ranking to Prioritise, the pull requests to Remediate
+   * and Install. Nothing planned appears here.
+   *
+   * They render uppercase in a mono face at 0.72rem, so a promise has to survive being
+   * four or five words long. Any that needs a clause belongs in a section, not here.
+   */
   facts: [
-    'No forced migration',
-    'Keep your existing CI',
-    'Approve every installation PR',
-    'Private runtime available',
+    'Cloud scan writes the policy',
+    'One policy set, every repo',
+    'Ranked by real exposure',
+    'Fixes arrive as pull requests',
   ],
 };
 
@@ -107,6 +145,7 @@ const OFFER = [
 
 const STAGES = [
   ['Discover', 'Find Terraform and OpenTofu repositories and pipelines with read access; show coverage confidence and gaps.', 'available'],
+  ['Detect', 'Scan connected cloud accounts on a schedule against CIS, PCI DSS, NIST and HIPAA, and turn each finding into a Tirith policy the pipeline then enforces.', 'available'],
   ['Prioritise', 'Rank which repositories need governance first by verified severity and exposure signals.', 'available'],
   ['Install', 'Open minimal Tirith pull requests for repository owners to review, and it does not write directly to protected branches.', 'available'],
   ['Standardise', 'Manage central policy and evaluate it continuously across GitHub Actions, GitLab CI and other pipelines.', 'available'],
@@ -116,22 +155,97 @@ const STAGES = [
   ['Execute from Tirith', 'Tirith calling the StackGuardian workflow API directly to move from policy decision into controlled execution.', 'planned'],
 ];
 
+/*
+ * Each entry is [label, brief, asset]. `asset` null keeps the pending well, which is a
+ * reserved space at the right aspect ratio rather than a gap, so the page does not reflow
+ * when the image lands and the amount of missing material stays visible to a reviewer.
+ *
+ * The three assets are StackGuardian's own product screenshots, taken from
+ * stackguardian.io. Every brief below describes what is actually in its image. The briefs
+ * used to be a shooting spec for screenshots nobody had taken yet, and dropping a
+ * different image under an unchanged spec would have made the page describe something the
+ * reader cannot see.
+ *
+ * They carry verdicts in colour, which the open-source pages deliberately never do. That
+ * is the boundary this section already claims to draw rather than a slip: these are a
+ * separate commercial product and they should not look like the rest of the site.
+ */
+/*
+ * The loop, and the strongest single reason to connect anything.
+ *
+ * It also resolves the boundary this page has to keep. Tirith reads documents, never a
+ * cloud API: the translation corpus measured live-cloud rules at 0 of 1,372, and a
+ * collector is still an open question. So detection cannot be the gate's job and is not
+ * claimed as one. The platform finds what is already wrong; the policy it writes is an
+ * ordinary Tirith policy, evaluated by the same open-source CLI, in the reader's own
+ * pipeline. Neither half pretends to be the other.
+ *
+ * Written in the present tense because all of it ships. The one planned thing on this page
+ * stays tagged as planned in STAGES above.
+ */
+const loop = {
+  steps: [
+    {
+      n: '1',
+      k: 'It scans what you already run',
+      v:
+        'Connected cloud accounts are checked on a schedule against CIS, PCI DSS, NIST ' +
+        '800-53 and HIPAA. The result is a count of real resources failing real controls, ' +
+        'not a list of things that might one day be wrong.',
+    },
+    {
+      n: '2',
+      k: 'Each finding becomes a policy',
+      v:
+        'A misconfiguration you already have is the best possible specification for a rule: ' +
+        'somebody built it that way once, so somebody will build it that way again. The ' +
+        'platform writes it as an ordinary Tirith policy.',
+      product: true,
+    },
+    {
+      n: '3',
+      k: 'The gate stops it coming back',
+      v:
+        'That policy runs in your pipeline, on your runner, through the same open-source ' +
+        'CLI as everything else on this site. The next plan that would reintroduce the ' +
+        'misconfiguration does not reach apply.',
+    },
+  ],
+  cta: {
+    label: 'Scan your cloud now',
+    href: 'https://app.stackguardian.io/',
+  },
+};
+
 const VIEWS = [
   [
-    'Overview',
-    'Every Terraform and OpenTofu repository discovered across the organisation, each with its governance state: gated, gap, or not yet evaluated. Show coverage confidence and the gaps ranked, because the honest version of this screen has unknowns on it.',
+    'Policy enforcement',
+    'Every evaluation across the estate, rolled up: 939 passed, 98 failed, 391 warned. The row underneath is one run, and it counts skipped checks separately from passed ones, which is the same four-outcome result the CLI returns.',
+    {
+      src: 'img/platform/policy-enforcement.png',
+      alt: 'A policy enforcement summary: 1.4k total evaluations, 939 pass, 98 fail, 391 warn, and a single run reporting pass, failed, warning and skipped counts separately.',
+    },
   ],
   [
     'Workflows',
-    'The run list: which pipeline, which repository, the policy verdict, who approved and when. Include at least one errored run alongside the passes and failures, so the screenshot shows the three-state result rather than a tidy green column.',
+    'The run list across an organisation, grouped by team and environment. Status is mixed on purpose: applied, planning, applying, pending, and one waiting on an approval. Policy Sets sits in the sidebar beside deployments, because the gate is part of the pipeline rather than a report about it.',
+    {
+      src: 'img/platform/workflows.webp',
+      alt: 'A list of infrastructure workflows and workflow groups with mixed statuses including applied, pending, planning, applying and approval required.',
+    },
   ],
   [
-    'Policies',
-    'The policy sets an organisation enforces, their severity, and which repositories each one currently applies to. Show one policy in both states: enforced somewhere, not yet rolled out elsewhere.',
+    'Benchmarks',
+    'Policy sets an organisation can enforce as a pack: CIS, PCI DSS, NIST 800-53, HIPAA, GDPR, cost. Each reports fails, passes, info, skips and errors as separate tabs, and says when it last ran, which is what continuous evaluation looks like from the outside.',
+    {
+      src: 'img/platform/benchmarks.webp',
+      alt: 'A best-practice check panel listing CIS, CISA, GDPR, HIPAA, NIST and PCI DSS benchmarks, with fail, pass, info and skip counts and a generated timestamp.',
+    },
   ],
   [
     'Plan detail',
-    'A single evaluated plan: the verdict, severity, the resource and value evidence behind it, and the run snapshot. This is the view that has to match the OSS pull-request comment, because the claim is that it is the same verdict.',
+    'A single evaluated plan: the verdict, the severity, the resource and value evidence behind it, and the run snapshot. Still to come, and deliberately not substituted with something adjacent. This is the view that has to match the pull-request comment the open-source CLI already posts, because the claim is that it is the same verdict.',
+    null,
   ],
 ];
 
@@ -368,6 +482,13 @@ function EnquiryForm() {
 
 export default function AtScale() {
   usePageView(EVENTS.scaleView);
+  /*
+   * Resolved once here rather than per item. useBaseUrl is a hook, and the call site below
+   * sits inside a conditional inside a map, where a hook must not go. The site is served
+   * under /tirith/, so a bare `img/...` src resolves against the current route and 404s on
+   * every page that is not the root.
+   */
+  const base = useBaseUrl('/');
 
   return (
     <Layout
@@ -376,6 +497,31 @@ export default function AtScale() {
         'Use Tirith locally for free, or connect StackGuardian to discover IaC ' +
         'repositories, open approved installation PRs and govern plans across your cloud estate.'
       }>
+      {/*
+       * FAQPage structured data, generated from the FAQ array below rather than written out
+       * again. Two reasons it is worth having on this page specifically: the questions are
+       * the ones people actually put to a search engine or an assistant ("do I need
+       * StackGuardian to use Tirith?"), and a hand-copied second version of an answer is a
+       * fact that can drift out of agreement with the page it describes.
+       *
+       * Only this page gets it. Google's guidance is that FAQPage markup describes a real
+       * FAQ that is visible on the page, and inventing one elsewhere risks the rich result
+       * for the whole site.
+       */}
+      <Head>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            '@id': 'https://stackguardian.github.io/tirith/at-scale/#faq',
+            mainEntity: FAQ.map(([question, answer]) => ({
+              '@type': 'Question',
+              name: question,
+              acceptedAnswer: {'@type': 'Answer', text: answer},
+            })),
+          })}
+        </script>
+      </Head>
       <main className={styles.page}>
         {/* ================= HERO ================= */}
         <header className={styles.hero}>
@@ -410,7 +556,12 @@ export default function AtScale() {
               </div>
             </div>
             <div className={styles.heroAside}>
-              <span className={styles.fieldLabel}>What stays yours</span>
+              {/*
+               * The label names where these happen, which is the boundary this page has to
+               * keep visible: every line below is something the platform does, none of it
+               * is something the open-source CLI stops doing without it.
+               */}
+              <span className={styles.fieldLabel}>On the platform</span>
               <ul className={styles.facts}>
                 {hero.facts.map((f) => (
                   <li key={f}>{f}</li>
@@ -473,11 +624,6 @@ export default function AtScale() {
             Each starts with policies committed to the repository and then switches to the
             organization's, with nothing else in the pipeline changing.
           </p>
-          <p className={styles.caveat}>
-            The £0 offer is permanent. StackGuardian pricing is <em>Custom</em> on purpose:
-            there are no invented Free/Pro/Enterprise tiers here, and there will not be
-            until commercial packaging is settled.
-          </p>
         </section>
 
         {/* ================= 03 CAPABILITIES ================= */}
@@ -505,29 +651,99 @@ export default function AtScale() {
         </section>
 
         {/* ================= 04 VIEWS ================= */}
-        <section className={styles.section} id="views">
+        {/* ================= 04 THE LOOP ================= */}
+        <section className={styles.section} id="loop">
           <SectionHead
             num="04"
-            title="What the platform looks like"
-            lede="Four views cover most of what a platform team does here: find the repositories, watch the runs, manage the policy, and read a single plan in detail. They are screenshots of a separate, commercial product, kept visually apart from the open-source material elsewhere on this site so the boundary stays obvious."
+            title="Find it once, then stop it recurring"
+            lede="The strongest reason to connect anything. What is already misconfigured in your cloud is the specification for the rule that keeps it from being rebuilt, and the two halves stay where they belong: the platform finds it, the open-source gate prevents it."
           />
-          <ul className={styles.slots}>
-            {VIEWS.map(([label, brief]) => (
-              <li key={label}>
-                {/*
-                 * A reserved well at the aspect ratio the real screenshot will occupy, so
-                 * the page does not reflow when the image lands and so the amount of
-                 * missing material is obvious to anyone reviewing the page.
-                 */}
-                <div className={styles.slotWell} role="img" aria-label={`${label} — screenshot pending`}>
-                  <span className={styles.slotTag}>Asset pending</span>
-                  <span className={styles.slotLabel}>{label}</span>
-                </div>
-                <p className={styles.slotBrief}>{brief}</p>
+
+          <ol className={styles.loop}>
+            {loop.steps.map((step) => (
+              <li key={step.n} data-product={step.product ? 'true' : undefined}>
+                <span className={styles.loopNum}>{step.n}</span>
+                <span className={styles.loopBody}>
+                  <span className={styles.loopTitle}>{step.k}</span>
+                  <span className={styles.loopText}>{step.v}</span>
+                </span>
               </li>
             ))}
-          </ul>
+          </ol>
+
+          {/*
+           * Ghost, not primary. The enquiry form further down is this page's primary
+           * conversion, and a self-serve button styled as the loudest thing in the section
+           * would quietly demote it.
+           */}
+          <div className={styles.loopCta}>
+            <Link className={styles.btnGhost} href={loop.cta.href}>
+              {loop.cta.label} <span aria-hidden="true">→</span>
+            </Link>
+            <span className={styles.loopCtaNote}>
+              Free to start, no card. Or use the form below if you would rather talk first.
+            </span>
+          </div>
         </section>
+
+        {/*
+         * ================= VIEWS: HIDDEN =================
+         *
+         * NOTE ON RESTORING: two things to settle first.
+         *
+         * It still carries num="04", which the section above now uses, so give it a free
+         * number. And its three screenshots were judged stale and poor quality and were
+         * removed from section 04 for that reason, so switching this on unchanged puts them
+         * straight back. Replace them with current captures before restoring, or drop the
+         * asset entries and let the reserved wells show instead.
+         *
+         * Hidden for now. A `false` guard rather than a comment, deliberately: JSX children
+         * cannot take a line comment, and a block comment would end early at the closing
+         * delimiter of the JSX comment nested inside this section. The guard also keeps the
+         * markup parsed and its references live, so it cannot rot while switched off.
+         *
+         * To restore: change `false` to `true`. Everything it needs is still in place:
+         * VIEWS above with its three assets, the files under static/img/platform, and
+         * .slotImage, .slotWell, .slotTag, .slotLabel and .slotBrief in the stylesheet.
+         *
+         * The section numbers below are not renumbered. Moving 05 to 04 would turn
+         * restoring this into a multi-file edit, and the gap in the sequence is visible only
+         * to someone counting the headings.
+         */}
+        {false && (
+          <section className={styles.section} id="views">
+            <SectionHead
+              num="04"
+              title="What the platform looks like"
+              lede="Four views cover most of what a platform team does here: find the repositories, watch the runs, manage the policy, and read a single plan in detail. They are screenshots of a separate, commercial product, kept visually apart from the open-source material elsewhere on this site so the boundary stays obvious."
+            />
+            <ul className={styles.slots}>
+              {VIEWS.map(([label, brief, asset]) => (
+                <li key={label}>
+                  {/*
+                   * A reserved well at the aspect ratio the real screenshot will occupy, so
+                   * the page does not reflow when the image lands and so the amount of
+                   * missing material is obvious to anyone reviewing the page.
+                   */}
+                  {asset ? (
+                    <img
+                      className={styles.slotImage}
+                      src={`${base}${asset.src}`}
+                      alt={asset.alt}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className={styles.slotWell} role="img" aria-label={`${label}, screenshot pending`}>
+                      <span className={styles.slotTag}>Asset pending</span>
+                      <span className={styles.slotLabel}>{label}</span>
+                    </div>
+                  )}
+                  <p className={styles.slotBrief}>{brief}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* ================= 05 COMPARISON ================= */}
         <section className={styles.section} id="comparison">
@@ -580,7 +796,28 @@ export default function AtScale() {
             title="Tell us how your IaC reaches production today"
             lede="Whatever it looks like now, we will map the shortest route from the pipelines you already run to consistent governance across all of them, with no execution migration, and your apply jobs stay where they are."
           />
-          <EnquiryForm />
+          {/*
+           * A booking link, not a form.
+           *
+           * The form asked for six fields before anyone had spoken, which is a lot to ask of
+           * a reader who has just been told the open-source tool is enough for most teams.
+           * The call picks a time and asks for nothing else.
+           *
+           * EnquiryForm is still defined above and no longer rendered. It is kept because
+           * the HubSpot wiring it depends on (the portal id and form guid, supplied from the
+           * environment and never committed) is still in docusaurus.config.js and in the
+           * deploy workflow, and untangling that is a separate decision from this one.
+           */}
+          <div className={styles.bookCall}>
+            <Link className={styles.btnPrimary} href="https://www.stackguardian.io/book-call">
+              Book a call <span aria-hidden="true">→</span>
+            </Link>
+            <span className={styles.bookCallNote}>
+              Thirty minutes with an engineer, not a qualification call. Bring the pipeline
+              you actually run.
+            </span>
+          </div>
+
           <p className={styles.caveat}>
             Would rather keep it public?{' '}
             <Link
@@ -595,24 +832,7 @@ export default function AtScale() {
           </p>
         </section>
 
-        <footer className={styles.colophon}>
-          <span className={styles.colophonBrand}>
-            <TirithMark className={styles.colophonMark} size={16} />
-            Tirith · StackGuardian
-          </span>
-          <span>
-            <Link to="/">Landing page</Link>
-          </span>
-          <span>
-            <Link to="/learn/">Learn</Link>
-          </span>
-          <span>
-            <Link to="/skills/">Skills</Link>
-          </span>
-          <span>
-            <Link href={REPO}>Source</Link>
-          </span>
-        </footer>
+        <Colophon styles={styles} />
       </main>
     </Layout>
   );

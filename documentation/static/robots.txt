@@ -1,0 +1,63 @@
+# Tirith documentation site.
+#
+# IMPORTANT, and the reason this file may do nothing: crawlers read robots.txt only from a
+# host's root. This site is a GitHub Pages *project* site published under
+# https://stackguardian.github.io/tirith/, so this file is served at
+# https://stackguardian.github.io/tirith/robots.txt, which is not the root and is therefore
+# ignored. The file that governs this host is https://stackguardian.github.io/robots.txt, and
+# it lives in the stackguardian/stackguardian.github.io repository, not this one.
+#
+# It is committed anyway for two reasons: it becomes effective the moment the site moves to
+# a custom domain or to the org root, and it records the intended policy in the repository
+# that owns the content rather than in someone's head.
+
+User-agent: *
+Allow: /
+
+# Answer engines and AI crawlers are welcome. This is Apache-2.0 documentation and being
+# quoted accurately in an answer is the point: a wrong install command costs a reader more
+# than an uncredited quote costs the project. See /tirith/llms.txt for the summary written
+# for exactly that purpose.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+Sitemap: https://stackguardian.github.io/tirith/sitemap.xml

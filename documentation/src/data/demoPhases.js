@@ -210,7 +210,10 @@ export const PIPELINE_TARGETS = [
   checks: write
 
 steps:
-  - run: terraform show -json tfplan > plan.json
+  - run: |
+      terraform plan -out=tfplan -input=false
+      terraform show -json tfplan > plan.json
+
   - uses: StackGuardian/tirith-iac-governance-action@v2
     with:
       fail-on-error: true`,
@@ -222,13 +225,20 @@ steps:
     note: 'No wrapper — the CLI directly, consuming the plan as an artifact.',
     url: 'https://gitlab.com/stackguardian/tirith-component-demo',
     linkLabel: 'Open the GitLab demo',
-    code: `tirith:
+    code: `terraform-plan:
+  stage: plan
+  script:
+    - terraform plan -out=tfplan -input=false
+    - terraform show -json tfplan > plan.json
+  artifacts: {paths: [plan.json]}
+
+tirith:
   stage: policy
   image: python:3.12
   needs: [terraform-plan]
   script:
     - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-    - tirith lint .tirith/policies
+    # - tirith lint .tirith/policies   # in dev, not in 1.2.0
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
   {
@@ -239,10 +249,17 @@ steps:
     url: 'https://bitbucket.org/__refeed__/tirith-bitbucket-demo',
     linkLabel: 'Open the Bitbucket demo',
     code: `- step:
+    name: Terraform plan
+    script:
+      - terraform plan -out=tfplan -input=false
+      - terraform show -json tfplan > plan.json
+    artifacts: [plan.json]
+
+- step:
     name: Policy gate
     script:
       - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-      - tirith lint .tirith/policies
+      # - tirith lint .tirith/policies   # in dev, not in 1.2.0
       - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
   {
@@ -255,7 +272,7 @@ steps:
     to: '/docs/tirith-usage/ci-integration/',
     linkLabel: 'Jenkins and other runners',
     code: `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-tirith lint .tirith/policies
+# tirith lint .tirith/policies   # in dev, not in 1.2.0
 tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
   {
@@ -268,6 +285,7 @@ tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
     to: '/docs/tirith-usage/editor-and-local/',
     linkLabel: 'Run it as you write',
     code: `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+terraform plan -out=tfplan
 terraform show -json tfplan > plan.json
 tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
@@ -303,7 +321,7 @@ steps:
   needs: [terraform-plan]
   script:
     - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-    - tirith lint .tirith/policies
+    # - tirith lint .tirith/policies   # in dev, not in 1.2.0
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
   {
@@ -316,7 +334,7 @@ steps:
     name: Policy gate
     script:
       - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-      - tirith lint .tirith/policies
+      # - tirith lint .tirith/policies   # in dev, not in 1.2.0
       - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
 ];
@@ -329,13 +347,18 @@ export const INTEGRATIONS = [
   {
     glyph: '⎇',
     title: 'pre-commit',
-    body: 'A tirith-lint hook that runs when a policy file changes. Offline, no plan needed, and it catches the mistakes that read as real violations.',
+    // Needs .pre-commit-hooks.yaml, which is not in this repository, and `tirith lint`,
+    // which is not in the released CLI.
+    inDev: true,
+    body: 'A tirith-lint hook that will run when a policy file changes. Offline, no plan needed, and it catches the mistakes that read as real violations.',
     to: '/docs/tirith-usage/editor-and-local/',
   },
   {
     glyph: '{}',
     title: 'Your editor',
-    body: 'VS Code tasks that lint and evaluate in one keystroke — the loop to use while an agent is drafting the policy for you.',
+    // Needs .vscode/tasks.json, which is not in this repository, and the same lint command.
+    inDev: true,
+    body: 'VS Code tasks that will lint and evaluate in one keystroke — the loop to use while an agent is drafting the policy for you.',
     to: '/docs/tirith-usage/editor-and-local/',
   },
 ];

@@ -4,8 +4,9 @@ import Heading from '@theme/Heading';
 
 import Glyph from '../components/brand/Glyph';
 import TirithMark from '../components/brand/TirithMark';
+import Colophon from '../components/site/Colophon';
 import {KEEP, SEVEN_WALLS, THE_CLIMB, TWO_WALLS} from '../data/logoStory';
-import styles from './logo.module.css';
+import styles from './origins.module.css';
 import '../css/chrome.module.css';
 
 /*
@@ -157,10 +158,11 @@ function SectionHead({num, title, lede}) {
 export default function Logo() {
   return (
     <Layout
-      title="The mark — the idea behind the Tirith logo"
+      title="Origins — where the Tirith name and mark come from"
       description={
-        'Why the Tirith mark is a city seen in plan: seven walls reduced to two, gates ' +
-        'set opposite, and a change that cannot reach the summit without passing all of them.'
+        'Where the name comes from and what the mark means: Minas Tirith seen in plan, ' +
+        'seven walls reduced to two, gates set opposite, and a change that cannot reach ' +
+        'the summit without passing all of them.'
       }>
       <main className={styles.page}>
         {/* ================= HERO ================= */}
@@ -169,7 +171,7 @@ export default function Logo() {
             <TirithMark className={styles.letterheadMark} size={40} />
             <span className={styles.letterheadName}>Tirith</span>
             <span className={styles.letterheadRule} aria-hidden="true" />
-            <span className={styles.letterheadNote}>The mark</span>
+            <span className={styles.letterheadNote}>Origins</span>
           </div>
 
           <Heading as="h1" className={styles.h1}>
@@ -232,24 +234,7 @@ export default function Logo() {
           </dl>
         </section>
 
-        <footer className={styles.colophon}>
-          <span className={styles.colophonBrand}>
-            <TirithMark className={styles.colophonMark} size={16} />
-            Tirith · StackGuardian
-          </span>
-          <span>
-            <Link to="/">Landing page</Link>
-          </span>
-          <span>
-            <Link to="/learn/">Learn</Link>
-          </span>
-          <span>
-            <Link to="/at-scale/">Tirith at scale</Link>
-          </span>
-          <span>
-            <Link href="https://github.com/StackGuardian/tirith">Source</Link>
-          </span>
-        </footer>
+        <Colophon styles={styles} />
       </main>
     </Layout>
   );

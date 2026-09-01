@@ -45,6 +45,95 @@ const config = {
    * the navbar already asks for actually available on every route.
    */
   headTags: [
+    /*
+     * Structured data, on every route.
+     *
+     * Two graph nodes and no more. SoftwareApplication is the one an answer engine reads to
+     * decide what this is, what it costs and what it runs on, and every field below is
+     * checkable against the repository: the licence, the price, the language floor from
+     * setup.py's python_requires, and the version from setup.py. SoftwareSourceCode carries
+     * the repository so a citation can point at the code rather than only the docs.
+     *
+     * `offers` at price 0 is not marketing. Without it a crawler has no statement either
+     * way, and "is Tirith free" is a question people actually ask an assistant.
+     *
+     * Deliberately absent: aggregateRating and any review markup. There are no ratings, and
+     * inventing them is both a policy violation and the fastest way to lose a rich result.
+     */
+    {
+      tagName: 'script',
+      attributes: {type: 'application/ld+json'},
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'SoftwareApplication',
+            '@id': 'https://stackguardian.github.io/tirith/#software',
+            name: 'Tirith',
+            alternateName: 'Tirith IaC Governance',
+            applicationCategory: 'DeveloperApplication',
+            applicationSubCategory: 'Infrastructure as Code policy engine',
+            operatingSystem: 'Linux, macOS, Windows',
+            softwareVersion: '1.2.0',
+            softwareRequirements: 'Python 3.8 or newer',
+            license: 'https://www.apache.org/licenses/LICENSE-2.0',
+            url: 'https://stackguardian.github.io/tirith/',
+            downloadUrl: 'https://github.com/StackGuardian/tirith',
+            codeRepository: 'https://github.com/StackGuardian/tirith',
+            description:
+              'An Apache-2.0 policy gate for infrastructure as code. Tirith evaluates the ' +
+              'OpenTofu or Terraform plan a pipeline already produces against declarative ' +
+              'JSON policies and returns an exit code the pipeline can gate on. Runs ' +
+              'locally or in any CI, on your own runner, with no account.',
+            featureList: [
+              'Evaluates OpenTofu and Terraform plan JSON',
+              'Policies are JSON documents, not code',
+              'Thirteen condition types',
+              'Reads Kubernetes manifests, Infracost breakdowns and any JSON or YAML document',
+              'Exit-code contract that separates a policy failure from an engine error',
+              'Reports a check that could not run as unevaluated rather than as a pass',
+              'No account and no network call in local mode',
+            ],
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD',
+            },
+            author: {'@id': 'https://www.stackguardian.io/#org'},
+          },
+          {
+            '@type': 'SoftwareSourceCode',
+            '@id': 'https://github.com/StackGuardian/tirith#code',
+            name: 'Tirith',
+            codeRepository: 'https://github.com/StackGuardian/tirith',
+            programmingLanguage: 'Python',
+            license: 'https://www.apache.org/licenses/LICENSE-2.0',
+            about: {'@id': 'https://stackguardian.github.io/tirith/#software'},
+          },
+          {
+            '@type': 'Organization',
+            '@id': 'https://www.stackguardian.io/#org',
+            name: 'StackGuardian',
+            url: 'https://www.stackguardian.io/',
+          },
+        ],
+      }),
+    },
+    /*
+     * A machine-discoverable pointer to llms.txt. There is no registered rel value for it
+     * yet, so this is a convention rather than a standard, and it costs one line. It matters
+     * more here than on most sites: a project subpath means /llms.txt at the host root is
+     * not ours to publish, so a crawler that only probes the root will never find it.
+     */
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'alternate',
+        type: 'text/plain',
+        title: 'llms.txt',
+        href: 'https://stackguardian.github.io/tirith/llms.txt',
+      },
+    },
     {
       tagName: 'link',
       attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
@@ -84,6 +173,29 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
+        },
+        /*
+         * Skills is hidden for now, not deleted. src/pages/skills.js and its stylesheet
+         * are untouched; this line is the only thing keeping the route out of the build,
+         * so restoring the page is deleting the 'skills.js' entry below and putting the
+         * navbar item back.
+         *
+         * Excluding here rather than renaming the file to _skills.js -- the other way to
+         * hide a page -- keeps the filename matching the route it will return to, and puts
+         * the decision somewhere a reader of the config can see it.
+         *
+         * GlobExcludeDefault is repeated because supplying `exclude` replaces the plugin's
+         * defaults rather than adding to them, and dropping them would start building
+         * _partials and test files as pages.
+         */
+        pages: {
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+            'skills.js',
+          ],
         },
         blog: false,
         theme: {
@@ -125,11 +237,13 @@ const config = {
             label: 'Learn',
             position: 'left',
           },
-          {
-            to: '/skills/',
-            label: 'Skills',
-            position: 'left',
-          },
+          // Hidden with the page itself -- see the `pages.exclude` note above. Kept
+          // here so restoring the route is uncommenting rather than rewriting.
+          // {
+          //   to: '/skills/',
+          //   label: 'Skills',
+          //   position: 'left',
+          // },
           {
             type: 'docSidebar',
             sidebarId: 'TirithSidebar',

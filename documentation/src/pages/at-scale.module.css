@@ -591,6 +591,117 @@
  * than blank so nobody mistakes it for a rendering failure or an image that is merely
  * slow. It should look unfinished; that is its whole job.
  */
+/*
+ * A real screenshot, ruled rather than boxed: one hairline, square corners, no shadow, the
+ * same treatment every other bordered thing on this page gets.
+ *
+ * height:auto and no aspect-ratio, unlike the pending well beside it. These are three
+ * different shapes (16:9 and two at roughly 16:10) and forcing one ratio would either crop
+ * a column off the run list or letterbox it. The well needs a fixed ratio because it is
+ * reserving space for something that does not exist; a real image brings its own.
+ */
+/*
+ * The loop: three numbered steps, ruled apart rather than boxed, and step 2 marked as the
+ * one Tirith itself owns. Same device the landing page uses for its four-step flow, so a
+ * reader who has seen that page recognises this as the same kind of diagram.
+ */
+.loop {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.loop li {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 0 1rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+/*
+ * The step the open-source gate performs, marked with a rule on the left edge in the
+ * accent rather than a fill. It is the only coloured thing in the section, and it points at
+ * the half of the loop the reader already has for free.
+ */
+.loop li[data-product='true'] {
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--tp-accent);
+}
+
+.loopNum {
+  font-family: var(--tp-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--tp-faint);
+}
+
+.loopBody {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.loopTitle {
+  font-family: var(--tp-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.loopText {
+  max-width: 74ch;
+  color: var(--tp-soft);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.loopCta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+}
+
+.loopCtaNote {
+  color: var(--tp-faint);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 48rem) {
+  .loop li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+}
+
+/* The booking call to action that replaced the enquiry form. */
+.bookCall {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.bookCallNote {
+  max-width: 46ch;
+  color: var(--tp-soft);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.slotImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--tp-rule);
+}
+
 .slotWell {
   display: flex;
   flex-direction: column;

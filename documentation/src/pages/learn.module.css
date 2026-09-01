@@ -68,9 +68,61 @@
 
 /* ------------------------------------------------------------------ hero ---- */
 
+/* The same top inset as index/skills/at-scale/logo, so the letterhead lands on the
+   same line on every page. This was 2.75rem/5vw/4.5rem, which sat the row ~16px high
+   of the other four -- visible as a jump when moving between pages. */
 .hero {
-  padding: clamp(2.75rem, 5vw, 4.5rem) var(--tp-pad) 0;
+  padding: clamp(3rem, 6vw, 5.5rem) var(--tp-pad) 0;
   border-bottom: 1px solid var(--tp-rule);
+}
+
+/*
+ * The letterhead row: mark, name, rule, note. The rule is a flexible spacer that
+ * draws itself, so the note sits hard against the right edge at every width and the
+ * row reads as one ruled line rather than three floating items.
+ *
+ * Repeated here rather than imported, matching the tokens above and the same block in
+ * index/skills/at-scale/logo. Four copies is the cost of these pages staying separable;
+ * if a fifth appears, move all of them to chrome.module.css in one go rather than
+ * having some pages read a shared rule and others their own.
+ */
+.letterhead {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+/* currentColor, inherited from .page's --tp-ink, so the mark flips with the theme
+   without a second asset. See components/brand/TirithMark.js. */
+.letterheadMark {
+  display: block;
+  flex: none;
+  color: var(--tp-ink);
+}
+
+.letterheadName {
+  font-family: var(--tp-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.letterheadRule {
+  flex: 1 1 auto;
+  height: 1px;
+  min-width: 1rem;
+  background: var(--tp-rule);
+}
+
+.letterheadNote {
+  flex: none;
+  color: var(--tp-faint);
+  font-family: var(--tp-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .h1 {
@@ -764,4 +816,50 @@
   .page *::before {
     transition-duration: 1ms !important;
   }
+}
+
+/* --------------------------------------------------------------- colophon --- */
+
+/*
+ * Lifted verbatim from index.module.css, like the letterhead above it. Learn was the only
+ * page of the five with no footer at all, so a reader who finished the lessons had nowhere
+ * to go except the navbar.
+ */
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2rem;
+  padding: 1.5rem var(--tp-pad);
+  border-top: 1px solid var(--tp-rule);
+  color: var(--tp-faint);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The mark sits with the name as one item, so the colophon's `gap` still separates
+   the four entries evenly rather than pushing the mark away from the word it labels. */
+.colophonBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 16px is the floor for this mark. The canvas notes Keep reads as two shapes rather
+   than one below roughly that size, which is also why the favicon is the only place
+   it is allowed smaller and why that cut is worth re-drawing before launch. */
+.colophonMark {
+  display: block;
+  flex: none;
+  color: var(--tp-soft);
+}
+
+.colophon a {
+  color: var(--tp-soft);
+  text-decoration: none;
+}
+
+.colophon a:hover {
+  color: var(--tp-accent);
+  text-decoration: underline;
 }
