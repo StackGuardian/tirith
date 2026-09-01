@@ -4,10 +4,11 @@ Both registries are closed. Inventing a value does not raise an error: an unknow
 `condition.type` reaches the engine as an **ordinary failed check with no error attached**, so it
 is indistinguishable from a real violation and sends someone to debug infrastructure that is fine.
 
-Confirm against the live registries rather than this file:
+Confirm against the live registry rather than this file. `tirith lint --gotchas` will do it once
+lint ships; today the registry itself is the source of truth:
 
 ```bash
-tirith lint --gotchas
+python -c "from tirith.core.evaluators import EVALUATORS_DICT; print(sorted(EVALUATORS_DICT))"
 ```
 
 ## Policy shape

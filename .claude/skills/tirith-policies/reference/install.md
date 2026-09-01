@@ -13,7 +13,7 @@ Pin a tag rather than tracking the default branch, so a CI job cannot change beh
 you:
 
 ```bash
-pip install "git+https://github.com/StackGuardian/tirith.git@1.0.5"
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
 ```
 
 `git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists the available tags.

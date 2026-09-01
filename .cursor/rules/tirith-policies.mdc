@@ -1,18 +1,18 @@
 ---
-description: Authoring and debugging Tirith IaC governance policies
-globs: ["**/.tirith/policies/**", "**/*.tirith.json"]
+description: Authoring Tirith IaC governance policies, and adding Tirith to a CI pipeline
+globs: ["**/.tirith/policies/**", "**/*.tirith.json", "**/.github/workflows/*.y*ml", "**/.gitlab-ci.yml", "**/bitbucket-pipelines.yml", "**/Jenkinsfile", "**/azure-pipelines.yml", "**/.circleci/config.yml"]
 alwaysApply: false
 ---
 
-Tirith policies are JSON data, not programs. Do not invent vocabulary — both registries are
+Tirith policies are JSON data, not programs. Do not invent vocabulary: both registries are
 closed, and an unknown `condition.type` reaches the engine as an ordinary failed check with no
-error attached, so it reads as a real infrastructure violation and sends someone to debug
-working infrastructure.
+error attached, so it reads as a real infrastructure violation and sends someone to debug working
+infrastructure.
 
 **Condition types** — the complete list:
 `ContainedIn`, `Contains`, `Equals`, `GreaterThan`, `GreaterThanEqualTo`, `IsEmpty`,
 `IsNotEmpty`, `LessThan`, `LessThanEqualTo`, `NotContainedIn`, `NotContains`, `NotEquals`,
-`RegexMatch`. There is no `Exists` — use `IsNotEmpty` for presence.
+`RegexMatch`. There is no `Exists`: use `IsNotEmpty` for presence.
 
 **`operation_type` by provider:**
 - `stackguardian/terraform_plan` — `action`, `attribute`, `count`, `direct_dependencies`,
@@ -20,34 +20,93 @@ working infrastructure.
 - `stackguardian/infracost` — `total_monthly_cost`, `total_hourly_cost`
 - `stackguardian/kubernetes` — `attribute`
 - `stackguardian/json` — `get_value`
+- `stackguardian/sg_workflow` — StackGuardian workflow documents
+
+Five providers, and no CloudFormation provider: a CloudFormation template is arbitrary JSON, read
+by `stackguardian/json`. There is no `stackguardian/terraform_state` either; read a state file the
+same way, with `key_path`.
 
 **Structure:** `meta` (`version`, `required_provider`, `name`) · `evaluators[]` (each with `id`,
-`provider_args`, `condition`) · `eval_expression` combining evaluator ids with `and` / `or`. An
-evaluator the expression never references cannot affect the verdict.
+`provider_args`, `condition`) · `eval_expression`.
 
-**Verdicts:** exit `0` passed · `3` a policy failed · `1` no verdict was reached. `final_result:
-null` means every check was skipped — that is not a pass, and it usually means `provider_args`
-matched nothing.
+**`eval_expression` operators are `&&`, `||`, `!` and parentheses.** Not `and` / `or`: the engine
+rejects those with `Unsupported operator in eval_expression`. `!` is the only negation, so write
+the positive detector and invert it. An evaluator the expression never references cannot affect
+the verdict.
 
-**Gotchas:** the key naming the value differs per provider — `terraform_resource_attribute`
-for terraform_plan/state, `attribute_path` plus `kubernetes_kind` for kubernetes, `key_path` for
-json. Another provider's key is ignored rather than rejected, so the evaluator reads nothing. `error_tolerance` goes inside
-`condition` — severity `0` = resource being deleted, `1` = type absent, `2` = attribute absent.
-`attribute` reads `change.after` only, so use `action` for destroys. `count(*)` is root-module
-size, not change size. `jmespath` and `jq_query` do not ship despite appearing in test fixtures.
+**Verdicts:** exit `0` passed · `3` a policy failed · `1` no verdict was reached · `2` platform
+timeout. `final_result: null` means every check was skipped: that is not a pass, it exits `1`, and
+it usually means `provider_args` matched nothing.
+
+**Gotchas:**
+- The key naming the value differs per provider: `terraform_resource_attribute` for
+  terraform_plan, `attribute_path` plus `kubernetes_kind` for kubernetes, `key_path` for json.
+  Another provider's key is **ignored rather than rejected**, so the evaluator reads nothing and
+  the check passes.
+- `error_tolerance` goes **inside `condition`**, not on the evaluator. On the evaluator it is
+  silently ignored and the check still fails. Severity `0` = resource being deleted, `1` = type
+  absent, `2` = attribute absent.
+- One evaluator yields one result per matching resource. Three buckets give three results from one
+  rule, and the check fails if any fails.
+- `attribute` reads `change.after` only, so use `action` for destroys.
+- `count(*)` is root-module size, not change size.
+- `jmespath` and `jq_query` do not ship, despite appearing in test fixtures.
 
 **Always evaluate before claiming a policy works.** A policy that matches nothing looks identical
-to one that works:
+to one that works. Run it against input that *should* be refused; exit `3` is the pass condition
+for that test, and exit `0` means it matched nothing.
 
 ```bash
-tirith lint .tirith/policies                                              # check the shape
-tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error  # check the verdict
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
-**There is no `stackguardian/terraform_state` provider.** Read a state file with
-`stackguardian/json` and `key_path`.
+`tirith lint` is **not in the released package**; it is in development. Do not put it in a
+pipeline. The released CLI dispatches `tirith`, `tirith ui` and `tirith platform check`.
+
+## Installing, and adding it to CI
+
+**Not from PyPI.** `pip install tirith` installs an unrelated project of the same name, and
+`pip install py-tirith` finds nothing. Install from git, pinned to a tag:
+
+```bash
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+```
+
+Every pipeline is the same three pieces: a policy under `.tirith/policies/`, the plan as JSON, and
+Tirith with `--fail-on-error`. Produce the input first, or `plan.json` never exists:
+
+```bash
+terraform plan -out=tfplan -input=false     # -input=false, or CI hangs on a prompt
+terraform show -json tfplan > plan.json     # tofu works identically
+```
+
+**GitHub Actions** uses the action, which adds the pull-request comment and check run. It needs
+`pull-requests: write` and `checks: write`, the only setup it cannot do for itself:
+
+```yaml
+permissions: {contents: read, pull-requests: write, checks: write}
+steps:
+  - run: |
+      terraform plan -out=tfplan -input=false
+      terraform show -json tfplan > plan.json
+  - uses: StackGuardian/tirith-iac-governance-action@v2
+    with: {fail-on-error: true}
+```
+
+**GitLab, Bitbucket, Jenkins, Azure DevOps, CircleCI and anything else** call the CLI directly,
+which is all the action does underneath. Plan in one job, gate in the next, and pass `plan.json`
+between them as an artifact:
+
+```yaml
+- pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+- tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+```
+
+**Do not collapse exit `1` into exit `3`.** `3` means the change was refused; `1` means no verdict
+was reached. A job that cannot tell them apart reports an outage as a policy violation, and cannot
+tell a working gate from a broken one.
 
 Worked examples: `src/tirith/tui/examples/`. Deeper reference, if the repository has it:
-`.claude/skills/tirith-policies/reference/` covers the schema, linting, verdicts, each provider,
-policy variables, installing Tirith, adding it to a pipeline, and debugging a red CI check.
-Online: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-reference/
+`.claude/skills/tirith-policies/reference/` covers the schema, validation, verdicts, each
+provider, policy variables, installing Tirith, six CI platforms, and debugging a red check.
+Online: https://stackguardian.github.io/tirith/llms.txt

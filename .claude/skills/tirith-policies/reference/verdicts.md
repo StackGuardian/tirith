@@ -57,5 +57,6 @@ looking in the plan for the resource lacking that attribute.
 
 An unsupported `condition.type` or an unknown `required_provider` comes back as an ordinary failed
 check with no error attached — indistinguishable from a real violation, and it exits `3`. It fails
-in the safe direction, but it points at your infrastructure when the fault is in the policy. Run
-`tirith lint` first and this class disappears.
+in the safe direction, but it points at your infrastructure when the fault is in the policy.
+Check the condition type against the closed list in `reference/schema.md`: a typo there is the
+usual cause, and it is not reported as one.

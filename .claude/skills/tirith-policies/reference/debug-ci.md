@@ -50,8 +50,9 @@ Check `final_result` in the result document.
 - **No `final_result` at all** — the policy could not be loaded. Usually an unresolved variable;
   read the `errors` array.
 - **A misconfigured policy** — an unsupported `condition.type` or unknown provider arrives as an
-  ordinary failed check and exits `3`, not `1`. Run `tirith lint .tirith/policies`; if it reports
-  an error, the fault is in the policy, not the infrastructure.
+  ordinary failed check and exits `3`, not `1`. Check `condition.type` and every `provider_args`
+  key against `reference/schema.md`: an unknown key is ignored rather than rejected, so the fault
+  is in the policy even though the failure points at infrastructure.
 
 ## 5. Exit `0` when you expected a failure
 
@@ -66,7 +67,6 @@ Check `final_result` in the result document.
 ## The two commands
 
 ```bash
-tirith lint .tirith/policies                       # is the policy well-formed?
 tirith --json -policy-path .tirith/policies \
        -input-path plan.json | head -40            # what did it actually decide?
 ```
