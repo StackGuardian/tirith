@@ -30,7 +30,7 @@ CSS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.css")
 # at this size the half-block `█ █` that has to stand for an H is indistinguishable from two
 # `I`s, so TIRITH read as TIRITII. Letter-spaced bold caps stay unambiguous, which matters
 # more for a name than height does.
-BANNER = "[b]T I R I T H[/b]   [dim]Open-source IaC governance[/dim]"
+BANNER = "[b]T I R I T H[/b]   [dim]Policy as Code[/dim]"
 
 
 class TirithApp(App):
