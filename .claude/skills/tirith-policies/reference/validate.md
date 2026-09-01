@@ -6,9 +6,27 @@ It is in development. The released CLI dispatches `tirith`, `tirith ui` and `tir
 check` and nothing else, so `tirith lint` in a pipeline you are writing for someone else is a step
 that fails with an unrecognised argument.
 
-Until it ships, validation is the two things below: check the shape against the closed vocabulary
-by hand, then evaluate the policy against a document that should fail it. The second is the one
-that matters, and it is the one that is available.
+Until it ships there are two ways to validate, and both are available today.
+
+## The interactive validator does ship
+
+`tirith ui` carries one. `src/tirith/tui/validate.py` reads the live `EVALUATORS_DICT` and
+`PROVIDERS_DICT` and returns errors and warnings as data, and the Playground runs it on every
+keystroke while the Builder refuses to add a check that fails it. So the registry-checking that
+`tirith lint` will do from the command line is already in the product, just interactively:
+
+```bash
+pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
+tirith ui --policy .tirith/policies/my-policy.json
+```
+
+It is advisory by design: it reports a malformed policy rather than refusing to evaluate it,
+because experimenting with a half-written policy is the point of a playground.
+
+## Without the interface
+
+Check the shape against the closed vocabulary by hand, then evaluate the policy against a document
+that should fail it. The second is the one that matters.
 
 ## Check the shape
 

@@ -375,8 +375,11 @@ export function verdict(evaluation) {
  * Messages come from the evaluator classes in src/tirith/core/evaluators/, and
  * values are wrapped in backticks by utils.json_format_value.
  *
- * Note what is NOT in any of these lines: the resource address. That is real,
- * and it is the reason `tirith ui` exists — the README says so in as many words.
+ * Note what is NOT in any of these printed lines: the resource address. The address is
+ * carried in the result document, in `evaluators[].result[].meta`, which for the
+ * terraform_plan provider is the whole resource_change. prettyprinter.py drops meta when
+ * it renders, so the terminal never shows it, and `tirith ui` reads the same document and
+ * does. That is one of the reasons the Explorer view exists.
  * ------------------------------------------------------------------------- */
 
 const MESSAGES = {

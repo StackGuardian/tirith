@@ -118,7 +118,8 @@ const product = {
     'That is Tirith, drawn as a floor plan. A plan arrives at the gate before anything ' +
       'is applied, every rule you have written gets its say on it in turn, and the change ' +
       'either comes out the far side or it does not move at all. A rule that passes does ' +
-      'not excuse the one behind it. A rule that fails is not outvoted by the rest.',
+      'not excuse the one behind it, and where the rules are joined by and, one refusal is ' +
+      'the whole verdict.',
     'Which is the refusal the city was built on. No single move gets you to the top, and ' +
       'nothing reaches production without walking the whole route.',
   ],

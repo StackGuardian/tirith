@@ -66,25 +66,30 @@ const involve = {
 const hero = {
   title: ['Stop unsafe IaC', 'before it is applied.'],
   /*
-   * Four capabilities, each checked against the source before it was written down.
+   * Every capability here is checked against src/tirith/ before it is written down.
    *
-   * "Protect sensitive values" was in an earlier draft of this sentence and is not true:
-   * the plan provider has no `sensitive`, `before_sensitive` or `after_sensitive`
-   * handling at all -- that is 09-E8, scheduled for R3. What is true, and is the stronger
-   * claim, is that the document never leaves the runner. Local mode makes no network
-   * call, and that is a published commitment rather than current behaviour.
+   * SENSITIVE VALUES, and the exact shape of the claim, because this has been got wrong in
+   * both directions. Tirith does read terraform's `before_sensitive` / `after_sensitive`
+   * markers, in platform/redact.py, to mask flagged values client-side before anything is
+   * uploaded. What it cannot do is let you write a policy *about* sensitivity: no provider
+   * exposes those markers as a value a condition can test, and that is roadmap R3.
    *
-   * "Centralised policies" is `tirith platform check`, which does ship -- but centralised
-   * is the opposite of this project's premise, so it is phrased as the option it is. The
+   * So the claim belongs on the At scale page, where something is actually being sent, and
+   * not in this lede. In local mode the document never leaves the machine, so there is
+   * nothing to mask and the promise answers a question nobody asked.
+   *
+   * "Centralised policies" is `tirith platform check`, which does ship -- but centralised is
+   * the opposite of this project's premise, so it is phrased as the option it is. The
    * commercial mode must not read as a condition of using the tool.
    *
-   * The last clause is the one no competitor answers, so it is the one the sentence ends
-   * on rather than a feature any scanner could also claim.
+   * The last clause is the one no competitor answers, so the sentence ends on it rather
+   * than on a feature any scanner could also claim.
    */
   lede:
-    'Plug IaC governance into any IaC pipeline. ' +
-    'Evaluate plans with Tirith, protect sensitive values, enforce centralised policies, ' +
-    'and surface actionable results before infrastructure changes are applied. ',
+    'Plug IaC governance into any pipeline you already run. Tirith evaluates the plan on ' +
+    'your own runner, enforces one policy set across repositories when you want one, and ' +
+    'returns a single actionable verdict before the change is applied, including the ' +
+    'outcome every scanner reports as success: a check that never ran.',
   // "On your own runner" is the lede's line now, so this no longer repeats it.
   actions: [
     {
@@ -97,20 +102,22 @@ const hero = {
        * one thing the block did not show. `-input=false` because CI has no terminal to
        * prompt at, and it is the flag whose absence hangs a job rather than failing it.
        */
-      command: `- run: |
-    terraform plan -out=tfplan -input=false
-    terraform show -json tfplan > plan.json
+      command: `- run: terraform plan -out=tfplan -input=false
 
 - uses: StackGuardian/tirith-iac-governance-action@v2
-  with: {fail-on-error: true}`,
+  with:
+    plan-file: tfplan
+    fail-on-error: true`,
       prompt: false,
       // Two, specifically: pull-requests: write for the comment, checks: write for the
       // check run. It is the only setup step the Action cannot do for you, and the one
       // thing people get wrong on a first install.
-      facts: ['Needs two write permissions', 'Runs on your runner', 'Comments on the pull request'],
+      facts: ['Needs two write permissions', 'Runs on your runner', 'No plan JSON on disk'],
       caveat:
         'The Action runs Tirith on the GitHub runner and reports the verdict on the pull ' +
-        'request. The setup below adds the policy, plan export, and permissions.',
+        'request. Handing it the binary plan rather than exporting JSON first is one step ' +
+        'shorter, and renders the plan in memory, so no unmasked plan JSON is written to ' +
+        'the workspace. The setup below adds the policy and the permissions.',
     },
     {
       id: 'gitlab',
@@ -247,7 +254,8 @@ const announcement = {
   command: 'tirith ui',
   body:
     'explores a failing evaluation down to the resource that caused it, builds policies ' +
-    'from a form, and runs a playground.',
+    'from a form, validates them as you type, and serves the playground on a port for ' +
+    'people who have installed nothing.',
   to: '/docs/tirith-usage/interactive-interface/',
   linkLabel: 'Read more',
 };
@@ -298,7 +306,7 @@ const how = {
       product: true,
     },
     {n: '3', k: 'Policies test the change', v: 'JSON conditions check each matching value and produce one verdict.'},
-    {n: '4', k: 'CI continues or stops', v: 'A pass moves on to apply. A failure explains the rejected values and exits non-zero.'},
+    {n: '4', k: 'CI continues or stops', v: 'A pass moves on to apply. A failure explains the rejected values and, with fail-on-error, exits 3.'},
   ],
 };
 
@@ -371,13 +379,13 @@ const explore = {
     {
       glyph: '{}',
       title: 'Providers',
-      body: 'Learn how Tirith reads OpenTofu and Terraform plans, Infracost, Kubernetes and JSON.',
+      body: 'Learn how Tirith reads OpenTofu and Terraform plans, Kubernetes, Infracost, StackGuardian workflows, and any other JSON or YAML document.',
       to: '/docs/tirith-providers/providers-overview/',
     },
     {
       glyph: 'ui',
       title: 'tirith ui',
-      body: 'Inspect failures, build a policy, or experiment in the playground.',
+      body: 'Inspect failures down to the resource, build a policy from a form, validate as you type, or serve the playground to your team over HTTP.',
       to: '/docs/tirith-usage/interactive-interface/',
       tag: 'Beta',
     },

@@ -239,6 +239,6 @@ export const HIGHLIGHTS = [
     // this category answers at all.
     title: 'A skipped check can never read as a pass',
     status: 'inDev',
-    body: 'A rule that could not run is reported as unevaluated, never as success.',
+    body: 'A rule that could not run will be reported as unevaluated, never as success.',
   },
 ];

@@ -40,7 +40,9 @@ tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 | `0` | Every check passed | Continue to `apply` |
 | `3` | A policy failed | Fail the job: the change was refused |
 | `1` | No verdict could be reached | Fail the job, but report a **tool or input** problem |
-| `2` | Platform mode timed out | Fail the job; `platform check` only |
+
+`ExitStatus.ERROR_TIMEOUT = 2` is declared in `status.py` and returned nowhere, including on the
+platform path, which maps a timeout to `1`. Do not branch a pipeline on it.
 
 `3` is deliberately not `1`. Collapsing them reports an outage as a policy violation, and a job
 that cannot tell them apart cannot tell a working gate from a broken one.

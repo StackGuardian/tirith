@@ -248,7 +248,7 @@ export default function Learn() {
               <span className={styles.fieldLabel}>Install</span>
               <pre className={styles.installBlock}>
                 <code>
-                  pip install git+https://github.com/StackGuardian/tirith.git
+                  pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
                 </code>
               </pre>
               <Link className={styles.textLink} to="/docs/getting-started-with-tirith/">

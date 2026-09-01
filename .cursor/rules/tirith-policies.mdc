@@ -34,8 +34,8 @@ rejects those with `Unsupported operator in eval_expression`. `!` is the only ne
 the positive detector and invert it. An evaluator the expression never references cannot affect
 the verdict.
 
-**Verdicts:** exit `0` passed · `3` a policy failed · `1` no verdict was reached · `2` platform
-timeout. `final_result: null` means every check was skipped: that is not a pass, it exits `1`, and
+**Verdicts:** exit `0` passed · `3` a policy failed · `1` no verdict was reached. (`2` is declared
+in `status.py` but never returned.) `final_result: null` means every check was skipped: that is not a pass, it exits `1`, and
 it usually means `provider_args` matched nothing.
 
 **Gotchas:**

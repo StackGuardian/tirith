@@ -220,7 +220,7 @@ const loop = {
 const VIEWS = [
   [
     'Policy enforcement',
-    'Every evaluation across the estate, rolled up: 939 passed, 98 failed, 391 warned. The row underneath is one run, and it counts skipped checks separately from passed ones, which is the same four-outcome result the CLI returns.',
+    'Every evaluation across the estate, rolled up: 939 passed, 98 failed, 391 warned. The row underneath is one run, and it counts skipped checks separately from passed ones, the same distinction the CLI draws. Warned is the platform adding a fourth outcome: the CLI reports three, because nothing in the engine reads meta.severity yet.',
     {
       src: 'img/platform/policy-enforcement.png',
       alt: 'A policy enforcement summary: 1.4k total evaluations, 939 pass, 98 fail, 391 warn, and a single run reporting pass, failed, warning and skipped counts separately.',
@@ -670,6 +670,51 @@ export default function AtScale() {
               </li>
             ))}
           </ol>
+
+          {/*
+           * What leaves the runner, and what does not. This is the objection the loop above
+           * raises and it deserves more than the clause it gets in the FAQ, because what
+           * ships is unusually strong: platform/redact.py masks client-side by design, drops
+           * planned_values wholesale, scrubs provider expressions, and publishes its own
+           * caveat. Stating the caveat next to the capability is the same move the rest of
+           * this site makes.
+           */}
+          <div className={styles.loop} style={{marginTop: '2rem'}}>
+            <ul className={styles.redact}>
+              <li>
+                <span className={styles.redactK}>Masked before it leaves</span>
+                <span className={styles.redactV}>
+                  Values Terraform marked sensitive are replaced on your runner, not on
+                  arrival. Once bytes reach a server the exposure has already happened, so
+                  masking there would be theatre.
+                </span>
+              </li>
+              <li>
+                <span className={styles.redactK}>The mirror is dropped, not masked</span>
+                <span className={styles.redactV}>
+                  A plan repeats every value in <code>planned_values</code>, which carries no
+                  sensitivity markers of its own. It is removed entirely rather than scrubbed,
+                  because a real plan leaked a file body through exactly that path.
+                </span>
+              </li>
+              <li>
+                <span className={styles.redactK}>Provider blocks are scrubbed</span>
+                <span className={styles.redactV}>
+                  Provider configuration can hold hardcoded credentials, so everything except
+                  the handful of fields a policy can read is stripped.
+                </span>
+              </li>
+              <li>
+                <span className={styles.redactK}>And the limit, stated</span>
+                <span className={styles.redactV}>
+                  Terraform&rsquo;s markers are not exhaustive. A value that flows through a
+                  local, or comes from a provider that did not mark its schema, arrives
+                  unmarked and marker-driven masking will not catch it. Sending less is the
+                  only defence against that, which is why the two rules above exist.
+                </span>
+              </li>
+            </ul>
+          </div>
 
           {/*
            * Ghost, not primary. The enquiry form further down is this page's primary

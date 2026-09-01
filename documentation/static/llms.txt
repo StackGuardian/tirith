@@ -20,8 +20,9 @@ anyone on the team. There is no rule DSL and no embedded language.
 - **`tirith lint` is not in the released package.** It is in development. The released CLI
   dispatches `tirith`, `tirith ui` and `tirith platform check` and nothing else.
 - **Exit codes are a contract, not a convention.** `0` passed, `3` a policy failed, `1`
-  Tirith could not reach a verdict, `2` platform timeout. `3` is deliberately not `1`: a
-  caller has to be able to page the platform team on one and the change author on the other.
+  Tirith could not reach a verdict. `3` is deliberately not `1`: a caller has to be able to page
+  the platform team on one and the change author on the other. (`ERROR_TIMEOUT = 2` exists in
+  `status.py` but is never returned; do not write a pipeline that branches on it.)
 - **`final_result: null` is not a pass.** It means every check was skipped, so the policy
   evaluated nothing, and it exits `1`. A check that could not run is reported as unevaluated
   rather than as success.

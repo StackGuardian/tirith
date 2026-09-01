@@ -102,7 +102,7 @@ export const DEMO_PHASES = [
       title: '1 failed · 1 warned · 2 passed',
       items: [
         'The Owner policy failed on aws_s3_bucket.analytics',
-        'The empty value is named in the report',
+        'The rejected value is in the report, and the pull-request comment names the resource',
         'The Terraform job failed before Apply',
       ],
       note: 'The only code change is the ten-line bucket resource shown above.',
@@ -210,12 +210,11 @@ export const PIPELINE_TARGETS = [
   checks: write
 
 steps:
-  - run: |
-      terraform plan -out=tfplan -input=false
-      terraform show -json tfplan > plan.json
+  - run: terraform plan -out=tfplan -input=false
 
   - uses: StackGuardian/tirith-iac-governance-action@v2
     with:
+      plan-file: tfplan
       fail-on-error: true`,
   },
   {

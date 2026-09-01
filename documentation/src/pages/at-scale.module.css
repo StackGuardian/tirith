@@ -695,6 +695,42 @@
   line-height: 1.55;
 }
 
+/* What leaves the runner: four ruled rows, same treatment as .loop above it. */
+.redact {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tp-rule);
+}
+
+.redact li {
+  display: grid;
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+  gap: 0.35rem 1.25rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.redactK {
+  font-family: var(--tp-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.redactV {
+  max-width: 70ch;
+  color: var(--tp-soft);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 48rem) {
+  .redact li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .slotImage {
   display: block;
   width: 100%;

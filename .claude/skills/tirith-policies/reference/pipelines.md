@@ -49,20 +49,23 @@ permissions:
 
 steps:
   - uses: actions/checkout@v4
-
-  - run: |
-      terraform plan -out=tfplan -input=false
-      terraform show -json tfplan > plan.json
+  - run: terraform plan -out=tfplan -input=false
 
   - uses: StackGuardian/tirith-iac-governance-action@v2
     with:
+      plan-file: tfplan
       fail-on-error: true
 ```
 
-With `plan.json` in the working directory and policies under `.tirith/policies`, that is the whole
-integration: no other `with:` keys are required, because the action finds the document by
-convention (`plan.json` or `tfplan.json`). Without `fail-on-error` it reports findings but does
-not block.
+`plan-file` takes the **binary** plan and renders it with `terraform show -json` in memory, so no
+unmasked plan JSON is written to the workspace. Prefer it on GitHub: it is one step shorter than
+exporting first, and a plan file on disk is a plan file something else can read.
+
+Exporting JSON yourself also works, and then no `with:` keys are needed at all: the action finds
+the document by convention (`plan.json` or `tfplan.json`) and the policies under
+`.tirith/policies`. `plan-file` and `input-path` cannot be combined.
+
+Without `fail-on-error` it reports findings but does not block.
 
 The two write permissions are the only setup the action cannot do for itself, and the usual cause
 of a first install that runs but posts nothing.
