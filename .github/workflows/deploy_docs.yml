@@ -29,20 +29,13 @@ jobs:
         cd documentation
         npm ci
 
-    # POSTHOG_KEY is optional. Unset -- on a fork, or in a pull-request build --
-    # the site ships no analytics script at all, which is the behaviour we want
-    # everywhere except the published site.
+    # POSTHOG_KEY is optional. Unset -- on a fork, or in any build that is not this one --
+    # the client module never loads the script and src/analytics.js no-ops, so the published
+    # site is the only place anything is reported.
     - name: Build documentation site
       env:
         POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
         POSTHOG_HOST: ${{ vars.POSTHOG_HOST }}
-        # The At scale enquiry form. Neither is a secret -- a HubSpot portal id
-        # and form guid are public by design, since the browser posts to them
-        # directly -- but they are supplied here rather than committed so a
-        # fork's build does not point at StackGuardian's CRM. Unset, the form
-        # disables itself and explains why.
-        HUBSPOT_PORTAL_ID: ${{ vars.HUBSPOT_PORTAL_ID }}
-        HUBSPOT_FORM_GUID: ${{ vars.HUBSPOT_FORM_GUID }}
       run: |
         cd documentation
         npm run build

@@ -60,18 +60,74 @@ The build is written to `documentation/build/`, which is what the deploy workflo
 
 ## Environment
 
-Everything below is optional and nothing is committed. Unset, each feature degrades to a
-sensible state rather than failing — which is the correct behaviour for a local
-`docusaurus start`, a fork's build and a contributor's checkout.
+Two variables, both optional, neither committed. Unset, the analytics client never loads the
+script and `src/analytics.js` no-ops: the right behaviour for a local `docusaurus start`, a
+fork's build and a contributor's checkout. Only the deploy workflow supplies them, so the
+published site is the one place anything is reported.
 
-| Variable | Effect when unset |
+| Variable | Where it comes from | Unset |
+| --- | --- | --- |
+| `POSTHOG_KEY` | PostHog project API key, `phc_…` | No tracking script is loaded at all |
+| `POSTHOG_HOST` | `https://eu.i.posthog.com` or `https://us.i.posthog.com` | Defaults to the EU host |
+
+### Getting the values
+
+In PostHog: **Settings → Project → Project API key**. It starts `phc_`. That is the *project*
+key, not a personal API key (`phx_…`), which will not work here.
+
+The host is your region, and it is the domain you log in to: `eu.posthog.com` means
+`https://eu.i.posthog.com`, `us.posthog.com` means `https://us.i.posthog.com`. On EU you can
+leave `POSTHOG_HOST` unset, because that is the default.
+
+### Adding them
+
+In the GitHub repository: **Settings → Secrets and variables → Actions**.
+
+- `POSTHOG_KEY` goes on the **Secrets** tab (`New repository secret`).
+- `POSTHOG_HOST` goes on the **Variables** tab (`New repository variable`).
+
+The two tabs are not interchangeable: `deploy_docs.yml` reads them as
+`${{ secrets.POSTHOG_KEY }}` and `${{ vars.POSTHOG_HOST }}`, so a host added as a secret is
+read as empty and silently falls back to the EU default.
+
+### The key is not a secret, and that matters
+
+A PostHog project API key is designed to be public. It is initialised in the browser, so it
+ships in the built JavaScript and anyone can read it from the deployed page. Keeping it in
+GitHub secrets stops it being committed to the repository, which is worth doing, but it does
+not keep it private.
+
+What actually stops someone else sending events with it is PostHog's own
+**Settings → Project → Authorized URLs**. Add the site's origin there.
+
+### Trying it locally
+
+```bash
+POSTHOG_KEY=phc_your_key npm run build && npm run serve
+```
+
+Then look for a request to `/static/array.js` on your PostHog host. Without the variable there
+is no such request, which is the check that the unset path still works.
+
+### What it collects, and what it stores
+
+`src/clientModules/posthog.js` is deliberately restrained, and the settings are the point:
+
+| Setting | Effect |
 | --- | --- |
-| `POSTHOG_KEY`, `POSTHOG_HOST` | The client module never loads the script and `src/analytics.js` no-ops. |
-| `HUBSPOT_PORTAL_ID`, `HUBSPOT_FORM_GUID` | The At scale enquiry form disables itself and says why. |
+| `autocapture: false` | Only the events named in `src/analytics.js` are sent. No keystrokes, no clicks on unnamed elements. |
+| `disable_session_recording: true` | No replay. The forms and code blocks on these pages are exactly what a recording would capture. |
+| `disable_surveys: true` | Nothing can open a dialog over the page. |
+| `persistence: 'memory'` | **Cookieless.** Nothing is written to the visitor's device, so there is no cookie to consent to and no banner needed. |
+| `person_profiles: 'identified_only'` | No person profile is created for an anonymous visitor. |
 
-A HubSpot portal id and form guid are not secrets — the browser posts to them directly — but
-they are supplied from the environment rather than committed so a fork's build does not point
-at StackGuardian's CRM.
+Memory persistence has a cost worth knowing: the id lives for the lifetime of the JavaScript
+context, so client-side navigation within a visit is one id and a full reload starts a new one.
+Returning visitors cannot be recognised and retention is not measurable. Counts and funnels
+within a visit still work, which is what a documentation site actually needs.
+
+Do not change `persistence` back to `localStorage+cookie` without adding a consent banner and a
+privacy notice first.
 
 ## Brand
 

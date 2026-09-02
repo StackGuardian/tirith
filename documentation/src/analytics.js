@@ -60,9 +60,12 @@ export const EVENTS = {
   scaleView: 'at_scale_view',
   offerCta: 'offer_cta_click',
   scaleCapabilityExpand: 'at_scale_capability_expand',
-  scaleFormStart: 'at_scale_form_start',
-  scaleFormSubmit: 'at_scale_form_submit',
   scaleToOss: 'at_scale_to_oss',
+  // The two at_scale_form_* events went with the enquiry form, which the At scale page
+  // replaced with a booking link. Nothing on the site can emit them, so they are not
+  // listed: an event vocabulary that names events nothing fires is a dashboard full of
+  // series that never move.
+  scaleBookCall: 'at_scale_book_call',
 
   // AI
   aiView: 'ai_view',

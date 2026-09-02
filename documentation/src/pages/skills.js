@@ -1,8 +1,8 @@
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
+import {EVENTS, capture, track, usePageView} from '../analytics';
 import Heading from '@theme/Heading';
 
-import {EVENTS, capture, track, usePageView} from '../analytics';
 import TirithMark from '../components/brand/TirithMark';
 import CopyField from '../components/landing/CopyField';
 import styles from './skills.module.css';
@@ -197,8 +197,7 @@ export default function Skills() {
               <div className={styles.heroLinks}>
                 <a
                   className={styles.btnPrimary}
-                  href="#install"
-                  onClick={track(EVENTS.skillCopy, {target: 'hero'})}>
+                  href="#install">
                   Install the skills <span aria-hidden="true">→</span>
                 </a>
                 <a className={styles.btnGhost} href="#skills">
@@ -225,7 +224,6 @@ export default function Skills() {
                   command={c.command}
                   label={`skill-${c.id}`}
                   prompt={false}
-                  onCopy={() => capture(EVENTS.skillCopy, {file: c.id})}
                 />
                 <p className={styles.clientVerify}>
                   <span className={styles.verifyLabel}>Check it worked</span>
@@ -262,8 +260,7 @@ export default function Skills() {
                     <span className={styles.skillName}>{name}</span>
                     <Link
                       className={styles.skillFile}
-                      href={`${REPO}/blob/main/${SKILL_DIR}/${file}`}
-                      onClick={track(EVENTS.skillCopy, {file})}>
+                      href={`${REPO}/blob/main/${SKILL_DIR}/${file}`}>
                       <code>{file}</code>
                     </Link>
                     <span className={styles.skillWhat}>{what}</span>
@@ -329,8 +326,7 @@ export default function Skills() {
             <div className={styles.finaleLinks}>
               <Link
                 className={styles.btnPrimary}
-                to={ROUTES.atScale}
-                onClick={track(EVENTS.sgMcpInterest, {stage: 'skill-page'})}>
+                to={ROUTES.atScale}>
                 Tirith at scale <span aria-hidden="true">→</span>
               </Link>
               <Link className={styles.btnGhost} to={ROUTES.ci}>

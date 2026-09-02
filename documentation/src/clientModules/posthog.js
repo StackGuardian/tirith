@@ -23,12 +23,35 @@ if (ExecutionEnvironment.canUseDOM) {
 
     window.posthog.init(posthogKey, {
       api_host: posthogHost || 'https://eu.i.posthog.com',
+
       // A public documentation page has no business recording what a visitor
       // types, and the landing page's forms and code blocks would be exactly
       // what got recorded.
       autocapture: false,
       disable_session_recording: true,
-      persistence: 'localStorage+cookie',
+
+      // Surveys can open a dialog over the page. Nothing here asks for one.
+      disable_surveys: true,
+
+      /*
+       * COOKIELESS. This was `localStorage+cookie`, which is what makes a
+       * consent banner necessary in the EU: a cookie set for analytics is not
+       * strictly necessary to deliver the page, and this site has no banner and
+       * no privacy notice to point at. Memory persistence stores nothing on the
+       * visitor's device, so there is nothing to consent to.
+       *
+       * What it costs: the distinct id lives for the lifetime of the JavaScript
+       * context, so client-side navigation within a visit stays one id and a
+       * full reload starts a new one. Returning visitors cannot be recognised
+       * and retention is not measurable. That is an acceptable trade for a docs
+       * site whose actual question is "does anyone reach section 03", which is a
+       * count.
+       *
+       * `identified_only` keeps it from creating a person profile per anonymous
+       * visitor, which would be a stored identity in all but name.
+       */
+      persistence: 'memory',
+      person_profiles: 'identified_only',
     });
   }
 }

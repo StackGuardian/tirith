@@ -1,12 +1,11 @@
 import {useState} from 'react';
 import Head from '@docusaurus/Head';
+import {EVENTS, track, usePageView} from '../analytics';
 import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
-import {EVENTS, capture, track, usePageView} from '../analytics';
 import TirithMark from '../components/brand/TirithMark';
 import {NEW_ISSUE, REPO, issueUrl} from '../data/repo';
 import Colophon from '../components/site/Colophon';
@@ -276,9 +275,7 @@ const FAQ = [
   ],
 ];
 
-const REPO_BANDS = ['1–10', '11–50', '51–250', '250+'];
-const CI_SYSTEMS = ['GitHub Actions', 'GitLab CI', 'Azure DevOps', 'Jenkins', 'Other'];
-const PROBLEMS = ['Visibility', 'Policy consistency', 'Approvals', 'Remediation', 'Audit', 'Governed execution'];
+const REPO_BANDS = ['1–10', '11–50', '51–250', '250+'];const PROBLEMS = ['Visibility', 'Policy consistency', 'Approvals', 'Remediation', 'Audit', 'Governed execution'];
 
 /* --------------------------------------------------------------------------- */
 
@@ -293,182 +290,6 @@ function SectionHead({num, title, lede}) {
       </div>
       {lede ? <p className={styles.sectionLede}>{lede}</p> : null}
     </div>
-  );
-}
-
-/**
- * The enquiry form.
- *
- * Submits to HubSpot's forms API directly from the browser, which is what that endpoint
- * is designed for, so a static site needs no backend. The portal id and form guid come
- * from build-time configuration rather than being committed here -- and when they are
- * absent the form disables itself and says why, instead of silently posting into the void.
- *
- * Analytics never sees free text. Only the enumerated fields -- repository band, CI
- * systems and primary problem -- are captured; email, organisation and the context box
- * are not, and must not be.
- */
-function EnquiryForm() {
-  const {siteConfig} = useDocusaurusContext();
-  const {hubspotPortalId, hubspotFormGuid} = siteConfig.customFields || {};
-  const configured = Boolean(hubspotPortalId && hubspotFormGuid);
-
-  const [state, setState] = useState('idle');
-  const [started, setStarted] = useState(false);
-
-  const onFirstInput = () => {
-    if (!started) {
-      setStarted(true);
-      capture(EVENTS.scaleFormStart);
-    }
-  };
-
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    if (!configured) return;
-
-    const data = new FormData(event.target);
-    const band = data.get('repository_band');
-    const problem = data.get('primary_problem');
-    const ci = data.getAll('ci_systems');
-
-    // Enumerated values only. Never the email, organisation or context box.
-    capture(EVENTS.scaleFormSubmit, {
-      repo_count_band: band,
-      primary_problem: problem,
-      ci_systems: ci.join(','),
-    });
-
-    setState('sending');
-    try {
-      const response = await fetch(
-        `https://api.hsforms.com/submissions/v3/integration/submit/${hubspotPortalId}/${hubspotFormGuid}`,
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            fields: [
-              {objectTypeId: '0-1', name: 'email', value: data.get('email')},
-              {objectTypeId: '0-1', name: 'company', value: data.get('company')},
-              {objectTypeId: '0-1', name: 'repository_band', value: band},
-              {objectTypeId: '0-1', name: 'ci_systems', value: ci.join('; ')},
-              {objectTypeId: '0-1', name: 'primary_problem', value: problem},
-              {objectTypeId: '0-1', name: 'context', value: data.get('context') || ''},
-            ],
-            context: {
-              pageUri: typeof window !== 'undefined' ? window.location.href : '',
-              pageName: 'Tirith at scale',
-            },
-          }),
-        },
-      );
-      setState(response.ok ? 'sent' : 'failed');
-    } catch {
-      setState('failed');
-    }
-  };
-
-  if (state === 'sent') {
-    return (
-      <p className={styles.prose}>
-        <strong>Thanks.</strong> While we review your setup, govern one repository locally
-        with Tirith. <Link to="/docs/tirith-usage/ci-integration/">The quick start</Link>{' '}
-        takes about two lines.
-      </p>
-    );
-  }
-
-  return (
-    <>
-      {configured ? null : (
-        <p className={styles.notice} role="note">
-          <span className={styles.noticeTag}>Form disabled</span>
-          This build has no HubSpot form configured, so nothing here would send. Set{' '}
-          <code>HUBSPOT_PORTAL_ID</code> and <code>HUBSPOT_FORM_GUID</code> at build time,
-          with matching HubSpot properties for <code>email</code>, <code>company</code>,{' '}
-          <code>repository_band</code>, <code>ci_systems</code>,{' '}
-          <code>primary_problem</code> and <code>context</code>. Until then the issue link
-          below is the working route.
-        </p>
-      )}
-
-      <form className={styles.form} onSubmit={onSubmit} onChange={onFirstInput}>
-        <div className={styles.field}>
-          <label htmlFor="email">Work email</label>
-          <input id="email" name="email" type="email" required disabled={!configured} />
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="company">Organisation</label>
-          <input id="company" name="company" type="text" required disabled={!configured} />
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="repository_band">Approximate number of IaC repositories</label>
-          <select id="repository_band" name="repository_band" disabled={!configured}>
-            {REPO_BANDS.map((band) => (
-              <option key={band} value={band}>
-                {band}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* A real <legend>, so the checkbox group is labelled for a screen reader. */}
-        <fieldset className={styles.field}>
-          <legend>CI systems</legend>
-          <div className={styles.checkboxRow}>
-            {CI_SYSTEMS.map((system) => (
-              <label key={system}>
-                <input type="checkbox" name="ci_systems" value={system} disabled={!configured} />
-                {system}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <div className={styles.field}>
-          <label htmlFor="primary_problem">Primary problem</label>
-          <select id="primary_problem" name="primary_problem" disabled={!configured}>
-            {PROBLEMS.map((problem) => (
-              <option key={problem} value={problem}>
-                {problem}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="context">Anything else (optional)</label>
-          <textarea id="context" name="context" rows={4} disabled={!configured} />
-          <small>
-            Please do not paste source code, plan files, tokens or credentials. A sentence
-            about how your IaC reaches production today is more useful than any of them.
-          </small>
-        </div>
-
-        <div>
-          <button
-            type="submit"
-            className={styles.btnPrimary}
-            disabled={!configured || state === 'sending'}>
-            {state === 'sending' ? 'Sending…' : 'Discuss rolling this out'}
-          </button>
-        </div>
-
-        {state === 'failed' ? (
-          <p className={styles.formNote}>
-            That did not send. Please <Link href={NEW_ISSUE}>open an issue</Link> or email
-            the maintainers instead.
-          </p>
-        ) : null}
-
-        <p className={styles.formNote}>
-          Submitting shares these details with StackGuardian so they can reply. Nothing you
-          type here reaches the project&apos;s analytics.
-        </p>
-      </form>
-    </>
   );
 }
 
@@ -536,7 +357,7 @@ export default function AtScale() {
                 <a
                   className={styles.btnPrimary}
                   href="#contact"
-                  onClick={track(EVENTS.offerCta, {offer: 'at-scale'})}>
+                  onClick={track(EVENTS.offerCta, {offer: 'at-scale', source: 'hero'})}>
                   Discuss rolling this out <span aria-hidden="true">→</span>
                 </a>
                 <Link
@@ -596,14 +417,13 @@ export default function AtScale() {
           <div className={styles.actions}>
             <Link
               className={styles.btnPrimary}
-              to="/docs/tirith-usage/ci-integration/"
-              onClick={track(EVENTS.scaleToOss, {source: 'offer'})}>
+              to="/docs/tirith-usage/ci-integration/">
               Govern your first pipeline <span aria-hidden="true">→</span>
             </Link>
             <a
               className={styles.btnGhost}
               href="#contact"
-              onClick={track(EVENTS.offerCta, {offer: 'at-scale'})}>
+              onClick={track(EVENTS.offerCta, {offer: 'at-scale', source: 'offer'})}>
               Discuss rolling this out <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -714,7 +534,10 @@ export default function AtScale() {
            * would quietly demote it.
            */}
           <div className={styles.loopCta}>
-            <Link className={styles.btnGhost} href={loop.cta.href}>
+            <Link
+              className={styles.btnGhost}
+              href={loop.cta.href}
+              onClick={track(EVENTS.scaleBookCall, {source: 'loop'})}>
               {loop.cta.label} <span aria-hidden="true">→</span>
             </Link>
             <span className={styles.loopCtaNote}>
@@ -840,10 +663,6 @@ export default function AtScale() {
            * a reader who has just been told the open-source tool is enough for most teams.
            * The call picks a time and asks for nothing else.
            *
-           * EnquiryForm is still defined above and no longer rendered. It is kept because
-           * the HubSpot wiring it depends on (the portal id and form guid, supplied from the
-           * environment and never committed) is still in docusaurus.config.js and in the
-           * deploy workflow, and untangling that is a separate decision from this one.
            */}
           <div className={styles.bookCall}>
             <Link className={styles.btnPrimary} href="https://www.stackguardian.io/book-call">

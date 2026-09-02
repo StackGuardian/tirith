@@ -1,24 +1,13 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 
 /*
- * PostHog is configured entirely from the environment, and nothing is committed. An
- * unset key never loads the script and src/analytics.js no-ops -- which is the correct
- * behaviour for a local `docusaurus start`, a fork's build and a contributor's checkout.
- * Only .github/workflows/deploy_docs.yml supplies a key, so the published site is the
- * one place anything is reported.
+ * PostHog is configured entirely from the environment and nothing is committed. An unset key
+ * means the client module never loads the script and src/analytics.js no-ops, which is the
+ * correct behaviour for a local `docusaurus start`, a fork's build and a contributor's
+ * checkout. Only a build that supplies POSTHOG_KEY reports anything.
  */
 const posthogKey = process.env.POSTHOG_KEY || '';
 const posthogHost = process.env.POSTHOG_HOST || 'https://eu.i.posthog.com';
-
-/*
- * The At scale enquiry form posts straight to HubSpot from the browser, which is what that
- * endpoint is for -- a static site needs no backend. Neither value is a secret: a portal
- * id and form guid are public by design, since the browser sends them. They are supplied
- * from the environment rather than committed so a fork's build does not point at
- * StackGuardian's CRM. Unset, the form disables itself and says why.
- */
-const hubspotPortalId = process.env.HUBSPOT_PORTAL_ID || '';
-const hubspotFormGuid = process.env.HUBSPOT_FORM_GUID || '';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -152,11 +141,11 @@ const config = {
     'https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap',
   ],
 
+  // PostHog only. The HubSpot form this used to carry is gone: the At scale page converts
+  // through a booking link now, so nothing reads a portal id or form guid.
   customFields: {
     posthogKey,
     posthogHost,
-    hubspotPortalId,
-    hubspotFormGuid,
   },
 
   clientModules: ['./src/clientModules/posthog.js'],
