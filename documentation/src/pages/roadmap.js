@@ -5,6 +5,7 @@ import Heading from '@theme/Heading';
 import TirithMark from '../components/brand/TirithMark';
 import Colophon from '../components/site/Colophon';
 import {RELEASES} from '../data/roadmap';
+import {NEW_ISSUE, issueUrl} from '../data/repo';
 import styles from './roadmap.module.css';
 import '../css/chrome.module.css';
 
@@ -80,9 +81,8 @@ export default function Roadmap() {
               <Link className={styles.btnPrimary} to="/docs/getting-started-with-tirith/">
                 What works today <span aria-hidden="true">→</span>
               </Link>
-              <Link
-                className={styles.btnGhost}
-                href="https://github.com/StackGuardian/tirith/issues/new/choose">
+              {/* Deliberately the picker: "ask for something" is not one template. */}
+              <Link className={styles.btnGhost} href={NEW_ISSUE}>
                 Ask for something <span aria-hidden="true">→</span>
               </Link>
             </div>
@@ -127,9 +127,12 @@ export default function Roadmap() {
             need is missing, saying so is the most useful thing you can do.
           </p>
           <div className={styles.heroLinks}>
-            <Link
-              className={styles.btnPrimary}
-              href="https://github.com/StackGuardian/tirith/issues/new/choose">
+            {/*
+             * Straight to the feature-request template, not the picker. A button that names
+             * one action should not open a menu of three, and the template carries the
+             * `enhancement` label and the title prefix, which a blank form does not.
+             */}
+            <Link className={styles.btnPrimary} href={issueUrl({template: 'feature_request.md'})}>
               Request a feature <span aria-hidden="true">→</span>
             </Link>
             <Link className={styles.btnGhost} to="/learn/">

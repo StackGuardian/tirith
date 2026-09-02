@@ -12,6 +12,7 @@ import Specimen from '../components/landing/Specimen';
 import {INTEGRATIONS} from '../data/demoPhases';
 import {HIGHLIGHTS} from '../data/roadmap';
 import {AGENT_BRIEF} from '../data/agentBrief';
+import {CONTRIBUTORS} from '../data/contributors';
 import styles from './index.module.css';
 import '../css/chrome.module.css';
 
@@ -53,11 +54,23 @@ const REPO = 'https://github.com/StackGuardian/tirith';
  */
 const involve = {
   note:
-    'The order above is not fixed. A star tells us someone is watching. An issue ' +
-    'describing a plan you could not gate tells us what to build, and several items on ' +
-    'the roadmap are there because somebody wrote one.',
+    'Influence our roadmap by asking for a feature or watching for releases.',
+  /*
+   * Faces, not a number. "18 contributors" is a statistic; eighteen avatars is a group of
+   * people, and the claim this section makes is about people.
+   *
+   * The list is generated across every branch rather than from the contributors API, which
+   * sees only the default branch and misses one of these eighteen. A page thanking the
+   * community that leaves a contributor out is worse than no page.
+   */
+  community:
+    'Tirith is built in the open by StackGuardian engineers and external contributors. ' +
+    'It is licensed under Apache 2.0 and governed publicly. Contributions do not need to ' + 
+    'be large: a tested policy, a CI example for an underserved system, or a reproducible bug ' +
+    'report can be far more valuable than a star.',
   links: [
     {label: 'Star on GitHub', href: REPO},
+    {label: 'Find a good first issue', href: `${REPO}/labels/good%20first%20issue`},
     {label: 'Watch for releases', href: `${REPO}/releases`},
     {label: 'Ask for a feature', href: `${REPO}/issues/new/choose`},
   ],
@@ -890,6 +903,24 @@ export default function Home() {
             </p>
 
             <div className={styles.involve}>
+              <p className={styles.routeLabel}>Built by the community</p>
+              <ul className={styles.faces}>
+                {CONTRIBUTORS.map((c) => (
+                  <li key={c.login}>
+                    <Link href={`https://github.com/${c.login}`} title={c.login}>
+                      <img
+                        className={styles.face}
+                        src={`https://avatars.githubusercontent.com/u/${c.id}?s=96&v=4`}
+                        alt={c.login}
+                        width={40}
+                        height={40}
+                        loading="lazy"
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <p className={styles.involveNote}>{involve.community}</p>
               <p className={styles.involveNote}>{involve.note}</p>
               <div className={styles.involveLinks}>
                 {involve.links.map((l) => (

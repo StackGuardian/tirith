@@ -8,6 +8,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
 import {EVENTS, capture, track, usePageView} from '../analytics';
 import TirithMark from '../components/brand/TirithMark';
+import {NEW_ISSUE, REPO, issueUrl} from '../data/repo';
 import Colophon from '../components/site/Colophon';
 import styles from './at-scale.module.css';
 import '../css/chrome.module.css';
@@ -50,15 +51,6 @@ import '../css/chrome.module.css';
  * of them has gone stale, it went stale there first.
  * ---------------------------------------------------------------------------
  */
-
-const REPO = 'https://github.com/StackGuardian/tirith';
-const NEW_ISSUE = `${REPO}/issues/new/choose`;
-
-function issueUrl({template = 'general-issue.md', title} = {}) {
-  const params = new URLSearchParams({template});
-  if (title) params.set('title', title);
-  return `${REPO}/issues/new?${params.toString()}`;
-}
 
 const hero = {
   eyebrow: 'Scale IaC governance across your organisation',

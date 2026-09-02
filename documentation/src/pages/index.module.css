@@ -1476,6 +1476,51 @@
   border-top: 1px solid var(--tp-rule);
 }
 
+/*
+ * The contributor faces.
+ *
+ * Square, hairline-ruled, no radius: a circular avatar would be the only rounded thing on
+ * the sheet. They sit in a wrapping row rather than a grid so the count reads as a crowd at
+ * any width, and the row keeps its shape as people are added.
+ *
+ * Fixed 40px with width/height on the element as well as here, so the row does not reflow
+ * as eighteen external images arrive one by one.
+ */
+.faces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.9rem 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.face {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--tp-rule);
+  background: var(--tp-surface);
+  filter: grayscale(1);
+  transition: filter 120ms ease-out;
+}
+
+/*
+ * Grey until hovered. Eighteen full-colour photographs would be the loudest thing on a page
+ * built from two hues, and the row is here to be read as a group first and as individuals
+ * second. Hover restores the person.
+ */
+.faces a:hover .face,
+.faces a:focus-visible .face {
+  filter: none;
+  border-color: var(--tp-ink);
+}
+
+.faces a:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: 2px;
+}
+
 .involveNote {
   max-width: 62ch;
   margin: 0;
