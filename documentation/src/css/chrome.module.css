@@ -79,6 +79,55 @@
   letter-spacing: 0.02em;
 }
 
+/*
+ * The logo is a link to the home page, and it was the only thing in the bar that never said
+ * so. Every nav item beside it shifts to the accent on hover; the lockup did nothing, gave
+ * no focus ring, and sat next to a letterhead on the landing page that repeats the same
+ * mark as decoration. So it read as a masthead.
+ *
+ * Three signals, none of them a new element:
+ *   - the lockup dims on hover, the conventional affordance for an image link;
+ *   - a hairline in the accent appears beneath it, which is how this design shows a live
+ *     edge everywhere else, and is what distinguishes "clickable" from "slightly faded";
+ *   - a real focus ring, which was missing entirely and is the keyboard user's only clue.
+ *
+ * `position: relative` so the rule can be an ::after on the anchor rather than a border,
+ * which would shift the row by a pixel on hover.
+ */
+:global(.navbar__brand) {
+  position: relative;
+  transition: opacity 120ms ease-out;
+}
+
+:global(.navbar__brand::after) {
+  content: '';
+  position: absolute;
+  /* Inset 0 both sides: .navbar__brand's 1.5rem is a margin, which is outside the box, so
+     insetting by it left the rule short of the wordmark. */
+  right: 0;
+  bottom: -0.35rem;
+  left: 0;
+  height: 1px;
+  background: var(--tl-accent);
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+
+:global(.navbar__brand:hover),
+:global(.navbar__brand:focus-visible) {
+  opacity: 0.72;
+}
+
+:global(.navbar__brand:hover::after),
+:global(.navbar__brand:focus-visible::after) {
+  opacity: 1;
+}
+
+:global(.navbar__brand:focus-visible) {
+  outline: 2px solid var(--tl-accent);
+  outline-offset: 4px;
+}
+
 :global(.navbar__logo) {
   height: 1.15rem;
   margin-right: 0.55rem;

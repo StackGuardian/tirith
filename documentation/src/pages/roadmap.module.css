@@ -112,11 +112,14 @@
   margin-top: 2rem;
 }
 
-.btnPrimary {
-  background: var(--tp-accent);
-  color: #fff;
-}
-
+/*
+ * Both buttons, complete. The shared typography has to stay in a grouped selector: it was
+ * lost once already because this file was seeded by extracting single-selector rules from
+ * at-scale.module.css, and `.btnPrimary, .btnGhost {` is not one. The result was a primary
+ * button rendering in the body face while the ghost beside it rendered correctly, because
+ * the extractor matched `.btnGhost {` on the group's second line and gave it the base body.
+ */
+.btnPrimary,
 .btnGhost {
   display: inline-flex;
   align-items: center;
@@ -130,6 +133,29 @@
   text-transform: uppercase;
   text-decoration: none;
   transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+.btnPrimary {
+  background: var(--tp-accent);
+  color: #fff;
+}
+
+.btnPrimary:hover {
+  background: var(--tp-ink);
+  border-color: var(--tp-ink);
+  color: var(--tp-paper);
+  text-decoration: none;
+}
+
+.btnGhost {
+  border-color: var(--tp-rule);
+  color: var(--tp-ink);
+}
+
+.btnGhost:hover {
+  border-color: var(--tp-ink);
+  color: var(--tp-ink);
+  text-decoration: none;
 }
 
 .section {
@@ -205,6 +231,20 @@
   --tp-alarm-wash: #231614;
   --tp-alarm-edge: #452e2a;
 }
+/*
+ * The display face on every heading. This reaches h1/h2/h3 through a descendant selector
+ * rather than a class, which is why seeding this file by extracting single-class rules from
+ * at-scale.module.css missed it: every heading on the page was rendering in the body sans
+ * while `font-variation-settings: 'wdth' 100` on .h1 sat there addressing a Martian Mono
+ * axis that was not in use.
+ */
+.page :is(h1, h2, h3) {
+  font-family: var(--tp-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
 /* ---------------------------------------------------------- roadmap only --- */
 
 /*

@@ -215,7 +215,10 @@ const config = {
         // once in the drawn face and once in the theme's.
         hideOnScroll: true,
         logo: {
-          alt: 'Tirith',
+          // Names the destination, not the picture. The anchor takes its accessible name
+          // from this, so a screen reader announced "Tirith, link" and said nothing about
+          // where the link goes, which is the same gap the hover state had visually.
+          alt: 'Tirith, home',
           // Two files rather than one theme-reactive SVG: the swap is driven by the
           // site's own theme toggle, which a `prefers-color-scheme` query inside the
           // file cannot observe. `src` carries the dark ink for the light theme,

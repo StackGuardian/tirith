@@ -567,7 +567,7 @@ export default function Home() {
 
   return (
     <Layout
-      title="Tirith — open-source policy checks for OpenTofu and Terraform plans"
+      title="Tirith - complete IaC governance"
       description={
         'Tirith is an Apache-2.0 policy gate that checks OpenTofu and Terraform plans against ' +
         'JSON ' +
