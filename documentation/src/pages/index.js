@@ -278,10 +278,12 @@ const announcement = {
   // No backticks: this is JSX text, not markdown, so they would render literally.
   // The renderer sets the command in <code>.
   command: 'tirith ui',
+  // A banner is read at a glance or not at all, so it carries the two things the tool is
+  // for and nothing else. Validation as you type and serving the playground to a team are
+  // the page it links to, not this line.
   body:
-    'explores a failing evaluation down to the resource that caused it, builds policies ' +
-    'from a form, validates them as you type, and serves the playground on a port for ' +
-    'people who have installed nothing.',
+    'explores a failing evaluation down to the resource that caused it, and builds ' +
+    'policies from a form.',
   to: '/docs/tirith-usage/interactive-interface/',
   linkLabel: 'Read more',
 };
