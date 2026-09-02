@@ -1428,10 +1428,24 @@
   border-bottom: 1px solid var(--tp-rule);
 }
 
+/*
+ * The tag sits in its own column rather than trailing the title inline, so the four tags
+ * line up down the strip instead of landing wherever each title happens to stop. Each row
+ * is its own grid, so the tags only agree on a width if the column names one and they
+ * fill it; left to size themselves the shorter tag sits indented from the longer ones.
+ * It is a floor rather than a fixed width because the tags do not wrap: a status longer
+ * than today's two should push the column open, not spill across the gap into the body.
+ */
 .aheadHead {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(4.6rem, auto);
   align-items: baseline;
   gap: 0.6rem;
+}
+
+.aheadHead .betaTag,
+.aheadHead .tagPlanned {
+  text-align: center;
 }
 
 .aheadTitle {
@@ -1460,6 +1474,12 @@
 @media (max-width: 48rem) {
   .aheadStrip li {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Nothing to line up against once the rows are full width, and a tag held out at the
+     right edge of a phone reads as belonging to the row rather than to its title. */
+  .aheadHead {
+    display: flex;
   }
 }
 
