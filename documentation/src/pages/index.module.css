@@ -1428,10 +1428,24 @@
   border-bottom: 1px solid var(--tp-rule);
 }
 
+/*
+ * The tag sits in its own column rather than trailing the title inline, so the four tags
+ * line up down the strip instead of landing wherever each title happens to stop. Each row
+ * is its own grid, so the tags only agree on a width if the column names one and they
+ * fill it; left to size themselves the shorter tag sits indented from the longer ones.
+ * It is a floor rather than a fixed width because the tags do not wrap: a status longer
+ * than today's two should push the column open, not spill across the gap into the body.
+ */
 .aheadHead {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(4.6rem, auto);
   align-items: baseline;
   gap: 0.6rem;
+}
+
+.aheadHead .betaTag,
+.aheadHead .tagPlanned {
+  text-align: center;
 }
 
 .aheadTitle {
@@ -1460,6 +1474,12 @@
 @media (max-width: 48rem) {
   .aheadStrip li {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Nothing to line up against once the rows are full width, and a tag held out at the
+     right edge of a phone reads as belonging to the row rather than to its title. */
+  .aheadHead {
+    display: flex;
   }
 }
 
@@ -1519,6 +1539,45 @@
 .faces a:focus-visible {
   outline: 2px solid var(--tp-accent);
   outline-offset: 2px;
+}
+
+/*
+ * The figure holds the faces and their caption together. The row's own bottom margin is
+ * spacing for the block below it, which is too much between an image and its caption, so
+ * it is overridden here rather than pulled back with a negative margin on the caption.
+ */
+.contributors {
+  margin: 0;
+}
+
+.contributors .faces {
+  margin-bottom: 0.55rem;
+}
+
+.contributorsNote {
+  color: var(--tp-faint);
+  font-size: 0.8rem;
+}
+
+/*
+ * The references under the button. They are deliberately not buttons: the block asks for
+ * one thing, and a row of equally sized boxes turns that ask into a menu.
+ */
+.involveMore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.2rem;
+  font-size: 0.85rem;
+}
+
+.involveMore a {
+  color: var(--tp-soft);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.involveMore a:hover {
+  color: var(--tp-ink);
 }
 
 .involveNote {

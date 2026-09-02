@@ -289,11 +289,49 @@
 
 /* ------------------------------------------------------------------ table ---- */
 
+/*
+ * Infima styles every table as a bordered, striped grid, and this one is ruled
+ * horizontally only. Its defaults are cleared here rather than worked around: the cells
+ * start at the measure with no left padding, which only reads as a column when there is
+ * no vertical rule for the text to sit against. display:table is part of the reset too,
+ * since Infima's display:block leaves border-collapse below with nothing to collapse.
+ *
+ * The layout is fixed so the widths below hold: a long answer wraps inside its column
+ * rather than widening it, which is what keeps the gaps between the three even.
+ */
 .table {
+  display: table;
+  table-layout: fixed;
   width: 100%;
-  margin-top: 2rem;
+  margin: 2rem 0 0;
   border-collapse: collapse;
   font-size: 0.9rem;
+}
+
+/*
+ * The middle column holds a word or two. Sizing itself, it took nearly a third of the
+ * table and left its answer stranded a long way short of the last column, so it is given
+ * the width its content needs and the slack goes to the column on the end, where there is
+ * nothing following it to open a gap against. Widths sit on the head row because the
+ * fixed layout above takes its columns from the first row.
+ */
+.table thead th:first-child {
+  width: 30%;
+}
+
+.table thead th:nth-child(2) {
+  width: 14rem;
+}
+
+.table thead,
+.table tr,
+.table tr:nth-child(2n) {
+  background: none;
+  border-top: none;
+}
+
+.table thead tr {
+  border-bottom: none;
 }
 
 .table th,
@@ -301,7 +339,16 @@
   padding: 0.9rem var(--tp-gut) 0.9rem 0;
   text-align: left;
   vertical-align: top;
+  border: none;
   border-bottom: 1px solid var(--tp-rule);
+}
+
+/* The capability column's text runs to its full measure, so this padding is the entire gap
+   after it. It is wider than the shared gutter to match the space the middle column's
+   width leaves before the last one, which is set by that column's content, not by a
+   gutter. */
+.table tr > *:first-child {
+  padding-right: 3.5rem;
 }
 
 .table thead th {
@@ -315,7 +362,6 @@
 }
 
 .table tbody th {
-  width: 30%;
   font-family: var(--tp-display);
   font-size: 0.88rem;
   font-weight: 700;
@@ -1018,8 +1064,11 @@
     border-bottom: none;
   }
 
+  .table tr > *:first-child {
+    padding-right: 0;
+  }
+
   .table tbody th {
-    width: auto;
     margin-bottom: 0.4rem;
   }
 
