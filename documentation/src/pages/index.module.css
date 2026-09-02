@@ -1541,6 +1541,45 @@
   outline-offset: 2px;
 }
 
+/*
+ * The figure holds the faces and their caption together. The row's own bottom margin is
+ * spacing for the block below it, which is too much between an image and its caption, so
+ * it is overridden here rather than pulled back with a negative margin on the caption.
+ */
+.contributors {
+  margin: 0;
+}
+
+.contributors .faces {
+  margin-bottom: 0.55rem;
+}
+
+.contributorsNote {
+  color: var(--tp-faint);
+  font-size: 0.8rem;
+}
+
+/*
+ * The references under the button. They are deliberately not buttons: the block asks for
+ * one thing, and a row of equally sized boxes turns that ask into a menu.
+ */
+.involveMore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.2rem;
+  font-size: 0.85rem;
+}
+
+.involveMore a {
+  color: var(--tp-soft);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.involveMore a:hover {
+  color: var(--tp-ink);
+}
+
 .involveNote {
   max-width: 62ch;
   margin: 0;

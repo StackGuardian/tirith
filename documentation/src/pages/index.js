@@ -49,8 +49,9 @@ const REPO = 'https://github.com/StackGuardian/tirith';
  * told it does not exist yet. Influence is the offer, and the star is the cheap version of
  * it rather than the point.
  *
- * All three are ghost buttons. A secondary action that looks primary is not secondary, and
- * the accent on this page belongs to the copy button in the hero.
+ * Only the first is a ghost button and the rest are plain text. A secondary action that
+ * looks primary is not secondary, and the accent on this page belongs to the copy button
+ * in the hero.
  */
 const involve = {
   note:
@@ -68,11 +69,23 @@ const involve = {
     'It is licensed under Apache 2.0 and governed publicly. Contributions do not need to ' + 
     'be large: a tested policy, a CI example for an underserved system, or a reproducible bug ' +
     'report can be far more valuable than a star.',
-  links: [
-    {label: 'Star on GitHub', href: REPO},
-    {label: 'Find a good first issue', href: `${REPO}/labels/good%20first%20issue`},
-    {label: 'Watch for releases', href: `${REPO}/releases`},
+  /*
+   * One button, because four of them read as four equally weighted decisions at the point
+   * where the page should be asking for one thing.
+   *
+   * The button is the good-first-issue list and not the star. The paragraph above it says
+   * a bug report is worth more than a star, so giving the star the loudest element would
+   * have the layout contradicting the copy, and starring is not contributing. The rest run
+   * from the ask that takes real work down to the one that costs nothing.
+   */
+  primary: {
+    label: 'Find a good first issue',
+    href: `${REPO}/labels/good%20first%20issue`,
+  },
+  more: [
     {label: 'Ask for a feature', href: `${REPO}/issues/new/choose`},
+    {label: 'Watch for releases', href: `${REPO}/releases`},
+    {label: 'Star on GitHub', href: REPO},
   ],
 };
 
@@ -903,29 +916,47 @@ export default function Home() {
             </p>
 
             <div className={styles.involve}>
-              <p className={styles.routeLabel}>Built by the community</p>
-              <ul className={styles.faces}>
-                {CONTRIBUTORS.map((c) => (
-                  <li key={c.login}>
-                    <Link href={`https://github.com/${c.login}`} title={c.login}>
-                      <img
-                        className={styles.face}
-                        src={`https://avatars.githubusercontent.com/u/${c.id}?s=96&v=4`}
-                        alt={c.login}
-                        width={40}
-                        height={40}
-                        loading="lazy"
-                      />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <Heading as="h2" className={styles.sectionTitle}>
+                Get involved
+              </Heading>
+              {/*
+                 * Captioned rather than labelled from above, because the heading now names
+                 * the section rather than the row: without a line of its own the faces are
+                 * a group of strangers the reader has no way to place.
+                 */}
+              <figure className={styles.contributors}>
+                <ul className={styles.faces}>
+                  {CONTRIBUTORS.map((c) => (
+                    <li key={c.login}>
+                      <Link href={`https://github.com/${c.login}`} title={c.login}>
+                        <img
+                          className={styles.face}
+                          src={`https://avatars.githubusercontent.com/u/${c.id}?s=96&v=4`}
+                          alt={c.login}
+                          width={40}
+                          height={40}
+                          loading="lazy"
+                        />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <figcaption className={styles.contributorsNote}>
+                  Built by the community.
+                </figcaption>
+              </figure>
               <p className={styles.involveNote}>{involve.community}</p>
               <p className={styles.involveNote}>{involve.note}</p>
+              {/* Wrapped, because a bare grid child would stretch the button full width. */}
               <div className={styles.involveLinks}>
-                {involve.links.map((l) => (
-                  <Link className={styles.btnGhost} key={l.label} href={l.href}>
-                    {l.label} <span aria-hidden="true">→</span>
+                <Link className={styles.btnGhost} href={involve.primary.href}>
+                  {involve.primary.label} <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+              <div className={styles.involveMore}>
+                {involve.more.map((l) => (
+                  <Link key={l.label} href={l.href}>
+                    {l.label}
                   </Link>
                 ))}
               </div>
