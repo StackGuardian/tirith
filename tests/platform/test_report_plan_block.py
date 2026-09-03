@@ -114,12 +114,17 @@ def test_small_plans_are_inline_and_large_ones_collapse():
     assert "<details><summary>Show plan" in _render(large)
 
 
-def test_the_row_list_is_capped():
-    plan = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(report.PLAN_ROW_LIMIT + 25)])
+def test_the_block_is_capped():
+    """
+    Capped in lines rather than resources, because a resource now brings its changed attributes with
+    it and it is the line count that decides whether the comment is readable.
+    """
+    total = report.PLAN_LINE_LIMIT + 25
+    plan = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(total)])
     body = _render(plan)
-    assert "… and 25 more" in body
+    assert "more line(s), truncated" in body
     # The count still reflects the whole plan, not just what was shown.
-    assert f"Plan: {report.PLAN_ROW_LIMIT + 25} to add" in body
+    assert f"Plan: {total} to add" in body
 
 
 # --- what an attacker cannot do ----------------------------------------------------------------
