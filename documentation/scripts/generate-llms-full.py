@@ -61,6 +61,7 @@ ORDER = [
     "tirith-usage/ci-integration.md",
     "tirith-usage/interactive-interface.md",
     "tirith-usage/editor-and-local.md",
+    "tirith-usage/agent-skills.md",
     "tirith-usage/platform-check.md",
 ]
 

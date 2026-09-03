@@ -540,15 +540,20 @@
 
 /* Pushed to the bottom so the three verification lines sit on one baseline however
    long the description above them runs. */
-.clientVerify {
+/*
+ * One verification line for all three clients, not one per column.
+ * The three installs run the same script and load the same pack, so three separate checks were
+ * the same test written three ways. Below the list, spanning it, is also where a reader who has
+ * just run a command looks next.
+ */
+.verify {
   display: grid;
-  gap: 0.3rem;
-  margin: auto 0 0;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--tp-rule);
+  gap: 0.4rem;
+  max-width: 68ch;
+  margin: 1.6rem 0 0;
   color: var(--tp-soft);
-  font-size: 0.82rem;
-  line-height: 1.5;
+  font-size: 0.88rem;
+  line-height: 1.6;
 }
 
 .verifyLabel {

@@ -82,9 +82,11 @@ would turn `--fail-on-error` into a flag that does not exist.
 per page on `.page`, with a dark-theme block that redefines the same names. To change the
 palette, change the token block — do not hard-code colours in rules.
 
-> Note for whoever rebuilds this: the token block is currently duplicated across five page
-> stylesheets. That was fine at two pages and is now the main thing worth refactoring —
-> one shared file, imported everywhere.
+The shared file that note used to ask for now exists: `src/css/custom.css` declares the whole
+palette at `:root` and maps Infima's variables onto it, which is what lets the documentation
+be restyled from the same tokens as the pages. The five page stylesheets still carry their own
+identical block and win on specificity, so nothing about them has changed yet. Removing those
+five blocks is now a deletion rather than a rewrite, and is the remaining half of the job.
 
 **Section grammar**, shared by every page: a two-digit number, a title, an optional lede,
 then the content. Numbering is per page and runs `01`, `02`, `03`…
@@ -215,13 +217,38 @@ diagrams → `03` opposed gates are the product.
 **Design note.** This page is linked only from footers. It is background for someone who has
 finished a product page, not a step toward installing anything.
 
-### Docs — `docs-example.html`
+### Docs, at `/tirith/docs/…`
 
-Standard Docusaurus documentation, wearing the site's chrome: same navbar, same 96rem
-measure, same palette. Included so the review covers the moment a visitor crosses from the
-designed pages into the documentation — historically the point where a site stops feeling
-like one site. The page body itself is authored Markdown and is not part of this design
-work.
+The moment a visitor crosses from the designed pages into the documentation is historically
+where a site stops feeling like one site. It used to be that here: stock Infima below the
+navbar, which meant rounded pills, card shadows, a system typeface and six syntax colours.
+
+It is now built from the same tokens. Two files do it, and the split is the point:
+
+- **`src/css/custom.css`** declares the palette and maps Infima's variables onto it. One
+  block moves the fonts, the accent and every corner radius at once, `--ifm-global-radius: 0`
+  being the single line that squares the whole theme.
+- **`src/css/docs.css`** handles only what a variable cannot express: hairlines where Infima
+  draws cards, micro-labels where it draws sentence case, a rule above every `h2` so a long
+  reference page has the same spine as a landing page, and a heading scale stepped down from
+  the pages because documentation is read rather than scanned.
+
+Three swizzles support it, all of them wrappers rather than ejections: `DocBreadcrumbs` hosts
+the copy-page control, `PaginatorNavLink` draws previous/next, `Admonition` supplies icons.
+
+**Syntax highlighting is one theme for both colour schemes**, defined in
+`docusaurus.config.js` entirely in custom properties. That is not a shortcut:
+prism-react-renderer writes its colours as inline `style` attributes on the token spans, and
+an inline style cannot be overridden from a stylesheet, so naming variables is the only way
+the highlighting can answer to the light/dark switch at all. Two hues, like everything else:
+a key is ink, a value is the accent.
+
+**The copy-page control** beside the breadcrumbs hands the page to an agent: copy the
+markdown, view it, or open it in ChatGPT or Claude. It serves the `.md` twin that
+`scripts/generate-llms-full.py` writes for every route, so it is a pointer at something that
+already existed rather than a scrape of the rendered DOM.
+
+The page bodies are authored Markdown and are not part of this design work.
 
 ---
 

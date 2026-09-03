@@ -31,17 +31,26 @@ permissions:
   checks: write          # check run
 
 steps:
-  - run: |
-      terraform plan -out=tfplan -input=false
-      terraform show -json tfplan > plan.json
+  - run: terraform plan -out=tfplan -input=false
 
   - uses: StackGuardian/tirith-iac-governance-action@v2
+    with:
+      plan-file: tfplan
+      fail-on-error: true
 ```
 
-With a `plan.json` in the working directory that is the whole integration — no `with:` block. The
-action finds the document by convention (`plan.json` or `tfplan.json`) and evaluates the policy
-files committed under `.tirith/policies`, on the runner, talking to nothing. Add
-`with: { fail-on-error: true }` to make a failing policy fail the job.
+The two write permissions are the only setup the action cannot do for itself, and are the thing
+most often missing on a first install. `-input=false` matters in CI: without it a missing variable
+waits for a prompt that never comes, and the job hangs instead of failing.
+
+Handing the action the **binary plan** rather than exporting JSON first is one step shorter and
+strictly safer: the action renders it with `terraform show -json` in memory, so no unmasked plan
+JSON is written to the workspace where a later step, a cache or an artifact upload could pick it
+up.
+
+If your pipeline already writes `plan.json`, drop `plan-file` and the action finds the document by
+convention (`plan.json` or `tfplan.json`). Either way it evaluates the policy files committed under
+`.tirith/policies`, on the runner, talking to nothing.
 
 ### Local mode and platform mode
 
@@ -175,8 +184,7 @@ pipelines:
             - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
-A complete file is in [`examples/ci/bitbucket-pipelines.yml`](https://github.com/StackGuardian/tirith/blob/main/examples/ci/bitbucket-pipelines.yml),
-and a worked repository is at
+A worked repository is at
 [tirith-bitbucket-demo](https://bitbucket.org/__refeed__/tirith-bitbucket-demo).
 
 ## Jenkins
@@ -203,12 +211,18 @@ stage('Policy gate') {
 }
 ```
 
-The full pipeline, including install, lint and artifact archiving, is in
-[`examples/ci/Jenkinsfile`](https://github.com/StackGuardian/tirith/blob/main/examples/ci/Jenkinsfile).
+`returnStatus: true` is what makes this work: without it the shell step throws on any non-zero
+exit and the two cases become one.
 
 ## As a pre-commit hook
 
-Catch a broken policy before it is committed, let alone before CI runs it. Tirith publishes a
+[WARNING] In development
+`tirith lint` is not in 1.2.0 and the `tirith-lint` hook id is not published, so the
+configuration below does not work yet: `pre-commit` cannot resolve the hook and the run fails.
+It is documented here because the design is settled and the shape will not change. Track it on
+the [roadmap](https://stackguardian.github.io/tirith/roadmap/).
+
+Catch a broken policy before it is committed, let alone before CI runs it. Tirith will publish a
 `tirith-lint` hook:
 
 ```yaml

@@ -18,8 +18,6 @@ import '../css/chrome.module.css';
 
 const REPO = 'https://github.com/StackGuardian/tirith';
 const SKILL_DIR = '.claude/skills/tirith-policies';
-const RAW = 'https://raw.githubusercontent.com/StackGuardian/tirith/main';
-
 const ROUTES = {
   playground: '/learn/#playground',
   policies: '/docs/tirith-policies/tirith-policy-cookbook/',
@@ -38,32 +36,17 @@ const hero = {
 };
 
 /*
- * One install command per client.
+ * One line, because the previous version was six: a mkdir, a BASE assignment, a curl and a
+ * for loop over ten filenames. That is a correct install and nobody reads it, let alone
+ * types it.
  *
- * The two that fetch the pack fetch every file in it. An earlier draft created the
- * reference/ directory and then downloaded only SKILL.md, which left the ten references
- * this page advertises as dangling paths inside the skill.
+ * The script is served from this site's own static/ directory, so it sits on the same
+ * origin as the page telling you to run it, and its source is a committed file rather than
+ * a gist. `curl | sh` earns an objection from exactly this audience, so the page shows the
+ * URL as text next to the command: it is readable before it is runnable, and the no-pipe
+ * form is offered beside it.
  */
-const REFERENCES = [
-  'schema',
-  'validate',
-  'verdicts',
-  'terraform-plan',
-  'other-providers',
-  'variables',
-  'install',
-  'pipelines',
-  'platform',
-  'debug-ci',
-];
-
-const FETCH_PACK =
-  `mkdir -p ${SKILL_DIR}/reference\n` +
-  `BASE=${RAW}/${SKILL_DIR}\n` +
-  `curl -sL $BASE/SKILL.md -o ${SKILL_DIR}/SKILL.md\n` +
-  `for f in ${REFERENCES.join(' ')}; do\n` +
-  `  curl -sL $BASE/reference/$f.md -o ${SKILL_DIR}/reference/$f.md\n` +
-  `done`;
+const INSTALLER = 'https://stackguardian.github.io/tirith/skill.sh';
 
 const CLIENTS = [
   {
@@ -72,8 +55,7 @@ const CLIENTS = [
     detail:
       'Drop the folder into your repository. It is picked up automatically: no config file, ' +
       'no restart. Works in any project, not just this one.',
-    command: FETCH_PACK,
-    verify: 'Ask: "write a Tirith policy requiring an owner tag", and it should name real conditions.',
+    command: `curl -fsSL ${INSTALLER} | sh`,
   },
   {
     id: 'cursor',
@@ -81,11 +63,7 @@ const CLIENTS = [
     detail:
       'A single rule file scoped with globs, so it attaches by itself the moment a policy file ' +
       'is open and stays out of the way otherwise. Self-contained: it needs nothing else.',
-    command:
-      'mkdir -p .cursor/rules\n' +
-      `curl -sL ${RAW}/.cursor/rules/tirith-policies.mdc \\\n` +
-      '  -o .cursor/rules/tirith-policies.mdc',
-    verify: 'Open a file under .tirith/policies, and the rule shows as attached in the chat panel.',
+    command: `curl -fsSL ${INSTALLER} | sh -s -- --cursor`,
   },
   {
     id: 'agents',
@@ -94,10 +72,8 @@ const CLIENTS = [
       'Fetch the pack, then point AGENTS.md at it. One file at the repository root is read by a ' +
       'growing number of clients, and the pack beside it keeps the references resolvable.',
     command:
-      FETCH_PACK +
-      '\n\nprintf \'\\n## Tirith policies\\nSee %s/SKILL.md\\n\' \\\n' +
-      `  "${SKILL_DIR}" >> AGENTS.md`,
-    verify: 'Ask your agent what condition types Tirith supports. It should say thirteen, not guess.',
+      `curl -fsSL ${INSTALLER} | sh\n` +
+      `printf '\\n## Tirith policies\\nSee %s/SKILL.md\\n' ${SKILL_DIR} >> AGENTS.md`,
   },
 ];
 
@@ -226,13 +202,15 @@ export default function Skills() {
                   label={`skill-${c.id}`}
                   prompt={false}
                 />
-                <p className={styles.clientVerify}>
-                  <span className={styles.verifyLabel}>Check it worked</span>
-                  {c.verify}
-                </p>
               </li>
             ))}
           </ul>
+          <p className={styles.verify}>
+            <span className={styles.verifyLabel}>Check it worked</span>
+            Ask for a policy in plain words: <em>every bucket needs an Owner tag</em>. With the
+            pack loaded your agent names a real condition type and the argument key that provider
+            actually takes. Without it, it invents one that reads perfectly and gates nothing.
+          </p>
           <p className={styles.caveat}>
             Working in VS Code? The{' '}
             <Link to="/docs/tirith-usage/editor-and-local/">editor setup</Link> wires lint and

@@ -17,6 +17,12 @@ The documentation site and the marketing pages, built with
 | `/tirith/at-scale/` | Many repositories, one policy set — the commercial page | `src/pages/at-scale.js` |
 | `/tirith/origins/` | Where the name and the mark come from | `src/pages/origins.js` |
 
+One static asset is part of the site's contract rather than decoration:
+`static/skill.sh`, served at `https://stackguardian.github.io/tirith/skill.sh`. It is the
+one-line installer the Skills page, the editor documentation and `llms.txt` all point at, so
+it is a published URL and moving or renaming it breaks three pages and every agent that has
+read the brief. It downloads the files in `.claude/skills/tirith-policies/` and nothing else.
+
 `/origins/` is reachable only from the landing page's footer, by design — it is background for a
 reader who has finished the page, not a step towards installing anything, so it is deliberately
 absent from the navbar.
@@ -134,6 +140,19 @@ must not change.
 The idea behind the mark — the city the name comes from, the four moves that reduce it to a
 plan, and why opposed gates are the product — is the `/origins/` page. Its geometry comes from
 `src/data/logoStory.js`.
+
+### The documentation, and the design
+
+`src/css/custom.css` declares the palette once and maps Infima's variables onto it;
+`src/css/docs.css` handles the structure a variable cannot express. Together they put the
+documentation in the same design as the landing pages, so the two halves of the site do not
+read as two products. Three small swizzles support it: `DocBreadcrumbs` hosts the copy-page
+control, `PaginatorNavLink` draws previous/next, and `Admonition` supplies the icons.
+
+Every documentation page carries a **copy-page menu** beside its breadcrumbs: copy the
+markdown, view it, or open the page in ChatGPT or Claude. It serves the `.md` twin that
+`scripts/generate-llms-full.py` already writes for every route, so adding a page means
+re-running that script or the menu has nothing to hand over.
 
 The mark is Tirith's own, not StackGuardian's. This is an Apache-2.0 project that works with no
 account and no vendor relationship, and flying the sponsor's logo as the page logo argues the

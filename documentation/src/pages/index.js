@@ -70,22 +70,26 @@ const involve = {
     'be large: a tested policy, a CI example for an underserved system, or a reproducible bug ' +
     'report can be far more valuable than a star.',
   /*
-   * One button, because four of them read as four equally weighted decisions at the point
-   * where the page should be asking for one thing.
+   * Two buttons, then the quieter links. Four buttons would read as four equally weighted
+   * decisions at the point where the page should be asking for something.
    *
-   * The button is the good-first-issue list and not the star. The paragraph above it says
-   * a bug report is worth more than a star, so giving the star the loudest element would
-   * have the layout contradicting the copy, and starring is not contributing. The rest run
-   * from the ask that takes real work down to the one that costs nothing.
+   * The good-first-issue list leads, because the paragraph above says a bug report is worth
+   * more than a star and the layout should not contradict the copy. The star gets the same
+   * treatment rather than a louder one: it is the one ask a reader can satisfy in a second,
+   * so it should not be buried in a row of text links, but order carries the hierarchy and
+   * neither button shouts over the other.
    */
   primary: {
     label: 'Find a good first issue',
     href: `${REPO}/labels/good%20first%20issue`,
   },
+  secondary: {
+    label: 'Star on GitHub',
+    href: REPO,
+  },
   more: [
     {label: 'Ask for a feature', href: `${REPO}/issues/new/choose`},
     {label: 'Watch for releases', href: `${REPO}/releases`},
-    {label: 'Star on GitHub', href: REPO},
   ],
 };
 
@@ -949,10 +953,13 @@ export default function Home() {
               </figure>
               <p className={styles.involveNote}>{involve.community}</p>
               <p className={styles.involveNote}>{involve.note}</p>
-              {/* Wrapped, because a bare grid child would stretch the button full width. */}
+              {/* Wrapped, because bare grid children would stretch the buttons full width. */}
               <div className={styles.involveLinks}>
                 <Link className={styles.btnGhost} href={involve.primary.href}>
                   {involve.primary.label} <span aria-hidden="true">→</span>
+                </Link>
+                <Link className={styles.btnGhost} href={involve.secondary.href}>
+                  {involve.secondary.label} <span aria-hidden="true">→</span>
                 </Link>
               </div>
               <div className={styles.involveMore}>

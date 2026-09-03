@@ -1,4 +1,29 @@
-import {themes as prismThemes} from 'prism-react-renderer';
+/*
+ * Syntax highlighting, in the site's two hues.
+ *
+ * github and dracula were the stock pair and drew six colours across a JSON policy: teal
+ * keys, pink strings, red numbers. This design has an accent and an alarm, and on these
+ * pages the only distinction that carries meaning is key from value.
+ *
+ * ONE THEME FOR BOTH SCHEMES, because every colour here is a custom property. That is not
+ * a shortcut: prism-react-renderer writes its colours as inline `style` attributes on the
+ * token spans, and an inline style cannot be overridden from a stylesheet. Naming variables
+ * is the only way the highlighting can answer to the light/dark switch at all. The values
+ * live in src/css/custom.css beside the rest of the palette.
+ */
+const codeTheme = {
+  plain: {color: 'var(--tp-ink)', backgroundColor: 'transparent'},
+  styles: [
+    {types: ['comment', 'prolog', 'cdata'], style: {color: 'var(--tp-code-muted)', fontStyle: 'italic'}},
+    {types: ['punctuation', 'operator', 'entity'], style: {color: 'var(--tp-code-muted)'}},
+    {types: ['property', 'tag', 'attr-name', 'selector', 'symbol'], style: {color: 'var(--tp-code-key)', fontWeight: '600'}},
+    {types: ['string', 'char', 'attr-value', 'url', 'inserted'], style: {color: 'var(--tp-code-string)'}},
+    {types: ['number', 'boolean', 'constant'], style: {color: 'var(--tp-code-num)'}},
+    {types: ['keyword', 'atrule', 'builtin', 'class-name', 'function'], style: {color: 'var(--tp-code-key)', fontWeight: '700'}},
+    {types: ['variable', 'regex', 'important'], style: {color: 'var(--tp-code-string)'}},
+    {types: ['deleted'], style: {color: 'var(--tp-alarm)'}},
+  ],
+};
 
 /*
  * PostHog is configured entirely from the environment and nothing is committed. An unset key
@@ -180,7 +205,10 @@ const config = {
         },
         blog: false,
         theme: {
-          customCss: './src/css/custom.css',
+          // Order matters: custom.css declares the tokens and maps Infima's variables onto
+          // them, docs.css spends them. Reversed, the docs skin would resolve against
+          // undefined custom properties on first paint.
+          customCss: ['./src/css/custom.css', './src/css/docs.css'],
         },
       }),
     ],
@@ -245,8 +273,8 @@ const config = {
         ],
       },
       prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        theme: codeTheme,
+        darkTheme: codeTheme,
       },
     }),
 };
