@@ -17,6 +17,8 @@ Kept free of textual imports so it can be tested on CI's Python 3.8 leg.
 
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional
 
+from .. import plan_actions
+
 # The tri-state a check reports. `None` means skipped, and skipped is not a pass -- the engine
 # is careful about this distinction (see the --fail-on-error commentary in cli.py) and so is
 # every count here.
@@ -55,24 +57,7 @@ class ResourceRef(NamedTuple):
     @property
     def action_summary(self) -> str:
         """The planned action, in terraform's own vocabulary."""
-        actions = [a for a in self.actions if a]
-        if not actions:
-            return ""
-        if actions == ["no-op"]:
-            return "no change"
-        if actions == ["create"]:
-            return "create"
-        if actions == ["delete"]:
-            return "destroy"
-        if actions == ["update"]:
-            return "update in place"
-        # terraform expresses a replacement as an ordered pair, and which way round it is
-        # changes the risk: delete-then-create has downtime, create-then-delete does not.
-        if actions == ["delete", "create"]:
-            return "replace (destroy first)"
-        if actions == ["create", "delete"]:
-            return "replace (create first)"
-        return ", ".join(actions)
+        return plan_actions.action_summary(self.actions)
 
     @property
     def label(self) -> str:
