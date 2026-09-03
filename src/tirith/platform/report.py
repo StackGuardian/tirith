@@ -98,7 +98,11 @@ def render_plan_block(plan):
 
     summary = plan_actions.summary_line(counts)
     if counts.get("no_op"):
-        summary += f" <sub>{counts['no_op']} unchanged</sub>"
+        # Plain text, not <sub>. Every other <sub> in this module wraps a whole line; wrapping a
+        # fragment mid-line glues an HTML tag onto a line that otherwise reads as terraform output.
+        # The count still earns its place -- it is what explains why the list is shorter than the
+        # plan -- but it does not need to shout, and a sentence is quieter than a tag.
+        summary += f" {counts['no_op']} unchanged."
 
     if not rows:
         # Nothing is changing, so there is no list to show -- but the line saying so is still worth

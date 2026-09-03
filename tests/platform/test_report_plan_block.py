@@ -48,6 +48,24 @@ def test_no_op_resources_are_counted_but_not_listed():
     assert "2 unchanged" in body
 
 
+def test_the_unchanged_count_is_plain_text():
+    """
+    Not wrapped in <sub>.
+
+    Every other <sub> in the reporter wraps a whole line -- the cost line, the context line, the
+    footer. Wrapping a fragment mid-line glues an HTML tag onto a line that otherwise reads as
+    terraform output. The count still earns its place; it just does not need a tag.
+    """
+    plan = _plan(
+        _change("aws_s3_bucket.analytics", ["create"]),
+        _change("aws_s3_bucket.artifacts", ["no-op"]),
+    )
+    body = _render(plan)
+    summary = [line for line in body.splitlines() if line.startswith("Plan:")][0]
+    assert summary == "Plan: 1 to add, 0 to change, 0 to destroy. 1 unchanged."
+    assert "<sub>" not in summary
+
+
 def test_a_replacement_is_one_row_and_its_own_count():
     """
     Terraform folds replacements into add and destroy. We do not: "1 to replace" is the number a
@@ -126,9 +144,17 @@ def test_an_address_cannot_escape_the_fence():
 
 
 def test_a_newline_in_an_address_cannot_fabricate_rows():
-    body = _render(_plan(_change("aws_s3_bucket.x\\n- aws_s3_bucket.production", ["create"])))
+    """
+    A real newline, not the escaped kind.
+
+    Terraform escapes newlines in a for_each key into a literal backslash-n, which is inert. But the
+    plan document is not always terraform's: a hand-written state or another tool could carry a real
+    one, and one real newline in an address is one forged row in the diff.
+    """
+    body = _render(_plan(_change("aws_s3_bucket.x\n- aws_s3_bucket.production", ["create"])))
     fence = body.split("```diff")[1].split("```")[0]
     assert len([line for line in fence.strip().splitlines() if line.strip()]) == 1
+    assert "aws_s3_bucket.production" in fence  # kept, but on the same row
 
 
 def test_masked_values_stay_masked():
