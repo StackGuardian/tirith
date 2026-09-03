@@ -12,16 +12,10 @@ The documentation site and the marketing pages, built with
 | --- | --- | --- |
 | `/tirith/` | Landing | `src/pages/index.js` |
 | `/tirith/learn/` | Six lessons and a browser playground | `src/pages/learn.js` |
-| ~~`/tirith/skills/`~~ | Tirith with a coding agent — **hidden**, see below | `src/pages/skills.js` |
+| `/tirith/skills/` | Tirith with a coding agent | `src/pages/skills.js` |
 | `/tirith/docs/…` | The documentation | `docs/`, ordered by `sidebars.js` |
 | `/tirith/at-scale/` | Many repositories, one policy set — the commercial page | `src/pages/at-scale.js` |
 | `/tirith/origins/` | Where the name and the mark come from | `src/pages/origins.js` |
-
-**Skills is hidden, not removed.** `src/pages/skills.js` and `src/pages/skills.module.css`
-are untouched; the route is kept out of the build by the `pages.exclude` entry in
-`docusaurus.config.js`, and the navbar item and the At scale colophon link are commented out
-beside their originals. To restore the page: drop `'skills.js'` from that exclude list and
-uncomment those two links.
 
 `/origins/` is reachable only from the landing page's footer, by design — it is background for a
 reader who has finished the page, not a step towards installing anything, so it is deliberately

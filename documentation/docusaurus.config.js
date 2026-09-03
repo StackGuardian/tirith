@@ -164,18 +164,11 @@ const config = {
           sidebarPath: './sidebars.js',
         },
         /*
-         * Skills is hidden for now, not deleted. src/pages/skills.js and its stylesheet
-         * are untouched; this line is the only thing keeping the route out of the build,
-         * so restoring the page is deleting the 'skills.js' entry below and putting the
-         * navbar item back.
-         *
-         * Excluding here rather than renaming the file to _skills.js -- the other way to
-         * hide a page -- keeps the filename matching the route it will return to, and puts
-         * the decision somewhere a reader of the config can see it.
-         *
-         * GlobExcludeDefault is repeated because supplying `exclude` replaces the plugin's
-         * defaults rather than adding to them, and dropping them would start building
-         * _partials and test files as pages.
+         * GlobExcludeDefault, repeated verbatim. Supplying `exclude` replaces the plugin's
+         * defaults rather than adding to them, so omitting these would start building
+         * _partials and test files as pages. Nothing project-specific is excluded today;
+         * this block exists so that adding an exclusion later does not silently drop the
+         * defaults with it.
          */
         pages: {
           exclude: [
@@ -183,7 +176,6 @@ const config = {
             '**/_*/**',
             '**/*.test.{js,jsx,ts,tsx}',
             '**/__tests__/**',
-            'skills.js',
           ],
         },
         blog: false,
@@ -229,13 +221,11 @@ const config = {
             label: 'Learn',
             position: 'left',
           },
-          // Hidden with the page itself -- see the `pages.exclude` note above. Kept
-          // here so restoring the route is uncommenting rather than rewriting.
-          // {
-          //   to: '/skills/',
-          //   label: 'Skills',
-          //   position: 'left',
-          // },
+          {
+            to: '/skills/',
+            label: 'Skills',
+            position: 'left',
+          },
           {
             type: 'docSidebar',
             sidebarId: 'TirithSidebar',
