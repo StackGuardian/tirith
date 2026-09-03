@@ -1,0 +1,3575 @@
+# Tirith: complete documentation
+
+Every documentation page of https://stackguardian.github.io/tirith/ in one file,
+in the order the sidebar presents them. Generated from the source markdown by
+documentation/scripts/generate-llms-full.py, so it cannot disagree with the site.
+
+For a short index instead, with the facts most answers get wrong, read
+https://stackguardian.github.io/tirith/llms.txt
+
+
+==============================================================================
+# Getting started with Tirith
+Source: https://stackguardian.github.io/tirith/docs/getting-started-with-tirith/
+Summary: Learn how Tirith simplifies security, governance, and compliance for infrastructure-as-code platforms.
+==============================================================================
+
+[NOTE] New — `tirith ui`, an interactive interface. In beta, and we want your input.
+
+Explore a failing evaluation down to the resource that caused it, assemble policies from a form, and
+experiment in a playground with worked examples. Install it with
+`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'` and run
+`tirith ui` — see
+[the interactive interface](tirith-usage/interactive-interface.md).
+
+It is new, so the rough edges are still being found. Tell us what is confusing, what is missing, or
+what you would rather it did:
+[open an issue](https://github.com/StackGuardian/tirith/issues/new/choose).
+Nothing about the existing CLI changes.
+
+Tirith is a robust policy framework designed to automate and enforce security, governance, and compliance across infrastructure-as-code (IaC) platforms like Terraform, CloudFormation, and Kubernetes. It simplifies policy creation and management, ensuring infrastructure adheres to industry regulations and best practices.
+
+## Key Benefits of Tirith
+
+- **Centralized Policy Management :** Tirith offers a unified platform for centralized policy management, reducing duplication and streamlining governance across multiple infrastructures and environments. This ensures consistent application of policies, regardless of the platform being used.
+
+- **Simplified Policy Creation :** Tirith’s [intuitive, no-code interface](https://tirith-policy-builder.vercel.app/) and declarative language simplify policy authoring, enabling users to define and manage policies effortlessly. This removes the need for deep technical expertise, allowing teams to quickly align with evolving regulatory requirements.
+
+- **Proactive Compliance Enforcement :** With seamless CI/CD pipeline integration, Tirith proactively enforces compliance by running pre-deployment checks. This ensures non-compliant infrastructure configurations are detected and resolved before deployment, enhancing operational efficiency.
+
+- **Integration with Popular Tools :** Tirith integrates with popular infrastructure-as-code (IaC) tools like Terraform, CloudFormation, and Kubernetes, making it easy to incorporate into your existing workflows.
+
+- **Enhanced Security :** By enforcing consistent policies across your infrastructure, Tirith helps to reduce the risk of security vulnerabilities and compliance violations.
+
+
+==============================================================================
+# Quick Installation for Users
+Source: https://stackguardian.github.io/tirith/docs/tirith-installation/quick-installation/
+Summary: This documentation overviews you about the introduction of the Tirith software installation on your respective operating system.
+==============================================================================
+
+<script type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify({
+   "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.lambdatest.com"
+    },{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Support",
+      "item": "https://www.lambdatest.com/support/docs/"
+    },{
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Installation",
+      "item": "https://www.lambdatest.com/support/docs/quick-installation/"
+    }]
+  })
+}}></script>
+If you simply want to install and start using Tirith, this option provides a fast installation process with minimal setup. Perfect for end users and non-developers who only need basic functionality.
+
+## Prerequisite
+- Make sure your machine has [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) installed.
+- Install [Git](https://git-scm.com/downloads) on your machine.
+
+## Steps to Install Tirith
+
+### Step 1: Install using the `pip` command
+Run the following command in your terminal to download Tirith directly from the GitHub repository and install it on your local system. This command ensures that you have the latest version.
+
+```bash
+pip install git+https://github.com/StackGuardian/tirith.git
+```
+    
+
+### Step 2: Verify Installation
+Once installed, verify that Tirith is working by checking its version. You should see a version number (e.g., 1.0.0-beta.12) indicating successful installation.
+```bash
+tirith --version
+```
+
+<img loading="lazy" src={require('../../assets/installation/tirith-version.png').default} alt="tirith-version" className="doc_img"/>
+
+
+==============================================================================
+# Manual Installation (Using a Python Virtual Environment)
+Source: https://stackguardian.github.io/tirith/docs/tirith-installation/manual-installation/
+Summary: This documentation overviews you about the introduction of the Tirith software installation on your respective operating system.
+==============================================================================
+
+<script type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify({
+   "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.lambdatest.com"
+    },{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Support",
+      "item": "https://www.lambdatest.com/support/docs/"
+    },{
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Installation",
+      "item": "https://www.lambdatest.com/support/docs/manual-installation/"
+    }]
+  })
+}}></script>
+If you prefer a manual setup, especially if you want to modify Tirith’s codebase directly, follow these steps to install Tirith in a virtual Python environment.
+
+## Prerequisite
+- Make sure your machine has [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) installed.
+- Install [Git](https://git-scm.com/downloads) on your machine.
+
+## Steps to Install Tirith
+
+### Step 1: Clone the Repository
+Clone the Tirith repository from GitHub to get the latest code:
+
+```bash
+git clone https://github.com/StackGuardian/tirith.git
+cd tirith
+```
+
+### Step 2: Set Up a Python Virtual Environment
+Setting up a virtual environment isolates Tirith’s dependencies, preventing potential conflicts with other projects on your machine.
+
+Create a Virtual Environment:
+
+```bash
+virtualenv .venv
+```
+
+Activate the Virtual Environment:
+
+```bash
+source .venv/bin/activate
+```
+
+This command activates the virtual environment, ensuring all packages you install are contained within this environment.
+
+### Step 3: Install Tirith
+With the virtual environment activated, install Tirith:
+
+```bash
+pip install -e .
+```
+The -e flag installs Tirith in `editable` mode, allowing you to make modifications to the codebase without needing to reinstall the package.
+
+### Step 4: Verify Installation
+To confirm Tirith is installed and running properly, check its version:
+
+```bash
+tirith --version
+```
+You should see a version number output, verifying that Tirith is set up correctly.
+
+<img loading="lazy" src={require('../../assets/installation/tirith-version.png').default} alt="tirith-version" className="doc_img"/>
+
+
+==============================================================================
+# Installation for Developers (Using Docker and Dev Containers in VS Code)
+Source: https://stackguardian.github.io/tirith/docs/tirith-installation/developer-mode-installation/
+Summary: This documentation overviews you about the introduction of the Tirith software installation on your respective operating system.
+==============================================================================
+
+<script type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify({
+   "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [{
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.lambdatest.com"
+    },{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Support",
+      "item": "https://www.lambdatest.com/support/docs/"
+    },{
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Installation",
+      "item": "https://www.lambdatest.com/support/docs/developer-mode-installation/"
+    }]
+  })
+}}></script>
+For developers who want to contribute to Tirith, setting up a [Dev Container in Visual Studio Code (VS Code)](https://code.visualstudio.com/docs/devcontainers/create-dev-container#_create-a-devcontainerjson-file) offers a robust development environment. This approach ensures that all dependencies and configurations are consistent across different setups.
+
+## Prerequisite
+- Make sure your machine has [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) installed.
+- Install [Git](https://git-scm.com/downloads) on your machine.
+- Basic knowledge on [Docker](https://docs.docker.com/engine/install/) is required.
+
+## Steps to Install Tirith
+
+### Step 1: Clone the Repository
+Clone the Tirith repository from GitHub to get the latest code:
+
+```bash
+git clone https://github.com/StackGuardian/tirith.git
+cd tirith
+```
+
+### Step 2: Set Up Docker
+Ensure [Docker](https://docs.docker.com/engine/install/) is installed and running on your machine. You can manage Docker using Docker Desktop or the command-line interface (CLI). Docker allows you to run Tirith within isolated containers, preventing any dependency conflicts with your local system.
+
+### Step 3: Open the Project in VS Code
+- Launch Visual Studio Code and open the cloned repository folder.
+- Open the Command Palette by pressing `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS).
+- Search for **Dev Containers: Rebuild and Reopen in Container** and select this option.
+- VS Code will use the `devcontainer.json` configuration file within the project to build a containerized environment for Tirith. This configuration file contains settings for the development environment, such as necessary extensions and dependencies. Building the container may take a few minutes.
+- Once the container is running, you’ll have a fully configured development environment within Docker, optimized for Tirith development.
+
+
+==============================================================================
+# Creating Your First Tirith Policy
+Source: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-create-first-policy/
+Summary: A step-by-step guide to creating and evaluating your first Tirith policy.
+==============================================================================
+
+In modern cloud-native environments, security and compliance are paramount. Tirith, a powerful policy-as-code framework by StackGuardian, enables you to enforce robust validation and guardrails over JSON-based inputs. By defining policies in JSON format, you can automate security and operational controls efficiently within your cloud and DevOps workflows.
+
+This guide provides a hands-on approach to creating and evaluating a Tirith policy against a JSON input file. You will learn how to:
+
+- Use the Tirith CLI to validate policies against JSON inputs
+- Leverage the Tirith JSON provider for extracting and validating data
+
+## Prerequisites
+
+Before starting, ensure you have the Tirith CLI installed and create the following two JSON files: `input.json` and `policy.json`:
+
+```json
+{
+  "path": "/stackguardian/wfgrps/test",
+  "verb": "POST",
+  "meta": {
+    "epoch": 1718860398,
+    "User-Agent": {
+        "name": "User-Agent",
+        "value": "PostmanRuntime/7.26.8"
+    }
+  }
+}
+```
+
+Here is the `policy.json` file:
+
+```json
+{
+    "meta": {
+        "version": "v1",
+        "required_provider": "stackguardian/json"
+    },
+    "evaluators": [
+        {
+            "id": "can_post",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "verb"
+            },
+            "condition": {
+                "type": "Equals",
+                "value": "POST"
+            }
+        },
+        {
+            "id": "wfgrps_path",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "path"
+            },
+            "condition": {
+                "type": "RegexMatch",
+                "value": "/stackguardian/wfgrps/test.*"
+            }
+        },
+        {
+            "id": "epoch_less_than_8th_july_2024",
+            "provider_args": {
+                "operation_type": "get_value",
+                "key_path": "meta.epoch"
+            },
+            "condition": {
+                "type": "LessThan",
+                "value": 1720415598
+            }
+        }
+    ],
+    "eval_expression": "can_post && wfgrps_path && epoch_less_than_8th_july_2024"
+}
+```
+
+## Evaluating the Policy Against the Input
+
+Once you have created the input and policy files, execute the following command to evaluate the policy:
+
+```bash
+tirith -input-path input.json -policy-path policy.json
+```
+
+Explanation:
+
+- `tirith`: The core command to run the Tirith policy evaluation engine.
+- `-input-path input.json`: Specifies the JSON input file containing data to be validated.
+- `-policy-path policy.json`: Points to the JSON policy file defining validation rules.
+
+```bash
+Check: can_post
+  PASSED
+  Results:
+	1. PASSED: POST is equal to POST
+
+Check: wfgrps_path
+  PASSED
+  Results:
+	1. PASSED: /stackguardian/wfgrps/test matches regex pattern /stackguardian/wfgrps/test.*
+
+Check: epoch_less_than_8th_july_2024
+  PASSED
+  Results:
+	1. PASSED: 1718860398 is less than 1720415598
+
+Passed: 3 Failed: 0 Skipped: 0
+
+Final expression used:
+-> can_post && wfgrps_path && epoch_less_than_8th_july_2024
+✔ Passed final eval
+```
+
+This confirms that the input successfully meets all defined policy conditions.
+
+By implementing policies in Tirith, you can ensure consistent enforcement of security, compliance, and operational rules across your cloud and DevOps pipelines. In the next sections, we will explore more advanced features such as policy conditions, variables, and error tolerance handling to make your policies more dynamic and resilient.
+
+
+==============================================================================
+# Policy Structure
+Source: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-structure/
+Summary: Learn about the structure of Tirith policies, including metadata, evaluators, and evaluation expressions.
+==============================================================================
+
+Tirith policies are written in JSON format, following a structured approach that defines rules and conditions for evaluating input data. Each policy consists of:
+
+- **Metadata** (`meta`): Specifies the policy version and required provider.
+- **Evaluators** (`evaluators`): A list of conditions that determine if the input meets the policy requirements.
+- **Evaluation Expression** (`eval_expression`): Defines how evaluators are combined to determine the final result.
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json"
+  },
+  "evaluators": [
+    {
+      "id": "can_post",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "verb"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "POST"
+      }
+    }
+  ],
+  "eval_expression": "can_post"
+}
+```
+
+
+==============================================================================
+# Policy Reference
+Source: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-reference/
+Summary: Field-by-field reference for the Tirith policy file format, including every key, its type, its default, and its failure behavior.
+==============================================================================
+
+A Tirith policy is a single JSON document with exactly three top-level keys. It is evaluated against an input document passed to the CLI with `-input-path` (see the [CLI reference](../tirith-usage/cli-reference.md)). The policy file itself is always JSON; the input file is parsed as JSON unless its name ends in `.yaml` or `.yml`, in which case it is parsed as YAML (a multi-document YAML file becomes a list of documents).
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json"
+  },
+  "evaluators": [
+    {
+      "id": "can_post",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "verb"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "POST"
+      }
+    }
+  ],
+  "eval_expression": "can_post"
+}
+```
+
+Unknown keys, at any level, are ignored.
+
+## Top-level keys
+
+| Key | Required | Type | Description |
+|---|---|---|---|
+| `meta` | yes | object | Policy metadata. Selects the provider; everything else is informational. |
+| `evaluators` | yes | array of objects | The checks. Each one extracts values from the input and compares them against a condition. |
+| `eval_expression` | yes | string | Boolean expression over evaluator `id`s that produces the final verdict. |
+
+If `meta`, `evaluators`, or `eval_expression` is missing, the run aborts before producing a verdict: the CLI prints `ERROR` and exits with code `1` (with or without `--fail-on-error`).
+
+## `meta`
+
+| Key | Required | Type | Default | Behavior |
+|---|---|---|---|---|
+| `required_provider` | effectively yes | string | `"core"` | Selects the provider used by every evaluator in the policy. See [below](#metarequired_provider). |
+| `version` | no | string | none | Not interpreted. Always echoed into the result `meta` (as `null` when absent). |
+| `id` | no | any (conventionally string) | none | Not interpreted. Echoed verbatim into the result `meta` only when present. |
+| `name` | no | any (conventionally string) | none | Same as `id`. |
+| `description` | no | any (conventionally string) | none | Same as `id`. |
+| `severity` | no | any (conventionally string) | none | Same as `id`. |
+| `enforcement` | no | any (conventionally string) | none | Same as `id`. See [below](#metaenforcement). |
+| `tags` | no | any (conventionally array of strings) | none | Same as `id`. |
+| `remediation` | no | any (conventionally string) | none | Same as `id`. |
+
+An empty `meta` object (`"meta": {}`) is accepted; the policy then falls back to the default provider, which fails every check (see next section).
+
+### `meta.required_provider`
+
+The registered providers are:
+
+- `stackguardian/terraform_plan`
+- `stackguardian/infracost`
+- `stackguardian/sg_workflow`
+- `stackguardian/json`
+- `stackguardian/kubernetes`
+
+Each provider defines its own `provider_args`; see the [provider documentation](../tirith-providers/overview.md).
+
+When `required_provider` is absent it defaults to `"core"`, and no provider named `core` is registered. An unregistered provider name — the default included — is **not** a hard error: every evaluator in the policy simply receives no values and fails with the message `Could not find input value`. The final verdict is a failure (exit code `3` under `--fail-on-error`), which can be mistaken for a genuine policy violation. Always set `required_provider` explicitly.
+
+### `meta.enforcement`
+
+The open-source engine does **not** interpret this field. There is no list of accepted values, no validation, and no warning: any value — `hard_mandatory`, `soft_mandatory`, or any other string — is copied verbatim into the result `meta` and changes nothing about how the policy is evaluated. An unrecognised value has exactly the same effect as a recognised-looking one: none.
+
+In particular, `enforcement` never affects the exit code of the `tirith` command. The exit code is determined solely by `final_result` and the `--fail-on-error` flag (see [Outcomes and exit codes](#outcomes-and-exit-codes)). If you need a policy to block a pipeline *when invoking the CLI directly*, gate on the exit code with `--fail-on-error`, not on this field. The same applies to `severity`, `tags`, and `remediation`: they exist so that tools consuming Tirith's JSON output can act on them, and the engine passes them through untouched.
+
+[NOTE] Consumers do interpret it
+
+The field is not decorative — it is read by the layer above the engine. The
+[GitHub Action](../tirith-usage/ci-integration.md) downgrades a failing policy to a warning when
+`meta.enforcement` is one of `soft_mandatory`, `advisory`, `warn`, `warning`, `low` or
+`approval_required`, and blocks on `hard_mandatory`, `mandatory`, `fail`, `error`, `high`,
+`critical` or `blocking`. Matching is case-insensitive and ignores surrounding whitespace.
+
+An **unrecognised** value blocks, and logs a warning that it did so. That is deliberate: a policy
+that is mislabelled or carries a typo must gate rather than slip through silently.
+
+So `enforcement` is meaningful when a consumer acts on it, and inert when you run `tirith` yourself.
+
+## `evaluators[]`
+
+Each entry in the `evaluators` array is an object with these keys:
+
+| Key | Required | Type | Default | Behavior |
+|---|---|---|---|---|
+| `id` | yes | string | — | The name this check is referenced by in `eval_expression`. Missing `id` aborts the run (`ERROR`, exit `1`). |
+| `provider_args` | yes | object | — | Arguments for the provider selected by `meta.required_provider`. Missing `provider_args` aborts the run (`ERROR`, exit `1`). |
+| `condition` | yes | object | — | The comparison applied to every value the provider extracts. Missing `condition` aborts the run (`ERROR`, exit `1`). |
+| `description` | no | string | none | Informational. Echoed into the result for this check (as `null` when absent). |
+
+`id` is substituted into `eval_expression` as a bare word, so it must look like an identifier: letters, digits, and underscores. Ids should be unique within a policy; if two evaluators share an id, both appear in the output but only the **last** one's outcome is substituted into `eval_expression`.
+
+### `evaluators[].provider_args`
+
+The contents are provider-specific; the one key every provider expects is `operation_type`, which selects the operation (for example `get_value` for `stackguardian/json`, or `attribute` for `stackguardian/terraform_plan`). See [providers](../tirith-providers/overview.md) for each provider's operations and arguments.
+
+A malformed `provider_args` — an unsupported `operation_type`, or a missing required argument — does not abort the run. The provider reports the mistake as an error on that check, the check fails regardless of `error_tolerance`, and the message tells you what was wrong (for example `operation_type: 'attrbute' is not supported (severity_value: 99)`).
+
+### `evaluators[].condition`
+
+| Key | Required | Type | Default | Behavior |
+|---|---|---|---|---|
+| `type` | yes | string | — | The condition (evaluator) name. An unknown or missing `type` does not abort the run: that check fails with `` `X` is not a supported evaluator ``. |
+| `value` | yes in practice | any | `null` | The operand the extracted value is compared against. The expected type depends on `type` (a list for `ContainedIn`, a pattern string for `RegexMatch`, a number for `LessThan`, and so on). Omitting it compares against `null`; the outcome then depends on the condition type, so always set it explicitly. |
+| `error_tolerance` | no | integer | `0` | The maximum provider-error severity this check tolerates. Errors at or below the tolerance mark the check as **skipped** instead of failed. See [Error tolerance](#error-tolerance-the-third-outcome). |
+
+The supported condition types are:
+
+`ContainedIn`, `Contains`, `Equals`, `GreaterThan`, `GreaterThanEqualTo`, `IsEmpty`, `IsNotEmpty`, `LessThan`, `LessThanEqualTo`, `NotContainedIn`, `NotContains`, `NotEquals`, `RegexMatch`
+
+Their exact semantics are documented in the [evaluator reference](../tirith-reference/evaluators.md).
+
+A provider may extract several values for one check (for example, one attribute per matching resource). The condition is applied to each value, and the check passes only if **every** value passes.
+
+## `eval_expression`
+
+A boolean expression that combines the per-check outcomes into the final verdict. Operands are evaluator `id`s; the operators are:
+
+- `&&` — and
+- `||` — or
+- `!` — not
+- `(` `)` — grouping
+
+`&` and `|` are rejected with an explicit error (`Unsupported operator '&' in eval_expression. Use '&&' instead.`) and the run aborts with exit code `1`.
+
+Two behaviors worth knowing:
+
+- **An id that does not match any evaluator is silently dropped from the expression**, and the run continues. The result carries an informational note in its `errors` array (`The following evaluator ids are not defined and have been removed: ...`), but this is not a failure: a policy whose expression is `real_check && typo_id` passes if `real_check` passes. Check the `errors` array (or the `Errors:` block in the printed output) when authoring.
+- **Skipped checks are removed from the expression** before it is evaluated, rather than being treated as false. `a && b` with `b` skipped evaluates as just `a`. If every id in the expression is removed — all checks skipped — the final verdict is neither pass nor fail; see the next section.
+
+## Outcomes and exit codes
+
+Every check has one of three outcomes, reported in the `passed` field of its result:
+
+| `passed` | Meaning |
+|---|---|
+| `true` | Every value the provider extracted satisfied the condition. |
+| `false` | At least one value failed the condition, the provider found no values at all (`Could not find input value`), or a provider error exceeded `error_tolerance`. |
+| `null` | Skipped: the provider reported an error whose severity is within `error_tolerance`. |
+
+The final verdict, `final_result`, is also tri-state: `true` when the expression evaluates true, `false` when it evaluates false, and `null` when every check it references was skipped.
+
+The CLI exit code depends on `final_result` and the `--fail-on-error` flag:
+
+| Situation | `final_result` | Exit (default) | Exit (`--fail-on-error`) |
+|---|---|---|---|
+| Policy passed | `true` | 0 | 0 |
+| Policy failed | `false` | 0 | 3 |
+| All checks skipped | `null` | 0 | 1 |
+| Unresolved variable | absent | 0 | 1 |
+| Policy file malformed (missing `meta`, `evaluators`, `eval_expression`, `id`, `provider_args`, `condition`; `&` instead of `&&` in the expression, and likewise for the or operator) | — | 1 | 1 |
+
+Without `--fail-on-error` the exit code is `0` whether the policy passed or failed — the verdict is only in the output. A run where every check was skipped is deliberately treated as an error under `--fail-on-error`, not a pass: it verified nothing. See the [CLI reference](../tirith-usage/cli-reference.md) for the flag.
+
+## Error tolerance: the third outcome
+
+`error_tolerance` exists so a policy can tolerate *missing data* without tolerating *violations*. When a provider cannot extract a value, it reports an error with a numeric severity instead of a value. For each such error on a check:
+
+- severity **>** `error_tolerance` → the check **fails**, with the provider's message.
+- severity **≤** `error_tolerance` → that result is **skipped** (`passed: null`), with the provider's message.
+
+The default tolerance is `0`. The severities the bundled providers use:
+
+| Severity | Used by | Meaning |
+|---|---|---|
+| 0 | `terraform_plan` | No resource changes in the plan at all, or a matched resource has no planned attributes (for example, a resource being destroyed). Because the comparison is *strictly greater than*, severity-0 errors are skipped even at the default tolerance of 0. |
+| 1 | `terraform_plan` | The resource type was not found in the plan. |
+| 2 | `terraform_plan`, `json` | The attribute (`terraform_plan`) or `key_path` (`json`) was not found. |
+| 99 | `terraform_plan` | The policy itself is malformed (unsupported `operation_type`, missing required argument). Do not set a tolerance this high: it would mask broken policies. |
+
+So `"error_tolerance": 2` is the common setting for "skip this check when the key or attribute is absent", and `"error_tolerance": 1` for "skip when the resource type does not appear in the plan".
+
+Two situations are never tolerated, regardless of the setting:
+
+- The provider found **no values at all** for the check (`Could not find input value`) — this fails.
+- The provider reported an error **without a severity**, which the engine treats as a malformed provider call — this fails.
+
+A skipped check interacts with the final verdict as described above: it is removed from `eval_expression`, and if nothing is left, `final_result` is `null` — reported as `= Skipped final evaluator`, exit `0` by default and exit `1` under `--fail-on-error`.
+
+## Variables
+
+Any **string** value in the policy can be replaced by a variable reference:
+
+```json
+"condition": {
+  "type": "LessThanEqualTo",
+  "value": "{{ var.max_monthly_cost }}"
+}
+```
+
+The rules, exactly as implemented:
+
+- The syntax is `{{ var.NAME }}`. The `var.` prefix is mandatory; `{{ NAME }}` is not a variable reference and is left untouched.
+- The reference must start the string, and the whole string is replaced by the variable's value — which keeps the variable's JSON type. A number stays a number, a list stays a list. Variables cannot be interpolated into the middle of a longer string.
+- Substitution is applied to: string values directly under `meta`, each evaluator's `id`, string values directly under `provider_args` and `condition`, and `eval_expression`. It does **not** recurse into nested objects or arrays inside those keys.
+- `NAME` may be a dotted path (`{{ var.limits.cost }}`), looked up inside the variable document.
+
+Variables come from two CLI sources, applied in this order (later wins):
+
+1. `-var-path vars.json` — a JSON object per file; the flag may be repeated, and files are merged left to right, so a later file overrides an earlier one key by key.
+2. `-var NAME=VALUE` — `VALUE` is parsed as JSON (`-var 'max_monthly_cost=300'`, `-var 'env="prod"'`); the flag may be repeated. Inline variables override variable files. An inline variable that is not of the form `NAME=<valid JSON>` is ignored with a logged error — it does not define the variable.
+
+If a referenced variable is not defined by any source, the policy is **not evaluated at all**: the result contains only `{"errors": ["Variables not found: NAME"]}`, there is no verdict, and the CLI exits `0` by default and `1` under `--fail-on-error`.
+
+## Result document
+
+With `--json`, the CLI prints a single JSON object:
+
+| Key | Type | Content |
+|---|---|---|
+| `meta` | object | `version` and `required_provider` (always present, `null`/`"core"` when defaulted), plus whichever of `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation` the policy declared, copied verbatim. |
+| `final_result` | `true` / `false` / `null` | The final verdict. |
+| `evaluators` | array | One entry per check: `id`, `description`, tri-state `passed`, and `result` — the per-value messages, each with its own tri-state `passed`. |
+| `errors` | array of strings | Informational notes from evaluating `eval_expression` (undefined ids that were removed, disallowed symbols). Empty on a clean run — including a clean *failing* run. |
+| `eval_expression` | string | The expression that was evaluated, after variable substitution. |
+
+For complete, runnable policies with their inputs and verdicts, see the [Policy Cookbook](./tirith-policy-cookbook.md).
+
+
+==============================================================================
+# Policy Conditions
+Source: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-conditions/
+Summary: Discover the various condition types supported by Tirith for evaluating input JSON.
+==============================================================================
+
+Conditions define how values from input JSON are evaluated. Tirith supports various condition types:
+
+- **Equals :** Checks if a value matches a specified value.
+- **RegexMatch :** Validates if a string matches a regex pattern.
+- **LessThan / GreaterThan :** Compares numeric values.
+
+```jsonc
+{
+  // ...
+  "id": "epoch_check",
+  "provider_args": {
+    "operation_type": "get_value",
+    "key_path": "meta.epoch"
+  },
+  "condition": {
+    "type": "LessThan",
+    "value": 1720415598
+  }
+  // ...
+}
+```
+
+This condition ensures that the `meta.epoch` value is less than `1720415598`.
+
+
+==============================================================================
+# Policy Variables
+Source: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-variables/
+Summary: Understand how to use dynamic variables in Tirith policies for flexible policy definitions.
+==============================================================================
+
+Policy variables allow dynamic values in policy definitions. They can be referenced in conditions to make policies more flexible.
+
+A variable is referenced as `{{ var.NAME }}`. The `var.` prefix is required — a placeholder written
+without it, such as `{{ max_epoch }}`, is not recognised as a variable and is compared as the
+literal string, so the check quietly measures the wrong thing instead of failing.
+
+```json
+{
+  "max_epoch": 1720415598
+}
+```
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json"
+  },
+  "evaluators": [
+    {
+      "id": "epoch_check",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "meta.epoch"
+      },
+      "condition": {
+        "type": "LessThan",
+        "value": "{{ var.max_epoch }}"
+      }
+    }
+  ],
+  "eval_expression": "epoch_check"
+}
+```
+
+Example command:
+
+```bash
+tirith -input-path <INPUT_PATH> -policy-path policy.json -var-path variables.json
+```
+
+Against an input of `{"meta": {"epoch": 1720000000}}` this passes:
+
+```
+Check: epoch_check
+  PASSED
+    1. PASSED: `1720000000` is less than `1720415598`
+```
+
+Supply variables inline with `-var` instead of, or in addition to, `-var-path`; an inline `-var`
+wins when the same name is set in both. A variable that is referenced but never supplied is an
+error, not an empty value: the run reports `Variables not found` and exits `1`.
+
+See [Policy reference](tirith-policy-reference.md) for where `{{ var.NAME }}` may appear, and
+[CLI reference](../tirith-usage/cli-reference.md) for the flags.
+
+
+==============================================================================
+# Error Tolerance
+Source: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-error-tolerance/
+Summary: Learn how Tirith handles missing or invalid keys in policies using error tolerance.
+==============================================================================
+
+Tirith supports error tolerance to handle missing or invalid keys in the input JSON.
+
+## Handling Missing Keys
+
+If a key referenced in an evaluator is missing, the evaluation typically fails. However, setting `error_tolerance` allows `evaluators` to be skipped instead of failing.
+
+If we modify the previous policy to include `error_tolerance`, missing keys won’t cause a failure:
+```jsonc
+{
+  // ...
+  "id": "can_post",
+  "provider_args": {
+    "operation_type": "get_value",
+    "key_path": "verb"
+  },
+  "condition": {
+    "type": "Equals",
+    "value": "POST",
+    "error_tolerance": 2
+  }
+  // ...
+}
+```
+
+This ensures that if `verb` is missing, the evaluation is skipped rather than failing.
+
+
+==============================================================================
+# Policy Cookbook
+Source: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-cookbook/
+Summary: Complete, runnable Tirith policies for common real-world checks, each shown with its input and the verdict it produces.
+==============================================================================
+
+Every recipe on this page is complete: copy the policy and the input into files, run the command shown, and you will get the output shown. All commands use `--fail-on-error` so the exit code carries the verdict — `0` pass, `3` fail, `1` when the run could not produce a verdict (see the [exit code table](./tirith-policy-reference.md#outcomes-and-exit-codes) and the [CLI reference](../tirith-usage/cli-reference.md)).
+
+Field-by-field schema details are in the [Policy Reference](./tirith-policy-reference.md); condition semantics in the [evaluator reference](../tirith-reference/evaluators.md); provider operations in the [provider documentation](../tirith-providers/overview.md).
+
+## Forbid unapproved instance types
+
+Every `aws_instance` in a Terraform plan must use an instance type from an approved list. `ContainedIn` checks each extracted value against the list, and the check passes only if **all** instances pass — so one oversized instance fails the whole policy.
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "allowed-instance-types",
+    "name": "Only approved EC2 instance types",
+    "description": "Every aws_instance in the plan must use an instance type from the approved list.",
+    "severity": "HIGH"
+  },
+  "evaluators": [
+    {
+      "id": "instance_type_is_approved",
+      "description": "aws_instance.instance_type must be one of the approved types",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_instance",
+        "terraform_resource_attribute": "instance_type"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": ["t3.micro", "t3.small", "t3.medium"]
+      }
+    }
+  ],
+  "eval_expression": "instance_type_is_approved"
+}
+```
+
+The input is a Terraform plan in JSON form (`terraform show -json plan.out > input.json`). This trimmed-down plan has one compliant and one non-compliant instance:
+
+```json
+{
+  "format_version": "1.2",
+  "terraform_version": "1.5.7",
+  "resource_changes": [
+    {
+      "address": "aws_instance.web",
+      "type": "aws_instance",
+      "name": "web",
+      "change": {
+        "actions": ["create"],
+        "after": {
+          "instance_type": "t3.small",
+          "tags": { "Environment": "prod" }
+        }
+      }
+    },
+    {
+      "address": "aws_instance.batch",
+      "type": "aws_instance",
+      "name": "batch",
+      "change": {
+        "actions": ["create"],
+        "after": {
+          "instance_type": "m5.24xlarge",
+          "tags": { "Environment": "prod" }
+        }
+      }
+    }
+  ]
+}
+```
+
+```bash
+tirith --fail-on-error -policy-path policy.json -input-path input.json
+```
+
+```text
+Check: instance_type_is_approved
+  FAILED
+    1. PASSED: Found `"t3.small"` inside `["t3.medium", "t3.micro", "t3.small"]`
+    2. FAILED: Failed to find `"m5.24xlarge"` inside `["t3.medium", "t3.micro", "t3.small"]`
+
+Passed: 0 Failed: 1 Skipped: 0
+
+Final expression used:
+-> instance_type_is_approved
+✘ Failed final evaluation
+```
+
+Exit code: `3`.
+
+## Require an Environment tag on every resource
+
+With `terraform_resource_type` set to `"*"`, the check runs against every resource in the plan. The dotted attribute path reaches into the `tags` map, and `RegexMatch` restricts the value to an allowed set.
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "require-environment-tag",
+    "name": "Every resource carries an Environment tag",
+    "description": "Every resource in the plan must be tagged with Environment set to dev, staging, or prod."
+  },
+  "evaluators": [
+    {
+      "id": "environment_tag_is_valid",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "tags.Environment"
+      },
+      "condition": {
+        "type": "RegexMatch",
+        "value": "^(dev|staging|prod)$"
+      }
+    }
+  ],
+  "eval_expression": "environment_tag_is_valid"
+}
+```
+
+```json
+{
+  "format_version": "1.2",
+  "terraform_version": "1.5.7",
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.artifacts",
+      "type": "aws_s3_bucket",
+      "name": "artifacts",
+      "change": {
+        "actions": ["create"],
+        "after": {
+          "bucket": "team-artifacts",
+          "tags": { "Environment": "prod" }
+        }
+      }
+    },
+    {
+      "address": "aws_instance.web",
+      "type": "aws_instance",
+      "name": "web",
+      "change": {
+        "actions": ["create"],
+        "after": {
+          "instance_type": "t3.small",
+          "tags": { "Environment": "staging" }
+        }
+      }
+    }
+  ]
+}
+```
+
+```bash
+tirith --fail-on-error -policy-path policy.json -input-path input.json
+```
+
+```text
+Check: environment_tag_is_valid
+  PASSED
+    1. PASSED: `"prod"` matches regex pattern `"^(dev|staging|prod)$"`
+    2. PASSED: `"staging"` matches regex pattern `"^(dev|staging|prod)$"`
+
+Passed: 1 Failed: 0 Skipped: 0
+
+Final expression used:
+-> environment_tag_is_valid
+✔ Passed final evaluator
+```
+
+Exit code: `0`.
+
+A resource with no `tags.Environment` at all fails rather than slipping through. Against an input whose only resource has no tags:
+
+```text
+Check: environment_tag_is_valid
+  FAILED
+    1. FAILED: attribute: 'tags.Environment' is not found
+
+Passed: 0 Failed: 1 Skipped: 0
+
+Final expression used:
+-> environment_tag_is_valid
+✘ Failed final evaluation
+```
+
+Exit code: `3`. (A missing attribute is a severity-2 provider error; the default `error_tolerance` of 0 turns it into a failure. The [last recipe](#tolerate-a-missing-key) shows how to skip instead.)
+
+## Block security group ingress from 0.0.0.0/0
+
+A public-ingress check. The attribute path `ingress.*.cidr_blocks` extracts the `cidr_blocks` list of **each** ingress rule, and `NotContains` requires that none of those lists contain `0.0.0.0/0`.
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "no-public-ingress",
+    "name": "No security group ingress from 0.0.0.0/0",
+    "description": "No ingress rule of any aws_security_group may allow traffic from 0.0.0.0/0.",
+    "severity": "HIGH",
+    "remediation": "Restrict the CIDR range or reference another security group instead."
+  },
+  "evaluators": [
+    {
+      "id": "no_public_cidr_in_ingress",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_security_group",
+        "terraform_resource_attribute": "ingress.*.cidr_blocks"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "0.0.0.0/0"
+      }
+    }
+  ],
+  "eval_expression": "no_public_cidr_in_ingress"
+}
+```
+
+```json
+{
+  "format_version": "1.2",
+  "terraform_version": "1.5.7",
+  "resource_changes": [
+    {
+      "address": "aws_security_group.web",
+      "type": "aws_security_group",
+      "name": "web",
+      "change": {
+        "actions": ["create"],
+        "after": {
+          "name": "web-sg",
+          "ingress": [
+            {
+              "from_port": 443,
+              "to_port": 443,
+              "protocol": "tcp",
+              "cidr_blocks": ["10.0.0.0/8"]
+            },
+            {
+              "from_port": 22,
+              "to_port": 22,
+              "protocol": "tcp",
+              "cidr_blocks": ["0.0.0.0/0"]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+```
+
+```bash
+tirith --fail-on-error -policy-path policy.json -input-path input.json
+```
+
+```text
+Check: no_public_cidr_in_ingress
+  FAILED
+    1. PASSED: Did not find 0.0.0.0/0 inside ['10.0.0.0/8']
+    2. FAILED: Found `"0.0.0.0/0"` inside `["0.0.0.0/0"]`
+
+Passed: 0 Failed: 1 Skipped: 0
+
+Final expression used:
+-> no_public_cidr_in_ingress
+✘ Failed final evaluation
+```
+
+Exit code: `3`. The port-443 rule scoped to `10.0.0.0/8` passes; the SSH rule open to the world fails the policy.
+
+## Cap the estimated monthly cost
+
+Uses the `stackguardian/infracost` provider against an [Infracost](https://www.infracost.io/) breakdown (`infracost breakdown --path . --format json > input.json`). The `total_monthly_cost` operation sums the monthly cost of the matched resources; `["*"]` matches all of them.
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/infracost",
+    "id": "monthly-cost-ceiling",
+    "name": "Monthly cost stays under the ceiling",
+    "description": "The estimated total monthly cost of all resources must not exceed 500 USD."
+  },
+  "evaluators": [
+    {
+      "id": "total_monthly_cost_under_ceiling",
+      "provider_args": {
+        "operation_type": "total_monthly_cost",
+        "resource_type": ["*"]
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 500
+      }
+    }
+  ],
+  "eval_expression": "total_monthly_cost_under_ceiling"
+}
+```
+
+```json
+{
+  "version": "0.2",
+  "currency": "USD",
+  "projects": [
+    {
+      "name": "main",
+      "breakdown": {
+        "resources": [
+          {
+            "name": "aws_instance.web",
+            "monthlyCost": "301.44"
+          },
+          {
+            "name": "aws_db_instance.app",
+            "monthlyCost": "109.86"
+          },
+          {
+            "name": "aws_s3_bucket.artifacts",
+            "monthlyCost": "2.30"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+```bash
+tirith --fail-on-error -policy-path policy.json -input-path input.json
+```
+
+```text
+Check: total_monthly_cost_under_ceiling
+  PASSED
+    1. PASSED: `413.6` is less than equal to `500`
+
+Passed: 1 Failed: 0 Skipped: 0
+
+Final expression used:
+-> total_monthly_cost_under_ceiling
+✔ Passed final evaluator
+```
+
+Exit code: `0`. To limit the sum to particular resource types instead, list them: `"resource_type": ["aws_instance", "aws_db_instance"]`.
+
+## Tolerate a missing key
+
+By default a value the provider cannot find fails the check. `error_tolerance` turns "the data is absent" into a **skip** instead — here the logging level is validated only when a `logging` block exists at all. Encryption, by contrast, gets no tolerance: its absence must fail.
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json",
+    "id": "encryption-and-optional-logging",
+    "name": "Encryption required, logging checked when configured",
+    "description": "Encryption must be enabled. The logging level is validated only when the logging block exists."
+  },
+  "evaluators": [
+    {
+      "id": "encryption_enabled",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "spec.encryption.enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    },
+    {
+      "id": "logging_level_is_valid",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "spec.logging.level"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": ["INFO", "WARN", "ERROR"],
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "encryption_enabled && logging_level_is_valid"
+}
+```
+
+```json
+{
+  "spec": {
+    "encryption": {
+      "enabled": true
+    }
+  }
+}
+```
+
+```bash
+tirith --fail-on-error -policy-path policy.json -input-path input.json
+```
+
+```text
+Check: encryption_enabled
+  PASSED
+    1. PASSED: `true` is equal to `true`
+
+Check: logging_level_is_valid
+  SKIPPED
+    1. SKIPPED: key_path: `spec.logging.level` is not found (severity: 2)
+
+Passed: 1 Failed: 0 Skipped: 1
+
+Final expression used:
+-> encryption_enabled && logging_level_is_valid
+✔ Passed final evaluator
+```
+
+Exit code: `0`. The skipped check is removed from `eval_expression` — the expression effectively becomes `encryption_enabled` — so the policy passes. The missing `key_path` is a severity-2 provider error; `"error_tolerance": 2` absorbs it. If the input *does* contain `spec.logging.level`, the value is validated normally and `DEBUG` would fail the policy.
+
+One consequence to be aware of: if **every** check in the expression is skipped, the final verdict is neither pass nor fail. Running only the tolerant check against the same input:
+
+```text
+Check: logging_level_is_valid
+  SKIPPED
+    1. SKIPPED: key_path: `spec.logging.level` is not found (severity: 2)
+
+Passed: 0 Failed: 0 Skipped: 1
+
+Final expression used:
+-> logging_level_is_valid
+= Skipped final evaluator
+```
+
+Exit code: `1` — with `--fail-on-error`, an all-skipped run counts as an error, not a pass, because nothing was actually verified. Without the flag the exit code is `0`, like every other outcome.
+
+## Parameterize the policy with variables
+
+The same cost-ceiling policy, with the limit supplied at run time. A variable reference must be the entire string value; it is replaced with the variable's JSON value, so a number stays a number.
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/infracost",
+    "id": "parameterized-cost-ceiling",
+    "name": "Monthly cost stays under a configurable ceiling",
+    "description": "The estimated total monthly cost must not exceed the ceiling supplied as a variable."
+  },
+  "evaluators": [
+    {
+      "id": "cost_under_ceiling",
+      "provider_args": {
+        "operation_type": "total_monthly_cost",
+        "resource_type": ["*"]
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": "{{ var.max_monthly_cost }}"
+      }
+    }
+  ],
+  "eval_expression": "cost_under_ceiling"
+}
+```
+
+```json
+{
+  "max_monthly_cost": 300
+}
+```
+
+Run against the same `input.json` as the previous cost recipe (total: 413.60):
+
+```bash
+tirith --fail-on-error -policy-path policy.json -input-path input.json -var-path variables.json
+```
+
+```text
+Check: cost_under_ceiling
+  FAILED
+    1. FAILED: `413.6` is not less than or equal to `300`
+
+Passed: 0 Failed: 1 Skipped: 0
+
+Final expression used:
+-> cost_under_ceiling
+✘ Failed final evaluation
+```
+
+Exit code: `3`.
+
+An inline `-var` overrides the variable file:
+
+```bash
+tirith --fail-on-error -policy-path policy.json -input-path input.json \
+  -var-path variables.json -var 'max_monthly_cost=1000'
+```
+
+```text
+Check: cost_under_ceiling
+  PASSED
+    1. PASSED: `413.6` is less than equal to `1000`
+
+Passed: 1 Failed: 0 Skipped: 0
+
+Final expression used:
+-> cost_under_ceiling
+✔ Passed final evaluator
+```
+
+Exit code: `0`. If a referenced variable is not supplied at all, the policy is not evaluated: the output reports `Variables not found: max_monthly_cost` and there is no verdict (exit `1` with `--fail-on-error`). The full substitution rules are in the [Policy Reference](./tirith-policy-reference.md#variables).
+
+
+==============================================================================
+# Example Policies
+Source: https://stackguardian.github.io/tirith/docs/tirith-policies/tirith-policy-examples/
+Summary: Explore practical examples of Tirith policies to understand their implementation and usage.
+==============================================================================
+
+
+
+
+==============================================================================
+# Providers Overview
+Source: https://stackguardian.github.io/tirith/docs/tirith-providers/providers-overview/
+Summary: What a Tirith provider is, how required_provider selects one, how provider_args are passed, and the list of available providers.
+==============================================================================
+
+A **provider** is the part of Tirith that knows how to read one specific kind of input document and extract values from it. The policy declares which provider to use; each evaluator in the policy then asks the provider for values (via `provider_args`), and the evaluator's `condition` is applied to every value the provider returns.
+
+## Selecting a provider
+
+The provider is selected once for the whole policy with `meta.required_provider`:
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [ ... ],
+  "eval_expression": "..."
+}
+```
+
+The value must be one of the exact strings below. If the string does not match any known provider, every evaluator in the policy fails with an error.
+
+| `required_provider` | Summary | Expected input document |
+|---|---|---|
+| [`stackguardian/terraform_plan`](terraform-plan.md) | Inspects resource changes, actions, counts, dependencies, references, provider configuration, and the Terraform version in a Terraform plan. | Terraform plan in JSON form (`terraform show -json <plan-file>`) |
+| [`stackguardian/infracost`](infracost.md) | Sums estimated monthly or hourly costs from an Infracost breakdown. | Infracost output (`infracost breakdown --format json`) |
+| [`stackguardian/json`](json.md) | Extracts values from any JSON or YAML document by key path, with wildcard support. | Any JSON or YAML file |
+| [`stackguardian/kubernetes`](kubernetes.md) | Extracts attribute values from Kubernetes manifests of a given `kind`. | A list of Kubernetes manifests (multi-document YAML, e.g. `helm template` output) |
+| [`stackguardian/sg_workflow`](sg-workflow.md) | Reads attributes of a StackGuardian workflow definition. | StackGuardian workflow JSON |
+
+## How `provider_args` reaches the provider
+
+Each evaluator carries a `provider_args` object. Tirith hands that object to the selected provider **verbatim** — the provider decides which keys it understands. Every provider except `stackguardian/sg_workflow` dispatches on the `operation_type` key; the remaining keys are parameters of that operation.
+
+```json
+{
+  "id": "my_check",
+  "provider_args": {
+    "operation_type": "attribute",
+    "terraform_resource_type": "aws_s3_bucket",
+    "terraform_resource_attribute": "force_destroy"
+  },
+  "condition": {
+    "type": "Equals",
+    "value": false
+  }
+}
+```
+
+The provider returns a **list of results**. Each result is a value extracted from the input (a scalar, a list, or a dict, depending on the operation). The evaluator's `condition` is applied to each value independently, and the evaluator passes only if **every** value passes. If the provider returns nothing at all, the evaluator fails with the message `Could not find input value`.
+
+For the available condition types (`Equals`, `Contains`, `RegexMatch`, ...) see the [evaluators reference](../tirith-reference/evaluators.md).
+
+## How the input document is parsed
+
+The file given to [`-input-path`](../tirith-usage/cli-reference.md) is parsed by extension:
+
+- `.yaml` / `.yml` — parsed as YAML. A file with multiple documents (separated by `---`) becomes a **list** of documents; a file with a single document becomes that document directly.
+- anything else — parsed as JSON.
+
+The parsed value is what the provider sees.
+
+## Errors, misses, and `error_tolerance`
+
+When a provider cannot find what an operation asked for, it reports an error instead of a value. There are two kinds:
+
+1. **Errors with a severity value.** Most "not found" situations carry a numeric severity. Whether the check fails or is skipped depends on the evaluator's `condition.error_tolerance` (default `0`):
+   - severity **greater than** `error_tolerance` — the check **fails**.
+   - severity **less than or equal to** `error_tolerance` — the check is **skipped** (its `passed` is `null`, and its id is dropped from `eval_expression`).
+
+   The conventional severity values are:
+
+   | Severity | Meaning |
+   |---|---|
+   | 0 | Nothing to inspect (e.g. no resource changes in the plan). Skipped even at the default tolerance. |
+   | 1 | The requested resource / kind / provider was not found. |
+   | 2 | The resource was found but the requested attribute / key path was not. |
+   | 99 | The `provider_args` themselves are invalid (unsupported operation, missing required parameter). Practically never tolerated. |
+
+2. **Errors without a severity value.** Some errors (an unsupported `operation_type` in the `json` and `kubernetes` providers, and all errors from the `infracost` and `sg_workflow` providers) carry no severity. These always **fail** the check, regardless of `error_tolerance`.
+
+Each provider page below lists exactly which situation produces which severity. See also [error tolerance](../tirith-policies/tirith-policy-error-tolerance.md).
+
+
+==============================================================================
+# Terraform Plan Provider
+Source: https://stackguardian.github.io/tirith/docs/tirith-providers/terraform-plan-provider/
+Summary: Reference for the stackguardian/terraform_plan provider - operation types, parameters, return shapes, and error behavior.
+==============================================================================
+
+```
+required_provider: stackguardian/terraform_plan
+```
+
+Inspects a Terraform plan: attribute values of changed resources, the actions applied to them, resource counts, explicit dependencies, references between resources, provider configuration, and the Terraform version.
+
+## Input document
+
+The JSON representation of a Terraform plan:
+
+```bash
+terraform plan -out=plan.out
+terraform show -json plan.out > plan.json
+tirith -policy-path policy.json -input-path plan.json
+```
+
+Most operations read the `resource_changes` array of the plan. If the plan contains no `resource_changes` at all, every operation reports an error with severity 0 (`No Terraform resources changes are found`), which is skipped at the default `error_tolerance` of 0.
+
+## Operation types
+
+| `operation_type` | Purpose |
+|---|---|
+| `attribute` | Get an attribute's planned value for every instance of a resource type |
+| `action` | Get the plan actions (`create`, `update`, `delete`, ...) for a resource type |
+| `count` | Count the changed instances of a resource type |
+| `direct_dependencies` | Get the resource types listed in a resource's `depends_on` |
+| `direct_references` | Get or check references between resources |
+| `terraform_version` | Get the Terraform version that produced the plan |
+| `provider_config` | Get the configuration of a Terraform provider (version constraint or region) |
+
+Any other `operation_type` produces an error with severity 99, which fails the check.
+
+---
+
+## `attribute`
+
+Returns the planned (`change.after`) value of an attribute for every instance of a resource type.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `terraform_resource_type` | yes | Resource type to match (e.g. `aws_s3_bucket`), or `*` to match every type. |
+| `terraform_resource_attribute` | yes | Attribute to read. A plain top-level key (`force_destroy`), a dotted path (`tags.costcenter`), or a path containing `.*.` to iterate over a list (`ebs_block_device.*.encrypted`). |
+| `exclude_resource_types` | no (default `[]`) | List of resource types to skip. Only applied when `terraform_resource_type` is `*`. |
+
+**Returns:** one value per matching resource instance. With a `.*.` wildcard, one value per list element; list elements that lack the attribute contribute `null`, so they are still evaluated. The value is whatever the attribute holds in the plan — scalar, list, or dict.
+
+**On a miss:**
+
+- No resource of the requested type in `resource_changes` — severity 1 (`resource_type: '...' is not found`).
+- Resource found, attribute absent — severity 2 (`attribute: '...' is not found`), reported per resource instance that lacks it.
+- Resource found but its `change.after` is empty (e.g. a destroy-only change) — severity 0 (`No Terraform changes found for resource type: '...'`).
+
+Example (adapted from a test fixture; requires every resource in the plan to carry a non-empty `costcenter` tag):
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "every_resource_has_costcenter_tag",
+      "description": "All resources must have a 'costcenter' tag with a non-empty value",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "tags.costcenter",
+        "exclude_resource_types": ["aws_iam_role_policy_attachment"]
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "value": "",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "every_resource_has_costcenter_tag"
+}
+```
+
+---
+
+## `action`
+
+Returns the actions Terraform plans to take on every instance of a resource type. Actions come straight from `change.actions` in the plan: `create`, `update`, `delete`, `no-op`, `read` (a replacement appears as both `delete` and `create`).
+
+| Parameter | Required | Description |
+|---|---|---|
+| `terraform_resource_type` | yes | Resource type to match, or `*` for every type. |
+| `exclude_resource_types` | no (default `[]`) | List of resource types to skip. Only applied when `terraform_resource_type` is `*`. |
+
+**Returns:** one string per action per matching resource instance (a resource with actions `["delete", "create"]` yields two values).
+
+**On a miss:** no resource of the requested type — severity 1.
+
+Example (adapted from a test fixture; fails when a virtual network would be deleted):
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "vnet_is_deleted",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "azurerm_virtual_network"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": ["delete"],
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "!vnet_is_deleted"
+}
+```
+
+---
+
+## `count`
+
+Counts the instances of a resource type in `resource_changes`.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `terraform_resource_type` | yes | Resource type to count, or `*` for every type. |
+| `exclude_resource_types` | no (default `[]`) | List of resource types to skip. Only applied when `terraform_resource_type` is `*`. |
+
+**Returns:** a single integer. A type with no instances returns `0` — this operation never produces a "not found" error.
+
+Example:
+
+```json
+{
+  "id": "at_most_ten_vpcs",
+  "provider_args": {
+    "operation_type": "count",
+    "terraform_resource_type": "aws_vpc"
+  },
+  "condition": {
+    "type": "LessThanEqualTo",
+    "value": 10
+  }
+}
+```
+
+---
+
+## `direct_dependencies`
+
+Returns, for each resource of a type, the resource types named in its explicit `depends_on`. Only resources declared in the **root module** of the configuration are inspected.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `terraform_resource_type` | yes | Resource type to inspect. Omitting it produces a severity 99 error. |
+
+**Returns:** one list of resource-type strings per matching resource (only the type part of each `depends_on` entry, i.e. `aws_s3_bucket.example` becomes `aws_s3_bucket`). A resource without `depends_on` yields an empty list.
+
+**On a miss:** no resource of the requested type in the configuration — severity 1.
+
+Example (verified against a test fixture; requires every EC2 instance to declare an explicit dependency on an S3 bucket):
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "ec2_depends_on_s3",
+      "description": "Make sure that EC2 instances have explicit dependency on S3 bucket",
+      "provider_args": {
+        "operation_type": "direct_dependencies",
+        "terraform_resource_type": "aws_instance"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "aws_s3_bucket",
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "ec2_depends_on_s3"
+}
+```
+
+---
+
+## `direct_references`
+
+Inspects references between resources (a reference is created when one resource's argument uses another resource's attribute, e.g. `security_groups = [aws_security_group.sg.id]`). It has three modes, chosen by which parameters are present:
+
+| Parameter | Required | Description |
+|---|---|---|
+| `terraform_resource_type` | yes | The resource type under inspection. |
+| `referenced_by` | no | A resource type that should point **at** `terraform_resource_type`. |
+| `references_to` | no | A resource type that `terraform_resource_type` should point **to**. |
+
+`referenced_by` and `references_to` are mutually exclusive — supplying both produces a severity 99 error.
+
+### Plain mode (neither `referenced_by` nor `references_to`)
+
+For each resource of `terraform_resource_type` declared in the **root module**, returns the list of resource types it references in its expressions.
+
+**Returns:** one list of resource-type strings per matching resource.
+
+**On a miss:** type not found in the configuration — severity 1. Omitting `terraform_resource_type` — severity 99.
+
+Example (verified against a test fixture):
+
+```json
+{
+  "id": "aws_elbs_have_direct_references_to_security_group",
+  "provider_args": {
+    "operation_type": "direct_references",
+    "terraform_resource_type": "aws_elb"
+  },
+  "condition": {
+    "type": "Contains",
+    "value": "aws_security_group",
+    "error_tolerance": 2
+  }
+}
+```
+
+### `referenced_by` mode
+
+Checks that instances of `terraform_resource_type` are referenced by resources of type `referenced_by`. Instances that are only being destroyed are ignored. Unlike the plain mode, references are searched through the whole configuration, including child modules.
+
+**Returns:** one boolean per instance of `terraform_resource_type` — `true` if some `referenced_by` resource references it, `false` otherwise. Use `"condition": {"type": "Equals", "value": true}` to require that all instances are referenced.
+
+**On a miss:** no (non-destroyed) instance of `terraform_resource_type` — severity 1.
+
+Example (from a test fixture; every S3 bucket must have an intelligent-tiering configuration attached):
+
+```json
+{
+  "meta": {
+    "required_provider": "stackguardian/terraform_plan",
+    "version": "v1"
+  },
+  "evaluators": [
+    {
+      "id": "s3HasLifeCycleIntelligentTiering",
+      "description": "Make sure all aws_s3_bucket are referenced by aws_s3_bucket_intelligent_tiering_configuration",
+      "provider_args": {
+        "operation_type": "direct_references",
+        "terraform_resource_type": "aws_s3_bucket",
+        "referenced_by": "aws_s3_bucket_intelligent_tiering_configuration"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 0
+      }
+    }
+  ],
+  "eval_expression": "s3HasLifeCycleIntelligentTiering"
+}
+```
+
+### `references_to` mode
+
+Checks that every instance of `terraform_resource_type` references at least one resource of type `references_to`. Instances that are only being destroyed are ignored.
+
+**Returns:** a **single** boolean — `true` only if all instances reference the target type.
+
+**On a miss:** no (non-destroyed) instance of `terraform_resource_type` — severity 1.
+
+Example (verified against a test fixture):
+
+```json
+{
+  "id": "elbRefsToSecGroup",
+  "description": "Make sure ELBs references to security groups",
+  "provider_args": {
+    "operation_type": "direct_references",
+    "terraform_resource_type": "aws_elb",
+    "references_to": "aws_security_group"
+  },
+  "condition": {
+    "type": "Equals",
+    "value": true,
+    "error_tolerance": 0
+  }
+}
+```
+
+---
+
+## `terraform_version`
+
+Returns the Terraform version string recorded in the plan.
+
+No parameters besides `operation_type`.
+
+**Returns:** a single string (e.g. `"1.4.5"`), or `null` if the plan has no `terraform_version` key.
+
+Example (verified end-to-end):
+
+```json
+{
+  "id": "terraform_version_check",
+  "provider_args": {
+    "operation_type": "terraform_version"
+  },
+  "condition": {
+    "type": "RegexMatch",
+    "value": "^1\\."
+  }
+}
+```
+
+---
+
+## `provider_config`
+
+Reads the configuration of a Terraform provider from `configuration.provider_config` in the plan.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `terraform_provider_full_name` | yes | The provider's full registry name, e.g. `registry.terraform.io/hashicorp/aws`. Omitting it produces a severity 99 error. |
+| `attribute` | yes | What to read. Must be `version_constraint` or `region` — anything else produces a severity 99 error. |
+
+**Returns:** one string per provider entry whose `full_name` matches: the version constraint (e.g. `">= 3.11.0, < 4.0.0"`) or the region. The region is only found when it is written as a constant in the configuration; a region supplied through a variable is reported as not found (severity 2).
+
+**On a miss:**
+
+- Matching provider found but the attribute is absent — severity 2 (`` `region` is not found in the provider_config ``).
+- No provider with that `full_name` — severity 1.
+
+Example (verified end-to-end):
+
+```json
+{
+  "id": "aws_region_check",
+  "provider_args": {
+    "operation_type": "provider_config",
+    "terraform_provider_full_name": "registry.terraform.io/hashicorp/aws",
+    "attribute": "region"
+  },
+  "condition": {
+    "type": "ContainedIn",
+    "value": ["eu-central-1", "eu-west-1"]
+  }
+}
+```
+
+---
+
+## Error severities used by this provider
+
+| Severity | Situation |
+|---|---|
+| 0 | No `resource_changes` in the plan, or the matched resource has no planned values (destroy-only change). |
+| 1 | Resource type / provider name not found. |
+| 2 | Attribute not found on a matched resource or provider config. |
+| 99 | Invalid `provider_args` (unsupported operation or attribute, missing required parameter, both `referenced_by` and `references_to` given). |
+
+Whether a severity fails or skips the check depends on `condition.error_tolerance` — see the [providers overview](overview.md) and [error tolerance](../tirith-policies/tirith-policy-error-tolerance.md). Condition types are documented in the [evaluators reference](../tirith-reference/evaluators.md).
+
+
+==============================================================================
+# JSON Provider
+Source: https://stackguardian.github.io/tirith/docs/tirith-providers/json-provider/
+Summary: Reference for the stackguardian/json provider - the get_value operation, key path syntax, return shapes, and error behavior.
+==============================================================================
+
+```
+required_provider: stackguardian/json
+```
+
+Extracts values from any JSON or YAML document by key path. Use this provider when no specialized provider exists for your input format.
+
+## Input document
+
+Any JSON file, or any YAML file (`.yaml` / `.yml` extension). A YAML file with multiple documents (separated by `---`) is parsed into a **list** of documents; start the key path with `*.` to iterate over them.
+
+## Operation types
+
+| `operation_type` | Purpose |
+|---|---|
+| `get_value` | Get the value(s) at a key path |
+
+Any other `operation_type` produces an error **without** a severity value, which always fails the check.
+
+---
+
+## `get_value`
+
+| Parameter | Required | Description |
+|---|---|---|
+| `key_path` | yes | Dot-separated path into the document. `*` as a path segment iterates over every element of a list or every value of a dict. |
+
+Path syntax, with examples of what each returns:
+
+| `key_path` | Input | Values produced |
+|---|---|---|
+| `a.b` | `{"a": {"b": 1}}` | `1` |
+| `c` | `{"c": ["aa", "bb"]}` | `["aa", "bb"]` (the whole list, one value) |
+| `nested_map` | `{"nested_map": {"e": {"f": "3"}}}` | `{"e": {"f": "3"}}` (the whole dict, one value) |
+| `list_of_dict.*.key1` | `{"list_of_dict": [{"key1": "value1"}, {"key1": "value1"}]}` | `"value1"`, `"value1"` (one value per element) |
+| `countries.*.capital` | `{"countries": {"US": {"capital": "Washington"}, "UK": {"capital": "London"}}}` | `"Washington"`, `"London"` (one per dict value) |
+| `*.name` | `[{"name": "Alice"}, {"name": "Bob"}]` | `"Alice"`, `"Bob"` (leading `*` over a top-level list) |
+
+**Returns:** one result per value found at the path. Without `*`, that is a single value of whatever shape lives there (scalar, list, or dict). With `*`, one result per matched element — and the condition must pass for **every** one of them.
+
+**On a miss:** if the path matches nothing, the provider reports an error with **severity 2** (`` key_path: `...` is not found ``). With the default `error_tolerance` of 0 the check fails; with `error_tolerance: 2` it is skipped instead. See [error tolerance](../tirith-policies/tirith-policy-error-tolerance.md).
+
+## Examples
+
+Verified end-to-end against the test fixtures:
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json"
+  },
+  "evaluators": [
+    {
+      "id": "check0",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "z.b"
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 1,
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "check1",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "a.b"
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 1
+      }
+    },
+    {
+      "id": "check2",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "c"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "aa"
+      }
+    },
+    {
+      "id": "check4",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "list_of_dict.*.key1"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "value1"
+      }
+    }
+  ],
+  "eval_expression": "check1 && check2 && check4"
+}
+```
+
+(`check0` targets a path that does not exist; with `error_tolerance: 2` it is skipped and dropped from `eval_expression` instead of failing.)
+
+The provider also works on YAML — this policy checks an Ansible playbook (a YAML file whose top level is a list of plays, hence the leading `*.`):
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json"
+  },
+  "evaluators": [
+    {
+      "id": "check0",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "*.vars.region"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "your_aws_region"
+      }
+    }
+  ],
+  "eval_expression": "check0"
+}
+```
+
+Condition types are documented in the [evaluators reference](../tirith-reference/evaluators.md).
+
+
+==============================================================================
+# Kubernetes Provider
+Source: https://stackguardian.github.io/tirith/docs/tirith-providers/kubernetes-provider/
+Summary: Reference for the stackguardian/kubernetes provider - the attribute operation, parameters, return shapes, and error behavior.
+==============================================================================
+
+```
+required_provider: stackguardian/kubernetes
+```
+
+Extracts attribute values from Kubernetes manifests of a chosen `kind` (Pod, Deployment, Service, ...).
+
+## Input document
+
+A **list** of Kubernetes manifests. In practice this is a multi-document YAML file — for example the output of `helm template` or a concatenation of manifests separated by `---`:
+
+```bash
+helm template my-release ./chart > manifests.yml
+tirith -policy-path policy.json -input-path manifests.yml
+```
+
+Every document in the list must have a `kind` key. Note that a YAML file containing only a **single** document does not currently work with this provider — the input must parse to a list of manifests (two or more YAML documents, or a JSON array).
+
+## Operation types
+
+| `operation_type` | Purpose |
+|---|---|
+| `attribute` | Get the value at an attribute path from every manifest of a kind |
+
+Any other `operation_type` produces an error **without** a severity value, which always fails the check.
+
+---
+
+## `attribute`
+
+| Parameter | Required | Description |
+|---|---|---|
+| `kubernetes_kind` | yes | The `kind` to match, e.g. `Pod`, `Deployment`. Exact match. Omitting it produces a severity 99 error. |
+| `attribute_path` | yes | Dot-separated path into the manifest, e.g. `spec.containers.*.image`. `*` as a path segment iterates over every element of a list or every value of a dict. Omitting it (or passing an empty string) produces a severity 99 error. |
+
+**Returns:** one result per manifest whose `kind` matches:
+
+- If `attribute_path` contains **no** `*` — the single value at that path (scalar, list, or dict), or `null` when the path is absent from that manifest.
+- If `attribute_path` contains `*` — a **list** with one entry per matched element; elements where the remainder of the path is absent appear as `null` in the list. The condition is applied to the list as a whole, which makes `Contains` / `NotContains` (checking for `null` entries) the natural conditions to pair with wildcard paths.
+
+**On a miss:** no manifest of the requested kind — severity 1 (`kind: ... is not found`). A present kind with an absent path is **not** an error; it produces `null` values as described above.
+
+## Example
+
+Verified end-to-end against the test fixtures — every container of every `Pod` must define a `livenessProbe`:
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "kinds_have_null_liveness_probe",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Pod",
+        "attribute_path": "spec.containers.*.livenessProbe"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": null,
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "!kinds_have_null_liveness_probe"
+}
+```
+
+How this works: for each `Pod`, the provider returns the list of every container's `livenessProbe` value, with `null` for containers that lack one. The `Contains: null` condition is true when at least one container is missing the probe, and the `eval_expression` negates it, so the policy passes only when every container defines a probe.
+
+Condition types are documented in the [evaluators reference](../tirith-reference/evaluators.md).
+
+
+==============================================================================
+# Infracost Provider
+Source: https://stackguardian.github.io/tirith/docs/tirith-providers/infracost-provider/
+Summary: Reference for the stackguardian/infracost provider - operation types, parameters, return shapes, and error behavior.
+==============================================================================
+
+```
+required_provider: stackguardian/infracost
+```
+
+Sums estimated costs from an Infracost cost breakdown, either for all resources or for a chosen set of resource types.
+
+## Input document
+
+The JSON produced by Infracost:
+
+```bash
+infracost breakdown --path . --format json > infracost.json
+tirith -policy-path policy.json -input-path infracost.json
+```
+
+The provider reads `projects[].breakdown.resources[]` and understands both the older per-resource keys (`totalMonthlyCost` / `totalHourlyCost`) and the newer ones (`monthlyCost` / `hourlyCost`). Resources whose cost field is missing or `null` contribute nothing to the sum.
+
+Note: only the **first** project in the `projects` array is summed.
+
+## Operation types
+
+| `operation_type` | Purpose |
+|---|---|
+| `total_monthly_cost` | Sum of estimated monthly costs |
+| `total_hourly_cost` | Sum of estimated hourly costs |
+
+Both operations take the same parameters:
+
+| Parameter | Required | Description |
+|---|---|---|
+| `operation_type` | yes | `total_monthly_cost` or `total_hourly_cost`. |
+| `resource_type` | yes | Which resources to sum. `"*"`, `["*"]`, or an empty value sums **all** resources. Otherwise, a list of Terraform resource type names (e.g. `["aws_eks_cluster", "aws_s3_bucket"]`); a resource is included when the type part of its name (everything before the first `.`) is in the list. |
+
+**Returns:** a single number — the sum of the selected resources' costs. If nothing matches, the sum is `0`.
+
+**On a miss / error:** all errors from this provider carry **no severity value**, so they always fail the check and `error_tolerance` cannot skip them:
+
+- `operation_type` or `resource_type` key missing from `provider_args` — error `'resource_type/operation_type not found in provider_args'`.
+- An `operation_type` other than the two above — error naming the unknown value.
+- Input without a `projects` key — error `'projects not found in input_data'`.
+- A project without `breakdown.resources` — error `'breakdown/resources not found in one of the project'`.
+
+## Example
+
+Verified end-to-end against the test fixtures — the total monthly cost of the stack must stay at or below 30, and the selected resource types must be free:
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/infracost"
+  },
+  "evaluators": [
+    {
+      "id": "cost_check_1",
+      "provider_args": {
+        "operation_type": "total_monthly_cost",
+        "resource_type": ["*"]
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 30
+      }
+    },
+    {
+      "id": "cost_check_2",
+      "provider_args": {
+        "operation_type": "total_monthly_cost",
+        "resource_type": ["aws_eks_cluster", "aws_s3_bucket"]
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0
+      }
+    }
+  ],
+  "eval_expression": "cost_check_1 && cost_check_2"
+}
+```
+
+Condition types are documented in the [evaluators reference](../tirith-reference/evaluators.md); CLI flags in the [CLI reference](../tirith-usage/cli-reference.md).
+
+
+==============================================================================
+# SG Workflow Provider
+Source: https://stackguardian.github.io/tirith/docs/tirith-providers/sg-workflow-provider/
+Summary: Reference for the stackguardian/sg_workflow provider - supported workflow attributes, return shapes, and error behavior.
+==============================================================================
+
+```
+required_provider: stackguardian/sg_workflow
+```
+
+Reads attributes of a StackGuardian workflow definition.
+
+## Input document
+
+A StackGuardian workflow definition in JSON form — the object that contains keys such as `WfType`, `TerraformConfig`, `VCSConfig`, and `DeploymentPlatformConfig`.
+
+## Parameters
+
+This provider does not dispatch on `operation_type`. It reads exactly one key from `provider_args`:
+
+| Parameter | Required | Description |
+|---|---|---|
+| `workflow_attribute` | yes | The name of the workflow attribute to read (see the table below). |
+
+By convention policies also set `"operation_type": "attribute"` (the test fixtures do), but the provider does not read or validate that key.
+
+## Supported values for `workflow_attribute`
+
+The attribute name determines where in the workflow document the value is read from:
+
+| `workflow_attribute` | Read from | Typical shape |
+|---|---|---|
+| `integrationId` | `DeploymentPlatformConfig[].config.integrationId`, with the `/integrations/` prefix stripped from each id | list of strings |
+| `Description` | top level | string |
+| `DocVersion` | top level | string |
+| `ResourceName` | top level | string |
+| `ResourceType` | top level | string (e.g. `WORKFLOW`) |
+| `Tags` | top level | list of strings |
+| `WfType` | top level | string (e.g. `TERRAFORM`) |
+| `approvalPreApply` | `TerraformConfig` | boolean |
+| `driftCheck` | `TerraformConfig` | boolean |
+| `managedTerraformState` | `TerraformConfig` | boolean |
+| `terraformVersion` | `TerraformConfig` | string |
+| `bucket_region` | `VCSConfig.iacInputData.data` | string |
+| `s3_bucket_acl` | `VCSConfig.iacInputData.data` | string |
+| `s3_bucket_block_public_acls` | `VCSConfig.iacInputData.data` | boolean |
+| `s3_bucket_block_public_policy` | `VCSConfig.iacInputData.data` | boolean |
+| `s3_bucket_force_destroy` | `VCSConfig.iacInputData.data` | boolean |
+| `s3_bucket_ignore_public_acls` | `VCSConfig.iacInputData.data` | boolean |
+| `s3_bucket_restrict_public_buckets` | `VCSConfig.iacInputData.data` | boolean |
+| `iacTemplateId` | `VCSConfig.iacVCSConfig` | string |
+| `useMarketplaceTemplate` | `VCSConfig.iacVCSConfig` | boolean |
+
+**Returns:** a single value with the shape shown above. `integrationId` returns a list — pair it with `Contains` (see the example) rather than `Equals`.
+
+**On a miss / error:** all errors from this provider carry **no severity value**, so they always fail the check and `error_tolerance` cannot skip them:
+
+- The attribute's containing key is absent from the workflow document (e.g. no `TerraformConfig` when asking for `driftCheck`) — error `'<attribute> not found in input_data'`.
+- `workflow_attribute` missing from `provider_args` — error `workflow_attribute not found in provider_args`.
+- `workflow_attribute` present but empty — the provider returns nothing and the check fails with `Could not find input value`.
+- A `workflow_attribute` name that is not in the table above is **not** an error: the provider returns an empty string `""`, which is then evaluated against the condition. Double-check spelling — a typo silently evaluates `""` instead of the intended value.
+
+## Example
+
+Verified end-to-end against the test fixtures:
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/sg_workflow"
+  },
+  "evaluators": [
+    {
+      "id": "wf_check_1",
+      "provider_args": {
+        "operation_type": "attribute",
+        "workflow_attribute": "useMarketplaceTemplate"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    },
+    {
+      "id": "wf_check_2",
+      "provider_args": {
+        "operation_type": "attribute",
+        "workflow_attribute": "integrationId"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "aws-qa"
+      }
+    },
+    {
+      "id": "wf_check_3",
+      "provider_args": {
+        "operation_type": "attribute",
+        "workflow_attribute": "terraformVersion"
+      },
+      "condition": {
+        "type": "RegexMatch",
+        "value": "^1\\."
+      }
+    }
+  ],
+  "eval_expression": "wf_check_1 && wf_check_2 && wf_check_3"
+}
+```
+
+Condition types are documented in the [evaluators reference](../tirith-reference/evaluators.md).
+
+
+==============================================================================
+# Evaluators and Conditions
+Source: https://stackguardian.github.io/tirith/docs/tirith-reference/evaluators/
+Summary: Complete reference for all Tirith condition types, their parameters, type handling, and pass/fail semantics.
+==============================================================================
+
+Every evaluator in a Tirith policy applies a **condition** to one or more values extracted by a provider. This page is the complete reference for all 13 condition types, including exactly how each one treats strings, numbers, lists, dictionaries, and `null`.
+
+## Anatomy of a condition
+
+An evaluator block looks like this:
+
+```json
+{
+  "id": "region_check",
+  "provider_args": {
+    "operation_type": "get_value",
+    "key_path": "region"
+  },
+  "condition": {
+    "type": "Equals",
+    "value": "eu-central-1"
+  }
+}
+```
+
+The `condition` object accepts three keys:
+
+| Key | Required | Meaning |
+| --- | --- | --- |
+| `type` | yes | One of the 13 evaluator names listed below. The name is case-sensitive. |
+| `value` | yes, except for `IsEmpty` and `IsNotEmpty`, which ignore it | The value the extracted input is compared against. Any JSON type is accepted; each evaluator defines which types it supports. |
+| `error_tolerance` | no (default `0`) | The maximum provider error severity that is *skipped* instead of failing the evaluator. See [Error Tolerance](../tirith-policies/tirith-policy-error-tolerance.md). |
+
+Throughout this page:
+
+- **input value** means a value the provider extracted from the input document (`evaluator_input` in the code),
+- **condition value** means `condition.value` from the policy (`evaluator_data` in the code).
+
+A provider can return *several* input values for one evaluator (for example, a wildcard `key_path` such as `items.*`). The condition is applied to **each value independently, and the evaluator passes only if every value passes**. If the provider returns no values at all, the evaluator fails with the message `Could not find input value`.
+
+Each evaluator therefore ends in one of three states:
+
+- `passed: true` — every extracted value satisfied the condition,
+- `passed: false` — at least one value did not (or an unrecoverable provider error occurred),
+- `passed: null` — the evaluation was *skipped*: every provider error was within `error_tolerance` and no value was actually checked.
+
+## Failures versus errors
+
+This distinction matters for exit codes, so it is worth stating precisely:
+
+- **Evaluators never abort the run.** Every condition type catches internal exceptions. A type mismatch — comparing a string with a number, matching a regex against `null`, searching inside a boolean — produces `passed: false` with an explanatory message. It is reported and gated exactly like a genuine policy violation: with `--fail-on-error`, `final_result: false` exits with code **3**.
+- Exit code **1** (a tool error rather than a verdict) is reserved for problems outside the evaluators: an unreadable policy or input file, undefined policy variables, an `eval_expression` that cannot be parsed (see [Evaluation Expressions](./eval-expressions.md)), or a run in which every evaluator was skipped (`final_result: null`).
+- A misconfigured evaluator — an unsupported `condition.type` or an unsupported provider `operation_type` — is surfaced as an ordinary failed evaluator (`passed: false`) with an explanatory message, so under `--fail-on-error` it exits **3**, not 1.
+
+Without `--fail-on-error`, the process exits **0** regardless of the verdict; the verdict is only in the output.
+
+## Quick reference
+
+| `condition.type` | Passes when | `condition.value` | On a type mismatch |
+| --- | --- | --- | --- |
+| [`Equals`](#equals) | input value equals the condition value | any JSON | returns false (values of different types are simply not equal) |
+| [`NotEquals`](#notequals) | input value differs from the condition value | any JSON | returns true (different types are not equal) |
+| [`GreaterThan`](#comparisons-greaterthan-greaterthanequalto-lessthan-lessthanequalto) | `input > condition value` | number, string, or list (same type as input) | returns false, message carries the comparison error |
+| [`GreaterThanEqualTo`](#comparisons-greaterthan-greaterthanequalto-lessthan-lessthanequalto) | `input >= condition value` | same | same |
+| [`LessThan`](#comparisons-greaterthan-greaterthanequalto-lessthan-lessthanequalto) | `input < condition value` | same | same |
+| [`LessThanEqualTo`](#comparisons-greaterthan-greaterthanequalto-lessthan-lessthanequalto) | `input <= condition value` | same | same |
+| [`IsEmpty`](#isempty) | input is `null`, `""`, `[]`, or `{}` | ignored | returns false for numbers and booleans (never an error) |
+| [`IsNotEmpty`](#isnotempty) | input is a **non-empty string, list, or dictionary** | ignored | returns false for numbers, booleans, and `null` |
+| [`RegexMatch`](#regexmatch) | the pattern is found in the input | string (regular expression) | returns false for non-string/list/dict input; invalid pattern returns false with the regex error message |
+| [`ContainedIn`](#containedin) | the input value occurs inside the condition value | string, list, or dictionary | returns false with an "unsupported data type" message |
+| [`NotContainedIn`](#notcontainedin) | the input value does **not** occur inside the condition value | string, list, or dictionary | returns false (not true) with an "unsupported data type" message |
+| [`Contains`](#contains) | the condition value occurs inside the input value | any JSON (input must be string, list, or dictionary) | returns false with an "unsupported data type" message |
+| [`NotContains`](#notcontains) | the condition value does **not** occur inside the input value | any JSON (input must be string, list, or dictionary) | returns false (not true) with an "unsupported data type" message |
+
+Note the last two rows of each pair: **the `Not*` variants are not simple negations.** When the data has a type the evaluator does not support, *both* the positive and the negative form fail. If a value may be absent or of an unexpected type, test that explicitly (for example with `IsNotEmpty`) instead of relying on a `Not*` condition to pass.
+
+---
+
+## Equals
+
+Passes when the input value equals the condition value.
+
+- Comparison is by value, with one normalization: **lists of scalars are sorted before comparing**, recursively, including lists nested inside dictionaries. `[1, 2]` equals `[2, 1]`, and `{"a": [2, 1]}` equals `{"a": [1, 2]}`. A list that mixes types (for example `[1, "a"]`) cannot be sorted and is compared in its original order.
+- Numbers compare numerically: `1` equals `1.0`.
+- Booleans compare as the numbers 1 and 0: `true` equals `1` and `false` equals `0`.
+- Strings never equal numbers: `"1"` is **not** equal to `1`.
+- `null` equals `null`.
+- Dictionaries compare by keys and values; key order never matters.
+
+A type mismatch is not an error; the values are simply unequal and the check fails.
+
+```json
+"condition": { "type": "Equals", "value": ["b", "a"] }
+```
+
+| Input value | Result |
+| --- | --- |
+| `["a", "b"]` | passes (list order ignored) |
+| `["a", "b", "c"]` | fails |
+| `"a,b"` | fails |
+
+## NotEquals
+
+The exact negation of [`Equals`](#equals), using the same normalization. It passes whenever `Equals` would fail, including on type mismatches: `"1"` NotEquals `1` passes.
+
+```json
+"condition": { "type": "NotEquals", "value": "0.0.0.0/0" }
+```
+
+An input value of `"10.0.0.0/16"` passes; `"0.0.0.0/0"` fails.
+
+## Comparisons: GreaterThan, GreaterThanEqualTo, LessThan, LessThanEqualTo
+
+Each passes when `input value <operator> condition value` holds:
+
+| Type | Operator |
+| --- | --- |
+| `GreaterThan` | `>` |
+| `GreaterThanEqualTo` | `>=` |
+| `LessThan` | `<` |
+| `LessThanEqualTo` | `<=` |
+
+Supported operand combinations (both sides must be of a comparable type):
+
+- **numbers** with numbers — the usual numeric comparison; integers and floats mix freely (`1 <= 1.5`).
+- **booleans** with numbers — booleans act as 1 and 0 (`true >= 0` passes).
+- **strings** with strings — lexicographic, case-sensitive character-by-character comparison (`"b" > "a"` passes). Note this is *not* numeric: `"10" < "9"`.
+- **lists** with lists — element-by-element lexicographic comparison (`[1, 3] > [1, 2]` passes).
+
+Any other combination — a string against a number, `null` against anything — **returns false**, with the underlying comparison error as the message, for example:
+
+```
+'>' not supported between instances of 'str' and 'int'
+```
+
+This is a failed check (exit 3 under `--fail-on-error`), not a tool error. In particular, an input value of `null` can never pass a comparison.
+
+```json
+"condition": { "type": "LessThanEqualTo", "value": 100 }
+```
+
+| Input value | Result |
+| --- | --- |
+| `42` | passes |
+| `100` | passes |
+| `"42"` | fails — `'<=' not supported between instances of 'str' and 'int'` |
+| `null` | fails |
+
+## IsEmpty
+
+Passes when the input value is `null`, an empty string `""`, an empty list `[]`, or an empty dictionary `{}`. `condition.value` is ignored and may be omitted.
+
+Everything else is "not empty" — including `0` and `false`, which fail this check.
+
+```json
+"condition": { "type": "IsEmpty" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `null` | passes |
+| `""`, `[]`, `{}` | passes |
+| `0` | fails |
+| `false` | fails |
+| `"x"` | fails |
+
+## IsNotEmpty
+
+Passes **only** when the input value is a non-empty string, a non-empty list, or a non-empty dictionary. `condition.value` is ignored and may be omitted.
+
+`IsNotEmpty` is **not** the negation of `IsEmpty`. Numbers and booleans are not strings, lists, or dictionaries, so they fail `IsNotEmpty` — even though they also fail `IsEmpty`. An input value of `5` fails both checks.
+
+```json
+"condition": { "type": "IsNotEmpty" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"x"`, `[1]`, `{"a": 1}` | passes |
+| `""`, `[]`, `{}`, `null` | fails |
+| `5` | fails (a number is neither empty nor "not empty") |
+| `true` | fails |
+
+## RegexMatch
+
+Passes when the regular expression in `condition.value` is found **anywhere** in the input value (search semantics, not full match). Anchor the pattern with `^` and `$` if you need it to match the whole string. Patterns use Python regular expression syntax and are case-sensitive.
+
+Input handling:
+
+- a **string** input is matched directly (multi-line strings included);
+- a **list** or **dictionary** input is first converted to its Python string form and the pattern is matched against that text. Note this form uses single quotes — `["a"]` becomes `['a']`, and `{"a": 2}` becomes `{'a': 2}` — not JSON.
+- **numbers, booleans, and `null` are never coerced**: the check returns false. An input value of `42` does not match the pattern `"4"`, and `true` does not match `"True"`.
+
+The pattern itself must be a string; a non-string `condition.value` returns false.
+
+An **invalid pattern** does not abort the run: the check returns false and the message carries the regex error, for example `unterminated character set at position 1`. Under `--fail-on-error` this exits 3, like any other failed check.
+
+```json
+"condition": { "type": "RegexMatch", "value": "^us-(east|west)-[12]$" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"us-east-1"` | passes |
+| `"eu-central-1"` | fails |
+| `42` (against pattern `"4"`) | fails — numbers are not coerced |
+
+## ContainedIn
+
+Asks: **is the input value inside `condition.value`?** The condition value is the container. Which check runs depends on the types of both sides:
+
+| Input value | Condition value | Check |
+| --- | --- | --- |
+| string | string | substring: passes if the input occurs anywhere in the condition value (`"amp"` is contained in `"example"`) |
+| scalar (string, number, boolean, `null`) | list | element membership: passes if the input equals one of the list's elements |
+| list | list | **element** membership, not subset: passes only if the whole input list is one *element* of the condition list. `["a", "b"]` is **not** contained in `["a", "b", "c"]`; `["a"]` *is* contained in `[["a"], ["b"]]`. Lists of scalars are sorted on both sides first, so element order does not matter (`[2, 1]` is found in `[[1, 2], [3]]`) |
+| dictionary | dictionary | subset: passes if **every** key of the input exists in the condition value with an equal value |
+| scalar | dictionary | key membership: passes if the input is one of the dictionary's keys |
+| anything else | number, boolean, or `null` — or a non-string input against a string | **unsupported**: returns false with the message `... is an unsupported data type for evaluating against value in 'condition.value'` |
+
+Two quirks to be aware of:
+
+- The common "is this value in the allowed list" use is the *scalar in list* row. If the provider hands you a **list** and you want to check that each element is allowed, extract the elements individually (for example with a `*` wildcard in `key_path`) rather than testing the list itself, which would be an element-membership test.
+- In the string-substring and key-in-dictionary forms, a *failing* check reports the message `Not evaluated` (with `passed: false`). The verdict is correct; only the message is unhelpful.
+
+```json
+"condition": { "type": "ContainedIn", "value": ["t3.micro", "t3.small"] }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"t3.micro"` | passes |
+| `"m5.large"` | fails |
+| `["t3.micro"]` | fails — a list is checked as one element, and `["t3.micro"]` is not an element |
+
+## NotContainedIn
+
+Asks: **is the input value absent from `condition.value`?** Broadly the negation of [`ContainedIn`](#containedin), with the same type table — but with two deliberate differences:
+
+- **Dictionaries:** passes if **no** key of the input has an equal value in the condition value. Keys of the input that are absent from the condition value are ignored. This makes the pair asymmetric: with input `{"a": 1, "b": 2}` and condition value `{"a": 1}`, `ContainedIn` fails (key `b` is missing from the container) *and* `NotContainedIn` also fails (key `a` matches). Both directions can fail for the same pair.
+- **Unsupported types are still failures, not passes.** If the condition value is a number, boolean, or `null`, `NotContainedIn` returns false with the same "unsupported data type" message that `ContainedIn` produces. A check like `NotContainedIn: null` can never pass.
+
+```json
+"condition": { "type": "NotContainedIn", "value": ["0.0.0.0/0", "::/0"] }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"10.0.0.0/16"` | passes |
+| `"0.0.0.0/0"` | fails |
+
+## Contains
+
+The mirror image of [`ContainedIn`](#containedin): asks **does the input value contain `condition.value`?** Here the *input* is the container:
+
+| Input value | Condition value | Check |
+| --- | --- | --- |
+| string | string | substring: passes if the condition value occurs anywhere in the input (`"hello world"` contains `"world"`) |
+| list | scalar | element membership |
+| list | list | **element** membership, not subset: `["a", "b", "c"]` does not contain `["a", "b"]`, but `[["a"], "b"]` contains `["a"]`. Lists of scalars are sorted on both sides first |
+| dictionary | dictionary | subset: passes if every key/value pair of the condition value exists in the input |
+| dictionary | scalar | key membership: passes if the condition value is one of the input's keys |
+| number, boolean, or `null` input | anything | **unsupported**: returns false with an "unsupported data type" message |
+
+An empty list or empty dictionary input contains nothing, so any search in it fails (except the degenerate `{}` contains `{}`, which passes). Unlike `ContainedIn`, failure messages here are always informative (`Failed to find ... inside ...`).
+
+The practical difference from `ContainedIn`: use `Contains` when the *extracted value* is the collection ("the tags attached to this resource must include X"); use `ContainedIn` when the *policy* holds the collection ("this value must be one of the allowed options").
+
+```json
+"condition": { "type": "Contains", "value": {"Environment": "production"} }
+```
+
+| Input value | Result |
+| --- | --- |
+| `{"Environment": "production", "Team": "core"}` | passes |
+| `{"Environment": "staging", "Team": "core"}` | fails |
+| `null` | fails — unsupported input type |
+
+## NotContains
+
+Asks: **does the input value *not* contain `condition.value`?** Broadly the negation of [`Contains`](#contains), with the same two departures the other `Not*` evaluator has:
+
+- **Dictionaries:** passes if **no** key/value pair of the condition value matches the input. Keys of the condition value that are absent from the input are ignored — `{"z": 1}` is "not contained" in `{"a": 1}` and the check passes.
+- **Unsupported input types are failures, not passes.** If the input value is a number, boolean, or `null`, `NotContains` returns false — it does not treat "cannot contain anything" as "does not contain it". An absent (`null`) value therefore fails *both* `Contains` and `NotContains`. (The failure message in this case quotes the condition value rather than the input value.)
+
+```json
+"condition": { "type": "NotContains", "value": "0.0.0.0/0" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `["10.0.0.0/16", "192.168.0.0/24"]` | passes |
+| `["10.0.0.0/16", "0.0.0.0/0"]` | fails |
+| `null` | fails — unsupported input type |
+
+---
+
+## Worked example
+
+Policy (`policy.json`), using the `stackguardian/json` provider:
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json"
+  },
+  "evaluators": [
+    {
+      "id": "region_allowed",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "region"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": ["eu-central-1", "eu-west-1"]
+      }
+    },
+    {
+      "id": "instances_are_small",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "instances.*.count"
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 3
+      }
+    }
+  ],
+  "eval_expression": "region_allowed && instances_are_small"
+}
+```
+
+Input (`input.json`):
+
+```json
+{
+  "region": "eu-central-1",
+  "instances": [
+    { "name": "web", "count": 2 },
+    { "name": "worker", "count": 5 }
+  ]
+}
+```
+
+Run:
+
+```bash
+tirith -policy-path policy.json -input-path input.json
+```
+
+`region_allowed` passes. `instances_are_small` receives *two* input values from the wildcard (`2` and `5`); `2 <= 3` passes but `5 <= 3` fails, so the whole evaluator fails and `final_result` is `false`. With `--fail-on-error` the process exits with code 3.
+
+How the per-evaluator verdicts combine into `final_result` is defined by the policy's `eval_expression` — see [Evaluation Expressions](./eval-expressions.md).
+
+
+==============================================================================
+# Evaluation Expressions
+Source: https://stackguardian.github.io/tirith/docs/tirith-reference/eval-expressions/
+Summary: Reference for eval_expression, the boolean expression that combines evaluator results into a policy's final verdict.
+==============================================================================
+
+A policy's top-level `eval_expression` is a boolean expression over the `id`s of its evaluators. After every evaluator has produced its verdict, Tirith substitutes those verdicts into the expression and evaluates it; the outcome becomes `final_result` in the output.
+
+```json
+{
+  "meta": { "version": "v1", "required_provider": "stackguardian/json" },
+  "evaluators": [
+    { "id": "check_region",  "provider_args": { "...": "..." }, "condition": { "...": "..." } },
+    { "id": "check_tags",    "provider_args": { "...": "..." }, "condition": { "...": "..." } },
+    { "id": "check_budget",  "provider_args": { "...": "..." }, "condition": { "...": "..." } }
+  ],
+  "eval_expression": "(check_region || check_tags) && check_budget"
+}
+```
+
+## Referencing evaluators
+
+Evaluators are referenced by their `id`, written bare (no quotes, no prefix). Substitution matches ids as whole words, so one id being a prefix of another (`check` and `check_2`) is not a problem.
+
+Use only letters, digits, and underscores in ids that appear in the expression. An id with other characters (such as `-`) still works *if it is defined*, because it is replaced by its verdict before the expression is parsed — but if such an id is missing from the policy, the leftover text cannot be parsed as an expression and the whole run aborts (see [Unparseable expressions](#unparseable-expressions)).
+
+Each id stands for the tri-state verdict of its evaluator:
+
+- `true` — every value it checked passed,
+- `false` — at least one value failed,
+- *skipped* — the evaluator did not actually check anything (all of its provider errors were within `error_tolerance`).
+
+## Operators
+
+| Operator | Meaning | Example |
+| --- | --- | --- |
+| `&&` | logical AND | `check_a && check_b` |
+| `\|\|` | logical OR | `check_a \|\| check_b` |
+| `!` | logical NOT | `!check_a` |
+| `( )` | grouping | `(check_a \|\| check_b) && check_c` |
+
+Whitespace is ignored. There are no comparison operators, literals, or function calls — only ids, the three operators above, and parentheses.
+
+**Precedence**, from tightest to loosest: `!`, then `&&`, then `||`. Both of these hold (verified against the implementation):
+
+- `a || b && c` means `a || (b && c)` — with `a` true and `b`, `c` false, the expression is true.
+- `!a || b` means `(!a) || b` — with `a` and `b` both true, the expression is true.
+
+Use parentheses whenever the intent is not obvious.
+
+**Single `&` and `|` are rejected.** They are not silently treated as `&&`/`||`; the run aborts with an explicit error and exit code 1:
+
+```
+Unsupported operator '&' in eval_expression. Use '&&' instead.
+```
+
+## Skipped evaluators
+
+An evaluator whose verdict is *skipped* (`passed: null` in the output) is **removed from the expression** before evaluation, together with any `!` that applied to it, rather than being treated as false:
+
+- `skipped && other` reduces to `other`;
+- `!skipped && other` also reduces to `other`;
+- if *everything* in the expression is removed, `final_result` is `null` — see below.
+
+This is deliberate: treating a skipped check as `false` would fail policies through `!`-negations, and treating it as `true` would pass checks that never ran.
+
+## Missing evaluator ids
+
+An id used in the expression but not defined by any evaluator does **not** abort the run. It is removed from the expression the same way a skipped evaluator is, the rest of the expression is evaluated normally, and a note is appended to the top-level `errors` array of the output:
+
+```
+The following evaluator ids are not defined and have been removed: ghost_check
+```
+
+`errors` is informational: it does not affect `final_result` or the exit code. A policy whose expression is `real_check && ghost_check` passes with `final_result: true` and exit code 0 when `real_check` passes. Watch the `errors` array — a typo in an id silently weakens the policy.
+
+The reverse — an evaluator defined but never mentioned in the expression — still runs and appears in the output, but its verdict does not influence `final_result`.
+
+## Unparseable expressions
+
+If the expression cannot be parsed at all — a syntax error such as `check1 &&`, an empty string, a single `&`/`|`, or leftover text from a missing id that is not a valid identifier — the evaluation **aborts**: no result document is produced (with `--json`, the output is `{}`), and the process exits with code **1** regardless of `--fail-on-error`. This is the "tool error" exit code, distinct from a policy failure.
+
+As a safety measure the expression is evaluated with no access to builtins, and any symbol that survives id substitution is rejected (`The following symbols are not allowed: ...`) with `final_result: false`; the expression language cannot call functions or reach interpreter internals.
+
+## From expression result to exit code
+
+`final_result` is tri-state, and with `--fail-on-error` it maps to the exit code:
+
+| `final_result` | Meaning | Exit code with `--fail-on-error` |
+| --- | --- | --- |
+| `true` | every check that ran passed the expression | 0 |
+| `false` | the expression evaluated to false | 3 |
+| `null` | nothing was left to evaluate — every evaluator referenced in the expression was skipped or undefined | 1 |
+| *(absent)* | the run aborted before a verdict (unparseable expression, undefined policy variables) | 1 |
+
+Without `--fail-on-error`, the exit code is 0 in all of these cases except an aborted run, which still exits 1; the verdict is only in the output.
+
+`null` is not a pass: a policy whose every check was skipped checked precisely nothing.
+
+## Worked example
+
+```json
+"eval_expression": "!deprecated_api_used && (region_allowed || region_exempted)"
+```
+
+| `deprecated_api_used` | `region_allowed` | `region_exempted` | `final_result` |
+| --- | --- | --- | --- |
+| `false` | `true` | `false` | `true` |
+| `true` | `true` | `false` | `false` |
+| *skipped* | `true` | `false` | `true` — reduces to `(region_allowed \|\| region_exempted)` |
+| *skipped* | *skipped* | *skipped* | `null` — exit 1 under `--fail-on-error` |
+
+For what makes an individual evaluator pass, fail, or get skipped, see [Evaluators and Conditions](./evaluators.md).
+
+
+==============================================================================
+# CLI Reference
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/cli-reference/
+Summary: Every flag of the tirith command, what it prints, and how --json and --verbose change the output.
+==============================================================================
+
+The base `tirith` command evaluates a policy file against an input document, locally, on your own
+machine. Nothing is sent anywhere and no account is needed.
+
+```
+tirith -policy-path policy.json -input-path plan.json
+```
+
+Run with no arguments, `tirith` prints its help text and exits `0`.
+
+There is one subcommand, `tirith platform check`, which evaluates against the policies a
+StackGuardian organization enforces instead of local files. It has its own flags and its own page:
+[Platform Check](platform-check.md).
+
+## Flags
+
+Note the spelling: the path and variable options take a **single dash** (`-policy-path`, not
+`--policy-path`), while the output and behaviour switches take two.
+
+| Flag | Argument | What it does |
+|---|---|---|
+| `-policy-path` | `PATH` | Path to the Tirith policy file. Required. |
+| `-input-path` | `PATH` | Path to the document the policy is evaluated against. Required. |
+| `-var-path` | `PATH` | Path to a JSON file of policy variables. Repeatable. |
+| `-var` | `NAME=JSON` | One inline policy variable. Repeatable. |
+| `--json` | | Print only the result document as JSON on stdout. |
+| `--verbose` | | Show detailed (debug-level) logs from the run on stderr. |
+| `--fail-on-error` | | Exit `3` when a policy fails, instead of `0`. Off by default. |
+| `--version` | | Print the version and exit. |
+| `-h`, `--help` | | Print the help text and exit. |
+
+### `-policy-path`
+
+The policy file to evaluate — a JSON document with `meta`, `evaluators` and an `eval_expression`.
+See the [policy reference](../tirith-policies/tirith-policy-reference.md) for the schema, the
+[evaluators reference](../tirith-reference/evaluators.md) for the available condition types, and the
+[providers overview](../tirith-providers/overview.md) for what kinds of input each
+`required_provider` reads.
+
+If the flag is missing, `tirith` prints an error to stderr and exits `1`.
+
+### `-input-path`
+
+The document to evaluate: a terraform plan in JSON form (`terraform show -json tfplan`), a
+Kubernetes manifest, an Infracost breakdown, or any JSON document — whatever the policy's provider
+expects. Files ending in `.yaml` or `.yml` are parsed as YAML; a multi-document YAML file is read
+as a list of documents. Everything else is parsed as JSON.
+
+If the flag is missing, `tirith` prints an error to stderr and exits `1`.
+
+### `-var-path` and `-var`
+
+A policy can be parameterized with `{{ var.name }}` placeholders. These two flags supply the
+values:
+
+```
+tirith -policy-path policy.json -input-path plan.json \
+       -var-path common-vars.json -var 'max_cost=100'
+```
+
+- `-var-path` names a JSON file whose top-level keys are variable names. The flag may be repeated;
+  files are merged in order, and a later file overrides an earlier one for the same key.
+- `-var` supplies a single variable inline as `name=value`, where `value` is parsed as JSON — so
+  `-var 'max_cost=100'` is a number, `-var 'region="eu-central-1"'` is a string, and
+  `-var 'allowed=["a","b"]'` is a list. Inline variables are applied after all files, so they
+  override them. A value that is not valid JSON is reported as an error and the variable is not
+  set.
+
+If the policy references a variable that none of these supplied, evaluation does not run at all:
+the result carries only an `errors` entry (`Variables not found: ...`), and with
+`--fail-on-error` the exit code is `1` — the tool could not evaluate, which is different from a
+policy failing.
+
+### `--json`
+
+Prints the result document, and nothing else, to stdout — all logging is disabled, so the output
+can be piped straight into `jq` or another program:
+
+```
+tirith -policy-path policy.json -input-path plan.json --json | jq .final_result
+```
+
+The document has this shape:
+
+```json
+{
+   "meta": { "version": "v1", "required_provider": "stackguardian/json" },
+   "final_result": true,
+   "evaluators": [
+      {
+         "id": "check1",
+         "passed": true,
+         "result": [ { "passed": true, "message": "1 is equal to 1", "meta": null } ],
+         "description": null
+      }
+   ],
+   "errors": [],
+   "eval_expression": "check1"
+}
+```
+
+`final_result` is tri-state: `true` when every check that ran passed, `false` when a check ran and
+failed, and `null` when every check was skipped (see
+[error tolerance](../tirith-policies/tirith-policy-error-tolerance.md)) — the policy then evaluated
+nothing. Each evaluator's `passed` is tri-state in the same way. If evaluation throws an
+unexpected error under `--json`, the command prints an empty `{}` and exits `1`.
+
+The exit code does not change under `--json`; combine it with `--fail-on-error` to gate on the
+verdict while still capturing the document.
+
+### `--verbose`
+
+Without it, the run prints the pretty-printed per-check results on stdout and only messages at
+INFO level and above on stderr, formatted as `[LEVEL] message`. With `--verbose`, stderr carries
+debug-level logs in a long format that includes the timestamp, process id and source location —
+useful when a policy is not matching what you expect and you want to see each evaluator being
+processed.
+
+`--verbose` has no effect together with `--json`, which disables logging entirely.
+
+### `--fail-on-error`
+
+By default the command exits `0` whenever it completed the evaluation, whether the policy passed
+or failed — the verdict is in the output. `--fail-on-error` turns the exit code into a gate: `3`
+when a policy failed, `1` when nothing could be evaluated, `0` only when every check that ran
+passed. This is the flag that makes the command usable as a CI gate; the full contract is on the
+[exit codes](exit-codes.md) page.
+
+### `--version`
+
+Prints the version number (for example `1.2.0`) and exits `0`.
+
+## Output streams
+
+- **stdout** carries the result: the pretty-printed report by default, or the JSON document under
+  `--json`.
+- **stderr** carries logs and error messages.
+
+This split is deliberate so that redirecting stdout captures only the verdict.
+
+
+==============================================================================
+# Exit Codes
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/exit-codes/
+Summary: The complete Tirith exit-code contract, and how to gate a CI job on it.
+==============================================================================
+
+Tirith's exit codes are a contract shared by both surfaces — local evaluation (`tirith`) and
+platform evaluation (`tirith platform check`) — so a caller scripting both only has to learn one
+vocabulary.
+
+| Code | Meaning |
+|---|---|
+| `0` | Policies passed, or nothing was in scope to gate on |
+| `1` | Tirith could not complete the evaluation — bad input, a policy it could not evaluate, unreachable API |
+| `2` | Timed out waiting for a StackGuardian run (`tirith platform check` only; local evaluation never produces it) |
+| `3` | A policy failed. Only with `--fail-on-error`, on either surface |
+| `130` | Interrupted (Ctrl-C) |
+
+## `3` is deliberately not `1`
+
+`3` means a check ran and said no: your infrastructure violates a policy. `1` means Tirith could
+not tell you either way — an unparseable policy file, an unresolved `{{ var.x }}` variable, an
+unreachable API, or a policy whose every check was skipped. A job that treats every non-zero code
+alike reports an outage as a policy violation, and cannot tell a working gate from a broken one.
+Keeping the two codes distinct lets a pipeline page the platform team on `1` and the change author
+on `3`.
+
+Both surfaces **fail closed**: anything that leaves the verdict unknown exits non-zero regardless
+of `--fail-on-error`. That flag governs policy verdicts, not tool health — a run that produced no
+verdict must never look like a pass.
+
+## Without `--fail-on-error`
+
+The local command exits `0` whether the policy passed or failed, with the verdict in the output.
+That is how it has always behaved, and it is left alone so that upgrading Tirith cannot turn a
+passing pipeline red; the gate is opt-in. `tirith platform check` behaves the same way: without
+the flag a policy failure logs a message and still exits `0`, and the verdict is in
+`--output-json`.
+
+Errors are different: a missing input file, an unparseable policy or an unresolved variable exits
+`1` even without the flag.
+
+## What each local outcome produces
+
+Under `--fail-on-error`, the exit code is decided by the result's tri-state `final_result`:
+
+| `final_result` | Meaning | Exit |
+|---|---|---|
+| `true` | every check that ran passed | `0` |
+| `false` | a check ran and failed | `3` |
+| `null` | every check was skipped — the policy evaluated nothing | `1` |
+| absent | the policy could not be evaluated at all (for example an unresolved variable) | `1` |
+
+`null` is not a pass. A policy whose every check was skipped — an
+[`error_tolerance`](../tirith-policies/tirith-policy-error-tolerance.md) swallowing a provider that
+found nothing — checked precisely nothing, and reporting that as green is exactly what the flag
+exists to prevent. It is not a violation either, so it is `1` rather than `3`.
+
+**One limit worth stating plainly:** a *misconfigured* policy — an unsupported `condition.type`,
+an unknown `required_provider` — comes back from the engine as an ordinary failed check with no
+error attached, so it is indistinguishable from a real violation and exits `3`. It fails closed,
+which is the safe direction, but it will point at your infrastructure when the fault is in the
+policy.
+
+## Gating a CI job
+
+Most CI systems fail a job on any non-zero exit, so the minimal gate is one line:
+
+```sh
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+```
+
+To act differently on "policy failed" versus "Tirith broke", branch on the code:
+
+```sh
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error --json > result.json
+code=$?
+case "$code" in
+  0) echo "policies passed" ;;
+  3) echo "a policy failed — see result.json" ; exit 1 ;;
+  *) echo "Tirith could not evaluate (exit $code) — this is a tooling problem, not a verdict" ; exit "$code" ;;
+esac
+```
+
+The same pattern works for `tirith platform check` unchanged — the codes mean the same things.
+Complete CI examples are on the [CI integration](ci-integration.md) page.
+
+
+==============================================================================
+# CI Integration
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/ci-integration/
+Summary: Running Tirith in GitHub Actions, GitLab CI, Bitbucket Pipelines, Jenkins, or any container-based CI, plus a pre-commit hook.
+==============================================================================
+
+Tirith reads the plan your pipeline already produces — the output of
+`terraform show -json tfplan` — checks it against your policies, and exits non-zero so a violating
+change never reaches `apply`. The same policy files gate a GitHub Actions job, a GitLab job and a
+laptop.
+
+Two ways to run it in CI:
+
+- **GitHub Actions** — use the
+  [StackGuardian/tirith-iac-governance-action](https://github.com/StackGuardian/tirith-iac-governance-action),
+  which wraps the CLI and adds the GitHub-specific reporting.
+- **Everything else** — GitLab CI, or any CI that can run a container — invoke the CLI directly,
+  which is all the action does underneath.
+
+Either way, the job is gated by the [exit code](exit-codes.md): pass `--fail-on-error` (or the
+action's `fail-on-error` input) and a failing policy fails the job.
+
+## GitHub Actions
+
+The action finds the plan, evaluates the policies, posts a sticky pull-request comment, creates a
+check run and sets the job's exit code:
+
+```yaml
+permissions:
+  contents: read
+  pull-requests: write   # sticky comment
+  checks: write          # check run
+
+steps:
+  - run: |
+      terraform plan -out=tfplan -input=false
+      terraform show -json tfplan > plan.json
+
+  - uses: StackGuardian/tirith-iac-governance-action@v2
+```
+
+With a `plan.json` in the working directory that is the whole integration — no `with:` block. The
+action finds the document by convention (`plan.json` or `tfplan.json`) and evaluates the policy
+files committed under `.tirith/policies`, on the runner, talking to nothing. Add
+`with: { fail-on-error: true }` to make a failing policy fail the job.
+
+### Local mode and platform mode
+
+The action has two modes, chosen by whether credentials are present — there is no switch:
+
+- **Without credentials** (the default), policy files from your repository are evaluated on the
+  runner. Nothing is uploaded and no account is needed.
+- **With credentials**, the action evaluates the policies your StackGuardian organization enforces
+  instead, by way of `tirith platform check` — see [Platform Check](platform-check.md):
+
+```yaml
+env:
+  SG_API_TOKEN: ${{ secrets.SG_API_TOKEN }}
+  SG_ORG: ${{ vars.SG_ORG }}
+```
+
+Everything on the pull request is the same in both modes — the same comment, the same
+`Tirith IaC Governance` check run, the same outputs and exit codes.
+
+### Commonly used inputs
+
+Every input is optional. The full list, with the matrix/monorepo guidance and the outputs, is in
+the [action's own README](https://github.com/StackGuardian/tirith-iac-governance-action#readme).
+
+| Input | Default | |
+|---|---|---|
+| `policy-path` | `.tirith/policies` | Local mode only: a file, directory or glob of policy files |
+| `input-path` | `plan.json` / `tfplan.json` | Document to evaluate, found by convention |
+| `plan-file` | | Binary plan, rendered with `terraform show -json` in memory |
+| `input-kind` | `terraform_plan` | `terraform_plan`, `terraform_state`, `kubernetes`, `json` |
+| `fail-on-error` | `false` | Fail the job when a policy fails |
+| `sg-region` | `eu` | `eu` or `us`; platform mode only |
+| `source-dir` | `.` | Platform mode: the terraform source uploaded with the documents; `""` sends documents only |
+| `timeout` | `1800` | Platform mode: seconds to wait for the run |
+
+The action's exit behaviour follows the shared contract: `fail-on-error` governs policy verdicts,
+while a run that errored, an unreachable platform, or a job with no credentials *and* no policies
+is always red — a check that gated nothing must not report green.
+
+### Outputs
+
+The action exposes `verdict` (`passed` | `warned` | `failed` | `errored` | `no-policies`), `mode`
+(`platform` | `local`), the `passed` / `failed` / `warned` counts, the full result document as
+`results` and `results-file`, and — in platform mode — `wfrun-id` and `wfrun-url` linking to the
+run.
+
+## GitLab CI
+
+There is no GitLab-native equivalent of the action, so you invoke the CLI directly. Two jobs: one
+produces the plan as an artifact, the next gates on it.
+
+```yaml
+plan:
+  stage: plan
+  script:
+    - terraform plan -out=tfplan -input=false
+    - terraform show -json tfplan > plan.json
+  artifacts:
+    paths: [plan.json]
+
+policy:
+  stage: test
+  image: python:3.12
+  needs: [plan]
+  script:
+    - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+    - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+```
+
+If you already have a plan job, keep it — add `plan.json` to its `artifacts` and point the gate at
+it with `needs`. `-input=false` matters in CI: without it a missing variable waits for a prompt that
+will never come, and the job hangs instead of failing.
+
+Tirith is **not on PyPI** — `pip install tirith` installs an unrelated project of the same name.
+Install from git, and pin a tag rather than tracking the default branch so a CI job cannot change
+behaviour underneath you. `1.2.0` is the newest tag;
+`git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists them. Python 3.8 or newer.
+
+To evaluate your organization's policies instead of the committed files, swap the last line for
+`tirith platform check` and supply credentials as CI variables:
+
+```yaml
+policy:
+  image: python:3.12
+  needs: [plan]
+  variables:
+    SG_ORG: my-org       # SG_API_TOKEN comes from a masked CI/CD variable
+  script:
+    - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+    - tirith platform check --workflow-id my-repo --input-path plan.json --fail-on-error
+```
+
+See [Platform Check](platform-check.md) for what that uploads and what it masks first.
+
+## Any container-based CI
+
+Nothing above is GitLab-specific: any runner that can execute a container and produce a plan works
+the same way. The recipe is always the same three steps —
+
+1. produce the input document (`terraform show -json tfplan > plan.json`);
+2. `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"`;
+3. `tirith -policy-path <policies> -input-path plan.json --fail-on-error`
+
+— and gate the job on the exit code, which every CI system does by default for a non-zero exit.
+Use `--json` to capture the result document for a later step, and see [Exit codes](exit-codes.md)
+for telling a policy failure (`3`) apart from a tooling failure (`1`).
+
+## Bitbucket Pipelines
+
+Bitbucket has no Tirith-native integration, so the CLI is called directly — which is all the
+GitHub Action does underneath. Plan in one step, gate in the next, and pass the plan between them
+as an artifact.
+
+```yaml
+image: python:3.12
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: Terraform plan
+          script:
+            - terraform plan -out=tfplan -input=false
+            - terraform show -json tfplan > plan.json
+          artifacts: [plan.json, tfplan]
+      - step:
+          name: Policy gate
+          script:
+            - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+            # - tirith lint .tirith/policies   # in dev, not in 1.2.0
+            - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+```
+
+A complete file is in [`examples/ci/bitbucket-pipelines.yml`](https://github.com/StackGuardian/tirith/blob/main/examples/ci/bitbucket-pipelines.yml),
+and a worked repository is at
+[tirith-bitbucket-demo](https://bitbucket.org/__refeed__/tirith-bitbucket-demo).
+
+## Jenkins
+
+A declarative pipeline with the gate as a stage between plan and apply. The one thing worth doing
+deliberately is keeping exit `3` and exit `1` apart, so a tooling problem is not reported as a
+policy violation:
+
+```groovy
+stage('Policy gate') {
+  steps {
+    script {
+      def code = sh(
+        returnStatus: true,
+        script: 'tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error',
+      )
+      if (code == 3) {
+        error('Tirith: a policy refused this change.')
+      } else if (code != 0) {
+        error("Tirith could not reach a verdict (exit ${code}).")
+      }
+    }
+  }
+}
+```
+
+The full pipeline, including install, lint and artifact archiving, is in
+[`examples/ci/Jenkinsfile`](https://github.com/StackGuardian/tirith/blob/main/examples/ci/Jenkinsfile).
+
+## As a pre-commit hook
+
+Catch a broken policy before it is committed, let alone before CI runs it. Tirith publishes a
+`tirith-lint` hook:
+
+```yaml
+repos:
+  - repo: https://github.com/StackGuardian/tirith
+    rev: 1.2.0
+    hooks:
+      - id: tirith-lint
+```
+
+```bash
+pre-commit install
+pre-commit run tirith-lint --all-files
+```
+
+The hook runs only when a file under `.tirith/policies/` or a `*.tirith.json` changes. It lints
+the policy directory rather than the individual changed files, because `tirith lint` takes a
+single path.
+
+[NOTE] Why linting and not evaluation
+Evaluating a policy needs a plan document, and producing one means running `terraform plan` —
+too slow for a commit hook, and it needs cloud credentials a hook has no business holding.
+Linting is pure local computation over JSON: fast, offline, and it catches the class of mistake
+that otherwise reaches CI looking like a real infrastructure violation.
+
+## Worked repositories
+
+Each of these is a small, real IaC pipeline with Tirith in front of it:
+
+| Platform | Repository |
+| --- | --- |
+| GitHub Actions | [StackGuardian/tirith-action-demo](https://github.com/StackGuardian/tirith-action-demo) |
+| GitLab CI | [stackguardian/tirith-component-demo](https://gitlab.com/stackguardian/tirith-component-demo) |
+| Bitbucket Pipelines | [__refeed__/tirith-bitbucket-demo](https://bitbucket.org/__refeed__/tirith-bitbucket-demo) |
+
+They follow the same five chapters: check the plan against policies in the repository, take the
+policies from the organization instead, add a resource that violates one, fix it, and publish the
+state after apply.
+
+
+==============================================================================
+# The interactive interface
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/interactive-interface/
+Summary: tirith ui — explore an evaluation down to the resource that caused it, build policies from a form, and experiment in a playground.
+==============================================================================
+
+[NOTE] Beta — and we want your input
+
+`tirith ui` is new. Everything described here works and is covered by tests, but the shape of the
+interface is still open, and the rough edges are still being found.
+
+Tell us what is confusing, what is missing, or what you would rather it did:
+[open an issue](https://github.com/StackGuardian/tirith/issues/new/choose).
+
+Nothing about the existing CLI changes: same flags, same `--json` output, same exit codes.
+
+`tirith ui` opens a terminal interface with three tabs: an **Explorer** for reading results, a
+**Builder** for assembling policies, and a **Playground** for experimenting.
+
+## Installing it
+
+It is an optional extra, so that using Tirith as a CI gate stays dependency-light — nobody gating a
+pipeline should pay to install an interface they never open. It needs Python 3.9 or newer, while
+Tirith itself still supports 3.8.
+
+```bash
+pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
+```
+
+Tirith is not on PyPI — `pip install py-tirith` finds nothing and `pip install tirith` installs an
+unrelated project of the same name — so the extra is requested against the git URL.
+
+## Opening it
+
+```bash
+tirith ui                                          # playground, with worked examples
+tirith ui --policy policy.json --input plan.json   # evaluate yours, open on the results
+tirith ui --result result.json                     # an evaluation you already ran
+tirith --json -policy-path p.json -input-path plan.json | tirith ui --result -
+```
+
+Naming both a policy and an input evaluates them and opens the **Explorer**, because that is what
+you came to see. With only a policy, or nothing at all, it opens the Playground.
+
+Keys: `1` Explorer, `2` Builder, `3` Playground, `r` re-run, `q` quit.
+
+## Explorer
+
+The output of `--json` and the pretty printer both tell you *that* a check failed. Neither tells you
+*which resource* failed it — although the result document has carried the resource's address, its
+planned action and its before/after values all along.
+
+The Explorer shows them. Selecting a failing result names the resource (`aws_db_instance.primary`),
+the action in Terraform's own vocabulary — **replace (destroy first)**, which is distinct from
+create-first because only one of them means downtime — and the attributes that changed, including
+the ones that are unknown until apply.
+
+This matters most on a wildcard policy, where every message reads identically
+(`` `"product-456"` is not empty ``) and only the address distinguishes one row from another.
+
+## Builder
+
+Pick a provider, an operation and a condition; the form's fields change to whatever that operation
+actually accepts, and the policy JSON is generated as you go.
+
+The argument names are not guessable: `stackguardian/json` reads `key_path` while
+`stackguardian/kubernetes` reads `attribute_path`, and the Terraform provider alone has seven
+operations taking different arguments. Get one wrong and the policy still parses, still runs, and
+silently matches nothing.
+
+Values keep their JSON types, so typing `true` gives a boolean, `["a","b"]` a list and `production`
+the string — `Equals: true` and `Equals: "true"` are different questions.
+
+**How the checks combine** is its own field, holding the policy's `eval_expression`:
+
+| | |
+| --- | --- |
+| `a && b` | both must pass |
+| `a \|\| b` | either may pass |
+| `!a` | passes when the check *fails* — how you write a detector |
+| `(a \|\| b) && c` | grouping |
+
+It fills itself in with every check `&&`-ed together, and stops doing that the moment you edit it.
+The expression is the one part of a policy that cannot be derived from the checks.
+
+## Playground
+
+Load one of the bundled examples, change something, watch the verdict move. Evaluation runs as you
+type. Broken JSON, a half-written policy and a provider that raises are all reported in a findings
+pane rather than as a traceback — while you are editing, the broken state is the normal state.
+
+The examples are worked lessons rather than fixtures. Most of them fail on purpose, and each one's
+notes explain the mechanism it demonstrates and what to try next:
+
+| Example | Demonstrates |
+| --- | --- |
+| Required tags | One check, one condition, nested attributes. Why `error_tolerance` can turn a failure into a *skip* — and why a skip is not a pass. |
+| No public buckets | Two checks joined with `&&`; two buckets, one at fault. |
+| Cost ceiling | The Infracost provider, and why a misspelled resource type sums to `0` and fails open. |
+| Block destroy | A database being replaced inside a routine plan, and the attribute that forced it. |
+| Kubernetes probes | Wildcard paths, why `IsNotEmpty` is the wrong question over a list, and the `!` operator. |
+
+Each editor has **Copy**, **Open** and **Clear** beside it. **Open** opens a file browser: arrow
+keys to move, `→` into a directory, `←` back, Enter to choose.
+
+## Serving it on a port
+
+The same interface runs in a browser, which is useful for sharing a result with someone who does not
+have Tirith installed:
+
+```bash
+tirith ui --serve --port 8000     # then open http://localhost:8000
+```
+
+It is the same interface relayed to the browser, not a second web-only implementation, so it behaves
+identically and there is nothing extra to keep in sync.
+
+The bind address and port are yours to choose, but note that the served interface can read any file
+path the serving process can. Keep it on `localhost` unless you have a reason not to.
+
+
+==============================================================================
+# In your editor
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/editor-and-local/
+Summary: In development — VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy. The lint half is not in the released package yet.
+==============================================================================
+
+[WARNING] In development — the lint half has not shipped
+
+`tirith lint`, the pre-commit hook and the VS Code tasks below are **in development**. They are
+not in the released package: `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"`
+gives you `tirith`, `tirith ui` and `tirith platform check`, and no `lint` subcommand. The
+`tirith-lint` hook id and the task file are not in the repository yet either.
+
+**What works today** is the second half of the loop — evaluating a policy against a document with
+`tirith -policy-path … -input-path … --fail-on-error`. That runs locally, offline, on any
+installed version.
+
+This page is published now so the shape is reviewable. Follow
+[the repository](https://github.com/StackGuardian/tirith) for the release, or
+[tell us what the loop is missing](https://github.com/StackGuardian/tirith/issues/new/choose).
+
+CI is the last place a policy should fail. This page is about the loop before that — running
+Tirith on your own machine, while the code is still being written.
+
+It matters most when an agent is drafting the policy for you. Generated policy JSON is plausible
+by construction: it parses, it looks right, and a policy that matches nothing is indistinguishable
+from one that works until you evaluate it.
+
+## The loop
+
+```bash
+tirith lint .tirith/policies                                                  # shape — in dev
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error    # meaning — ships
+```
+
+Linting checks the **shape** — that every condition type exists, that no `provider_args` key
+belongs to a different provider, that `eval_expression` names every evaluator. Only evaluation
+checks the **meaning**.
+
+Run both against a document that *should* fail. A guardrail only ever seen passing is a guardrail
+nobody has tested.
+
+## VS Code tasks
+
+**In development.** The lint task below calls a subcommand the released package does not have; the
+evaluate task works today.
+
+Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Tirith: lint policies",
+      "type": "shell",
+      "command": "tirith lint .tirith/policies",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Tirith: check the plan",
+      "type": "shell",
+      "command": "tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error",
+      "problemMatcher": [],
+      "group": {"kind": "test", "isDefault": true},
+      "dependsOn": ["Tirith: lint policies"]
+    }
+  ]
+}
+```
+
+`Tirith: check the plan` is the default test task, so **⇧⌘B** / **Ctrl+Shift+B** runs the whole
+loop. The complete file — including a task to refresh `plan.json` and one to open the result in
+the interactive explorer — is
+[`.vscode/tasks.json`](https://github.com/StackGuardian/tirith/blob/main/.vscode/tasks.json).
+
+## Catch it at commit time
+
+**In development.** The `tirith-lint` hook id is not published yet, so this configuration will not
+resolve — `pre-commit` fails with an unknown hook rather than installing anything.
+
+```yaml
+repos:
+  - repo: https://github.com/StackGuardian/tirith
+    rev: 1.2.0
+    hooks:
+      - id: tirith-lint
+```
+
+```bash
+pre-commit install
+```
+
+The hook runs only when a policy file changes, needs no network, and exits `3` when a policy has
+an error. See [CI integration](ci-integration.md) for why it lints rather than evaluates.
+
+## When an agent is writing the policy
+
+Install the Tirith skill and your agent gets the closed condition list, the argument key each
+provider reads, and the instruction to run a policy before claiming it works:
+
+```bash
+mkdir -p .claude/skills/tirith-policies/reference
+BASE=https://raw.githubusercontent.com/StackGuardian/tirith/main/.claude/skills/tirith-policies
+curl -sL $BASE/SKILL.md -o .claude/skills/tirith-policies/SKILL.md
+```
+
+Cursor reads `.cursor/rules/tirith-policies.mdc` instead, scoped with globs so it attaches by
+itself when a policy file is open.
+
+Two things make the difference between a drafted policy and a working one:
+
+1. **The agent has `tirith` on PATH.** It is an ordinary command, so an agent with a shell can
+   lint and evaluate its own work without any protocol server or plugin.
+2. **You give it a document that should fail.** Ask for the policy *and* a plan that violates it,
+   then check that the exit code is `3`. If it is `0`, the policy matched nothing.
+
+## Reading a failure without leaving the terminal
+
+```bash
+tirith --json -policy-path .tirith/policies -input-path plan.json > result.json
+tirith ui --result result.json      # needs the optional [tui] extra
+```
+
+The explorer names the resource behind each finding — its address, the planned action, and the
+attributes that changed — which the pretty printer does not show. See
+[the interactive interface](interactive-interface.md).
+
+
+==============================================================================
+# Platform Check
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/platform-check/
+Summary: The tirith platform check subcommand — every flag, what it uploads, what it masks on your machine first, and what it reports back.
+==============================================================================
+
+`tirith platform check` evaluates a terraform plan, state document or cost breakdown against the
+policies your **StackGuardian organization** enforces, from any CI system or from a laptop —
+instead of policy files committed to your repository. Policy then lives in one place rather than
+being copied into every repository that needs gating.
+
+This is the one part of Tirith that talks to a network and needs an account. Plain
+`tirith` — local evaluation — needs neither; see the [CLI reference](cli-reference.md).
+
+```sh
+export SG_API_TOKEN=sgo_...        # an organization token
+export SG_ORG=my-org
+
+tirith platform check --workflow-id my-repo --input-path plan.json --fail-on-error
+```
+
+`--input-path` is optional when a `plan.json` or `tfplan.json` is in the working directory.
+
+On GitHub, prefer the
+[GitHub Action](https://github.com/StackGuardian/tirith-iac-governance-action), which is a thin
+wrapper around this command and adds the pull-request comment and check run — see
+[CI integration](ci-integration.md). Use this command directly anywhere else: GitLab CI, a
+Makefile, a local shell.
+
+## What it does
+
+1. **Masks the document on your machine**, before anything is uploaded (details below).
+2. **Packs** the masked documents together with your terraform source into a `tar.gz`, excluding
+   `.git`, `.terraform`, `*.tfstate*` and anything matched by `.gitignore`. `--no-source` sends
+   documents only. An oversized source tree degrades to documents-only with a warning rather than
+   failing the check.
+3. **Uploads** the archive to the workflow's artifact directory and creates a StackGuardian
+   workflow run. The workflow and its group are created on first use.
+4. **Polls** the run until it finishes and prints the verdict — optionally also as JSON and
+   markdown files for a later CI step.
+
+## What it masks
+
+Masking happens client-side, on your machine, before anything leaves it. Masked values are
+replaced with the sentinel `__SG_REDACTED__`.
+
+For a **terraform plan** (`--input-kind terraform_plan`, the default):
+
+- Every value terraform marked sensitive (`before_sensitive` / `after_sensitive`) is masked, in
+  `resource_changes`, `resource_drift` and `output_changes` alike.
+- Root `variables` are dropped wholesale — the plan does not reliably mark which were declared
+  `sensitive`, so the only safe assumption is that all of them might be.
+- `prior_state` is dropped, and terraform's own `planned_values` — which mirrors every value with
+  no sensitivity markers — is dropped and **rebuilt from the already-masked** `resource_changes`,
+  so tools that read that section still work without the leak.
+- Credential-bearing literals in `configuration` (provider blocks, resource expressions, module
+  arguments, variable defaults) are scrubbed while the reference graph policies read is kept.
+- Finally, any string terraform marked sensitive *somewhere* is masked *everywhere* in the
+  document — catching provider-computed mirrors such as `tags_all` that carry the same plaintext
+  without a marker of their own.
+
+For a **terraform state document** (`--input-kind terraform_state`, or `--state-path`): outputs
+marked `sensitive` and every attribute named in an instance's `sensitive_attributes` are masked,
+and the same everywhere-sweep is applied. Both shapes are handled — raw `terraform state pull`
+output and `terraform show -json` output.
+
+Two limits, stated plainly:
+
+- **`json` and `kubernetes` documents are not masked** — there is no schema that says which fields
+  are secret. A document that looks like terraform state but is sent with the wrong `--input-kind`
+  triggers a warning, because that is the mistake that would ship every attribute in plaintext.
+- **Committed source ships as written.** Masking applies to the documents, not to your repository:
+  a secret hardcoded in a `.tf` file reaches the platform even though the plan was masked.
+  `--no-source` is the opt-out. Terraform's `*_sensitive` markers are also not exhaustive — a
+  value that flows through `locals`, or comes from a provider that did not mark its schema, is not
+  caught by marker-driven masking.
+
+The number of masked values is printed before upload, and recorded in the bundle's metadata.
+
+## What it uploads
+
+One `tar.gz` archive per run, in the workflow's artifact directory, with a fixed layout:
+
+```
+plan.json          the masked terraform plan
+tfstate.json       the masked state, if one was supplied
+infracost.json     the cost breakdown, if one was supplied
+metadata.json      what this bundle is: origin, repository, commit, masking, workflow identity
+code/              the terraform source, if any was packed
+```
+
+The archive is retained after the run — it is the source that produced the findings, and other
+systems read it to see the code a verdict came from. When a state document is supplied, the masked
+copy is additionally published as the workflow's `tfstate.json` artifact so it appears in the
+platform's State view; that copy is masked and cannot be used to run terraform. The full
+`metadata.json` field reference is in
+[docs/platform-check.md](https://github.com/StackGuardian/tirith/blob/main/docs/platform-check.md)
+in the repository.
+
+## What it reports back
+
+- **Progress and the verdict headline go to stderr**, so stdout stays clean for machine-readable
+  output: the masking count, the upload, a link to the created run, each poll of the run's status,
+  and finally a one-line headline such as `Tirith — 3 failed, 1 warned`.
+- **`--output-json`** writes the result document: the run `status`, the `verdict`
+  (`passed` | `warned` | `failed` | `no-policies` | `errored`), per-outcome `counts` (passed,
+  failed, warned, approval_required, skipped, unknown), the `headline`, `wfrun_id` and `wfrun_url`
+  linking to the run, the full `policy_results`, the `monthly_cost` when a cost breakdown was
+  evaluated, and where the uploaded archive lives (`archive_key`, `source_packed`,
+  `source_skipped_reason`). It is written once with `status: RUNNING` as soon as the run is
+  created — so a timeout still leaves the run discoverable — and again with the final result.
+- **`--output-markdown`** writes a rendered report, suitable for posting as a pull-request or
+  merge-request comment by a later CI step. `--comment-marker` sets an opaque first line so your
+  script can find and update its own previous comment, and `--markdown-limit` truncates the body
+  (default 60000 characters).
+- **The exit code** follows the shared [contract](exit-codes.md): `0` passed, `1` the check could
+  not be completed, `3` a policy failed (only with `--fail-on-error`), `130` interrupted. A run
+  that produced no verdict — errored, unreachable, unreadable results — always exits non-zero
+  regardless of `--fail-on-error`: it fails closed. A policy that asks for approval is reported as
+  a warning and does not block, because the evaluation has already finished by the time the intent
+  is known.
+
+## Credentials
+
+`--api-key` / `$SG_API_TOKEN` and `--org` / `$SG_ORG` are required. The key should be an
+**organization** (`sgo_`) token — `sgu_` user tokens are non-functional for SSO-group-only users
+and are warned about rather than rejected, so the symptom is a later 403.
+
+`--api-key -` reads the key from stdin, which keeps it out of the process table and out of shell
+history:
+
+```sh
+echo "$SG_TOKEN" | tirith platform check --api-key - --workflow-id infra
+```
+
+## Flag reference
+
+### Identity
+
+| Flag | Default | What it does |
+|---|---|---|
+| `--api-key` | `$SG_API_TOKEN` | API key, or `-` to read it from stdin |
+| `--org` | `$SG_ORG` | Organization name |
+| `--region` | `$SG_REGION` or `eu` | StackGuardian region, `eu` or `us`. Sets both the API and dashboard URLs at once |
+| `--api-url` | `$SG_BASE_URL` | API base URL, with or without `/api/v1`. Overrides `--region`; needed only for a self-hosted install or a dedicated host |
+| `--dashboard-url` | `$SG_DASHBOARD_URL` | Dashboard base URL, used to build run links. Inferred from `--api-url` when it names a known region |
+
+`--region` and an explicit URL cannot be combined — they set the same thing, and silently picking
+one would hide the contradiction.
+
+### Workflow
+
+| Flag | Default | What it does |
+|---|---|---|
+| `--workflow-id` | *(required)* | Slug identifying the StackGuardian workflow. Created if absent. Letters, digits, `-` and `_` only; anything else is rejected with a suggested slug |
+| `--workflow-group` | `default` | Workflow group. Created if absent — note that policies are scoped per group, so a typo silently enforces nothing |
+| `--terraform-version` | | Stored on the workflow at creation |
+| `--repo-url` | | Source repository URL, recorded on the workflow at creation so it links back to the code. Any credential embedded in the URL is stripped before it is recorded |
+| `--repo-ref` | | Branch, tag or commit, recorded alongside `--repo-url` |
+| `--repo-path` | inferred | Path of `--source-dir` within the repository, recorded in the bundle's `metadata.json`. Inferred from the enclosing git checkout if omitted |
+| `--step-template-id` | platform default | Override the policy-evaluation step template |
+
+Runs on one workflow serialize while another is pending — a matrix that shares an id becomes a
+queue, so give each leg its own.
+
+### Inputs
+
+| Flag | Default | What it does |
+|---|---|---|
+| `--input-path` | `plan.json` / `tfplan.json` in `--source-dir` | Document to evaluate |
+| `--plan-file` | | Binary plan from `terraform plan -out=`. Rendered with `terraform show -json` in memory, so no unmasked plan JSON is ever written to disk. Cannot be combined with `--input-path` |
+| `--terraform-bin` | auto-detected | terraform/tofu binary for `--plan-file`, preferring the real binary over a CI wrapper |
+| `--input-kind` | `terraform_plan` | One of `terraform_plan`, `terraform_state`, `kubernetes`, `json`. Decides how the document is masked |
+| `--state-path` | | Optional terraform state, masked before upload |
+| `--infracost-path` | | Optional `infracost breakdown --format json` document |
+| `--source-dir` | `.` | Terraform source to pack alongside the documents |
+| `--no-source` | | Send only the documents. Discovery still looks in `--source-dir` (or `.`) for the plan |
+
+### Run
+
+| Flag | Default | What it does |
+|---|---|---|
+| `--sha` | | Commit SHA, used to namespace the uploaded archive |
+| `--artifact-tag` | `default` | Namespaces the archive within a commit. Needed only when one workflow evaluates the same commit more than once — a plan phase and a state phase, or matrix legs sharing a workflow |
+| `--trigger-details-json` | `{"type": "cli"}` | JSON object describing what triggered this run |
+| `--trigger-details-file` | | File containing that JSON object |
+| `--timeout` | `1800` | Seconds to wait for the run |
+
+### Output
+
+| Flag | Default | What it does |
+|---|---|---|
+| `--output-json` | | Write the result document here |
+| `--output-markdown` | | Write a markdown report here |
+| `--comment-marker` | | Opaque first line of the markdown, so a script can find its own comment |
+| `--markdown-limit` | `60000` | Truncate the markdown to this length |
+| `--fail-on-error` | off | Exit non-zero when a policy fails. An unreachable platform or a run that produced no verdict always exits non-zero regardless of this flag |
+

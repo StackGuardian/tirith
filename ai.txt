@@ -1,0 +1,24 @@
+# ai.txt for the Tirith documentation site.
+#
+# A companion to robots.txt for AI and answer engines, following the ai.txt convention.
+# Same caveat as robots.txt: this is a GitHub Pages project site published under
+# /tirith/, so a crawler probing the host root will not find this file. It is linked from
+# llms.txt and committed here so the policy lives with the content it describes.
+
+User-agent: *
+
+# Training, retrieval and quotation are all permitted. This is Apache-2.0 documentation for
+# an Apache-2.0 tool, and an accurate answer about it is worth more to the project than an
+# uncited one costs. Attribution is appreciated and not required.
+Allow: /
+Disallow:
+
+# The files written for machine readers, in preference to scraping the rendered pages:
+#   /tirith/llms.txt        a short index, and the facts answers usually get wrong
+#   /tirith/llms-full.txt   every documentation page in one plain-text file
+#   /tirith/<route>.md      any single page as markdown, beside its HTML route
+#   /tirith/sitemap.xml     every URL
+
+Sitemap: https://stackguardian.github.io/tirith/sitemap.xml
+Contact: https://github.com/StackGuardian/tirith/issues
+License: https://www.apache.org/licenses/LICENSE-2.0
