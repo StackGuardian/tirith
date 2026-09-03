@@ -69,7 +69,7 @@ def test_generate_evaluator_result_empty_inputs():
         assert result["passed"] is False
         assert len(result["result"]) == 1
         assert result["result"][0]["passed"] is False
-        assert result["result"][0]["message"] == "Could not find input value"
+        assert result["result"][0]["message"] == "Could not find input value for operation_type: 'attribute'"
 
 
 @mark.passing

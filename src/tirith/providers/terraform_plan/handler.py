@@ -8,7 +8,7 @@ Value = 2, When an attribute of a resource is not found
 
 # input->(list ["a.b","c", "d"],value of resource)
 # returns->[any, any, any]
-from typing import Iterable, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 import pydash
 
 from ..common import ProviderError
@@ -18,12 +18,45 @@ class PydashPathNotFound:
     pass
 
 
+def _join_attribute_path(*parts) -> str:
+    """
+    Join the parts of an attribute path, skipping the empty ones.
+
+    :param parts: The path segments, which may be strings or list indices
+    :return:      The dotted attribute path
+    """
+    return ".".join(str(part) for part in parts if part != "" and part is not None)
+
+
 def _wrapper_get_exp_attribute(attribute, input_resource_change_attrs):
+    return [value for _, value in _wrapper_get_exp_attribute_with_paths(attribute, input_resource_change_attrs)]
+
+
+def _wrapper_get_exp_attribute_with_paths(attribute, input_resource_change_attrs):
     splitted_attribute = attribute.split(".*.")
-    return _get_exp_attribute(splitted_attribute, input_resource_change_attrs)
+    return _get_exp_attribute_with_paths(splitted_attribute, input_resource_change_attrs)
 
 
 def _get_exp_attribute(split_expressions, input_data):
+    return [value for _, value in _get_exp_attribute_with_paths(split_expressions, input_data)]
+
+
+def _get_exp_attribute_with_paths(split_expressions, input_data, path_prefix: str = "") -> List[Tuple[str, Any]]:
+    """
+    Resolve an attribute expression, reporting the concrete path each value was found at.
+
+    A wildcard expression such as ``ingress.*.cidr_blocks`` yields one value per list item, so
+    the expression alone cannot tell the reader which item a result belongs to. Alongside every
+    value this returns the path that produced it, with the wildcards replaced by the list index
+    they matched (``ingress.0.cidr_blocks``, ``ingress.1.cidr_blocks``, ...). When a list item
+    does not have the attribute at all, the unresolved tail of the expression is kept in the
+    path so that the reader can still see what was looked for.
+
+    :param split_expressions: The attribute expression split on ``.*.``
+    :param input_data:        The data to resolve the expression against
+    :param path_prefix:       The already resolved part of the path, used when recursing
+    :return:                  A list of ``(resolved_path, value)`` tuples
+    """
     # split_expressions=expression.split('*')
     final_data = []
     for i, expression in enumerate(split_expressions):
@@ -31,29 +64,71 @@ def _get_exp_attribute(split_expressions, input_data):
         if isinstance(intermediate_val, list) and i < len(split_expressions) - 1:
             # For each item in the list, recursively get attributes
             # Track if at least one item had the attribute
-            for val in intermediate_val:
-                final_attributes = _get_exp_attribute(split_expressions[i + 1 :], val)
+            remaining_expressions = split_expressions[i + 1 :]
+            for index, val in enumerate(intermediate_val):
+                item_path = _join_attribute_path(path_prefix, expression, index)
+                final_attributes = _get_exp_attribute_with_paths(remaining_expressions, val, item_path)
                 if final_attributes:
                     for final_attribute in final_attributes:
                         final_data.append(final_attribute)
                 else:
                     # If no attributes found for this list item, append None
                     # This ensures list items without the attribute are still evaluated
-                    final_data.append(None)
+                    unresolved_path = _join_attribute_path(item_path, ".*.".join(remaining_expressions))
+                    final_data.append((unresolved_path, None))
 
             # We've already processed all remaining expressions for this list
             # so we can return early
             return final_data
         elif i == len(split_expressions) - 1 and intermediate_val is not PydashPathNotFound:
-            final_data.append(intermediate_val)
+            final_data.append((_join_attribute_path(path_prefix, expression), intermediate_val))
         elif expression.endswith(".*"):
             intermediate_exp = expression.split(".*")
             intermediate_data = pydash.get(input_data, intermediate_exp[0], default=PydashPathNotFound)
             if intermediate_data is not PydashPathNotFound and isinstance(intermediate_data, list):
                 # For each item in the list, check if it has attributes or append None
-                for val in intermediate_data:
-                    final_data.append(val)
+                for index, val in enumerate(intermediate_data):
+                    final_data.append((_join_attribute_path(path_prefix, intermediate_exp[0], index), val))
     return final_data
+
+
+def _build_context(**fields) -> Dict:
+    """
+    Build a provider result context, dropping the fields that carry no value.
+
+    See :func:`tirith.providers.common.format_context_prefix` for how the context is rendered
+    into the result message.
+
+    :param fields: The context fields
+    :return:       The context dictionary
+    """
+    return {key: value for key, value in fields.items() if value is not None and value != ""}
+
+
+def _resource_context(
+    operation_type: str, resource_change: Dict, attribute: Optional[str] = None, include_action: bool = True
+) -> Dict:
+    """
+    Build the context for a value read off a single resource change.
+
+    :param operation_type: The `operation_type` of the provider args
+    :param resource_change: The resource change the value was read from
+    :param attribute:       The attribute being evaluated, if any
+    :param include_action:  Whether to report the planned action of the resource. Set this to
+                            False when the evaluated value already is the action.
+    :return:                The context dictionary
+    """
+    action = None
+    if include_action:
+        action = "/".join(str(planned) for planned in resource_change.get("change", {}).get("actions") or [])
+
+    return _build_context(
+        operation_type=operation_type,
+        resource_type=resource_change.get("type"),
+        resource_address=resource_change.get("address"),
+        action=action,
+        attribute=attribute,
+    )
 
 
 def provide(provider_inputs, input_data):
@@ -102,15 +177,25 @@ def provide(provider_inputs, input_data):
                                 "value": attribute_value,
                                 "meta": resource_change,
                                 "err": None,
+                                "context": _resource_context(input_type, resource_change, attribute),
                             }
                         )
                     elif "." in attribute or "*" in attribute:
-                        evaluated_outputs = _wrapper_get_exp_attribute(attribute, input_resource_change_attrs)
+                        evaluated_outputs = _wrapper_get_exp_attribute_with_paths(
+                            attribute, input_resource_change_attrs
+                        )
                         if evaluated_outputs:
                             is_attribute_found = True
                             local_is_found_attribute = True
-                            for evaluated_output in evaluated_outputs:
-                                outputs.append({"value": evaluated_output, "meta": resource_change, "err": None})
+                            for resolved_path, evaluated_output in evaluated_outputs:
+                                outputs.append(
+                                    {
+                                        "value": evaluated_output,
+                                        "meta": resource_change,
+                                        "err": None,
+                                        "context": _resource_context(input_type, resource_change, resolved_path),
+                                    }
+                                )
 
                     # If we didn't find the attribute in this resource, raise the ProviderError so that the value
                     # still gets evaluated
@@ -119,6 +204,7 @@ def provide(provider_inputs, input_data):
                             {
                                 "value": ProviderError(severity_value=2),
                                 "err": f"attribute: '{attribute}' is not found",
+                                "context": _resource_context(input_type, resource_change),
                             }
                         )
                 else:
@@ -126,6 +212,7 @@ def provide(provider_inputs, input_data):
                         {
                             "value": ProviderError(severity_value=0),
                             "err": f"No Terraform changes found for resource type: '{resource_type}'",
+                            "context": _resource_context(input_type, resource_change),
                         }
                     )
 
@@ -165,6 +252,10 @@ def provide(provider_inputs, input_data):
                             "value": action,
                             "meta": resource_change,
                             "err": None,
+                            # The evaluated value already is the action, so don't repeat it
+                            "context": _resource_context(
+                                input_type, resource_change, attribute="action", include_action=False
+                            ),
                         }
                     )
         if not is_resource_type_found:
@@ -197,6 +288,10 @@ def provide(provider_inputs, input_data):
                 "value": count,
                 "meta": resource_meta,
                 "err": None,
+                # A count belongs to a resource type rather than to a single resource
+                "context": _build_context(
+                    operation_type=input_type, resource_type=resource_type, label=resource_type, attribute="count"
+                ),
             }
         )
         return outputs
@@ -267,6 +362,12 @@ def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: l
             # FIXME: The region might not be in the constant_value, it can be in a variable
             attribute_value = provider_config_dict.get("expressions", {}).get("region", {}).get("constant_value")
 
+        context = _build_context(
+            operation_type="provider_config",
+            label=f"provider {terraform_provider_full_name}",
+            attribute=attribute_to_get,
+        )
+
         if attribute_value is None:
             severity_value = 2
             outputs.append(
@@ -274,6 +375,7 @@ def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: l
                     "value": ProviderError(severity_value=severity_value),
                     "err": f"`{attribute_to_get}` is not found in the provider_config (severity_value: {severity_value})",
                     "meta": provider_config_dict,
+                    "context": context,
                 }
             )
             return
@@ -281,6 +383,7 @@ def provider_config_operator(input_data: dict, provider_inputs: dict, outputs: l
             {
                 "value": attribute_value,
                 "meta": provider_config_dict,
+                "context": context,
             }
         )
 
@@ -303,7 +406,13 @@ def terraform_version_operator(input_data: dict, provider_inputs: dict, outputs:
     :param provider_inputs: The provider inputs
     :param outputs:         The outputs
     """
-    outputs.append({"value": input_data.get("terraform_version"), "meta": input_data})
+    outputs.append(
+        {
+            "value": input_data.get("terraform_version"),
+            "meta": input_data,
+            "context": _build_context(operation_type="terraform_version", attribute="terraform_version"),
+        }
+    )
 
 
 def direct_dependencies_operator(input_data: dict, provider_inputs: dict, outputs: list):
@@ -327,7 +436,18 @@ def direct_dependencies_operator(input_data: dict, provider_inputs: dict, output
             continue
         is_resource_found = True
         deps_resource_type = {resource_id.split(".")[0] for resource_id in resource.get("depends_on", [])}
-        outputs.append({"value": list(deps_resource_type), "meta": config_resources})
+        outputs.append(
+            {
+                "value": list(deps_resource_type),
+                "meta": config_resources,
+                "context": _build_context(
+                    operation_type="direct_dependencies",
+                    resource_type=resource_type,
+                    resource_address=resource.get("address"),
+                    attribute="depends_on",
+                ),
+            }
+        )
 
     if not is_resource_found:
         outputs.append(
@@ -393,12 +513,32 @@ def direct_references_operator_referenced_by(input_data: dict, provider_inputs: 
                     if reference_address in reference_target_addresses:
                         reference_target_addresses.remove(reference_address)
                         outputs.append(
-                            {"value": True, "meta": {"address": reference_address, "referenced_by": resource_config}}
+                            {
+                                "value": True,
+                                "meta": {"address": reference_address, "referenced_by": resource_config},
+                                "context": _build_context(
+                                    operation_type="direct_references",
+                                    resource_type=resource_type,
+                                    resource_address=reference_address,
+                                    attribute=f"referenced_by {referenced_by}",
+                                ),
+                            }
                         )
 
     # For all of the reference_target_addresses that don't have a reference
     for reference_target_address in reference_target_addresses:
-        outputs.append({"value": False, "meta": {"address": reference_target_address, "referenced_by": {}}})
+        outputs.append(
+            {
+                "value": False,
+                "meta": {"address": reference_target_address, "referenced_by": {}},
+                "context": _build_context(
+                    operation_type="direct_references",
+                    resource_type=resource_type,
+                    resource_address=reference_target_address,
+                    attribute=f"referenced_by {referenced_by}",
+                ),
+            }
+        )
 
 
 def get_module_resources_by_type_recursive(module: dict, resource_type: str, current_module_path: str = "") -> iter:
@@ -484,7 +624,19 @@ def direct_references_operator_references_to(input_data: dict, provider_inputs: 
         return
 
     is_all_resource_type_references_to = resource_type_count == reference_count
-    outputs.append({"value": is_all_resource_type_references_to, "meta": config_resources})
+    outputs.append(
+        {
+            "value": is_all_resource_type_references_to,
+            "meta": config_resources,
+            # The value covers every instance of the resource type, so there is no single address
+            "context": _build_context(
+                operation_type="direct_references",
+                resource_type=resource_type,
+                label=resource_type,
+                attribute=f"references_to {references_to_type}",
+            ),
+        }
+    )
 
 
 def direct_references_operator(input_data: dict, provider_inputs: dict, outputs: list):
@@ -536,7 +688,18 @@ def direct_references_operator(input_data: dict, provider_inputs: dict, outputs:
                 # Only get the resource type
                 resource_references.add(reference.split(".")[0])
 
-        outputs.append({"value": list(resource_references), "meta": resource})
+        outputs.append(
+            {
+                "value": list(resource_references),
+                "meta": resource,
+                "context": _build_context(
+                    operation_type="direct_references",
+                    resource_type=resource_type,
+                    resource_address=resource.get("address"),
+                    attribute="references",
+                ),
+            }
+        )
 
     if not is_resource_found:
         outputs.append(

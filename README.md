@@ -663,7 +663,14 @@ JSON Output:
          "result": [
             {
                "passed": true,
-               "message": "default is equal to default",
+               "message": "[aws_vpc.this[0] (create)] instance_tenancy: `\"default\"` is equal to `\"default\"`",
+               "context": {
+                  "operation_type": "attribute",
+                  "resource_type": "aws_vpc",
+                  "resource_address": "aws_vpc.this[0]",
+                  "action": "create",
+                  "attribute": "instance_tenancy"
+               },
                "meta": {
                   "address": "aws_vpc.this[0]",
                   "mode": "managed",
@@ -710,7 +717,14 @@ JSON Output:
             },
             {
                "passed": true,
-               "message": "default is equal to default",
+               "message": "[aws_vpc.this[0] (create)] instance_tenancy: `\"default\"` is equal to `\"default\"`",
+               "context": {
+                  "operation_type": "attribute",
+                  "resource_type": "aws_vpc",
+                  "resource_address": "aws_vpc.this[0]",
+                  "action": "create",
+                  "attribute": "instance_tenancy"
+               },
                "meta": {
                   "address": "aws_vpc.this[0]",
                   "mode": "managed",
