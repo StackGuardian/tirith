@@ -38,7 +38,7 @@ class TirithApp(App):
 
     CSS_PATH = CSS_PATH
     TITLE = "TIRITH"
-    SUB_TITLE = "Policy as Code"
+    SUB_TITLE = "Open-source IaC governance"
 
     BINDINGS = [
         Binding("q", "quit", "Quit"),

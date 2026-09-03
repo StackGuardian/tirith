@@ -22,6 +22,7 @@ module.exports = {
       items: [
         "tirith-usage/cli-reference",
         "tirith-usage/interactive-interface",
+        "tirith-usage/editor-and-local",
         "tirith-usage/exit-codes",
         "tirith-usage/ci-integration",
         "tirith-usage/platform-check",
