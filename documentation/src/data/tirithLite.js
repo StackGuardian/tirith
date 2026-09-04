@@ -5,8 +5,8 @@
  * WHAT THIS IS, PRECISELY
  *
  * This is NOT Tirith. Tirith is a Python package; this is a few hundred lines of
- * JavaScript that reproduces one provider and thirteen conditions closely enough
- * to teach the shape of a policy in a browser, with no install.
+ * JavaScript that reproduces three providers and thirteen conditions closely
+ * enough to teach the shape of a policy in a browser, with no install.
  *
  * It is written against the real thing and matches it where it matters:
  *   - result documents have the same shape as `tirith --json` (see
@@ -17,13 +17,27 @@
  *     passes only if every value passes" (docs/tirith-reference/evaluators.md);
  *   - `passed` and `final_result` are tri-state: true / false / null-for-skipped.
  *
- * KNOWN DIVERGENCES — say these out loud in the UI, never paper over them:
- *   - Only `stackguardian/json` is implemented. terraform_plan, kubernetes,
- *     infracost and sg_workflow are not.
+ * VERIFIED AGAINST THE ENGINE. Every policy on /learn was run through both this
+ * file and the installed Python package, and all eleven produce the same
+ * final_result and the same per-result outcomes. Re-run that comparison when you
+ * change anything below: a teaching engine that quietly disagrees with the real
+ * one is worse than no playground, because it is believed.
+ *
+ * KNOWN DIVERGENCES, say these out loud in the UI, never paper over them:
+ *   - `stackguardian/json`, `stackguardian/terraform_plan` and
+ *     `stackguardian/kubernetes` are implemented. infracost and sg_workflow are
+ *     not, and neither are the terraform_plan operations beyond attribute,
+ *     action and count: direct_references, direct_dependencies, provider_config
+ *     and terraform_version all run only in the package.
+ *   - Messages are formatted by this file's `fmt`, so a value is shown as JSON in
+ *     backticks where the Python sometimes shows a repr. Same verdict, different
+ *     punctuation.
  *   - `Equals` does not sort nested collections the way the Python does.
  *   - Regexes are JavaScript regexes, not Python's `re`.
- *   - Error severities are approximated: a missing key_path is severity 2, which
- *     is the one case the error_tolerance lesson needs.
+ *   - An evaluator whose results are a mix of failures and skips is reported as
+ *     failed here. core.py reports it as skipped when the skip comes last, which
+ *     is the ordering defect the roadmap's R1 item covers. This file implements
+ *     the intended rule rather than the current one, deliberately.
  *
  * The authoritative evaluator is always the installed package.
  * ─────────────────────────────────────────────────────────────────────────────
@@ -253,6 +267,196 @@ export function getValues(doc, keyPath) {
   return current;
 }
 
+/* ── providers ────────────────────────────────────────────────────────────────
+ *
+ * Three of the five that ship. Each returns the same shape the Python providers
+ * return, a list of outputs, so the evaluator loop below does not know or care
+ * which provider produced them:
+ *
+ *   {value, meta}                     a value to run the condition against
+ *   {err, severity, meta}             the provider could not produce one
+ *
+ * `severity` is the number `error_tolerance` is compared against, and the
+ * comparison is `severity > tolerance` fails, otherwise the check is skipped.
+ * The severities are copied from the handlers, not invented: they are the
+ * difference between "this resource type is not in your plan" and "this
+ * attribute is missing from a resource that is", and a lesson that got them
+ * wrong would teach the wrong error_tolerance.
+ */
+
+const NOT_FOUND = Symbol('not found');
+
+/** pydash.get: a dot path with numeric list indices, or NOT_FOUND. */
+function pget(data, path) {
+  let node = data;
+  for (const part of String(path).split('.')) {
+    if (isDict(node) && part in node) node = node[part];
+    else if (isList(node) && /^\d+$/.test(part) && node[Number(part)] !== undefined) node = node[Number(part)];
+    else return NOT_FOUND;
+  }
+  return node;
+}
+
+/**
+ * The `a.*.b` form of terraform_resource_attribute.
+ *
+ * Mirrors _get_exp_attribute in the handler, including the part that looks odd:
+ * every segment is resolved against the *original* attribute dictionary rather
+ * than against the previous segment's result. The list branch returns early, so
+ * that only shows up on paths that do not match, and reproducing it is the point
+ * of the playground.
+ */
+function expandAttribute(parts, data) {
+  const out = [];
+  for (let i = 0; i < parts.length; i += 1) {
+    const expr = parts[i];
+    const val = pget(data, expr);
+    if (isList(val) && i < parts.length - 1) {
+      for (const item of val) {
+        const sub = expandAttribute(parts.slice(i + 1), item);
+        if (sub.length) out.push(...sub);
+        // A list item without the attribute is still evaluated, as None, so a
+        // policy over a list cannot pass by the item simply being absent.
+        else out.push(null);
+      }
+      return out;
+    }
+    if (i === parts.length - 1 && val !== NOT_FOUND) {
+      out.push(val);
+    } else if (expr.endsWith('.*')) {
+      const base = pget(data, expr.slice(0, -2));
+      if (base !== NOT_FOUND && isList(base)) out.push(...base);
+    }
+  }
+  return out;
+}
+
+function jsonProvide(args, input) {
+  if (args.operation_type !== 'get_value') {
+    return [{err: `operation_type: ${args.operation_type} is not supported`, severity: 99}];
+  }
+  const values = getValues(input, args.key_path);
+  if (values.length === 0) {
+    return [{err: `key_path: \`${args.key_path}\` is not found`, severity: 2}];
+  }
+  return values.map((value) => ({value}));
+}
+
+function terraformProvide(args, input) {
+  const changes = input && input.resource_changes;
+  if (!isList(changes) || changes.length === 0) {
+    return [{err: 'No Terraform resources changes are found', severity: 0}];
+  }
+
+  const type = args.terraform_resource_type;
+  const exclude = args.exclude_resource_types || [];
+  // `*` means every resource, and is the only case exclude_resource_types applies
+  // to: naming a type explicitly and then excluding it is a contradiction the
+  // handler does not entertain.
+  const matches = (rc) => (type === '*' ? !exclude.includes(rc.type) : rc.type === type);
+
+  if (args.operation_type === 'attribute') {
+    const attribute = args.terraform_resource_attribute;
+    const out = [];
+    let resourceFound = false;
+    let attributeFound = false;
+
+    for (const rc of changes) {
+      if (!matches(rc)) continue;
+      resourceFound = true;
+      const after = rc.change && rc.change.after;
+      if (!after) {
+        out.push({err: `No Terraform changes found for resource type: '${type}'`, severity: 0});
+        continue;
+      }
+      let local = false;
+      if (attribute in after) {
+        attributeFound = true;
+        local = true;
+        out.push({value: after[attribute], meta: rc});
+      } else if (attribute.includes('.') || attribute.includes('*')) {
+        const vals = expandAttribute(attribute.split('.*.'), after);
+        if (vals.length) {
+          attributeFound = true;
+          local = true;
+          for (const v of vals) out.push({value: v, meta: rc});
+        }
+      }
+      if (!local) out.push({err: `attribute: '${attribute}' is not found`, severity: 2});
+    }
+
+    if (out.length === 0) {
+      if (!resourceFound) return [{err: `resource_type: '${type}' is not found`, severity: 1}];
+      if (!attributeFound) return [{err: `attribute: '${attribute}' is not found`, severity: 2}];
+    }
+    return out;
+  }
+
+  if (args.operation_type === 'action') {
+    const out = [];
+    let found = false;
+    for (const rc of changes) {
+      if (!matches(rc)) continue;
+      found = true;
+      for (const action of (rc.change && rc.change.actions) || []) out.push({value: action, meta: rc});
+    }
+    if (!found) out.push({err: `resource_type: '${type}' is not found`, severity: 1});
+    return out;
+  }
+
+  if (args.operation_type === 'count') {
+    // No "not found" error here, deliberately: zero of a resource is a real answer
+    // and often the one you are gating on.
+    let count = 0;
+    let meta = null;
+    for (const rc of changes) {
+      if (!matches(rc)) continue;
+      meta = rc;
+      count += 1;
+    }
+    return [{value: count, meta}];
+  }
+
+  return [{err: `operation_type: '${args.operation_type}' is not supported`, severity: 99}];
+}
+
+function kubernetesProvide(args, input) {
+  if (args.operation_type !== 'attribute') {
+    return [{err: `operation_type: ${args.operation_type} is not supported`, severity: 99}];
+  }
+  const kind = args.kubernetes_kind;
+  const path = args.attribute_path || '';
+  if (kind === undefined || kind === null) {
+    return [{err: 'kubernetes_kind must be provided', severity: 99}];
+  }
+  if (path === '') return [{err: 'attribute_path must be provided', severity: 99}];
+
+  // The CLI reads a multi-document YAML file and hands the provider a list. The
+  // playground parses JSON, so the same manifests arrive as a JSON array.
+  const resources = isList(input) ? input : [input];
+  const out = [];
+  let found = false;
+  for (const resource of resources) {
+    if (!isDict(resource) || resource.kind !== kind) continue;
+    found = true;
+    let values = getValues(resource, path);
+    // place_none_if_not_found: a manifest missing the attribute is evaluated as
+    // null rather than skipped, so it cannot pass by omission.
+    if (values.length === 0) values = [null];
+    out.push({value: path.includes('*') ? values : values[0], meta: resource});
+  }
+  if (!found) out.push({err: `kind: ${kind} is not found`, severity: 1});
+  return out;
+}
+
+export const PROVIDERS = {
+  'stackguardian/json': jsonProvide,
+  'stackguardian/terraform_plan': terraformProvide,
+  'stackguardian/kubernetes': kubernetesProvide,
+};
+
+export const PROVIDER_NAMES = Object.keys(PROVIDERS);
+
 /* ── eval_expression ──────────────────────────────────────────────────────────
  * Supports `&&`, `||`, `!` and parentheses over evaluator ids, which is the
  * grammar documented in docs/tirith-reference/eval-expressions.md.
@@ -355,12 +559,13 @@ export function evaluatePolicy(policyText, inputText) {
   }
 
   const meta = policy.meta || {};
-  const provider = meta.required_provider;
-  if (provider && provider !== 'stackguardian/json') {
+  const provider = meta.required_provider || 'stackguardian/json';
+  const provide = PROVIDERS[provider];
+  if (!provide) {
     return {
       document: null,
       fatal:
-        `this browser playground only implements stackguardian/json; ` +
+        `this browser playground implements ${PROVIDER_NAMES.join(', ')}; ` +
         `"${provider}" runs in the installed package.`,
     };
   }
@@ -381,31 +586,42 @@ export function evaluatePolicy(policyText, inputText) {
       passedById[id] = false;
       return {id, passed: false, description: ev.description ?? null, result: [{passed: false, message, meta: null}]};
     }
-    if (args.operation_type !== 'get_value') {
-      const message = `Unsupported operation type: ${args.operation_type}`;
-      passedById[id] = false;
-      return {id, passed: false, description: ev.description ?? null, result: [{passed: false, message, meta: null}]};
-    }
 
-    const values = getValues(input, args.key_path);
+    const outputs = provide(args, input);
 
-    if (values.length === 0) {
-      // Severity 2 in the real provider: skipped at error_tolerance >= 2.
-      const message = `key_path: \`${args.key_path}\` is not found`;
-      if (tolerance >= 2) {
-        passedById[id] = null;
-        return {id, passed: null, description: ev.description ?? null, result: [{passed: null, message, meta: null}]};
+    const result = outputs.map((o) => {
+      if (o.err !== undefined) {
+        // `severity > tolerance` fails, otherwise the check is skipped. Copied from
+        // core.py rather than reasoned about: the boundary case, severity equal to
+        // tolerance, is a skip, and getting it backwards would invert every lesson
+        // that teaches error_tolerance.
+        if (o.severity > tolerance) {
+          errors.push(o.err);
+          return {passed: false, message: o.err, meta: o.meta ?? null};
+        }
+        return {passed: null, message: o.err, meta: o.meta ?? null};
       }
-      errors.push(message);
-      passedById[id] = false;
-      return {id, passed: false, description: ev.description ?? null, result: [{passed: false, message, meta: null}]};
-    }
-
-    const result = values.map((v) => {
-      const r = fn(v, cond.value);
-      return {passed: r.passed, message: r.message, meta: null};
+      const r = fn(o.value, cond.value);
+      return {passed: r.passed, message: r.message, meta: o.meta ?? null};
     });
-    const passed = result.every((r) => r.passed);
+
+    /*
+     * Three-valued, and deliberately not a transcription of the engine.
+     *
+     * core.py sets its running verdict to None inside the skip branch without
+     * checking whether an earlier result already failed, so an evaluator that
+     * fails and *then* skips is reported as unevaluated. That is the defect the
+     * roadmap's "a rule that could not run is never reported as success" item
+     * exists to fix (src/data/roadmap.js). A teaching playground that reproduced
+     * it would teach an ordering artefact as a rule, so this is the intended
+     * semantics: any failure decides, and only an evaluator with nothing but
+     * skips is skipped.
+     */
+    let passed;
+    if (result.some((r) => r.passed === false)) passed = false;
+    else if (result.some((r) => r.passed === true)) passed = true;
+    else passed = null;
+
     passedById[id] = passed;
     return {id, passed, description: ev.description ?? null, result};
   });
