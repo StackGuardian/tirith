@@ -97,7 +97,6 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
 
     evaluator_instance = evaluator_class()
     evaluation_results = []
-    has_evaluation_passed = True
 
     # If there are no evaluator inputs, it means the provider didn't find any resources
     # In this case, the evaluation should fail
@@ -105,7 +104,11 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
         has_evaluation_passed = False
         evaluation_results = [{"passed": False, "message": _no_input_value_message(provider_inputs)}]
     else:
-        # Track if we've had at least one valid evaluation (not skipped)
+        # Roll-up across resources: any failure fails the evaluator; otherwise it passes if at least
+        # one resource was actually evaluated; only when every resource was tolerated away is the
+        # verdict None (skipped). Tracked as two flags and decided once at the end, so a skip can
+        # never overwrite a failure or a pass that came before it (issue #293).
+        has_failure = False
         has_valid_evaluation = False
 
         for evaluator_input in evaluator_inputs:
@@ -117,7 +120,7 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
             # reads as a genuine violation.
             if evaluator_input.get("err") and not isinstance(evaluator_input["value"], ProviderError):
                 evaluation_results.append({"passed": False, "message": evaluator_input["err"]})
-                has_evaluation_passed = False
+                has_failure = True
                 continue
 
             if isinstance(evaluator_input["value"], ProviderError) and evaluator_input.get("err", None):
@@ -130,12 +133,11 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
                 if severity_value > evaluator_error_tolerance:
                     err_result.update(dict(passed=False))
                     evaluation_results.append(err_result)
-                    has_evaluation_passed = False
+                    has_failure = True
                     continue
-                # Mark as skipped evaluation
+                # Within tolerance: this resource is skipped and does not touch the verdict
                 err_result.update(dict(passed=None))
                 evaluation_results.append(err_result)
-                has_evaluation_passed = None
                 continue
 
             evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)
@@ -150,10 +152,13 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
             has_valid_evaluation = True
 
             if not evaluation_result["passed"]:
-                has_evaluation_passed = False
+                has_failure = True
 
-        # If all evaluations were skipped, we need to make sure the overall result is 'None'
-        if not has_valid_evaluation and has_evaluation_passed is None:
+        if has_failure:
+            has_evaluation_passed = False
+        elif has_valid_evaluation:
+            has_evaluation_passed = True
+        else:
             has_evaluation_passed = None
 
     result["result"] = evaluation_results
