@@ -135,7 +135,13 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
                 # Mark as skipped evaluation
                 err_result.update(dict(passed=None))
                 evaluation_results.append(err_result)
-                has_evaluation_passed = None
+                # A skip says "nothing to inspect here". It must not erase a `False` a sibling
+                # input already produced: the order the provider emits resources is not part of
+                # the policy, and an unconditional assignment here made the verdict depend on it.
+                # A plan whose first matching resource fails and whose second is a tolerated miss
+                # reported `None` (exit 1) instead of the failure (exit 3).
+                if has_evaluation_passed is not False:
+                    has_evaluation_passed = None
                 continue
 
             evaluation_result = evaluator_instance.evaluate(evaluator_input["value"], evaluator_data)

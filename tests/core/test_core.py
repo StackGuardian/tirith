@@ -215,3 +215,44 @@ def test_generate_evaluator_result_bare_provider_err_ignores_error_tolerance():
 
     assert result["passed"] is False, "a malformed provider call must not be skipped"
     assert result["result"][0]["passed"] is False
+
+
+@mark.parametrize(
+    "inputs,expected",
+    [
+        # The defect: a tolerated miss arriving *after* a real failure used to overwrite it with
+        # the skip marker, so the verdict depended on the order the provider emitted resources.
+        # Reachable on any plan holding both a resource that violates the policy and one the
+        # provider cannot read -- a destroy, say, whose `after` is null.
+        ("fail_then_skip", False),
+        ("skip_then_fail", False),
+        # Pass-and-skip keeps the behaviour it has always had, in both orders: nothing was
+        # actually verified about the tolerated resource, so the check does not claim a pass.
+        ("pass_then_skip", None),
+        ("skip_then_pass", None),
+    ],
+)
+@mark.passing
+def test_generate_evaluator_result_skip_does_not_erase_a_failure(inputs, expected):
+    """A tolerated provider miss must not overwrite a verdict a sibling input already produced."""
+    evaluator_obj = {
+        "id": "test_evaluator",
+        "provider_args": {"operation_type": "attribute", "key": "value"},
+        "condition": {"type": "Equals", "value": "expected_value", "error_tolerance": 1},
+    }
+
+    skip = {"value": ProviderError(severity_value=1), "err": "Resource type not found"}
+    fail = {"value": "something_else"}
+    passes = {"value": "resource1"}  # the one value MockEvaluator passes
+    provider_inputs = {
+        "fail_then_skip": [fail, skip],
+        "skip_then_fail": [skip, fail],
+        "pass_then_skip": [passes, skip],
+        "skip_then_pass": [skip, passes],
+    }[inputs]
+
+    with patch("tirith.core.core.get_evaluator_inputs_from_provider_inputs", return_value=provider_inputs):
+        with patch("tirith.core.core.EVALUATORS_DICT", {"Equals": MockEvaluator}):
+            result = generate_evaluator_result(evaluator_obj, {}, "test_provider")
+
+    assert result["passed"] is expected
