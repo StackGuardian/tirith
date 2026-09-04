@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.0.7] - 2026-09-04
+
+### Added
+- `infracost`: Cost messages now name the cost that was measured and what it covered, e.g.
+  ``[all resources (2 resources)] total_monthly_cost: `300.1` is not less than or equal to `20` ``
+  instead of ``` `300.1` is not less than or equal to `20` ```. A monthly and an hourly figure of
+  the same size were previously indistinguishable. The same detail is carried as structured
+  fields in the result document, next to `message`.
+
+### Changed
+- `infracost`: A `resource_type` that matches no resource now says so — `[aws_instances
+  (0 resources)]` — instead of reporting a genuine-looking `0`. A typo'd resource type silently
+  satisfied a `LessThan` while measuring nothing. The verdict is deliberately unchanged; only the
+  message is.
+
 ## [1.0.6] - 2026-08-28
 
 ### Added
