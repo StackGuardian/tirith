@@ -47,6 +47,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of repeating the same text once per resource — with `terraform_resource_type: "*"` it was emitted
   once per resource with identical text.
 - `core`: "Could not find input value" now names the provider arguments that produced no value.
+- `infracost`: Cost messages now name the cost that was measured and what it covered, e.g.
+  ``[all resources (2 resources)] total_monthly_cost: `300.1` is not less than or equal to `20` ``
+  instead of ``` `300.1` is not less than or equal to `20` ```. A monthly and an hourly figure of
+  the same size were previously indistinguishable.
+- `infracost`: A `resource_type` that matches no resource now says so — `[aws_instances
+  (0 resources)]` — instead of reporting a genuine-looking `0`. A typo'd resource type silently
+  satisfied a `LessThan` while measuring nothing; the verdict is unchanged, the message is not.
+- `core`: A provider error reported without a `ProviderError` severity now gets the same context
+  prefix as every other message.
 
 ### Fixed
 - **Verdict change.** A resource skipped through `error_tolerance` no longer overwrites the
