@@ -94,7 +94,7 @@ values"). Check both before marking a row exact.
 | `param name default v` | `{{ var.name }}` in the value, with `-var` or `-var-path` |
 | enforcement level in `sentinel.hcl` | `meta.enforcement`, passed through to the result. The CLI treats every policy as hard-mandatory under `--fail-on-error` |
 
-Three engine behaviours to know, all verified:
+Two engine behaviours to know, both verified:
 
 - A present-but-null attribute is **not** a missing attribute. `error_tolerance: 2` skips a
   resource without the key; `"kms_key_id": null` is evaluated as null. `IsNotEmpty` fails it
@@ -102,18 +102,13 @@ Three engine behaviours to know, all verified:
   unsupported type, which reads like a violation.
 - A value unknown until apply is absent from `change.after`. Sentinel policies that accept any
   reference (`kms_key_id = aws_kms_key.x.arn`) see a value; Tirith sees a missing attribute.
-- **A skipped resource can erase an earlier failure** (Tirith issue #293). In one evaluator, a
-  resource tolerated away by `error_tolerance` after a violating resource resets the verdict to
-  `null`. The violation disappears and the exit is `1`. Any translation that relies on
-  `error_tolerance: 2`, including the "where the attribute exists" idiom, is unsafe on plans that
-  mix resources with and without the attribute until #293 is fixed. Say so in the report.
 
 ## Scope differs even when the test is exact
 
 `find_resources` and the `actions contains "create" or "update"` idiom exclude no-op and deleted
 resources. Tirith evaluates every `resource_changes` entry of the type, so an unchanged resource
 that already violates the rule fails the plan (Sentinel passes it), and a deleted resource is a
-severity-0 error that is skipped or, per #293, erases a sibling's failure. This applies to every
+severity-0 error that is skipped without touching its siblings' verdicts. This applies to every
 row marked exact above: exact on the resources both tools evaluate, not on which resources are
 evaluated.
 

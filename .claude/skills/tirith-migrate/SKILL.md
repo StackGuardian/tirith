@@ -64,10 +64,10 @@ page. Everything below assumes that vocabulary.
   or a value unknown until apply is invisible.
 - Configuration is not the plan. Module sources, variables, outputs, provisioners and expression
   references live in `tfconfig`; Tirith reads none of them.
-- A resource skipped through `error_tolerance` can erase an earlier resource's failure in the
-  same evaluator (Tirith issue #293). Destroys trigger it at every tolerance; the "where the
-  attribute exists" idiom triggers it at `error_tolerance: 2`. Test with mixed plans, and put the
-  warning in the report.
+- A resource skipped through `error_tolerance` does not touch the verdict of the others: an
+  evaluator fails if any resource fails, passes if none fail and at least one was evaluated, and
+  is skipped only when every resource was tolerated away. Test with mixed plans anyway; that is
+  where a scope difference shows.
 
 ## Before you hand it back
 

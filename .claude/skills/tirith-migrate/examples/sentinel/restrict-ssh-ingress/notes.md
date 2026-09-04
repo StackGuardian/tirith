@@ -14,7 +14,5 @@ and fails Tirith. Issue #316 (`resource_filter`) would make this exact.
 | `should-pass.json` (everything internal) | pass | exit 0 |
 | `diverges.json` (443 from anywhere, 22 internal) | **pass** | **exit 3** |
 
-`error_tolerance: 2` skips a group with no ingress blocks, which Sentinel's `any` also passed.
-Until Tirith issue #293 is fixed that skip can erase the bastion's failure when both groups are
-in one plan: the evaluator reports `null` and the exit is `1`, not `3`. A translation that leans
-on `error_tolerance: 2` must say this in its report.
+`error_tolerance: 2` skips a group with no ingress blocks, which Sentinel's `any` also passed. A
+skipped group next to the bastion leaves the bastion's failure standing: exit `3`.
