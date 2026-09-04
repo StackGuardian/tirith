@@ -1,0 +1,31 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_codepipeline.test",
+      "mode": "managed",
+      "type": "aws_codepipeline",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "artifact_store": [
+            {
+              "encryption_key": [
+                {
+                  "id": "tirith_corpus_sentinel"
+                }
+              ]
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

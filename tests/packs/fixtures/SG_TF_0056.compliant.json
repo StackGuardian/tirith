@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_frontdoor.test",
+      "mode": "managed",
+      "type": "azurerm_frontdoor",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "frontend_endpoint": [
+            {
+              "web_application_firewall_policy_link_id": "tirith_corpus_sentinel"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

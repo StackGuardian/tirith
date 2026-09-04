@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0021",
+    "name": "Ensure EKS clusters run on a supported Kubernetes version",
+    "description": "Ensure EKS clusters run on a supported Kubernetes version",
+    "tags": [
+      "cloud:aws",
+      "kubernetes"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "supported_kubernetes_version",
+      "description": "aws_eks_cluster.version must be a currently supported Kubernetes version (or left unpinned)",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_eks_cluster",
+        "terraform_resource_attribute": "version"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": [
+          null,
+          "1.29",
+          "1.30",
+          "1.31",
+          "1.32",
+          "1.33",
+          "1.34",
+          "1.35"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "supported_kubernetes_version"
+}

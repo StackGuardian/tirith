@@ -1,0 +1,44 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_kubernetes_cluster.test",
+      "mode": "managed",
+      "type": "azurerm_kubernetes_cluster",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "default_node_pool": [
+            {
+              "max_pods": 49
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "azurerm_kubernetes_cluster_node_pool.test",
+      "mode": "managed",
+      "type": "azurerm_kubernetes_cluster_node_pool",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "max_pods": 49
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

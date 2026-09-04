@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0092",
+    "name": "Minimize the admission of containers with added capability",
+    "description": "Minimize the admission of containers with added capability",
+    "tags": [
+      "cloud:kubernetes",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "pod_no_added_capabilities",
+      "description": "Every container of kubernetes_pod leaves security_context.capabilities.add empty. Path spec.*.container.*.security_context.*.capabilities.*.add yields one value per container: null when the container has no security_context or no capabilities block, [] when add is unset, and the capability list when it is set. IsEmpty passes on null and [] and fails on a non-empty list, so any added capability fails the plan.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_pod",
+        "terraform_resource_attribute": "spec.*.container.*.security_context.*.capabilities.*.add"
+      },
+      "condition": {
+        "type": "IsEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "pod_v1_no_added_capabilities",
+      "description": "Every container of kubernetes_pod_v1 leaves security_context.capabilities.add empty. Path spec.*.container.*.security_context.*.capabilities.*.add yields one value per container: null when the container has no security_context or no capabilities block, [] when add is unset, and the capability list when it is set. IsEmpty passes on null and [] and fails on a non-empty list, so any added capability fails the plan.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_pod_v1",
+        "terraform_resource_attribute": "spec.*.container.*.security_context.*.capabilities.*.add"
+      },
+      "condition": {
+        "type": "IsEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "deployment_no_added_capabilities",
+      "description": "Every container of kubernetes_deployment leaves security_context.capabilities.add empty. Path spec.*.template.*.spec.*.container.*.security_context.*.capabilities.*.add yields one value per container: null when the container has no security_context or no capabilities block, [] when add is unset, and the capability list when it is set. IsEmpty passes on null and [] and fails on a non-empty list, so any added capability fails the plan.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_deployment",
+        "terraform_resource_attribute": "spec.*.template.*.spec.*.container.*.security_context.*.capabilities.*.add"
+      },
+      "condition": {
+        "type": "IsEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "deployment_v1_no_added_capabilities",
+      "description": "Every container of kubernetes_deployment_v1 leaves security_context.capabilities.add empty. Path spec.*.template.*.spec.*.container.*.security_context.*.capabilities.*.add yields one value per container: null when the container has no security_context or no capabilities block, [] when add is unset, and the capability list when it is set. IsEmpty passes on null and [] and fails on a non-empty list, so any added capability fails the plan.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_deployment_v1",
+        "terraform_resource_attribute": "spec.*.template.*.spec.*.container.*.security_context.*.capabilities.*.add"
+      },
+      "condition": {
+        "type": "IsEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "pod_no_added_capabilities && pod_v1_no_added_capabilities && deployment_no_added_capabilities && deployment_v1_no_added_capabilities"
+}

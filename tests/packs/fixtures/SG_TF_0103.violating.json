@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "yandex_kubernetes_cluster.test",
+      "mode": "managed",
+      "type": "yandex_kubernetes_cluster",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "master": [
+            {
+              "public_ip": true
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

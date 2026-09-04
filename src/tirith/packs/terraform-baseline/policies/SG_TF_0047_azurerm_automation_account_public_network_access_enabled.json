@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0047",
+    "name": "Ensure Azure automation account does NOT have overly permissive network access",
+    "description": "Ensure Azure automation account does NOT have overly permissive network access",
+    "tags": [
+      "cloud:azure",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "public_network_access_disabled",
+      "description": "public_network_access_enabled must be explicitly false",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_automation_account",
+        "terraform_resource_attribute": "public_network_access_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "public_network_access_disabled"
+}

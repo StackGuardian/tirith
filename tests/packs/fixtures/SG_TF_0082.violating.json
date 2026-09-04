@@ -1,0 +1,24 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "google_notebooks_instance.test",
+      "mode": "managed",
+      "type": "google_notebooks_instance",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "kms_key": null,
+          "disk_encryption": "prefix-CMEK-suffix"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

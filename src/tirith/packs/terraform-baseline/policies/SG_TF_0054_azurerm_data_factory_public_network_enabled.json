@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0054",
+    "name": "Ensure that Azure Data factory public network access is disabled",
+    "description": "Ensure that Azure Data factory public network access is disabled",
+    "tags": [
+      "cloud:azure",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "public_network_disabled",
+      "description": "azurerm_data_factory.public_network_enabled must be false. The provider default of true appears in change.after and fails; an unresolvable attribute is a severity-2 miss that also fails at tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_data_factory",
+        "terraform_resource_attribute": "public_network_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "public_network_disabled"
+}

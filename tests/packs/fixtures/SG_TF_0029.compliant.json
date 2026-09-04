@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_kinesis_firehose_delivery_stream.test",
+      "mode": "managed",
+      "type": "aws_kinesis_firehose_delivery_stream",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "server_side_encryption": [
+            {
+              "enabled": true
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

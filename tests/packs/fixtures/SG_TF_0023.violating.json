@@ -1,0 +1,108 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_iam_policy.test",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "IAMFullAccess"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_iam_policy_attachment.test",
+      "mode": "managed",
+      "type": "aws_iam_policy_attachment",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "policy_arn": "arn:aws:iam::aws:policy/IAMFullAccess"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_iam_user_policy_attachment.test",
+      "mode": "managed",
+      "type": "aws_iam_user_policy_attachment",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "policy_arn": "arn:aws:iam::aws:policy/IAMFullAccess"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_iam_role_policy_attachment.test",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "policy_arn": "arn:aws:iam::aws:policy/IAMFullAccess"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_iam_group_policy_attachment.test",
+      "mode": "managed",
+      "type": "aws_iam_group_policy_attachment",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "policy_arn": "arn:aws:iam::aws:policy/IAMFullAccess"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_ssoadmin_managed_policy_attachment.test",
+      "mode": "managed",
+      "type": "aws_ssoadmin_managed_policy_attachment",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "managed_policy_arn": "arn:aws:iam::aws:policy/IAMFullAccess"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

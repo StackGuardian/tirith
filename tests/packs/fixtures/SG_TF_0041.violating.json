@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_sagemaker_data_quality_job_definition.test",
+      "mode": "managed",
+      "type": "aws_sagemaker_data_quality_job_definition",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "data_quality_job_output_config": [
+            {
+              "kms_key_id": null
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

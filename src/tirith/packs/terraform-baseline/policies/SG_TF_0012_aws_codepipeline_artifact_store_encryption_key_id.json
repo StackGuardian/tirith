@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0012",
+    "name": "Ensure CodePipeline Artifact store is using a KMS CMK",
+    "description": "Ensure CodePipeline Artifact store is using a KMS CMK",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ],
+    "remediation": "Add an encryption_key block with a KMS key id to every artifact_store of every aws_codepipeline."
+  },
+  "evaluators": [
+    {
+      "id": "codepipeline_artifact_store_encryption_key_id_set",
+      "description": "every aws_codepipeline artifact_store must carry a non-empty encryption_key.id",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_codepipeline",
+        "terraform_resource_attribute": "artifact_store.*.encryption_key.*.id"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "codepipeline_artifact_store_encryption_key_id_set"
+}

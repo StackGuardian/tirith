@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0086",
+    "name": "Ensure Spanner Database is encrypted with Customer Supplied Encryption Keys (CSEK)",
+    "description": "Ensure Spanner Database is encrypted with Customer Supplied Encryption Keys (CSEK)",
+    "tags": [
+      "cloud:gcp",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "spanner_encryption_config_kms_key",
+      "description": "google_spanner_database.encryption_config.*.kms_key_name must be a non-empty string. An absent or empty encryption_config block makes the wildcard path miss (severity 2, untolerated) and fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_spanner_database",
+        "terraform_resource_attribute": "encryption_config.*.kms_key_name"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "spanner_encryption_config_kms_key"
+}

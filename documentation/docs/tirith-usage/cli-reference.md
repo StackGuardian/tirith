@@ -30,7 +30,9 @@ Note the spelling: the path and variable options take a **single dash** (`-polic
 
 | Flag | Argument | What it does |
 |---|---|---|
-| `-policy-path` | `PATH` | Path to the Tirith policy file. Required. |
+| `-policy-path` | `PATH` | Path to a Tirith policy file, or a directory of them. Required unless `--pack` is given. |
+| `--pack` | `NAME` | A bundled policy pack to run. Repeatable, and combines with `-policy-path`. |
+| `--list-packs` | | List the packs bundled with this installation and exit. |
 | `-input-path` | `PATH` | Path to the document the policy is evaluated against. Required. |
 | `-var-path` | `PATH` | Path to a JSON file of policy variables. Repeatable. |
 | `-var` | `NAME=JSON` | One inline policy variable. Repeatable. |
@@ -48,7 +50,23 @@ See the [policy reference](../tirith-policies/tirith-policy-reference.md) for th
 [providers overview](../tirith-providers/overview.md) for what kinds of input each
 `required_provider` reads.
 
-If the flag is missing, `tirith` prints an error to stderr and exits `1`.
+Given a **directory**, it is walked recursively and every `*.json` in it is evaluated against the
+same input, with the verdicts rolled up into one summary and one exit code — see
+[policy packs](../tirith-policies/tirith-policy-packs.md).
+
+If neither this flag nor `--pack` is given, `tirith` prints an error to stderr and exits `1`.
+
+### `--pack`
+
+A set of policies bundled with Tirith, run by name:
+
+```bash
+tirith --list-packs
+tirith --pack terraform-baseline -input-path plan.json --fail-on-error
+```
+
+Repeatable, and combines with `-policy-path`, so your own rules and the bundled ones produce one
+verdict. An unknown pack name exits `1`. See [policy packs](../tirith-policies/tirith-policy-packs.md).
 
 ### `-input-path`
 

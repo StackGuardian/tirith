@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0052",
+    "name": "Ensure geo-replicated container registries to match multi-region container deployments.",
+    "description": "Ensure geo-replicated container registries to match multi-region container deployments.",
+    "tags": [
+      "cloud:azure",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "sku_is_premium",
+      "description": "azurerm_container_registry.sku must be 'Premium' — geo-replication is a Premium-only feature, so both halves of this policy have to hold.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_container_registry",
+        "terraform_resource_attribute": "sku"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "Premium",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "georeplications_present",
+      "description": "azurerm_container_registry.georeplications must be a non-empty list. An empty list, or an unresolvable attribute (severity 2 > tolerance 1), both fail.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_container_registry",
+        "terraform_resource_attribute": "georeplications"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "sku_is_premium && georeplications_present"
+}

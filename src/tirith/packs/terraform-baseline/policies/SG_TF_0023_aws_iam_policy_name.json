@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0023",
+    "name": "Ensure AWS Managed IAMFullAccess IAM policy is not used.",
+    "description": "Ensure AWS Managed IAMFullAccess IAM policy is not used.",
+    "tags": [
+      "cloud:aws",
+      "iam"
+    ],
+    "remediation": "Replace arn:aws:iam::aws:policy/IAMFullAccess with a customer managed policy that grants only the IAM actions the principal needs."
+  },
+  "evaluators": [
+    {
+      "id": "iam_policy_name_not_iamfullaccess",
+      "description": "No data.aws_iam_policy resolves the managed policy named IAMFullAccess. error_tolerance 2 skips a policy whose name is unknown at plan time (name_prefix) rather than failing it.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_iam_policy",
+        "terraform_resource_attribute": "name"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "IAMFullAccess",
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "policy_attachment_arn",
+      "description": "aws_iam_policy_attachment.policy_arn must not be the AWS managed IAMFullAccess policy; NotContainedIn with a list also passes an explicit null, and tolerance 2 skips an ARN that is unknown at plan time",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_iam_policy_attachment",
+        "terraform_resource_attribute": "policy_arn"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "arn:aws:iam::aws:policy/IAMFullAccess",
+          "arn:aws-us-gov:iam::aws:policy/IAMFullAccess",
+          "arn:aws-cn:iam::aws:policy/IAMFullAccess"
+        ],
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "user_policy_attachment_arn",
+      "description": "aws_iam_user_policy_attachment.policy_arn must not be the AWS managed IAMFullAccess policy; NotContainedIn with a list also passes an explicit null, and tolerance 2 skips an ARN that is unknown at plan time",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_iam_user_policy_attachment",
+        "terraform_resource_attribute": "policy_arn"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "arn:aws:iam::aws:policy/IAMFullAccess",
+          "arn:aws-us-gov:iam::aws:policy/IAMFullAccess",
+          "arn:aws-cn:iam::aws:policy/IAMFullAccess"
+        ],
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "role_policy_attachment_arn",
+      "description": "aws_iam_role_policy_attachment.policy_arn must not be the AWS managed IAMFullAccess policy; NotContainedIn with a list also passes an explicit null, and tolerance 2 skips an ARN that is unknown at plan time",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_iam_role_policy_attachment",
+        "terraform_resource_attribute": "policy_arn"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "arn:aws:iam::aws:policy/IAMFullAccess",
+          "arn:aws-us-gov:iam::aws:policy/IAMFullAccess",
+          "arn:aws-cn:iam::aws:policy/IAMFullAccess"
+        ],
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "group_policy_attachment_arn",
+      "description": "aws_iam_group_policy_attachment.policy_arn must not be the AWS managed IAMFullAccess policy; NotContainedIn with a list also passes an explicit null, and tolerance 2 skips an ARN that is unknown at plan time",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_iam_group_policy_attachment",
+        "terraform_resource_attribute": "policy_arn"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "arn:aws:iam::aws:policy/IAMFullAccess",
+          "arn:aws-us-gov:iam::aws:policy/IAMFullAccess",
+          "arn:aws-cn:iam::aws:policy/IAMFullAccess"
+        ],
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "ssoadmin_managed_policy_arn",
+      "description": "aws_ssoadmin_managed_policy_attachment.managed_policy_arn must not be the AWS managed IAMFullAccess policy",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_ssoadmin_managed_policy_attachment",
+        "terraform_resource_attribute": "managed_policy_arn"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "arn:aws:iam::aws:policy/IAMFullAccess",
+          "arn:aws-us-gov:iam::aws:policy/IAMFullAccess",
+          "arn:aws-cn:iam::aws:policy/IAMFullAccess"
+        ],
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "iam_policy_name_not_iamfullaccess && policy_attachment_arn && user_policy_attachment_arn && role_policy_attachment_arn && group_policy_attachment_arn && ssoadmin_managed_policy_arn"
+}

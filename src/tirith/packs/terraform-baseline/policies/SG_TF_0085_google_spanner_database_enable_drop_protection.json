@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0085",
+    "name": "Ensure Spanner Database has drop protection enabled",
+    "description": "Ensure Spanner Database has drop protection enabled",
+    "tags": [
+      "cloud:gcp",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "spanner_drop_protection_enabled",
+      "description": "google_spanner_database.enable_drop_protection must be true. A boolean is compared with Equals, and null or absent fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_spanner_database",
+        "terraform_resource_attribute": "enable_drop_protection"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "spanner_drop_protection_enabled"
+}

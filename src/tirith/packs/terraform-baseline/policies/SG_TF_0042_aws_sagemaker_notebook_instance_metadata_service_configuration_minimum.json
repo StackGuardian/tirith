@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0042",
+    "name": "Ensure Amazon SageMaker Notebook Instance only allows for IMDSv2",
+    "description": "Ensure Amazon SageMaker Notebook Instance only allows for IMDSv2",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ],
+    "remediation": "Set instance_metadata_service_configuration { minimum_instance_metadata_service_version = \"2\" } on every aws_sagemaker_notebook_instance."
+  },
+  "evaluators": [
+    {
+      "id": "imdsv2_minimum_version",
+      "description": "instance_metadata_service_configuration.0.minimum_instance_metadata_service_version must be the string \"2\". An absent block makes the path unresolvable (severity 2) and fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_sagemaker_notebook_instance",
+        "terraform_resource_attribute": "instance_metadata_service_configuration.0.minimum_instance_metadata_service_version"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "2",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "imdsv2_minimum_version"
+}

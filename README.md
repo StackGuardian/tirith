@@ -186,14 +186,17 @@ Congratulations! Tirith has been setup in your system
 ## Usage
 
 ```
-usage: tirith [-h] [-policy-path PATH] [-input-path PATH] [-var-path PATH]
-              [-var PATH] [--json] [--verbose] [--fail-on-error] [--version]
+usage: tirith [-h] [-policy-path PATH] [--pack NAME] [--list-packs]
+              [-input-path PATH] [-var-path PATH] [-var PATH] [--json]
+              [--verbose] [--fail-on-error] [--version]
 
 Tirith (StackGuardian Policy Framework)
 
 options:
   -h, --help         show this help message and exit
-  -policy-path PATH  Path containing Tirith policy as code
+  -policy-path PATH  Path to a Tirith policy file, or a directory of them
+  --pack NAME        Bundled policy pack(s) to run. Repeatable, and combines with -policy-path.
+  --list-packs       List the policy packs bundled with this installation and exit
   -input-path PATH   Input file path
   -var-path PATH     Variable file path(s)
   -var PATH          Inline variable(s)

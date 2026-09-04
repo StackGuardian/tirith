@@ -1,0 +1,1159 @@
+{
+  "name": "terraform-baseline",
+  "description": "Baseline security and configuration checks for Terraform plans",
+  "tier": "confirmed",
+  "source": {
+    "repo": "StackGuardian/tirith-policy-corpus",
+    "commit": "3cfba37d3fa1520a66c6bcd35ffce4ceb853efbc"
+  },
+  "required_providers": [
+    "stackguardian/terraform_plan"
+  ],
+  "count": 104,
+  "policies": [
+    {
+      "id": "SG_TF_0001",
+      "path": "policies/SG_TF_0001_alicloud_kms_key_automatic_rotation.json",
+      "name": "Ensure KMS Key Rotation is enabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:alicloud",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0002",
+      "path": "policies/SG_TF_0002_alicloud_disk_encrypted.json",
+      "name": "Ensure disk is encrypted",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:alicloud",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0003",
+      "path": "policies/SG_TF_0003_alicloud_ram_account_password_policy_minimum_length.json",
+      "name": "Ensure RAM password policy requires minimum length of 14 or greater",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:alicloud",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0004",
+      "path": "policies/SG_TF_0004_alicloud_ram_account_password_policy_max_age.json",
+      "name": "Ensure RAM password policy expires passwords within 90 days or less",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:alicloud",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0005",
+      "path": "policies/SG_TF_0005_alicloud_ram_account_password_policy_require_uppercase_characters.json",
+      "name": "Ensure RAM password policy requires at least one uppercase letter",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:alicloud",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0006",
+      "path": "policies/SG_TF_0006_aws_ami_launch_permission_count.json",
+      "name": "Ensure to Limit AMI launch Permissions",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0007",
+      "path": "policies/SG_TF_0007_aws_lb_desync_mitigation_mode.json",
+      "name": "Ensure that ALB is configured with defensive or strictest desync mitigation mode",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0008",
+      "path": "policies/SG_TF_0008_aws_appsync_api_cache_transit_encryption_enabled.json",
+      "name": "Ensure AppSync API Cache is encrypted in transit",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0009",
+      "path": "policies/SG_TF_0009_aws_appflow_flow_kms_arn.json",
+      "name": "Ensure AppFlow flow uses CMK",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0010",
+      "path": "policies/SG_TF_0010_aws_bedrockagent_agent_guardrail_configuration_identifier.json",
+      "name": "Ensure AWS Bedrock agent is associated with Bedrock guardrails",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "ai_and_ml"
+      ]
+    },
+    {
+      "id": "SG_TF_0011",
+      "path": "policies/SG_TF_0011_aws_athena_workgroup_configuration_enforce.json",
+      "name": "Ensure Athena Workgroup should enforce configuration to prevent client disabling encryption",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0012",
+      "path": "policies/SG_TF_0012_aws_codepipeline_artifact_store_encryption_key_id.json",
+      "name": "Ensure CodePipeline Artifact store is using a KMS CMK",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0013",
+      "path": "policies/SG_TF_0013_aws_codebuild_project_logs_config_s3_encryption_disabled.json",
+      "name": "Ensure that CodeBuild S3 logs are encrypted",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0014",
+      "path": "policies/SG_TF_0014_aws_default_vpc_count.json",
+      "name": "Ensure no default VPC is planned to be provisioned",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0015",
+      "path": "policies/SG_TF_0015_aws_db_security_group_count.json",
+      "name": "Ensure no aws_db_security_group resources exist",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0016",
+      "path": "policies/SG_TF_0016_aws_db_instance_auto_minor_version_upgrade.json",
+      "name": "Ensure DB instance gets all minor upgrades automatically",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0017",
+      "path": "policies/SG_TF_0017_aws_dms_replication_instance_publicly_accessible.json",
+      "name": "DMS replication instance should not be publicly accessible",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0018",
+      "path": "policies/SG_TF_0018_aws_ebs_snapshot_copy_kms_key_id.json",
+      "name": "Ensure EBS Snapshot Copy is encrypted by KMS using a customer managed Key (CMK)",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0019",
+      "path": "policies/SG_TF_0019_aws_ec2_transit_gateway_auto_accept_shared_attachments.json",
+      "name": "Ensure Transit Gateways do not automatically accept VPC attachment requests",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0020",
+      "path": "policies/SG_TF_0020_aws_elasticache_security_group_count.json",
+      "name": "Ensure no aws_elasticache_security_group resources exist",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0021",
+      "path": "policies/SG_TF_0021_aws_eks_cluster_version.json",
+      "name": "Ensure EKS clusters run on a supported Kubernetes version",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "kubernetes"
+      ]
+    },
+    {
+      "id": "SG_TF_0022",
+      "path": "policies/SG_TF_0022_aws_elasticache_cluster_subnet_group_name.json",
+      "name": "Ensure ElastiCache clusters do not use the default subnet group",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0023",
+      "path": "policies/SG_TF_0023_aws_iam_policy_name.json",
+      "name": "Ensure AWS Managed IAMFullAccess IAM policy is not used.",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0024",
+      "path": "policies/SG_TF_0024_aws_glue_crawler_security_configuration.json",
+      "name": "Ensure Glue component has a security configuration associated",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0025",
+      "path": "policies/SG_TF_0025_aws_iam_user_count.json",
+      "name": "Ensure access is controlled through SSO and not AWS IAM defined users",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0026",
+      "path": "policies/SG_TF_0026_aws_iam_access_key_user.json",
+      "name": "Ensure IAM root user does not have Access keys",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0027",
+      "path": "policies/SG_TF_0027_aws_instance_metadata_options_http_tokens.json",
+      "name": "Ensure Instance Metadata Service Version 1 is not enabled",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0028",
+      "path": "policies/SG_TF_0028_aws_instance_root_block_device_encrypted.json",
+      "name": "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0029",
+      "path": "policies/SG_TF_0029_aws_kinesis_firehose_delivery_stream_server_side_encryption_enabled.json",
+      "name": "Ensure Kinesis Firehose delivery stream is encrypted",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0030",
+      "path": "policies/SG_TF_0030_aws_kendra_index_server_side_encryption_configuration_kms_key_id.json",
+      "name": "Ensure Kendra index Server side encryption uses CMK",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0031",
+      "path": "policies/SG_TF_0031_aws_memorydb_cluster_kms_key_arn.json",
+      "name": "Ensure MemoryDB is encrypted at rest using KMS CMKs",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0032",
+      "path": "policies/SG_TF_0032_aws_lambda_permission_principal.json",
+      "name": "Ensure that AWS Lambda function is not publicly accessible",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0033",
+      "path": "policies/SG_TF_0033_aws_lambda_function_runtime.json",
+      "name": "Ensure Lambda Runtime is not deprecated",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0034",
+      "path": "policies/SG_TF_0034_aws_mwaa_environment_logging_configuration_worker_logs_enabled.json",
+      "name": "Ensure MWAA environment has worker logs enabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "logging"
+      ]
+    },
+    {
+      "id": "SG_TF_0035",
+      "path": "policies/SG_TF_0035_aws_neptune_cluster_backup_retention_period.json",
+      "name": "Ensure that Neptune DB cluster has automated backups enabled with adequate retention",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "backup_and_recovery"
+      ]
+    },
+    {
+      "id": "SG_TF_0036",
+      "path": "policies/SG_TF_0036_aws_redshift_cluster_publicly_accessible.json",
+      "name": "Redshift cluster should not be publicly accessible",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0037",
+      "path": "policies/SG_TF_0037_aws_s3_bucket_object_lock_configuration_enabled.json",
+      "name": "Ensure that S3 bucket has lock configuration enabled by default",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0038",
+      "path": "policies/SG_TF_0038_aws_s3_object_copy_kms_key_id.json",
+      "name": "Ensure S3 Object Copy is encrypted by KMS using a customer managed Key (CMK)",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0039",
+      "path": "policies/SG_TF_0039_aws_s3_bucket_object_kms_key_id.json",
+      "name": "Ensure S3 bucket Object is encrypted by KMS using a customer managed Key (CMK)",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0040",
+      "path": "policies/SG_TF_0040_aws_sagemaker_notebook_instance_root_access.json",
+      "name": "Ensure SageMaker Users should not have root access to SageMaker notebook instances",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0041",
+      "path": "policies/SG_TF_0041_aws_sagemaker_data_quality_job_definition_output_config_kms_key_id.json",
+      "name": "Ensure Amazon Sagemaker Data Quality Job uses KMS to encrypt model artifacts",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0042",
+      "path": "policies/SG_TF_0042_aws_sagemaker_notebook_instance_metadata_service_configuration_minimum.json",
+      "name": "Ensure Amazon SageMaker Notebook Instance only allows for IMDSv2",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0043",
+      "path": "policies/SG_TF_0043_aws_sns_topic_kms_master_key_id.json",
+      "name": "Ensure all data stored in the SNS topic is encrypted",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0044",
+      "path": "policies/SG_TF_0044_aws_ses_configuration_set_delivery_options_tls_policy.json",
+      "name": "Ensure SES Configuration Set enforces TLS usage",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0045",
+      "path": "policies/SG_TF_0045_aws_sagemaker_endpoint_configuration_kms_key_arn.json",
+      "name": "Ensure all data stored in the Sagemaker Endpoint is securely encrypted at rest",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0046",
+      "path": "policies/SG_TF_0046_aws_workspaces_workspace_root_volume_encryption_enabled.json",
+      "name": "Ensure that Workspace root volumes are encrypted",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:aws",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0047",
+      "path": "policies/SG_TF_0047_azurerm_automation_account_public_network_access_enabled.json",
+      "name": "Ensure Azure automation account does NOT have overly permissive network access",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0048",
+      "path": "policies/SG_TF_0048_azurerm_automation_account_identity_type.json",
+      "name": "Ensure Azure automation account is configured with managed identity",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0049",
+      "path": "policies/SG_TF_0049_azurerm_api_management_security_enable_backend_ssl30.json",
+      "name": "Ensure API management uses at least TLS 1.2",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0050",
+      "path": "policies/SG_TF_0050_azurerm_app_service_site_config_cors_allowed_origins.json",
+      "name": "Ensure that CORS disallows every resource to access app services",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0051",
+      "path": "policies/SG_TF_0051_azurerm_app_service_storage_account_type.json",
+      "name": "Ensure that app services use Azure Files",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0052",
+      "path": "policies/SG_TF_0052_azurerm_container_registry_sku.json",
+      "name": "Ensure geo-replicated container registries to match multi-region container deployments.",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0053",
+      "path": "policies/SG_TF_0053_azurerm_container_registry_quarantine_policy_enabled.json",
+      "name": "Ensure container image quarantine, scan, and mark images verified",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "supply_chain"
+      ]
+    },
+    {
+      "id": "SG_TF_0054",
+      "path": "policies/SG_TF_0054_azurerm_data_factory_public_network_enabled.json",
+      "name": "Ensure that Azure Data factory public network access is disabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0055",
+      "path": "policies/SG_TF_0055_azurerm_container_group_subnet_ids.json",
+      "name": "Ensure that Azure Container group is deployed into virtual network",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0056",
+      "path": "policies/SG_TF_0056_azurerm_frontdoor_frontend_endpoint_web_application_firewall_policy_li.json",
+      "name": "Ensure that Azure Front Door enables WAF",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0057",
+      "path": "policies/SG_TF_0057_azurerm_eventgrid_topic_identity_type.json",
+      "name": "Ensure that Managed identity provider is enabled for Azure Event Grid Topic",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0058",
+      "path": "policies/SG_TF_0058_azurerm_eventhub_namespace_location.json",
+      "name": "Ensure the Azure Event Hub Namespace is zone redundant",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "backup_and_recovery"
+      ]
+    },
+    {
+      "id": "SG_TF_0059",
+      "path": "policies/SG_TF_0059_azurerm_iothub_public_network_access_enabled.json",
+      "name": "Ensure that Azure IoT Hub disables public network access",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0060",
+      "path": "policies/SG_TF_0060_azurerm_kubernetes_cluster_default_node_pool_max_pods.json",
+      "name": "Ensure Azure Kubernetes Cluster (AKS) nodes should use a minimum number of 50 pods.",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "kubernetes"
+      ]
+    },
+    {
+      "id": "SG_TF_0061",
+      "path": "policies/SG_TF_0061_azurerm_kusto_cluster_identity_type.json",
+      "name": "Ensure that data explorer/Kusto uses managed identities to access Azure resources securely.",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0062",
+      "path": "policies/SG_TF_0062_azurerm_monitor_log_profile_categories.json",
+      "name": "Ensure audit profile captures all the activities",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "logging"
+      ]
+    },
+    {
+      "id": "SG_TF_0063",
+      "path": "policies/SG_TF_0063_azurerm_network_interface_enable_ip_forwarding.json",
+      "name": "Ensure that Network Interfaces disable IP forwarding",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0064",
+      "path": "policies/SG_TF_0064_azurerm_search_service_public_network_access_enabled.json",
+      "name": "Ensure that Azure Cognitive Search disables public network access",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0065",
+      "path": "policies/SG_TF_0065_azurerm_search_service_replica_count.json",
+      "name": "Ensure that Azure Cognitive Search maintains SLA for search index queries",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0066",
+      "path": "policies/SG_TF_0066_azurerm_service_fabric_cluster_azure_active_directory_tenant_id.json",
+      "name": "Ensures that Active Directory is used for authentication for Service Fabric",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0067",
+      "path": "policies/SG_TF_0067_azurerm_service_plan_worker_count.json",
+      "name": "Ensure App Service has a minimum number of instances for failover",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0068",
+      "path": "policies/SG_TF_0068_azurerm_service_plan_zone_balancing_enabled.json",
+      "name": "Ensure the App Service Plan is zone redundant",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "backup_and_recovery"
+      ]
+    },
+    {
+      "id": "SG_TF_0069",
+      "path": "policies/SG_TF_0069_azurerm_security_center_contact_alerts_to_admins.json",
+      "name": "Ensure that 'Send email notification for high severity alerts' is set to 'On'",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0070",
+      "path": "policies/SG_TF_0070_azurerm_servicebus_namespace_customer_managed_key_infrastructure_encry.json",
+      "name": "Ensure that Azure Service Bus uses double encryption",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0071",
+      "path": "policies/SG_TF_0071_azurerm_virtual_machine_storage_os_disk_managed_type.json",
+      "name": "Ensure Virtual Machines are utilizing Managed Disks",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0072",
+      "path": "policies/SG_TF_0072_azurerm_web_application_firewall_policy_settings_enabled.json",
+      "name": "Ensure that Application Gateway uses WAF in \"Detection\" or \"Prevention\" modes",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:azure",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0073",
+      "path": "policies/SG_TF_0073_digitalocean_firewall_inbound_rule_source_addresses.json",
+      "name": "Ensure the firewall ingress is not wide open",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:digitalocean",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0074",
+      "path": "policies/SG_TF_0074_google_bigquery_table_deletion_protection.json",
+      "name": "Ensure BigQuery tables have deletion protection enabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0075",
+      "path": "policies/SG_TF_0075_google_bigquery_table_encryption_configuration_kms_key_name.json",
+      "name": "Ensure Big Query Tables are encrypted with Customer Supplied Encryption Keys (CSEK)",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0076",
+      "path": "policies/SG_TF_0076_google_artifact_registry_repository_kms_key_name.json",
+      "name": "Ensure Artifact Registry Repositories are encrypted with Customer Supplied Encryption Keys (CSEK)",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0077",
+      "path": "policies/SG_TF_0077_google_compute_disk_encryption_key.json",
+      "name": "Ensure VM disks for critical VMs are encrypted with Customer Supplied Encryption Keys (CSEK)",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0078",
+      "path": "policies/SG_TF_0078_google_compute_instance_shielded_config.json",
+      "name": "Ensure Compute instances are launched with Shielded VM enabled",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0079",
+      "path": "policies/SG_TF_0079_google_container_cluster_logging_service.json",
+      "name": "Ensure Stackdriver Logging is set to Enabled on Kubernetes Engine Clusters",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "kubernetes"
+      ]
+    },
+    {
+      "id": "SG_TF_0080",
+      "path": "policies/SG_TF_0080_google_container_cluster_private_config.json",
+      "name": "Ensure Kubernetes Cluster is created with Private cluster enabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "kubernetes"
+      ]
+    },
+    {
+      "id": "SG_TF_0081",
+      "path": "policies/SG_TF_0081_google_document_ai_warehouse_location_kms_key.json",
+      "name": "Ensure Document AI Warehouse Location is configured to use a Customer Managed Key (CMK)",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0082",
+      "path": "policies/SG_TF_0082_google_notebooks_instance_kms_key.json",
+      "name": "Ensure Vertex AI instance disks are encrypted with a Customer Managed Key (CMK)",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0083",
+      "path": "policies/SG_TF_0083_google_kms_crypto_key_iam_member.json",
+      "name": "Ensure KMS policy should not allow public access",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "iam"
+      ]
+    },
+    {
+      "id": "SG_TF_0084",
+      "path": "policies/SG_TF_0084_google_notebooks_instance_no_public_ip.json",
+      "name": "Ensure Vertex AI instances are private",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0085",
+      "path": "policies/SG_TF_0085_google_spanner_database_enable_drop_protection.json",
+      "name": "Ensure Spanner Database has drop protection enabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0086",
+      "path": "policies/SG_TF_0086_google_spanner_database_encryption_config_kms_key_name.json",
+      "name": "Ensure Spanner Database is encrypted with Customer Supplied Encryption Keys (CSEK)",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0087",
+      "path": "policies/SG_TF_0087_google_storage_bucket_public_access_prevention.json",
+      "name": "Ensure public access prevention is enforced on Cloud Storage bucket",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0088",
+      "path": "policies/SG_TF_0088_google_storage_bucket_versioning_enabled.json",
+      "name": "Ensure Cloud storage has versioning enabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:gcp",
+        "logging"
+      ]
+    },
+    {
+      "id": "SG_TF_0089",
+      "path": "policies/SG_TF_0089_kubernetes_pod_spec_container_env_name.json",
+      "name": "Do not admit privileged containers",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:kubernetes",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0090",
+      "path": "policies/SG_TF_0090_kubernetes_pod_spec_container_image_pull_policy.json",
+      "name": "Image Pull Policy should be Always",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:kubernetes",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0091",
+      "path": "policies/SG_TF_0091_kubernetes_pod_spec_container_security_context_privileged.json",
+      "name": "Do not admit privileged containers",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:kubernetes",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0092",
+      "path": "policies/SG_TF_0092_kubernetes_pod_spec_container_security_context_capabilities_add.json",
+      "name": "Minimize the admission of containers with added capability",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:kubernetes",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0093",
+      "path": "policies/SG_TF_0093_kubernetes_service_account_metadata_name.json",
+      "name": "Ensure that default service accounts are not actively used",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:kubernetes",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0094",
+      "path": "policies/SG_TF_0094_linode_firewall_inbound_policy.json",
+      "name": "Ensure Inbound Firewall Policy is not set to ACCEPT",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:linode",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0095",
+      "path": "policies/SG_TF_0095_oci_file_storage_export_options_identity_squash.json",
+      "name": "Ensure File Storage File System access is restricted to root users",
+      "fidelity": "approximate",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:oci",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0096",
+      "path": "policies/SG_TF_0096_oci_core_instance_launch_options_is_pv_encryption_in_transit_enabled.json",
+      "name": "Ensure OCI Compute Instance boot volume has in-transit data encryption enabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:oci",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0097",
+      "path": "policies/SG_TF_0097_oci_identity_authentication_policy_password_is_lowercase_characters_re.json",
+      "name": "OCI IAM password policy - must contain lower case",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:oci",
+        "general_security"
+      ]
+    },
+    {
+      "id": "SG_TF_0098",
+      "path": "policies/SG_TF_0098_panos_ipsec_crypto_profile_protocol.json",
+      "name": "Ensure IPsec profiles do not specify use of insecure protocols",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:panos",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0099",
+      "path": "policies/SG_TF_0099_panos_management_profile_telnet.json",
+      "name": "Ensure plain-text management Telnet is not enabled for an Interface Management Profile",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:panos",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0100",
+      "path": "policies/SG_TF_0100_tencentcloud_clb_listener_protocol.json",
+      "name": "Ensure Tencent Cloud CLBs use modern, encrypted protocols",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:tencentcloud",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0101",
+      "path": "policies/SG_TF_0101_tencentcloud_cbs_storage_encrypt.json",
+      "name": "Ensure Tencent Cloud CBS is encrypted",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:tencentcloud",
+        "encryption"
+      ]
+    },
+    {
+      "id": "SG_TF_0102",
+      "path": "policies/SG_TF_0102_tencentcloud_instance_disable_monitor_service.json",
+      "name": "Ensure Tencent Cloud CVM monitor service is enabled",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:tencentcloud",
+        "logging"
+      ]
+    },
+    {
+      "id": "SG_TF_0103",
+      "path": "policies/SG_TF_0103_yandex_kubernetes_cluster_master_public_ip.json",
+      "name": "Ensure Kubernetes cluster does not have public IP address.",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:yandex",
+        "networking"
+      ]
+    },
+    {
+      "id": "SG_TF_0104",
+      "path": "policies/SG_TF_0104_yandex_kms_symmetric_key_rotation_period.json",
+      "name": "Ensure KMS symmetric key is rotated.",
+      "fidelity": "exact",
+      "required_provider": "stackguardian/terraform_plan",
+      "tags": [
+        "cloud:yandex",
+        "encryption"
+      ]
+    }
+  ]
+}

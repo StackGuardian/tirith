@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0077",
+    "name": "Ensure VM disks for critical VMs are encrypted with Customer Supplied Encryption Keys (CSEK)",
+    "description": "Ensure VM disks for critical VMs are encrypted with Customer Supplied Encryption Keys (CSEK)",
+    "tags": [
+      "cloud:gcp",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "disk_encryption_key_present",
+      "description": "google_compute_disk must declare a disk_encryption_key block. Terraform renders an unconfigured block list as [], which IsNotEmpty rejects; a disk whose change.after has no disk_encryption_key key is a severity-2 miss and fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_disk",
+        "terraform_resource_attribute": "disk_encryption_key"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "disk_encryption_key_present"
+}

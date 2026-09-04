@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0024",
+    "name": "Ensure Glue component has a security configuration associated",
+    "description": "Ensure Glue component has a security configuration associated",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ],
+    "remediation": "Set security_configuration on every aws_glue_crawler, aws_glue_dev_endpoint and aws_glue_job to the name of an aws_glue_security_configuration."
+  },
+  "evaluators": [
+    {
+      "id": "crawler_security_configuration",
+      "description": "aws_glue_crawler must carry a non-empty security_configuration; an absent one fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_glue_crawler",
+        "terraform_resource_attribute": "security_configuration"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "dev_endpoint_security_configuration",
+      "description": "aws_glue_dev_endpoint must carry a non-empty security_configuration",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_glue_dev_endpoint",
+        "terraform_resource_attribute": "security_configuration"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "job_security_configuration",
+      "description": "aws_glue_job must carry a non-empty security_configuration",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_glue_job",
+        "terraform_resource_attribute": "security_configuration"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "crawler_security_configuration && dev_endpoint_security_configuration && job_security_configuration"
+}

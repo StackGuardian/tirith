@@ -1,0 +1,28 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_virtual_machine.test",
+      "mode": "managed",
+      "type": "azurerm_virtual_machine",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "storage_os_disk": [
+            {
+              "managed_disk_type": null,
+              "vhd_uri": "tirith_corpus_sentinel"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

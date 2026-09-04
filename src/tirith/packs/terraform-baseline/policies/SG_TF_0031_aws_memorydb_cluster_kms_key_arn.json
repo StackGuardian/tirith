@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0031",
+    "name": "Ensure MemoryDB is encrypted at rest using KMS CMKs",
+    "description": "Ensure MemoryDB is encrypted at rest using KMS CMKs",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "kms_key_arn_set",
+      "description": "Every aws_memorydb_cluster sets a non-empty kms_key_arn; a null or absent kms_key_arn fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_memorydb_cluster",
+        "terraform_resource_attribute": "kms_key_arn"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "kms_key_arn_set"
+}

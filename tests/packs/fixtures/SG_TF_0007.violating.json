@@ -1,0 +1,57 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_lb.test",
+      "mode": "managed",
+      "type": "aws_lb",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "desync_mitigation_mode": "monitor"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_alb.test",
+      "mode": "managed",
+      "type": "aws_alb",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "desync_mitigation_mode": "monitor"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_elb.test",
+      "mode": "managed",
+      "type": "aws_elb",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "desync_mitigation_mode": "monitor"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

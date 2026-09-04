@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0035",
+    "name": "Ensure that Neptune DB cluster has automated backups enabled with adequate retention",
+    "description": "Ensure that Neptune DB cluster has automated backups enabled with adequate retention",
+    "tags": [
+      "cloud:aws",
+      "backup_and_recovery"
+    ],
+    "remediation": "Set backup_retention_period to 7 or more on every aws_neptune_cluster."
+  },
+  "evaluators": [
+    {
+      "id": "backup_retention_at_least_7_days",
+      "description": "Every aws_neptune_cluster keeps backup_retention_period >= 7. The provider default is 1, so a cluster that omits the argument fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_neptune_cluster",
+        "terraform_resource_attribute": "backup_retention_period"
+      },
+      "condition": {
+        "type": "GreaterThanEqualTo",
+        "value": 7,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "backup_retention_at_least_7_days"
+}

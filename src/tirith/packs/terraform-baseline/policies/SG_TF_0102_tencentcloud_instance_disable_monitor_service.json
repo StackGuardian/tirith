@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0102",
+    "name": "Ensure Tencent Cloud CVM monitor service is enabled",
+    "description": "Ensure Tencent Cloud CVM monitor service is enabled",
+    "tags": [
+      "cloud:tencentcloud",
+      "logging"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "monitor_service_not_disabled",
+      "description": "tencentcloud_instance must not set disable_monitor_service = true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "tencentcloud_instance",
+        "terraform_resource_attribute": "disable_monitor_service"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          true
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "monitor_service_not_disabled"
+}

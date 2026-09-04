@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0074",
+    "name": "Ensure BigQuery tables have deletion protection enabled",
+    "description": "Ensure BigQuery tables have deletion protection enabled",
+    "tags": [
+      "cloud:gcp",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "deletion_protection_enabled",
+      "description": "google_bigquery_table must set deletion_protection to true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_bigquery_table",
+        "terraform_resource_attribute": "deletion_protection"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "deletion_protection_enabled"
+}

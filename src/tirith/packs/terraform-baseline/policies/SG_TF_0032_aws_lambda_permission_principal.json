@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0032",
+    "name": "Ensure that AWS Lambda function is not publicly accessible",
+    "description": "Ensure that AWS Lambda function is not publicly accessible",
+    "tags": [
+      "cloud:aws",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "principal_not_wildcard",
+      "description": "No aws_lambda_permission grants invoke rights to the wildcard principal '*'. NotContainedIn with a list also passes on a null or absent principal.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_lambda_permission",
+        "terraform_resource_attribute": "principal"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "*"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "principal_not_wildcard"
+}

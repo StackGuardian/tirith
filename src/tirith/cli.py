@@ -5,15 +5,18 @@ CLI
 import argparse
 import json
 import logging
+import os
 import sys
 import textwrap
 
 from tirith.logging import setup_logging
-from tirith.prettyprinter import pretty_print_result_dict
+from tirith.prettyprinter import pretty_print_policy_set_result, pretty_print_result_dict
 from tirith.status import ExitStatus
 from tirith import __version__
 
+from . import packs
 from .core import start_policy_evaluation
+from .core.core import start_policy_set_evaluation
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +43,46 @@ def eprint(*args, **kwargs):
 # `--fail-on-error` fixed. No alias in either direction: nothing is released, so there is no caller to
 # keep working.
 SUBCOMMAND = "platform"
+
+
+def collect_policy_paths(policy_path, pack_names):
+    """
+    Every policy to run, as (name, path) pairs, in the order they were asked for.
+
+    `name` is what the result reports each policy as: the path relative to the directory that
+    was given, or `<pack>/<file>` for a packed one. Relative, so a report does not depend on
+    where the run happened.
+    """
+    collected = []
+    for name in pack_names:
+        pack = packs.resolve_pack(name)
+        if pack is None:
+            raise ValueError(f"unknown pack '{name}'. Run `tirith --list-packs` to see what is available.")
+        collected += packs.pack_policy_paths(pack)
+
+    if policy_path and os.path.isdir(policy_path):
+        for dirpath, dirnames, filenames in os.walk(policy_path):
+            # Prune in place so os.walk does not descend into hidden directories at all.
+            dirnames[:] = sorted(d for d in dirnames if not d.startswith("."))
+            for filename in sorted(filenames):
+                if filename.endswith(".json") and not filename.startswith("."):
+                    full = os.path.join(dirpath, filename)
+                    collected.append((os.path.relpath(full, policy_path), full))
+    elif policy_path:
+        collected.append((os.path.basename(policy_path), policy_path))
+
+    return collected
+
+
+def print_pack_listing():
+    installed = packs.list_packs()
+    if not installed:
+        print("No policy packs are bundled with this installation.")
+        return
+    width = max(len(pack.name) for pack in installed)
+    for pack in installed:
+        print(f"{pack.name:{width}}  {pack.count:>5} policies  {pack.description}")
+
 
 # `ui` joins it on the same terms: dispatched before the flat parser, so the local-evaluation
 # surface and its golden-file output are untouched. It is an optional extra -- it needs Python
@@ -104,7 +147,22 @@ def main(args=None) -> ExitStatus:
             metavar="PATH",
             type=str,
             dest="policyPath",
-            help="Path containing Tirith policy as code",
+            help="Path to a Tirith policy file, or a directory of them",
+        )
+        parser.add_argument(
+            "--pack",
+            metavar="NAME",
+            type=str,
+            default=[],
+            action="append",
+            dest="packs",
+            help="Bundled policy pack(s) to run. Repeatable, and combines with -policy-path.",
+        )
+        parser.add_argument(
+            "--list-packs",
+            dest="listPacks",
+            action="store_true",
+            help="List the policy packs bundled with this installation and exit",
         )
         parser.add_argument(
             "-input-path",
@@ -157,7 +215,17 @@ def main(args=None) -> ExitStatus:
             parser.print_help()
             sys.exit(0)
 
-        if not args.policyPath:
+        if args.listPacks:
+            print_pack_listing()
+            return ExitStatus.SUCCESS
+
+        for pack_name in args.packs:
+            if packs.resolve_pack(pack_name) is None:
+                eprint(f"Unknown policy pack '{pack_name}'")
+                eprint("Run `tirith --list-packs` to see the packs bundled with this installation.")
+                return ExitStatus.ERROR
+
+        if not args.policyPath and not args.packs:
             eprint("'-policy-path' argument is required")
             eprint("-policy-path argument is required. Provide a path to SG policy")
             return ExitStatus.ERROR
@@ -174,12 +242,28 @@ def main(args=None) -> ExitStatus:
         else:
             setup_logging(verbose=args.verbose)
 
+        # A single policy file keeps the result document, the printer and the exit codes it has
+        # always had -- tests/core/test_output_compatibility.py pins those bytes. A directory or a
+        # --pack is a *set*, and gets the aggregate document instead. The shape follows how the run
+        # was asked for, not how many policies matched, so a directory holding one policy still
+        # reports as a set.
+        is_set = bool(args.packs) or (args.policyPath and os.path.isdir(args.policyPath))
+
         try:
-            result = start_policy_evaluation(args.policyPath, args.inputPath, args.varPaths, args.inlineVars)
+            if is_set:
+                policy_paths = collect_policy_paths(args.policyPath, args.packs)
+                if not policy_paths:
+                    eprint("No policies found to evaluate")
+                    return ExitStatus.ERROR
+                result = start_policy_set_evaluation(policy_paths, args.inputPath, args.varPaths, args.inlineVars)
+            else:
+                result = start_policy_evaluation(args.policyPath, args.inputPath, args.varPaths, args.inlineVars)
 
             if args.json:
                 formatted_result = json.dumps(result, indent=3)
                 print(formatted_result)
+            elif is_set:
+                pretty_print_policy_set_result(result, verbose=args.verbose)
             else:
                 pretty_print_result_dict(result)
 
@@ -219,6 +303,13 @@ def main(args=None) -> ExitStatus:
             # an ordinary failed evaluator with no error attached, so it is indistinguishable from a
             # violation here and exits 3. Fixing that means the engine reporting it distinctly, not this
             # branch guessing from free text.
+            #
+            # A set run reads the same tri-state off `final_result`, which the set runner has
+            # already rolled up: any policy that said no makes the set False, and `None` means
+            # nothing reached a verdict at all. The one thing that is deliberately *not* a
+            # failure is a policy that skipped, because for a pack of any size that is the normal
+            # case -- most checks do not apply to most plans -- and counting them would make every
+            # pack run red regardless of the infrastructure.
             if args.failOnError:
                 final_result = result.get("final_result")
                 if "final_result" not in result or final_result is None:

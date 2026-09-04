@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0046",
+    "name": "Ensure that Workspace root volumes are encrypted",
+    "description": "Ensure that Workspace root volumes are encrypted",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "root_volume_encryption_enabled",
+      "description": "aws_workspaces_workspace must set root_volume_encryption_enabled = true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_workspaces_workspace",
+        "terraform_resource_attribute": "root_volume_encryption_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "root_volume_encryption_enabled"
+}

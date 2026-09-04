@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0064",
+    "name": "Ensure that Azure Cognitive Search disables public network access",
+    "description": "Ensure that Azure Cognitive Search disables public network access",
+    "tags": [
+      "cloud:azure",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "search_public_network_access_disabled",
+      "description": "azurerm_search_service.public_network_access_enabled must be false",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_search_service",
+        "terraform_resource_attribute": "public_network_access_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "search_public_network_access_disabled"
+}

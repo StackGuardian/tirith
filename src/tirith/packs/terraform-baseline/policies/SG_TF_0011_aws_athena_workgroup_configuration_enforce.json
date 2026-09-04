@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0011",
+    "name": "Ensure Athena Workgroup should enforce configuration to prevent client disabling encryption",
+    "description": "Ensure Athena Workgroup should enforce configuration to prevent client disabling encryption",
+    "tags": [
+      "cloud:aws",
+      "general_security"
+    ],
+    "remediation": "Leave enforce_workgroup_configuration at its default (true) inside the aws_athena_workgroup configuration block, never set it to false."
+  },
+  "evaluators": [
+    {
+      "id": "enforce_workgroup_configuration_not_disabled",
+      "description": "No aws_athena_workgroup may set configuration.0.enforce_workgroup_configuration to false. A list-valued NotContainedIn passes on an explicit null, and error_tolerance 2 skips a workgroup with no configuration block at all.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_athena_workgroup",
+        "terraform_resource_attribute": "configuration.0.enforce_workgroup_configuration"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          false
+        ],
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "enforce_workgroup_configuration_not_disabled"
+}

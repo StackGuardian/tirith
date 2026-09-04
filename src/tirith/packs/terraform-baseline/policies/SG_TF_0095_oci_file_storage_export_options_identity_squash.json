@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0095",
+    "name": "Ensure File Storage File System access is restricted to root users",
+    "description": "Ensure File Storage File System access is restricted to root users",
+    "tags": [
+      "cloud:oci",
+      "general_security"
+    ],
+    "remediation": "Avoid identity_squash = \"ROOT\" on oci_file_storage_export export_options; if root squashing is required, pin anonymous_uid and anonymous_gid to 65534."
+  },
+  "evaluators": [
+    {
+      "id": "no_root_identity_squash",
+      "description": "No export_options entry squashes to ROOT. NotContainedIn with a list passes on a null input, so an entry that omits identity_squash (padded to null by the wildcard) passes.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "oci_file_storage_export",
+        "terraform_resource_attribute": "export_options.*.identity_squash"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "ROOT",
+          "root",
+          "Root"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_root_identity_squash"
+}

@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_monitor_log_profile.test",
+      "mode": "managed",
+      "type": "azurerm_monitor_log_profile",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "categories": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

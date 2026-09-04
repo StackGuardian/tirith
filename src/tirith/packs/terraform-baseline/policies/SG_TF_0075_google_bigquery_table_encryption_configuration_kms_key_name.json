@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0075",
+    "name": "Ensure Big Query Tables are encrypted with Customer Supplied Encryption Keys (CSEK)",
+    "description": "Ensure Big Query Tables are encrypted with Customer Supplied Encryption Keys (CSEK)",
+    "tags": [
+      "cloud:gcp",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "encryption_configuration_kms_key_name_set",
+      "description": "google_bigquery_table must set encryption_configuration[0].kms_key_name",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_bigquery_table",
+        "terraform_resource_attribute": "encryption_configuration.0.kms_key_name"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "encryption_configuration_kms_key_name_set"
+}

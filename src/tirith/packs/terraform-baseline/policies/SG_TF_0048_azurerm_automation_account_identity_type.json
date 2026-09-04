@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0048",
+    "name": "Ensure Azure automation account is configured with managed identity",
+    "description": "Ensure Azure automation account is configured with managed identity",
+    "tags": [
+      "cloud:azure",
+      "iam"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "identity_type_set",
+      "description": "an identity block with a non-empty type must be present",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_automation_account",
+        "terraform_resource_attribute": "identity.*.type"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "identity_type_set"
+}

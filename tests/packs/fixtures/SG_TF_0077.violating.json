@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "google_compute_disk.test",
+      "mode": "managed",
+      "type": "google_compute_disk",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "disk_encryption_key": null
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

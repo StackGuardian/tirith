@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0038",
+    "name": "Ensure S3 Object Copy is encrypted by KMS using a customer managed Key (CMK)",
+    "description": "Ensure S3 Object Copy is encrypted by KMS using a customer managed Key (CMK)",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ],
+    "remediation": "Set kms_key_id to a customer managed KMS key on every aws_s3_object_copy."
+  },
+  "evaluators": [
+    {
+      "id": "kms_key_id_set",
+      "description": "kms_key_id must be a non-empty string. IsNotEmpty fails on null, and an unresolvable attribute is a severity-2 miss that also fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_s3_object_copy",
+        "terraform_resource_attribute": "kms_key_id"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "kms_key_id_set"
+}

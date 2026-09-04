@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0078",
+    "name": "Ensure Compute instances are launched with Shielded VM enabled",
+    "description": "Ensure Compute instances are launched with Shielded VM enabled",
+    "tags": [
+      "cloud:gcp",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "instance_shielded_config_present",
+      "description": "google_compute_instance must declare a shielded_instance_config block; terraform renders an unconfigured block list as [], which IsNotEmpty rejects.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance",
+        "terraform_resource_attribute": "shielded_instance_config"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_vtpm_not_disabled",
+      "description": "google_compute_instance shielded_instance_config.enable_vtpm must not be false. NotEquals passes on null, so a block that omits the key keeps the provider default and only an explicitly disabled vTPM fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance",
+        "terraform_resource_attribute": "shielded_instance_config.*.enable_vtpm"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_integrity_monitoring_not_disabled",
+      "description": "google_compute_instance shielded_instance_config.enable_integrity_monitoring must not be false.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance",
+        "terraform_resource_attribute": "shielded_instance_config.*.enable_integrity_monitoring"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_template_shielded_config_present",
+      "description": "Same block-presence check for google_compute_instance_template.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance_template",
+        "terraform_resource_attribute": "shielded_instance_config"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_template_vtpm_not_disabled",
+      "description": "Same enable_vtpm check for google_compute_instance_template.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance_template",
+        "terraform_resource_attribute": "shielded_instance_config.*.enable_vtpm"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_template_integrity_monitoring_not_disabled",
+      "description": "Same enable_integrity_monitoring check for google_compute_instance_template.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance_template",
+        "terraform_resource_attribute": "shielded_instance_config.*.enable_integrity_monitoring"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_from_template_shielded_config_present",
+      "description": "Same block-presence check for google_compute_instance_from_template.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance_from_template",
+        "terraform_resource_attribute": "shielded_instance_config"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_from_template_vtpm_not_disabled",
+      "description": "Same enable_vtpm check for google_compute_instance_from_template.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance_from_template",
+        "terraform_resource_attribute": "shielded_instance_config.*.enable_vtpm"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_from_template_integrity_monitoring_not_disabled",
+      "description": "Same enable_integrity_monitoring check for google_compute_instance_from_template.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_compute_instance_from_template",
+        "terraform_resource_attribute": "shielded_instance_config.*.enable_integrity_monitoring"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "instance_shielded_config_present && instance_vtpm_not_disabled && instance_integrity_monitoring_not_disabled && instance_template_shielded_config_present && instance_template_vtpm_not_disabled && instance_template_integrity_monitoring_not_disabled && instance_from_template_shielded_config_present && instance_from_template_vtpm_not_disabled && instance_from_template_integrity_monitoring_not_disabled"
+}

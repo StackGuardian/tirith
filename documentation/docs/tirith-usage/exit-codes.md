@@ -36,6 +36,17 @@ Both surfaces **fail closed**: anything that leaves the verdict unknown exits no
 of `--fail-on-error`. That flag governs policy verdicts, not tool health — a run that produced no
 verdict must never look like a pass.
 
+## Running more than one policy
+
+A directory of policies or a `--pack` produces one exit code for the whole set, on the same rules:
+`3` if any policy failed, `0` if none failed and at least one reached a verdict, `1` if nothing
+ran or every policy skipped.
+
+A **skipped** policy — one whose resource type is absent from the input — never produces `3`. For
+a pack of any size that is the normal outcome for most policies, since a check only applies to
+plans that touch the resource it names; counting skips as failures would make every pack run red
+regardless of the infrastructure.
+
 ## Without `--fail-on-error`
 
 The local command exits `0` whether the policy passed or failed, with the verdict in the output.

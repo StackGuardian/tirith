@@ -1,0 +1,50 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "kubernetes_service_account.test",
+      "mode": "managed",
+      "type": "kubernetes_service_account",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "metadata": [
+            {
+              "name": "tirith_corpus_sentinel"
+            }
+          ],
+          "automount_service_account_token": false
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "kubernetes_service_account_v1.test",
+      "mode": "managed",
+      "type": "kubernetes_service_account_v1",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "metadata": [
+            {
+              "name": "tirith_corpus_sentinel"
+            }
+          ],
+          "automount_service_account_token": false
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

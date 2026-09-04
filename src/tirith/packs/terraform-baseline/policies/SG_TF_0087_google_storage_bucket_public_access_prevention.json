@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0087",
+    "name": "Ensure public access prevention is enforced on Cloud Storage bucket",
+    "description": "Ensure public access prevention is enforced on Cloud Storage bucket",
+    "tags": [
+      "cloud:gcp",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "public_access_prevention_enforced",
+      "description": "google_storage_bucket.public_access_prevention must equal 'enforced'. A bucket that leaves the attribute out (so the plan carries no value, or carries 'inherited') is a severity-2 miss and fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_storage_bucket",
+        "terraform_resource_attribute": "public_access_prevention"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "enforced",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "public_access_prevention_enforced"
+}

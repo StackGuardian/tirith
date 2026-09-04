@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_eks_cluster.test",
+      "mode": "managed",
+      "type": "aws_eks_cluster",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "version": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

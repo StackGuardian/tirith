@@ -1,0 +1,29 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "digitalocean_firewall.test",
+      "mode": "managed",
+      "type": "digitalocean_firewall",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "inbound_rule": [
+            {
+              "source_addresses": [
+                "0.0.0.0/0"
+              ]
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

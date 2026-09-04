@@ -1,0 +1,72 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "google_compute_instance.test",
+      "mode": "managed",
+      "type": "google_compute_instance",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "shielded_instance_config": [
+            {
+              "enable_vtpm": true,
+              "enable_integrity_monitoring": true
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "google_compute_instance_template.test",
+      "mode": "managed",
+      "type": "google_compute_instance_template",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "shielded_instance_config": [
+            {
+              "enable_vtpm": true,
+              "enable_integrity_monitoring": true
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "google_compute_instance_from_template.test",
+      "mode": "managed",
+      "type": "google_compute_instance_from_template",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "shielded_instance_config": [
+            {
+              "enable_vtpm": true,
+              "enable_integrity_monitoring": true
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

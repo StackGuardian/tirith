@@ -40,6 +40,7 @@ module.exports = {
         "tirith-policies/tirith-policy-conditions",
         "tirith-policies/tirith-policy-variables",
         "tirith-policies/tirith-policy-cookbook",
+        "tirith-policies/tirith-policy-packs",
         // "tirith-policies/tirith-policy-examples"
       ]
     },

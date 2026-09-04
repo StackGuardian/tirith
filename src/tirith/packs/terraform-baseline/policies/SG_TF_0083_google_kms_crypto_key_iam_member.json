@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0083",
+    "name": "Ensure KMS policy should not allow public access",
+    "description": "Ensure KMS policy should not allow public access",
+    "tags": [
+      "cloud:gcp",
+      "iam"
+    ],
+    "remediation": "Remove 'allUsers' and 'allAuthenticatedUsers' from the member/members of every google_kms_crypto_key_iam_member and google_kms_crypto_key_iam_binding."
+  },
+  "evaluators": [
+    {
+      "id": "crypto_key_iam_member_not_public",
+      "description": "google_kms_crypto_key_iam_member.member is neither allUsers nor allAuthenticatedUsers",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_kms_crypto_key_iam_member",
+        "terraform_resource_attribute": "member"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "allUsers",
+          "allAuthenticatedUsers"
+        ],
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "crypto_key_iam_binding_no_all_users",
+      "description": "google_kms_crypto_key_iam_binding.members does not contain allUsers",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_kms_crypto_key_iam_binding",
+        "terraform_resource_attribute": "members"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "allUsers",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "crypto_key_iam_binding_no_all_authenticated_users",
+      "description": "google_kms_crypto_key_iam_binding.members does not contain allAuthenticatedUsers",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_kms_crypto_key_iam_binding",
+        "terraform_resource_attribute": "members"
+      },
+      "condition": {
+        "type": "NotContains",
+        "value": "allAuthenticatedUsers",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "crypto_key_iam_member_not_public && crypto_key_iam_binding_no_all_users && crypto_key_iam_binding_no_all_authenticated_users"
+}

@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0040",
+    "name": "Ensure SageMaker Users should not have root access to SageMaker notebook instances",
+    "description": "Ensure SageMaker Users should not have root access to SageMaker notebook instances",
+    "tags": [
+      "cloud:aws",
+      "general_security"
+    ],
+    "remediation": "Set root_access = \"Disabled\" on every aws_sagemaker_notebook_instance."
+  },
+  "evaluators": [
+    {
+      "id": "root_access_disabled",
+      "description": "root_access must equal 'Disabled'. The provider default is 'Enabled', so a notebook that omits the argument shows 'Enabled' in the plan and fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_sagemaker_notebook_instance",
+        "terraform_resource_attribute": "root_access"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "Disabled",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "root_access_disabled"
+}

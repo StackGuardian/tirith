@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_automation_account.test",
+      "mode": "managed",
+      "type": "azurerm_automation_account",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "identity": [
+            {
+              "type": null
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

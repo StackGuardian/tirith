@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0017",
+    "name": "DMS replication instance should not be publicly accessible",
+    "description": "DMS replication instance should not be publicly accessible",
+    "tags": [
+      "cloud:aws",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "not_publicly_accessible",
+      "description": "aws_dms_replication_instance.publicly_accessible must not be true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_dms_replication_instance",
+        "terraform_resource_attribute": "publicly_accessible"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          true
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "not_publicly_accessible"
+}

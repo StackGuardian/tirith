@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_web_application_firewall_policy.test",
+      "mode": "managed",
+      "type": "azurerm_web_application_firewall_policy",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "policy_settings": [
+            {
+              "enabled": false
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

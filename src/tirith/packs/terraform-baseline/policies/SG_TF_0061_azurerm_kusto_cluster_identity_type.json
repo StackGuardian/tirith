@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0061",
+    "name": "Ensure that data explorer/Kusto uses managed identities to access Azure resources securely.",
+    "description": "Ensure that data explorer/Kusto uses managed identities to access Azure resources securely.",
+    "tags": [
+      "cloud:azure",
+      "iam"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "kusto_identity_type_set",
+      "description": "azurerm_kusto_cluster must declare an identity block with a non-empty type; an absent identity block is a severity-2 miss that fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_kusto_cluster",
+        "terraform_resource_attribute": "identity.*.type"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "kusto_identity_type_set"
+}

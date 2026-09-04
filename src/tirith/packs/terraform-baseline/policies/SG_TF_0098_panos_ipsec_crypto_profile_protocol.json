@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0098",
+    "name": "Ensure IPsec profiles do not specify use of insecure protocols",
+    "description": "Ensure IPsec profiles do not specify use of insecure protocols",
+    "tags": [
+      "cloud:panos",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "ipsec_crypto_profile_protocol",
+      "description": "panos_ipsec_crypto_profile.protocol must not be the insecure 'ah' protocol",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "panos_ipsec_crypto_profile",
+        "terraform_resource_attribute": "protocol"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "ah"
+        ],
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "panorama_ipsec_crypto_profile_protocol",
+      "description": "panos_panorama_ipsec_crypto_profile.protocol must not be the insecure 'ah' protocol",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "panos_panorama_ipsec_crypto_profile",
+        "terraform_resource_attribute": "protocol"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "ah"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "ipsec_crypto_profile_protocol && panorama_ipsec_crypto_profile_protocol"
+}

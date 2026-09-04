@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0013",
+    "name": "Ensure that CodeBuild S3 logs are encrypted",
+    "description": "Ensure that CodeBuild S3 logs are encrypted",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ],
+    "remediation": "Do not set logs_config.s3_logs.encryption_disabled = true on aws_codebuild_project."
+  },
+  "evaluators": [
+    {
+      "id": "codebuild_s3_logs_encryption_not_disabled",
+      "description": "no aws_codebuild_project may set logs_config.s3_logs.encryption_disabled = true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_codebuild_project",
+        "terraform_resource_attribute": "logs_config.*.s3_logs.*.encryption_disabled"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": true,
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "codebuild_s3_logs_encryption_not_disabled"
+}

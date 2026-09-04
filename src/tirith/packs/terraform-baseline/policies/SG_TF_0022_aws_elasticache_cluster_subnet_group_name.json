@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0022",
+    "name": "Ensure ElastiCache clusters do not use the default subnet group",
+    "description": "Ensure ElastiCache clusters do not use the default subnet group",
+    "tags": [
+      "cloud:aws",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "subnet_group_name_set",
+      "description": "Every aws_elasticache_cluster must name a subnet group instead of falling back to the default one",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_elasticache_cluster",
+        "terraform_resource_attribute": "subnet_group_name"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "subnet_group_name_set"
+}

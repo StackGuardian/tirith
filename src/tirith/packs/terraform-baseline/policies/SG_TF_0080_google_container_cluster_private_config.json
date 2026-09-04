@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0080",
+    "name": "Ensure Kubernetes Cluster is created with Private cluster enabled",
+    "description": "Ensure Kubernetes Cluster is created with Private cluster enabled",
+    "tags": [
+      "cloud:gcp",
+      "kubernetes"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "private_cluster_config_present",
+      "description": "google_container_cluster must declare a private_cluster_config block. In the plan the block is a list, so IsNotEmpty rejects both the empty list produced when the block is omitted and the null terraform writes when the computed block is unknown; an absent key is a severity-2 miss and also fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_container_cluster",
+        "terraform_resource_attribute": "private_cluster_config"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "private_cluster_config_present"
+}

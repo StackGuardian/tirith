@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_workspaces_workspace.test",
+      "mode": "managed",
+      "type": "aws_workspaces_workspace",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "root_volume_encryption_enabled": true
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

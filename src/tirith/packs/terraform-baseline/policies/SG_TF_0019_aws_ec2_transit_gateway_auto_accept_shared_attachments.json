@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0019",
+    "name": "Ensure Transit Gateways do not automatically accept VPC attachment requests",
+    "description": "Ensure Transit Gateways do not automatically accept VPC attachment requests",
+    "tags": [
+      "cloud:aws",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "auto_accept_shared_attachments_not_enable",
+      "description": "No aws_ec2_transit_gateway sets auto_accept_shared_attachments = \"enable\". A null value passes NotEquals, so a gateway that leaves the argument out keeps the safe provider default.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_ec2_transit_gateway",
+        "terraform_resource_attribute": "auto_accept_shared_attachments"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "enable",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "auto_accept_shared_attachments_not_enable"
+}

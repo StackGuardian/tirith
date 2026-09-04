@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "oci_core_instance.test",
+      "mode": "managed",
+      "type": "oci_core_instance",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "launch_options": [
+            {
+              "is_pv_encryption_in_transit_enabled": false
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

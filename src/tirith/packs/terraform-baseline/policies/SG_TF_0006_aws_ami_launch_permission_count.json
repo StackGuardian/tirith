@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0006",
+    "name": "Ensure to Limit AMI launch Permissions",
+    "description": "Ensure to Limit AMI launch Permissions",
+    "tags": [
+      "cloud:aws",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "no_ami_launch_permission",
+      "description": "The plan declares no aws_ami_launch_permission resource",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "aws_ami_launch_permission"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_ami_launch_permission"
+}

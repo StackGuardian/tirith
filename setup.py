@@ -45,6 +45,9 @@ setup(
     package_data={
         "tirith.tui": ["*.css"],
         "tirith.tui.examples": ["*/*.json", "*/*.md"],
+        # The bundled policy packs. Without these `--pack` finds nothing and `--list-packs`
+        # prints an empty list, which is the same silent-empty failure the TUI had.
+        "tirith.packs": ["*/pack.json", "*/policies/*.json"],
     },
     zip_safe=False,
     classifiers=[

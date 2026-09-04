@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0073",
+    "name": "Ensure the firewall ingress is not wide open",
+    "description": "Ensure the firewall ingress is not wide open",
+    "tags": [
+      "cloud:digitalocean",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "inbound_source_addresses_not_open",
+      "description": "Every source address of every inbound_rule of digitalocean_firewall must be neither 0.0.0.0/0 nor ::/0. The doubled wildcard flattens the addresses of all inbound rules into one value per address; a rule that uses source_tags or source_droplet_ids instead contributes a padded null, and NotContainedIn over a list passes on null, so such a rule is not flagged.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "digitalocean_firewall",
+        "terraform_resource_attribute": "inbound_rule.*.source_addresses.*"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "0.0.0.0/0",
+          "::/0"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "inbound_source_addresses_not_open"
+}

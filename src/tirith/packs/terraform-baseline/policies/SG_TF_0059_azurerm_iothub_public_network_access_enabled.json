@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0059",
+    "name": "Ensure that Azure IoT Hub disables public network access",
+    "description": "Ensure that Azure IoT Hub disables public network access",
+    "tags": [
+      "cloud:azure",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "iothub_public_network_access_not_enabled",
+      "description": "No azurerm_iothub has public_network_access_enabled = true; a null value passes.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_iothub",
+        "terraform_resource_attribute": "public_network_access_enabled"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          true
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "iothub_public_network_access_not_enabled"
+}

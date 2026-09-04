@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0099",
+    "name": "Ensure plain-text management Telnet is not enabled for an Interface Management Profile",
+    "description": "Ensure plain-text management Telnet is not enabled for an Interface Management Profile",
+    "tags": [
+      "cloud:panos",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "management_profile_telnet_disabled",
+      "description": "panos_management_profile.telnet must not be true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "panos_management_profile",
+        "terraform_resource_attribute": "telnet"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "management_profile_telnet_disabled"
+}

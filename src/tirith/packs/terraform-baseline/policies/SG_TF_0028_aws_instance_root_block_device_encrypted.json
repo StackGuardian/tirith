@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0028",
+    "name": "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted",
+    "description": "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "instance_root_block_device_not_unencrypted",
+      "description": "aws_instance must declare a root_block_device and must not set encrypted = false on it",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_instance",
+        "terraform_resource_attribute": "root_block_device.0.encrypted"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "instance_ebs_block_devices_not_unencrypted",
+      "description": "No aws_instance ebs_block_device may set encrypted = false",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_instance",
+        "terraform_resource_attribute": "ebs_block_device.*.encrypted"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "launch_configuration_root_block_device_not_unencrypted",
+      "description": "aws_launch_configuration must declare a root_block_device and must not set encrypted = false on it",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_launch_configuration",
+        "terraform_resource_attribute": "root_block_device.0.encrypted"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "launch_configuration_ebs_block_devices_not_unencrypted",
+      "description": "No aws_launch_configuration ebs_block_device may set encrypted = false",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_launch_configuration",
+        "terraform_resource_attribute": "ebs_block_device.*.encrypted"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": false,
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "instance_root_block_device_not_unencrypted && instance_ebs_block_devices_not_unencrypted && launch_configuration_root_block_device_not_unencrypted && launch_configuration_ebs_block_devices_not_unencrypted"
+}

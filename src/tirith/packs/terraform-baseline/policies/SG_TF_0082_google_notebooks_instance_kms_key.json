@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0082",
+    "name": "Ensure Vertex AI instance disks are encrypted with a Customer Managed Key (CMK)",
+    "description": "Ensure Vertex AI instance disks are encrypted with a Customer Managed Key (CMK)",
+    "tags": [
+      "cloud:gcp",
+      "encryption"
+    ],
+    "remediation": "Set google_notebooks_instance.disk_encryption to \"CMEK\" and supply a kms_key."
+  },
+  "evaluators": [
+    {
+      "id": "kms_key_is_set",
+      "description": "google_notebooks_instance.kms_key is present and non-empty",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_notebooks_instance",
+        "terraform_resource_attribute": "kms_key"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "disk_encryption_is_cmek",
+      "description": "google_notebooks_instance.disk_encryption equals CMEK",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_notebooks_instance",
+        "terraform_resource_attribute": "disk_encryption"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "CMEK",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "kms_key_is_set && disk_encryption_is_cmek"
+}

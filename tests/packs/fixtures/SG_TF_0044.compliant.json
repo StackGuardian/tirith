@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_ses_configuration_set.test",
+      "mode": "managed",
+      "type": "aws_ses_configuration_set",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "delivery_options": [
+            {
+              "tls_policy": "Require"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0081",
+    "name": "Ensure Document AI Warehouse Location is configured to use a Customer Managed Key (CMK)",
+    "description": "Ensure Document AI Warehouse Location is configured to use a Customer Managed Key (CMK)",
+    "tags": [
+      "cloud:gcp",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "kms_key_set",
+      "description": "google_document_ai_warehouse_location.kms_key must be set",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_document_ai_warehouse_location",
+        "terraform_resource_attribute": "kms_key"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "kms_key_set"
+}

@@ -1,0 +1,40 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.test",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "auto_minor_version_upgrade": false
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_rds_cluster_instance.test",
+      "mode": "managed",
+      "type": "aws_rds_cluster_instance",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "auto_minor_version_upgrade": false
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}
