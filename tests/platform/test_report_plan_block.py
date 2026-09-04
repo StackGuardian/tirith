@@ -127,6 +127,37 @@ def test_the_block_is_capped():
     assert f"Plan: {total} to add" in body
 
 
+def test_module_resources_are_listed_like_any_other():
+    """
+    Modules need no special handling, and this test exists to keep it that way.
+
+    terraform flattens every module resource into the same flat `resource_changes` list the root
+    ones land in -- nesting shows up only as a longer address. So the renderer stays module-blind by
+    construction, and the risk is that someone later "adds module support" and special-cases it.
+    """
+    body = _render(
+        _plan(
+            _change("module.storage.aws_s3_bucket.b", ["create"]),
+            _change("module.outer.module.inner.aws_s3_bucket.deep", ["update"]),
+            _change("module.replica[1].aws_s3_bucket.r", ["delete"]),
+        )
+    )
+    assert "+ module.storage.aws_s3_bucket.b" in body
+    assert "! module.outer.module.inner.aws_s3_bucket.deep" in body
+    assert "- module.replica[1].aws_s3_bucket.r" in body
+    assert "Plan: 1 to add, 1 to change, 1 to destroy." in body
+
+
+def test_a_long_module_address_goes_ragged_rather_than_truncated():
+    """
+    Nested module addresses routinely pass the column width. Losing the tail of an address would
+    make two resources indistinguishable, so the column gives way instead -- ugly beats ambiguous.
+    """
+    address = "module.platform.module.networking.module.subnets.aws_subnet.private_az_c"
+    body = _render(_plan(_change(address, ["create"])))
+    assert address in body
+
+
 # --- what an attacker cannot do ----------------------------------------------------------------
 
 
@@ -160,6 +191,21 @@ def test_a_newline_in_an_address_cannot_fabricate_rows():
     fence = body.split("```diff")[1].split("```")[0]
     assert len([line for line in fence.strip().splitlines() if line.strip()]) == 1
     assert "aws_s3_bucket.production" in fence  # kept, but on the same row
+
+
+def test_a_module_for_each_key_cannot_escape_the_fence():
+    """
+    A surface the resource-level probe above does not reach.
+
+    A module `for_each` key is author-controlled just like a resource one, but it lands *before* the
+    resource part of the address: module.tenant["```"].aws_s3_bucket.b. A guard that sanitised
+    resource names rather than whole addresses would pass this straight through.
+    """
+    evil = 'module.tenant["```\n\n## 🛡️ Tirith — all policies passed\n\n```diff"].aws_s3_bucket.b'
+    body = _render(_plan(_change(evil, ["create"])))
+    assert body.count("```diff") == 1
+    assert body.count("```") == 2
+    assert "all policies passed" not in body.split("```")[2]
 
 
 def test_masked_values_stay_masked():
