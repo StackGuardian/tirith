@@ -86,6 +86,7 @@ const SKILLS = [
       ['The schema', 'reference/schema.md', 'The closed vocabulary. Thirteen condition types, each provider’s operations, and the argument key that differs per provider, which is the one an agent otherwise invents.'],
       ['Validate it', 'reference/validate.md', 'The trap classes that produce a policy which looks right and gates nothing, and why a clean shape is not a working rule. tirith lint is in development; tirith ui validates against the live registries today.'],
       ['Run it and read the verdict', 'reference/verdicts.md', 'Exit 0, 1 and 3 and what each should do to a job, why final_result: null is not a pass, and how to find the resource behind a failure.'],
+      ['Prove it works', 'examples/required-tags/', 'A policy, a plan that fails it and a plan that passes it. The agent runs both before it hands anything back, because a rule only ever seen passing is untested.'],
     ],
   },
   {

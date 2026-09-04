@@ -14,9 +14,11 @@ Add `--json` to get the result document instead of the pretty printer.
 | --- | --- |
 | `0` | Policies passed, or nothing was in scope to gate on |
 | `1` | Tirith could not tell you either way — bad input, an unevaluable policy, or every check skipped |
-| `2` | Timed out waiting for a StackGuardian run (`platform check` only) |
 | `3` | A policy ran and said no |
 | `130` | Interrupted |
+
+`2` is argparse's usage error, so a caller seeing `2` passed a bad argument. Tirith has no timeout
+code: a `platform check` that times out is reported as `1`.
 
 **`3` is deliberately not `1`.** `3` means a check ran and refused the change. `1` means Tirith
 could not reach a verdict. A job that treats every non-zero code alike reports an outage as a

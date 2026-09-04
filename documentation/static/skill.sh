@@ -8,7 +8,8 @@
 # its source is documentation/static/skill.sh in StackGuardian/tirith, so the version you
 # are about to pipe into a shell is the version you can read in the repository.
 #
-# What it does: downloads eleven markdown files into .claude/skills/tirith-policies/ and,
+# What it does: downloads the skill into .claude/skills/tirith-policies/ -- eleven markdown
+# files plus a worked example (a policy, a plan that fails it, a plan that passes it) -- and,
 # with --cursor, one rule file into .cursor/rules/. It creates directories, writes those
 # files, and nothing else. No package is installed, no PATH is changed, nothing is executed
 # after download, and it never touches a file it did not create.
@@ -30,6 +31,8 @@ DEST="."
 CURSOR=0
 
 REFERENCES="schema validate verdicts terraform-plan other-providers variables install pipelines platform debug-ci"
+EXAMPLE="examples/required-tags"
+EXAMPLE_FILES="README.md policy.json should-fail.json should-pass.json"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -55,7 +58,7 @@ TARGET="$DEST/$PACK"
 # partial vocabulary.
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT INT TERM
-mkdir -p "$TMP/reference"
+mkdir -p "$TMP/reference" "$TMP/$EXAMPLE"
 
 fetch() {
   curl -fsSL "$1" -o "$2" || { printf 'skill.sh: failed to download %s\n' "$1" >&2; exit 1; }
@@ -65,11 +68,17 @@ fetch "$BASE/SKILL.md" "$TMP/SKILL.md"
 for f in $REFERENCES; do
   fetch "$BASE/reference/$f.md" "$TMP/reference/$f.md"
 done
+for f in $EXAMPLE_FILES; do
+  fetch "$BASE/$EXAMPLE/$f" "$TMP/$EXAMPLE/$f"
+done
 
-mkdir -p "$TARGET/reference"
+mkdir -p "$TARGET/reference" "$TARGET/$EXAMPLE"
 cp "$TMP/SKILL.md" "$TARGET/SKILL.md"
 for f in $REFERENCES; do
   cp "$TMP/reference/$f.md" "$TARGET/reference/$f.md"
+done
+for f in $EXAMPLE_FILES; do
+  cp "$TMP/$EXAMPLE/$f" "$TARGET/$EXAMPLE/$f"
 done
 
 printf 'Installed the Tirith skill: %s\n' "$TARGET"

@@ -19,8 +19,8 @@ guess from a plausible-looking shape.
 curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Eleven markdown files under `.claude/skills/tirith-policies/`. No config file, no restart, and it
-is picked up in any repository you copy it into.
+Eleven markdown files and one worked example under `.claude/skills/tirith-policies/`. No config
+file, no restart, and it is picked up in any repository you copy it into.
 
 | Flag | |
 |---|---|
@@ -29,7 +29,7 @@ is picked up in any repository you copy it into.
 | `--ref REF` | Install from a branch or tag instead of `main` |
 | `--help` | The same summary, from the script itself |
 
-The script downloads eleven markdown files and does nothing else: no package is installed, no
+The script downloads those files and does nothing else: no package is installed, no
 `PATH` is changed, nothing is executed after the download, and it never touches a file it did not
 create. It downloads to a temporary directory and moves the files into place only once all of them
 have arrived, because a half-written skill is worse than none: an agent reads whatever files exist
@@ -82,6 +82,7 @@ with a small context window pays for only what the task needs.
 | `reference/pipelines.md` | Adding the gate to six CI platforms |
 | `reference/platform.md` | Evaluating an organization's policies |
 | `reference/debug-ci.md` | Diagnosing a red check |
+| `examples/required-tags/` | A policy, a plan that fails it and a plan that passes it, so the agent can prove its own work before it hands it back |
 
 ## Two things decide whether the policy actually works
 
@@ -93,7 +94,8 @@ the policy:
    [Quick Installation](../tirith-installation/quick-intallation.md).
 2. **Give it a document that should fail.** Ask for the policy *and* a plan that violates it, then
    check the exit code is `3`. If it is `0`, the policy matched nothing, which is the failure this
-   whole page exists to prevent. See [Exit codes](exit-codes.md).
+   whole page exists to prevent. The pack ships a starting pair in `examples/required-tags/`.
+   See [Exit codes](exit-codes.md).
 
 ## Keeping it current
 
@@ -104,7 +106,7 @@ version:
 curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Re-running is safe: it overwrites the eleven files it owns and leaves everything else alone.
+Re-running is safe: it overwrites the files it owns and leaves everything else alone.
 
 `--ref` takes a branch or a commit, which is worth knowing for a fork or a pull request. It cannot
 yet take a release tag: the pack was added after `1.2.0`, so `main` is the only ref that has it,

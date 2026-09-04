@@ -2,11 +2,12 @@
 
 ## `tirith lint` is not in the released package
 
-It is in development. The released CLI dispatches `tirith`, `tirith ui` and `tirith platform
-check` and nothing else, so `tirith lint` in a pipeline you are writing for someone else is a step
-that fails with an unrecognised argument.
+This is the one place in the pack that explains it; the other files point here. The released CLI
+dispatches `tirith`, `tirith ui` and `tirith platform check` and nothing else, so `tirith lint`
+in a pipeline is a step that fails with an unrecognised argument. A linter is on the roadmap at
+`https://stackguardian.github.io/tirith/roadmap/`; do not assume it has shipped.
 
-Until it ships there are two ways to validate, and both are available today.
+Two ways to validate exist today.
 
 ## The interactive validator does ship
 
@@ -57,6 +58,9 @@ tirith -policy-path .tirith/policies -input-path should-fail.json --fail-on-erro
 echo "exit: $?"
 ```
 
+`examples/required-tags/` in this pack has a policy with a failing and a passing plan. Copy the
+pair and edit it rather than starting from an empty file.
+
 | Exit | Reading |
 | --- | --- |
 | `3` | The policy works. It refused a change it was supposed to refuse. |
@@ -75,11 +79,3 @@ tirith --json -policy-path .tirith/policies -input-path plan.json > result.json
 The JSON carries every evaluator, its result, and the value that produced it. When a check
 surprises you, the value it actually read is the fastest way to the cause: an evaluator reading
 `None` on every resource is the signature of a key the provider ignored.
-
-## When lint ships
-
-It reads the engine's own registries, so it catches the invented condition type and the
-wrong-provider key from the source of truth rather than from a table that can go stale. It will
-exit `3` for a bad policy and `1` for an unreadable path, matching the rest of Tirith: the linter
-saying no about a policy is a verdict, not a tool failure. Check
-`https://stackguardian.github.io/tirith/roadmap/` before assuming it is available.

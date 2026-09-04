@@ -1,0 +1,53 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.5.7",
+  "resource_changes": [
+    {
+      "address": "aws_instance.web",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "web",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "instance_type": "t3.micro",
+          "tags": {
+            "Name": "web-server",
+            "costcenter": "product-123"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.assets",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "assets",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "example-assets",
+          "tags": {
+            "Name": "assets",
+            "costcenter": "product-123"
+          }
+        },
+        "after_unknown": {
+          "arn": true
+        }
+      }
+    }
+  ]
+}
