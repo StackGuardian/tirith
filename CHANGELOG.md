@@ -48,6 +48,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   once per resource with identical text.
 - `core`: "Could not find input value" now names the provider arguments that produced no value.
 
+### Fixed
+- **Verdict change.** A resource skipped through `error_tolerance` no longer overwrites the
+  verdict of the resources evaluated before it. An evaluator now fails if any resource fails,
+  passes if none fail and at least one was evaluated, and is skipped only when every resource
+  was tolerated away. Previously a skip reset the verdict to skipped, so a violating resource
+  followed by a destroyed one (severity 0, tolerated at every `error_tolerance`) disappeared
+  from `eval_expression` and the policy reported no verdict; under `!id` it passed. The result
+  depended on the order of `resource_changes`. Plans that mix compliant and destroyed
+  resources now pass instead of exiting 1, and plans that mix violating and destroyed
+  resources now exit 3 instead of 1. (#293)
+
 ### Notes
 - The local evaluation surface is untouched. `ui` is dispatched before the flat parser, like
   `platform`, so `--json` output remains byte-identical to the golden file.
