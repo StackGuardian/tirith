@@ -8,10 +8,10 @@
 # its source is documentation/static/skill.sh in StackGuardian/tirith, so the version you
 # are about to pipe into a shell is the version you can read in the repository.
 #
-# What it does: downloads the skill into .claude/skills/tirith-policies/ -- eleven markdown
-# files plus a worked example (a policy, a plan that fails it, a plan that passes it) -- and,
-# with --cursor, one rule file into .cursor/rules/. It creates directories, writes those
-# files, and nothing else. No package is installed, no PATH is changed, nothing is executed
+# What it does: downloads two skills into .claude/skills/ -- tirith-policies (eleven markdown
+# files plus a worked example) and tirith-migrate (Sentinel-to-Tirith translation, with its
+# classified corpus and five worked examples) -- and, with --cursor, one rule file into
+# .cursor/rules/. It creates directories, writes those files, and nothing else. No package is installed, no PATH is changed, nothing is executed
 # after download, and it never touches a file it did not create.
 #
 # Flags:
@@ -29,10 +29,42 @@ REF="main"
 PACK=".claude/skills/tirith-policies"
 DEST="."
 CURSOR=0
+MIGRATE_PACK=".claude/skills/tirith-migrate"
 
 REFERENCES="schema validate verdicts terraform-plan other-providers variables install pipelines platform debug-ci"
 EXAMPLE="examples/required-tags"
 EXAMPLE_FILES="README.md policy.json should-fail.json should-pass.json"
+
+# tirith-migrate, relative to its own pack root. One path per line so the list stays diffable.
+MIGRATE_FILES="SKILL.md
+reference/sentinel.md
+reference/sentinel-corpus.md
+examples/sentinel/README.md
+examples/sentinel/restrict-instance-type/source.sentinel
+examples/sentinel/restrict-instance-type/notes.md
+examples/sentinel/restrict-instance-type/policy.json
+examples/sentinel/restrict-instance-type/variables.json
+examples/sentinel/restrict-instance-type/should-fail.json
+examples/sentinel/restrict-instance-type/should-pass.json
+examples/sentinel/mandatory-tags/source.sentinel
+examples/sentinel/mandatory-tags/notes.md
+examples/sentinel/mandatory-tags/policy.json
+examples/sentinel/mandatory-tags/should-fail.json
+examples/sentinel/mandatory-tags/should-pass.json
+examples/sentinel/prevent-database-destroy/source.sentinel
+examples/sentinel/prevent-database-destroy/notes.md
+examples/sentinel/prevent-database-destroy/policy.json
+examples/sentinel/prevent-database-destroy/should-fail.json
+examples/sentinel/prevent-database-destroy/should-pass.json
+examples/sentinel/prevent-database-destroy/diverges.json
+examples/sentinel/restrict-ssh-ingress/source.sentinel
+examples/sentinel/restrict-ssh-ingress/notes.md
+examples/sentinel/restrict-ssh-ingress/policy.json
+examples/sentinel/restrict-ssh-ingress/should-fail.json
+examples/sentinel/restrict-ssh-ingress/should-pass.json
+examples/sentinel/restrict-ssh-ingress/diverges.json
+examples/sentinel/require-private-registry-modules/source.sentinel
+examples/sentinel/require-private-registry-modules/notes.md"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -71,6 +103,11 @@ done
 for f in $EXAMPLE_FILES; do
   fetch "$BASE/$EXAMPLE/$f" "$TMP/$EXAMPLE/$f"
 done
+MBASE="https://raw.githubusercontent.com/$REPO/$REF/$MIGRATE_PACK"
+for f in $MIGRATE_FILES; do
+  mkdir -p "$TMP/migrate/$(dirname "$f")"
+  fetch "$MBASE/$f" "$TMP/migrate/$f"
+done
 
 mkdir -p "$TARGET/reference" "$TARGET/$EXAMPLE"
 cp "$TMP/SKILL.md" "$TARGET/SKILL.md"
@@ -81,7 +118,14 @@ for f in $EXAMPLE_FILES; do
   cp "$TMP/$EXAMPLE/$f" "$TARGET/$EXAMPLE/$f"
 done
 
+MTARGET="$DEST/$MIGRATE_PACK"
+for f in $MIGRATE_FILES; do
+  mkdir -p "$MTARGET/$(dirname "$f")"
+  cp "$TMP/migrate/$f" "$MTARGET/$f"
+done
+
 printf 'Installed the Tirith skill: %s\n' "$TARGET"
+printf 'Installed the migration skill: %s\n' "$MTARGET"
 
 if [ "$CURSOR" -eq 1 ]; then
   mkdir -p "$DEST/.cursor/rules"

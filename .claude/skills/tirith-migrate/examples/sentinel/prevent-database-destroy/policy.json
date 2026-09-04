@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "prevent-database-destroy",
+    "description": "No aws_db_instance is deleted by this plan",
+    "enforcement": "hard-mandatory"
+  },
+  "evaluators": [{
+    "id": "database_deleted",
+    "description": "Detects a delete action on any aws_db_instance",
+    "provider_args": {"operation_type": "action", "terraform_resource_type": "aws_db_instance"},
+    "condition": {"type": "ContainedIn", "value": ["delete"], "error_tolerance": 1}
+  }],
+  "eval_expression": "!database_deleted"
+}

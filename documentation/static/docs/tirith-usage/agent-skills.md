@@ -19,8 +19,9 @@ guess from a plausible-looking shape.
 curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Eleven markdown files and one worked example under `.claude/skills/tirith-policies/`. No config
-file, no restart, and it is picked up in any repository you copy it into.
+Two skills under `.claude/skills/`: `tirith-policies`, for writing policies, and `tirith-migrate`,
+for translating existing Sentinel policies. No config file, no restart, and they are picked up in
+any repository you copy them into.
 
 | Flag | |
 |---|---|
@@ -84,6 +85,15 @@ with a small context window pays for only what the task needs.
 | `reference/debug-ci.md` | Diagnosing a red check |
 | `examples/required-tags/` | A policy, a plan that fails it and a plan that passes it, so the agent can prove its own work before it hands it back |
 
+## Migrating from Sentinel
+
+The second skill, `tirith-migrate`, is for teams with existing HashiCorp Sentinel policies. It is a
+projection from a larger language onto a smaller one, and the skill's job is to say what survives.
+Measured against the 110 policies in HashiCorp's public libraries, 41 translate exactly, 40
+approximately, and 29 not at all. Each translation is tagged with that fidelity, every approximate
+one ships a plan on which Sentinel and Tirith disagree, and every impossible one is refused in
+words with the Tirith issue that would change it. Checkov and OPA/Rego are planned next.
+
 ## Two things decide whether the policy actually works
 
 The pack teaches vocabulary. It does not run anything, and it is not a substitute for evaluating
@@ -106,7 +116,7 @@ version:
 curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Re-running is safe: it overwrites the files it owns and leaves everything else alone.
+Re-running is safe: it overwrites the files it owns, in both skills, and leaves everything else alone.
 
 `--ref` takes a branch or a commit, which is worth knowing for a fork or a pull request. It cannot
 yet take a release tag: the pack was added after `1.2.0`, so `main` is the only ref that has it,

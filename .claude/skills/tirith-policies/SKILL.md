@@ -129,3 +129,6 @@ tirith -policy-path policy.json -input-path should-pass.json --fail-on-error; ec
 | `reference/platform.md` | Evaluating against an organization's central policies |
 | `reference/debug-ci.md` | Starting from a red build and ending at the rule and the resource |
 | `examples/required-tags/` | A policy, a plan that fails it, and a plan that passes it |
+
+Translating existing Sentinel policies is a separate skill, `tirith-migrate`, installed alongside
+this one.
