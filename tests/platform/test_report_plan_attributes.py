@@ -260,4 +260,6 @@ def test_the_block_is_capped_in_lines_not_resources():
     body = _render(changes)
     fence = _fence(body)
     assert len(fence.strip().splitlines()) <= report.PLAN_LINE_LIMIT + 3
-    assert "truncated" in fence
+    # 40 resources fit; 40 resources plus three attributes each do not. The detail is what gives way.
+    assert "attribute detail omitted" in fence
+    assert "terraform_data.r39" in fence

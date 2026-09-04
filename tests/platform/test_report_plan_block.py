@@ -106,23 +106,68 @@ def test_a_document_with_no_resource_changes_renders_no_block():
     assert "```diff" not in _render(None)
 
 
-def test_small_plans_are_inline_and_large_ones_collapse():
-    small = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(report.PLAN_INLINE_LIMIT)])
-    assert "<details><summary>Show plan" not in _render(small)
-
-    large = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(report.PLAN_INLINE_LIMIT + 1)])
-    assert "<details><summary>Show plan" in _render(large)
-
-
-def test_the_block_is_capped():
+def test_the_plan_is_never_collapsed():
     """
-    Capped in lines rather than resources, because a resource now brings its changed attributes with
-    it and it is the line count that decides whether the comment is readable.
+    The plan is the thing this block was added to show. Hiding it behind a click makes the common
+    case a reviewer who never opens it, which is the same as not rendering it at all.
     """
+    large = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(40)])
+    body = _render(large)
+    assert "<details><summary>Show plan" not in body
+    assert "```diff" in body
+    assert "+ aws_s3_bucket.b39" in body
+
+
+def test_detail_is_given_up_before_any_resource():
+    """
+    The order of sacrifice. Every resource stays listed and every attribute row goes, rather than
+    the other way round -- a reviewer can act on "this is being destroyed" without knowing which
+    field changed, but not the reverse.
+    """
+    changes = [
+        {
+            "address": f"aws_s3_bucket.b{i}",
+            "type": "aws_s3_bucket",
+            "change": {"actions": ["update"], "before": {"acl": "private"}, "after": {"acl": "public"}},
+        }
+        for i in range(report.PLAN_LINE_LIMIT - 5)
+    ]
+    body = _render({"resource_changes": changes})
+    fence = body.split("```diff")[1].split("```")[0]
+
+    # Every resource is still named...
+    for i in range(report.PLAN_LINE_LIMIT - 5):
+        assert f"aws_s3_bucket.b{i} " in fence
+    # ...and no resource was cut off the end.
+    assert "more resource(s), truncated" not in body
+    # ...but the attribute rows that would not fit are gone, and said to be gone.
+    assert '~ acl = "private" -> "public"' not in fence
+    assert "attribute detail omitted" in fence
+
+
+def test_detail_is_dropped_wholesale_not_from_the_cut_off_point():
+    """
+    Trimming at the boundary would annotate the first few resources and leave the rest bare, which
+    reads as though the later ones had nothing to say -- and the bare-looking ones are exactly where
+    a reviewer stops looking.
+    """
+    changes = [
+        {
+            "address": f"aws_s3_bucket.b{i}",
+            "type": "aws_s3_bucket",
+            "change": {"actions": ["update"], "before": {"acl": "private"}, "after": {"acl": "public"}},
+        }
+        for i in range(report.PLAN_LINE_LIMIT)
+    ]
+    fence = _render({"resource_changes": changes}).split("```diff")[1].split("```")[0]
+    assert "acl" not in fence  # not "some of them kept their attributes"
+
+
+def test_resources_are_only_cut_when_the_bare_list_still_does_not_fit():
     total = report.PLAN_LINE_LIMIT + 25
     plan = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(total)])
     body = _render(plan)
-    assert "more line(s), truncated" in body
+    assert "more resource(s), truncated" in body
     # The count still reflects the whole plan, not just what was shown.
     assert f"Plan: {total} to add" in body
 

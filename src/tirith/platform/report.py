@@ -26,13 +26,13 @@ COMMENT_LIMIT = 60000
 
 _ICONS = {FAIL: "❌", WARN: "⚠️", APPROVAL_REQUIRED: "⏳", PASS: "✅", UNKNOWN: "❓"}
 
-# How many changed resources render inline before the block is collapsed. Small changes should be
-# readable without a click; large ones must not push the findings off the screen.
-PLAN_INLINE_LIMIT = 12
-
 # A hard cap on lines, independent of the comment limit. A thousand-resource plan would otherwise
 # consume the whole budget and take the findings down with it during truncation. Counted in lines
-# rather than resources because each resource now brings its changed attributes with it.
+# rather than resources because each resource brings its changed attributes with it.
+#
+# The block is never collapsed behind a <details>. It was, above twelve resources -- but the plan is
+# the thing the comment was extended to show, and putting it behind a click means the common case is
+# a reviewer who never sees it. What gives way under this cap is detail, not visibility.
 PLAN_LINE_LIMIT = 60
 
 
@@ -111,8 +111,7 @@ def render_plan_block(plan):
 
     counts = plan_actions.plan_counts(changes)
 
-    rows = []
-    listed_resources = 0
+    entries = []
     for change in changes:
         if not isinstance(change, dict):
             continue
@@ -125,17 +124,11 @@ def render_plan_block(plan):
         address = _fence_safe(change.get("address") or change.get("type") or "")
         if not address:
             continue
-        rows.append(f"{marker} {address:<48} {_fence_safe(plan_actions.action_summary(actions))}".rstrip())
-        rows.extend(_render_attributes(change.get("change") or {}))
-        listed_resources += 1
+        row = f"{marker} {address:<48} {_fence_safe(plan_actions.action_summary(actions))}".rstrip()
+        entries.append((row, _render_attributes(change.get("change") or {})))
 
-    # The caps count *lines*, not resources, now that a resource brings its attributes with it. A
-    # ten-resource plan can be eighty lines, and it is the line count that decides whether the
-    # comment is readable.
-    dropped_lines = 0
-    if len(rows) > PLAN_LINE_LIMIT:
-        dropped_lines = len(rows) - PLAN_LINE_LIMIT
-        rows = rows[:PLAN_LINE_LIMIT]
+    listed_resources = len(entries)
+    rows, hidden_detail, dropped_resources = _fit_plan_rows(entries)
 
     summary = plan_actions.summary_line(counts)
     if counts.get("no_op"):
@@ -150,19 +143,41 @@ def render_plan_block(plan):
         # having, otherwise the comment looks like it simply forgot to mention the plan.
         return [summary, ""]
 
-    truncation = ["", f"… and {dropped_lines} more line(s), truncated"] if dropped_lines else []
-    fence = ["```diff"] + rows + truncation + ["```"]
+    notes = []
+    if hidden_detail:
+        notes += ["", f"… attribute detail omitted: {hidden_detail} more line(s) than a comment can carry"]
+    if dropped_resources:
+        notes += ["", f"… and {dropped_resources} more resource(s), truncated"]
 
-    if len(rows) > PLAN_INLINE_LIMIT:
-        noun = "resource" if listed_resources == 1 else "resources"
-        block = [
-            f"<details><summary>Show plan — {listed_resources} changed {noun}</summary>",
-            "",
-        ] + fence + ["", "</details>"]
-    else:
-        block = fence
+    return ["```diff"] + rows + notes + ["```", "", summary, ""]
 
-    return block + ["", summary, ""]
+
+def _fit_plan_rows(entries):
+    """
+    Fit the plan into PLAN_LINE_LIMIT lines, giving up detail before resources.
+
+    Returns (rows, hidden_detail_lines, dropped_resources).
+
+    The order of sacrifice is the whole point. A resource row says *what is happening to your
+    infrastructure*; an attribute row elaborates on one. So an oversized plan loses every attribute
+    row before it loses a single resource, and only a resource list that is still too long after that
+    gets cut off the end.
+
+    Detail is dropped wholesale rather than from the cut-off point onward. Trimming at the boundary
+    would annotate the first handful of resources and leave the rest bare, which reads as though the
+    later ones had nothing to say -- the most misleading shape available, since the untouched-looking
+    ones are exactly where a reviewer stops looking.
+    """
+    full = [line for row, attributes in entries for line in [row] + attributes]
+    if len(full) <= PLAN_LINE_LIMIT:
+        return full, 0, 0
+
+    bare = [row for row, _ in entries]
+    hidden_detail = len(full) - len(bare)
+    if len(bare) <= PLAN_LINE_LIMIT:
+        return bare, hidden_detail, 0
+
+    return bare[:PLAN_LINE_LIMIT], hidden_detail, len(bare) - PLAN_LINE_LIMIT
 
 
 
