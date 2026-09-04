@@ -30,11 +30,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A policy validator behind the interface, reporting the mistakes that are otherwise silent:
   a provider argument the operation does not read, an id referenced in `eval_expression` but
   never defined, a single `&` where `&&` was meant, an evaluator that does not exist.
+- `core`: Provider results can now carry a `context` object saying where the evaluated value came
+  from. It is rendered into the front of the result `message` and kept as structured fields in the
+  result document.
+- `terraform_plan`: Result messages now name the resource address, its planned action and the
+  attribute being evaluated, e.g. ``[aws_s3_bucket.example (create)] acl: `"public-read"` is not
+  equal to `"private"` `` instead of just ``` `"public-read"` is not equal to `"private"` ``. The
+  Explorer above reads the same detail out of the result document; this puts it in the message, so
+  a CI log is legible without it.
+
+### Changed
+- `terraform_plan`: A wildcard attribute now reports the index it resolved to
+  (`ebs_block_device.0.tags.application_acronym`), so results coming from the same resource can be
+  told apart.
+- `terraform_plan`: An "attribute is not found" error now names the resource it is about, instead
+  of repeating the same text once per resource — with `terraform_resource_type: "*"` it was emitted
+  once per resource with identical text.
+- `core`: "Could not find input value" now names the provider arguments that produced no value.
 
 ### Notes
 - The local evaluation surface is untouched. `ui` is dispatched before the flat parser, like
   `platform`, so `--json` output remains byte-identical to the golden file.
 - No new runtime dependencies for anyone who does not install the extra.
+- Only `terraform_plan` attaches a result `context`. The other providers return results without
+  it, so their messages and result documents are unchanged.
 
 ## [1.2.0] - 2026-08-03
 
