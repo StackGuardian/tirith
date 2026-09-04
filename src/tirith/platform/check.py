@@ -707,6 +707,10 @@ def run_check(opts):
             limit=opts.markdown_limit,
             cost_breakdown=cost_breakdown,
             commit=opts.sha,
+            # The masked document, never the raw one -- see report.render_plan_block.
+            plan=plan,
+            source_dir=opts.source_dir,
+            workflow_id=opts.workflow_id,
         )
         try:
             with open(opts.output_markdown, "w") as f:
