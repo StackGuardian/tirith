@@ -55,7 +55,7 @@ reorders a list, and the output parses back to an equal document.
 - `meta`: `version`, `required_provider`, `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation`.
 - Each evaluator: `id`, `description`, `provider_args`, `condition`. `operation_type` leads `provider_args`; `type`, `value`, `error_tolerance` is the order inside `condition`.
 - Keys not in these lists keep their relative order after the listed ones.
-- Two-space indent, one key per line, lists of scalars on one line when they fit in 80 columns, one trailing newline.
+- Whitespace is exactly Python's `json.dumps(indent=2, ensure_ascii=False)` plus one trailing newline, so a policy written by any tool that uses the standard library is already canonical. Non-ASCII stays as written.
 
 ## Pre-commit
 

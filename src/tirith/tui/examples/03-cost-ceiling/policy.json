@@ -10,7 +10,9 @@
       "description": "The whole plan costs less than $500 a month",
       "provider_args": {
         "operation_type": "total_monthly_cost",
-        "resource_type": ["*"]
+        "resource_type": [
+          "*"
+        ]
       },
       "condition": {
         "type": "LessThanEqualTo",
@@ -22,7 +24,9 @@
       "description": "Compute alone stays under $200 a month",
       "provider_args": {
         "operation_type": "total_monthly_cost",
-        "resource_type": ["aws_instance"]
+        "resource_type": [
+          "aws_instance"
+        ]
       },
       "condition": {
         "type": "LessThanEqualTo",
