@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0014",
+    "name": "Ensure no default VPC is planned to be provisioned",
+    "description": "Ensure no default VPC is planned to be provisioned",
+    "tags": [
+      "cloud:aws",
+      "networking"
+    ],
+    "remediation": "Remove the aws_default_vpc resource and manage an explicit aws_vpc instead."
+  },
+  "evaluators": [
+    {
+      "id": "no_default_vpc",
+      "description": "The plan must contain zero aws_default_vpc resources",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "aws_default_vpc"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_default_vpc"
+}

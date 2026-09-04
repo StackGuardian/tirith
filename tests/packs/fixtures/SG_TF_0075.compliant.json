@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "google_bigquery_table.test",
+      "mode": "managed",
+      "type": "google_bigquery_table",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "encryption_configuration": [
+            {
+              "kms_key_name": "tirith_corpus_sentinel"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

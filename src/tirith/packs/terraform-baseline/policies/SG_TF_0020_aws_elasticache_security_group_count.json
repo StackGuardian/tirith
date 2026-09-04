@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0020",
+    "name": "Ensure no aws_elasticache_security_group resources exist",
+    "description": "Ensure no aws_elasticache_security_group resources exist",
+    "tags": [
+      "cloud:aws",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "no_elasticache_security_group",
+      "description": "aws_elasticache_security_group is EC2-Classic only and must not be used",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "aws_elasticache_security_group"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_elasticache_security_group"
+}

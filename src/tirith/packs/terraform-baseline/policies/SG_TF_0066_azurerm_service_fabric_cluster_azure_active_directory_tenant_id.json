@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0066",
+    "name": "Ensures that Active Directory is used for authentication for Service Fabric",
+    "description": "Ensures that Active Directory is used for authentication for Service Fabric",
+    "tags": [
+      "cloud:azure",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "aad_tenant_id_is_set",
+      "description": "Every azurerm_service_fabric_cluster must declare an azure_active_directory block with a non-empty tenant_id",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_service_fabric_cluster",
+        "terraform_resource_attribute": "azure_active_directory.0.tenant_id"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "aad_tenant_id_is_set"
+}

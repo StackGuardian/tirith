@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0010",
+    "name": "Ensure AWS Bedrock agent is associated with Bedrock guardrails",
+    "description": "Ensure AWS Bedrock agent is associated with Bedrock guardrails",
+    "tags": [
+      "cloud:aws",
+      "ai_and_ml"
+    ],
+    "remediation": "Add a guardrail_configuration block with guardrail_identifier to every aws_bedrockagent_agent."
+  },
+  "evaluators": [
+    {
+      "id": "bedrock_agent_guardrail_identifier_set",
+      "description": "Every aws_bedrockagent_agent must carry guardrail_configuration.0.guardrail_identifier. The block is a list in the plan, so an absent one is [] in change.after -- a severity-2 miss, which fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_bedrockagent_agent",
+        "terraform_resource_attribute": "guardrail_configuration.0.guardrail_identifier"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "bedrock_agent_guardrail_identifier_set"
+}

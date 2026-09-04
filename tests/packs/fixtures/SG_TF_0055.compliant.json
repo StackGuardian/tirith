@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_container_group.test",
+      "mode": "managed",
+      "type": "azurerm_container_group",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "subnet_ids": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

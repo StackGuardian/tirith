@@ -1,0 +1,69 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_app_service.test",
+      "mode": "managed",
+      "type": "azurerm_app_service",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "storage_account": [
+            {
+              "type": "prefix-AzureFiles-suffix"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "azurerm_linux_web_app.test",
+      "mode": "managed",
+      "type": "azurerm_linux_web_app",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "storage_account": [
+            {
+              "type": "prefix-AzureFiles-suffix"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "azurerm_windows_web_app.test",
+      "mode": "managed",
+      "type": "azurerm_windows_web_app",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "storage_account": [
+            {
+              "type": "prefix-AzureFiles-suffix"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

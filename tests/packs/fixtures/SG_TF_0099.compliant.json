@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "panos_management_profile.test",
+      "mode": "managed",
+      "type": "panos_management_profile",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "telnet": false
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0070",
+    "name": "Ensure that Azure Service Bus uses double encryption",
+    "description": "Ensure that Azure Service Bus uses double encryption",
+    "tags": [
+      "cloud:azure",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "infrastructure_encryption_enabled",
+      "description": "azurerm_servicebus_namespace customer_managed_key[0].infrastructure_encryption_enabled must be true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_servicebus_namespace",
+        "terraform_resource_attribute": "customer_managed_key.0.infrastructure_encryption_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "infrastructure_encryption_enabled"
+}

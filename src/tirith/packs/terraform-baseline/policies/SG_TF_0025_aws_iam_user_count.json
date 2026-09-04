@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0025",
+    "name": "Ensure access is controlled through SSO and not AWS IAM defined users",
+    "description": "Ensure access is controlled through SSO and not AWS IAM defined users",
+    "tags": [
+      "cloud:aws",
+      "iam"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "no_iam_users",
+      "description": "The plan must not create any aws_iam_user; access belongs in SSO",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "aws_iam_user"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_iam_users"
+}

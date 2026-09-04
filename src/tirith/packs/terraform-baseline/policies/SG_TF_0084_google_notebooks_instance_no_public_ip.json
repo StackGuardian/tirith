@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0084",
+    "name": "Ensure Vertex AI instances are private",
+    "description": "Ensure Vertex AI instances are private",
+    "tags": [
+      "cloud:gcp",
+      "general_security"
+    ],
+    "remediation": "Set no_public_ip = true on the google_notebooks_instance."
+  },
+  "evaluators": [
+    {
+      "id": "no_public_ip_enabled",
+      "description": "google_notebooks_instance.no_public_ip is true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_notebooks_instance",
+        "terraform_resource_attribute": "no_public_ip"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_public_ip_enabled"
+}

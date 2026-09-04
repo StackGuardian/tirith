@@ -1,0 +1,40 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "panos_ipsec_crypto_profile.test",
+      "mode": "managed",
+      "type": "panos_ipsec_crypto_profile",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "protocol": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "panos_panorama_ipsec_crypto_profile.test",
+      "mode": "managed",
+      "type": "panos_panorama_ipsec_crypto_profile",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "protocol": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

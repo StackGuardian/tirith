@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0088",
+    "name": "Ensure Cloud storage has versioning enabled",
+    "description": "Ensure Cloud storage has versioning enabled",
+    "tags": [
+      "cloud:gcp",
+      "logging"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "bucket_versioning_enabled",
+      "description": "google_storage_bucket versioning.*.enabled must be true. versioning is a block list in the plan; an absent or empty block is a severity-2 miss and fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_storage_bucket",
+        "terraform_resource_attribute": "versioning.*.enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "bucket_versioning_enabled"
+}

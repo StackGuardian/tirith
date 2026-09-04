@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "oci_file_storage_export.test",
+      "mode": "managed",
+      "type": "oci_file_storage_export",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "export_options": [
+            {
+              "identity_squash": "tirith_corpus_sentinel"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

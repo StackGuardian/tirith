@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_ec2_transit_gateway.test",
+      "mode": "managed",
+      "type": "aws_ec2_transit_gateway",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "auto_accept_shared_attachments": "enable"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0065",
+    "name": "Ensure that Azure Cognitive Search maintains SLA for search index queries",
+    "description": "Ensure that Azure Cognitive Search maintains SLA for search index queries",
+    "tags": [
+      "cloud:azure",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "search_replica_count_at_least_two",
+      "description": "azurerm_search_service.replica_count must be at least 2 to receive the index query SLA",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_search_service",
+        "terraform_resource_attribute": "replica_count"
+      },
+      "condition": {
+        "type": "GreaterThanEqualTo",
+        "value": 2,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "search_replica_count_at_least_two"
+}

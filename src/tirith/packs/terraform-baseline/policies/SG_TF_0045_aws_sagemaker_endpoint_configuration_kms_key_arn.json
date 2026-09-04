@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0045",
+    "name": "Ensure all data stored in the Sagemaker Endpoint is securely encrypted at rest",
+    "description": "Ensure all data stored in the Sagemaker Endpoint is securely encrypted at rest",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ],
+    "remediation": "Set kms_key_arn on every aws_sagemaker_endpoint_configuration."
+  },
+  "evaluators": [
+    {
+      "id": "endpoint_config_kms_key_arn",
+      "description": "kms_key_arn must be a non-empty string on every aws_sagemaker_endpoint_configuration. The attribute is optional, so an unset key arrives as an explicit null in change.after and fails IsNotEmpty.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_sagemaker_endpoint_configuration",
+        "terraform_resource_attribute": "kms_key_arn"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "endpoint_config_kms_key_arn"
+}

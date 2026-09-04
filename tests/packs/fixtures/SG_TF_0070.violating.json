@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_servicebus_namespace.test",
+      "mode": "managed",
+      "type": "azurerm_servicebus_namespace",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "customer_managed_key": [
+            {
+              "infrastructure_encryption_enabled": false
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

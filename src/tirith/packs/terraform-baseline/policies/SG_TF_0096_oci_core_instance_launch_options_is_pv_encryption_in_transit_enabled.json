@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0096",
+    "name": "Ensure OCI Compute Instance boot volume has in-transit data encryption enabled",
+    "description": "Ensure OCI Compute Instance boot volume has in-transit data encryption enabled",
+    "tags": [
+      "cloud:oci",
+      "encryption"
+    ],
+    "remediation": "Set launch_options { is_pv_encryption_in_transit_enabled = true } on oci_core_instance."
+  },
+  "evaluators": [
+    {
+      "id": "boot_volume_in_transit_encryption",
+      "description": "launch_options.0.is_pv_encryption_in_transit_enabled must be true. An absent or null launch_options block makes the indexed path a severity-2 miss, which fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "oci_core_instance",
+        "terraform_resource_attribute": "launch_options.0.is_pv_encryption_in_transit_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "boot_volume_in_transit_encryption"
+}

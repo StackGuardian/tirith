@@ -1,0 +1,58 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_instance.test",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "root_block_device": [
+            {
+              "encrypted": true
+            }
+          ],
+          "ebs_block_device": [
+            {
+              "encrypted": true
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_launch_configuration.test",
+      "mode": "managed",
+      "type": "aws_launch_configuration",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "root_block_device": [
+            {
+              "encrypted": true
+            }
+          ],
+          "ebs_block_device": [
+            {
+              "encrypted": true
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

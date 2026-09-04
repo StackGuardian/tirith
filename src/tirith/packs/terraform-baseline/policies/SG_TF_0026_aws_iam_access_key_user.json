@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0026",
+    "name": "Ensure IAM root user does not have Access keys",
+    "description": "Ensure IAM root user does not have Access keys",
+    "tags": [
+      "cloud:aws",
+      "iam"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "access_key_user_not_root",
+      "description": "aws_iam_access_key.user must not be the root user",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_iam_access_key",
+        "terraform_resource_attribute": "user"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "root"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "access_key_user_not_root"
+}

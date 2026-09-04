@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "google_document_ai_warehouse_location.test",
+      "mode": "managed",
+      "type": "google_document_ai_warehouse_location",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "kms_key": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0002",
+    "name": "Ensure disk is encrypted",
+    "description": "Ensure disk is encrypted",
+    "tags": [
+      "cloud:alicloud",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "disk_encrypted",
+      "description": "Every alicloud_disk sets encrypted = true; an absent or null encrypted fails. A disk restored from a snapshot inherits the snapshot's encryption, which this check cannot scope on and so still requires the flag.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "alicloud_disk",
+        "terraform_resource_attribute": "encrypted"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "disk_encrypted"
+}

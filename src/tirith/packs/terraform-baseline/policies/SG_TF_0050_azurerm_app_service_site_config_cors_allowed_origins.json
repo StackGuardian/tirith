@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0050",
+    "name": "Ensure that CORS disallows every resource to access app services",
+    "description": "Ensure that CORS disallows every resource to access app services",
+    "tags": [
+      "cloud:azure",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "app_service_cors_not_wildcard",
+      "description": "azurerm_app_service site_config.cors.allowed_origins is not exactly [\"*\"]",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_app_service",
+        "terraform_resource_attribute": "site_config.*.cors.*.allowed_origins"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": [
+          "*"
+        ],
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "linux_web_app_cors_not_wildcard",
+      "description": "azurerm_linux_web_app site_config.cors.allowed_origins is not exactly [\"*\"]",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_linux_web_app",
+        "terraform_resource_attribute": "site_config.*.cors.*.allowed_origins"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": [
+          "*"
+        ],
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "windows_web_app_cors_not_wildcard",
+      "description": "azurerm_windows_web_app site_config.cors.allowed_origins is not exactly [\"*\"]",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_windows_web_app",
+        "terraform_resource_attribute": "site_config.*.cors.*.allowed_origins"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": [
+          "*"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "app_service_cors_not_wildcard && linux_web_app_cors_not_wildcard && windows_web_app_cors_not_wildcard"
+}

@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0037",
+    "name": "Ensure that S3 bucket has lock configuration enabled by default",
+    "description": "Ensure that S3 bucket has lock configuration enabled by default",
+    "tags": [
+      "cloud:aws",
+      "general_security"
+    ],
+    "remediation": "Set object_lock_configuration { object_lock_enabled = \"Enabled\" } on the aws_s3_bucket."
+  },
+  "evaluators": [
+    {
+      "id": "object_lock_enabled",
+      "description": "object_lock_configuration.0.object_lock_enabled must be \"Enabled\". A block present without the key contributes null and fails, while a bucket with no object_lock_configuration at all is tolerated away rather than failed.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_s3_bucket",
+        "terraform_resource_attribute": "object_lock_configuration.*.object_lock_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "Enabled",
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "object_lock_enabled"
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0094",
+    "name": "Ensure Inbound Firewall Policy is not set to ACCEPT",
+    "description": "Ensure Inbound Firewall Policy is not set to ACCEPT",
+    "tags": [
+      "cloud:linode",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "inbound_policy_is_drop",
+      "description": "linode_firewall.inbound_policy must be DROP",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "linode_firewall",
+        "terraform_resource_attribute": "inbound_policy"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "DROP",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "inbound_policy_is_drop"
+}

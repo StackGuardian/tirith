@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0033",
+    "name": "Ensure Lambda Runtime is not deprecated",
+    "description": "Ensure Lambda Runtime is not deprecated",
+    "tags": [
+      "cloud:aws",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "runtime_not_deprecated",
+      "description": "aws_lambda_function.runtime must not be one of the deprecated runtimes. A list-valued NotContainedIn also passes on a null runtime, which is what container-image packaged functions record.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_lambda_function",
+        "terraform_resource_attribute": "runtime"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "dotnetcore3.1",
+          "nodejs12.x",
+          "python3.6",
+          "python2.7",
+          "dotnet5.0",
+          "dotnetcore2.1",
+          "ruby2.5",
+          "nodejs10.x",
+          "nodejs8.10",
+          "nodejs4.3",
+          "nodejs6.10",
+          "dotnetcore1.0",
+          "dotnetcore2.0",
+          "nodejs4.3-edge",
+          "nodejs",
+          "java8",
+          "python3.7",
+          "go1.x",
+          "provided",
+          "ruby2.7",
+          "nodejs14.x",
+          "nodejs16.x",
+          "python3.9",
+          "dotnet7",
+          "dotnet6"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "runtime_not_deprecated"
+}

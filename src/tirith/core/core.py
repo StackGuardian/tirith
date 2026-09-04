@@ -314,6 +314,19 @@ def start_policy_evaluation(
         policy_data = json.load(f)
     # TODO: validate policy_data against schema
 
+    input_data = _load_input(input_path)
+    merged_var_dict = _load_vars(var_paths, inline_vars)
+
+    return start_policy_evaluation_from_dict(policy_data, input_data, merged_var_dict)
+
+
+def _load_input(input_path: str):
+    """
+    Read and parse the input document.
+
+    :param input_path: Path to the input file; parsed as YAML for .yaml/.yml, JSON otherwise
+    :return: The parsed document
+    """
     with open(input_path) as f:
         if input_path.endswith(".yaml") or input_path.endswith(".yml"):
             input_data = list(yaml.safe_load_all(f))
@@ -322,9 +335,20 @@ def start_policy_evaluation(
         else:
             input_data = json.load(f)
     # TODO: validate input_data using the optionally available validate function in provider
+    return input_data
 
+
+def _load_vars(var_paths: List[str], inline_vars: List[str]) -> dict:
+    """
+    Merge every variable file, then every inline `-var name=json`, into one dictionary.
+
+    Later sources win, so an inline variable overrides the same name read from a file.
+
+    :param var_paths:   List of paths to the variable files
+    :param inline_vars: List of `name=<json>` strings
+    :return:            A merged dictionary
+    """
     # TODO: Move this logic into another module
-    # Merge policy variables into one dictionary
     var_dicts = []
     for var_path in var_paths:
         with open(var_path, encoding="utf-8") as f:
@@ -343,7 +367,78 @@ def start_policy_evaluation(
         else:
             logger.error(f"Invalid inline variable: {inline_var}")
 
-    return start_policy_evaluation_from_dict(policy_data, input_data, merged_var_dict)
+    return merged_var_dict
+
+
+def start_policy_set_evaluation(
+    policy_paths: List[Tuple[str, str]],
+    input_path: str,
+    var_paths: List[str] = [],
+    inline_vars: List[str] = [],
+) -> Dict:
+    """
+    Evaluate many policies against one input document, and roll their verdicts up into one.
+
+    The input document and the variables are read once and shared, so running a pack of a
+    thousand policies parses the plan once rather than a thousand times.
+
+    Each policy keeps its own result document unchanged -- a set run is the single-policy result
+    repeated, plus a summary -- so anything that already reads a tirith result can read one
+    element of `policies` without knowing it came from a set.
+
+    `skipped` is a first-class outcome and deliberately not a failure. A policy whose resource
+    type is absent from the input returns `final_result: None`, and for any pack worth running
+    that is the *modal* outcome: most checks do not apply to most plans. Counting those as
+    errors would make every pack run red regardless of the infrastructure.
+
+    :param policy_paths: (name, path) pairs; `name` is what the result reports the policy as
+    :param input_path:   Path to the input file
+    :param var_paths:    List of paths to the variable files
+    :param inline_vars:  List of `name=<json>` strings
+    :return: {"summary": {...}, "final_result": True|False|None, "policies": [...]}
+    """
+    input_data = _load_input(input_path)
+    merged_var_dict = _load_vars(var_paths, inline_vars)
+
+    results = []
+    counts = {"total": 0, "passed": 0, "failed": 0, "skipped": 0, "errored": 0}
+
+    for name, path in policy_paths:
+        counts["total"] += 1
+        try:
+            with open(path) as f:
+                policy_data = json.load(f)
+            result = start_policy_evaluation_from_dict(policy_data, input_data, merged_var_dict)
+        except Exception as exc:  # noqa: BLE001 - a broken policy is a result we want to report
+            # One unreadable policy must not take the run down with it: a pack is shipped
+            # content, and the useful answer is "these 999 ran, this one is broken".
+            logger.error(f"Could not evaluate policy '{name}': {exc}")
+            counts["errored"] += 1
+            results.append({"policy": name, "errors": [f"{type(exc).__name__}: {exc}"]})
+            continue
+
+        final_result = result.get("final_result")
+        if "final_result" not in result:
+            # The missing-variables path returns `errors` and no result at all.
+            counts["errored"] += 1
+        elif final_result is True:
+            counts["passed"] += 1
+        elif final_result is False:
+            counts["failed"] += 1
+        else:
+            counts["skipped"] += 1
+
+        results.append(dict(policy=name, **result))
+
+    if counts["failed"]:
+        set_result = False
+    elif counts["passed"]:
+        set_result = True
+    else:
+        # Nothing ran, or nothing that ran reached a verdict. Not a pass.
+        set_result = None
+
+    return {"summary": counts, "final_result": set_result, "policies": results}
 
 
 def _merge_var_dicts(var_dicts: List[dict]) -> dict:

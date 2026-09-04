@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_bedrockagent_agent.test",
+      "mode": "managed",
+      "type": "aws_bedrockagent_agent",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "guardrail_configuration": [
+            {
+              "guardrail_identifier": null
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0051",
+    "name": "Ensure that app services use Azure Files",
+    "description": "Ensure that app services use Azure Files",
+    "tags": [
+      "cloud:azure",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "app_service_storage_account_type",
+      "description": "azurerm_app_service storage_account.type is AzureFiles",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_app_service",
+        "terraform_resource_attribute": "storage_account.0.type"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "AzureFiles",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "linux_web_app_storage_account_type",
+      "description": "azurerm_linux_web_app storage_account.type is AzureFiles",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_linux_web_app",
+        "terraform_resource_attribute": "storage_account.0.type"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "AzureFiles",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "windows_web_app_storage_account_type",
+      "description": "azurerm_windows_web_app storage_account.type is AzureFiles",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_windows_web_app",
+        "terraform_resource_attribute": "storage_account.0.type"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "AzureFiles",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "app_service_storage_account_type && linux_web_app_storage_account_type && windows_web_app_storage_account_type"
+}

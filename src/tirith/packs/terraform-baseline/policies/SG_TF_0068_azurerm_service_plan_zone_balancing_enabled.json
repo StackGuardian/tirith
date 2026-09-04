@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0068",
+    "name": "Ensure the App Service Plan is zone redundant",
+    "description": "Ensure the App Service Plan is zone redundant",
+    "tags": [
+      "cloud:azure",
+      "backup_and_recovery"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "zone_balancing_enabled",
+      "description": "Every azurerm_service_plan must set zone_balancing_enabled = true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_service_plan",
+        "terraform_resource_attribute": "zone_balancing_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "zone_balancing_enabled"
+}

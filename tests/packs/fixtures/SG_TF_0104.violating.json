@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "yandex_kms_symmetric_key.test",
+      "mode": "managed",
+      "type": "yandex_kms_symmetric_key",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "rotation_period": null
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

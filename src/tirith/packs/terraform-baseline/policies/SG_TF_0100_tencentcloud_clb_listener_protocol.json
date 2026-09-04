@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0100",
+    "name": "Ensure Tencent Cloud CLBs use modern, encrypted protocols",
+    "description": "Ensure Tencent Cloud CLBs use modern, encrypted protocols",
+    "tags": [
+      "cloud:tencentcloud",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "listener_protocol_not_plaintext",
+      "description": "tencentcloud_clb_listener protocol must not be TCP, UDP or HTTP",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "tencentcloud_clb_listener",
+        "terraform_resource_attribute": "protocol"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "TCP",
+          "UDP",
+          "HTTP"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "listener_protocol_not_plaintext"
+}

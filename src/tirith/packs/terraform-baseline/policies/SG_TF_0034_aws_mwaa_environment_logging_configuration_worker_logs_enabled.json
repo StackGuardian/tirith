@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0034",
+    "name": "Ensure MWAA environment has worker logs enabled",
+    "description": "Ensure MWAA environment has worker logs enabled",
+    "tags": [
+      "cloud:aws",
+      "logging"
+    ],
+    "remediation": "In every aws_mwaa_environment logging_configuration block set worker_logs { enabled = true }."
+  },
+  "evaluators": [
+    {
+      "id": "worker_logs_enabled",
+      "description": "logging_configuration.worker_logs.enabled must be true on every aws_mwaa_environment; a missing block fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_mwaa_environment",
+        "terraform_resource_attribute": "logging_configuration.*.worker_logs.*.enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "worker_logs_enabled"
+}

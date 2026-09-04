@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0036",
+    "name": "Redshift cluster should not be publicly accessible",
+    "description": "Redshift cluster should not be publicly accessible",
+    "tags": [
+      "cloud:aws",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "publicly_accessible_false",
+      "description": "Every aws_redshift_cluster sets publicly_accessible = false; a true, null or absent value fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_redshift_cluster",
+        "terraform_resource_attribute": "publicly_accessible"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": false,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "publicly_accessible_false"
+}

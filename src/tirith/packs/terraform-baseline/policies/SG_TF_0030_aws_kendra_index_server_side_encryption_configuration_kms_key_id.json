@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0030",
+    "name": "Ensure Kendra index Server side encryption uses CMK",
+    "description": "Ensure Kendra index Server side encryption uses CMK",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "kendra_sse_kms_key_id_set",
+      "description": "aws_kendra_index must set server_side_encryption_configuration[0].kms_key_id to a customer managed key",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_kendra_index",
+        "terraform_resource_attribute": "server_side_encryption_configuration.0.kms_key_id"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "kendra_sse_kms_key_id_set"
+}

@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "azurerm_search_service.test",
+      "mode": "managed",
+      "type": "azurerm_search_service",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "replica_count": 1
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

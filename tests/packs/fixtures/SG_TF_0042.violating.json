@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_sagemaker_notebook_instance.test",
+      "mode": "managed",
+      "type": "aws_sagemaker_notebook_instance",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "instance_metadata_service_configuration": [
+            {
+              "minimum_instance_metadata_service_version": "prefix-2-suffix"
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

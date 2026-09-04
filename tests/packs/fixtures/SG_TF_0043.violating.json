@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_sns_topic.test",
+      "mode": "managed",
+      "type": "aws_sns_topic",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "kms_master_key_id": null
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

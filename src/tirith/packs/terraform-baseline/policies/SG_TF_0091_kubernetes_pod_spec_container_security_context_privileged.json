@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0091",
+    "name": "Do not admit privileged containers",
+    "description": "Do not admit privileged containers",
+    "tags": [
+      "cloud:kubernetes",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "pod_not_privileged",
+      "description": "No container of a kubernetes_pod sets security_context.privileged = true. NotEquals passes on null, so a container with no security_context, or one that leaves privileged unset, passes.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_pod",
+        "terraform_resource_attribute": "spec.0.container.*.security_context.0.privileged"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "pod_v1_not_privileged",
+      "description": "No container of a kubernetes_pod_v1 sets security_context.privileged = true. NotEquals passes on null, so a container with no security_context, or one that leaves privileged unset, passes.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_pod_v1",
+        "terraform_resource_attribute": "spec.0.container.*.security_context.0.privileged"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "deployment_not_privileged",
+      "description": "No container of a kubernetes_deployment sets security_context.privileged = true. NotEquals passes on null, so a container with no security_context, or one that leaves privileged unset, passes.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_deployment",
+        "terraform_resource_attribute": "spec.0.template.0.spec.0.container.*.security_context.0.privileged"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "deployment_v1_not_privileged",
+      "description": "No container of a kubernetes_deployment_v1 sets security_context.privileged = true. NotEquals passes on null, so a container with no security_context, or one that leaves privileged unset, passes.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_deployment_v1",
+        "terraform_resource_attribute": "spec.0.template.0.spec.0.container.*.security_context.0.privileged"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "pod_not_privileged && pod_v1_not_privileged && deployment_not_privileged && deployment_v1_not_privileged"
+}

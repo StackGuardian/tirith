@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0053",
+    "name": "Ensure container image quarantine, scan, and mark images verified",
+    "description": "Ensure container image quarantine, scan, and mark images verified",
+    "tags": [
+      "cloud:azure",
+      "supply_chain"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "quarantine_policy_enabled",
+      "description": "azurerm_container_registry.quarantine_policy_enabled must be true. The provider default is false, and an unresolvable attribute fails at tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_container_registry",
+        "terraform_resource_attribute": "quarantine_policy_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "quarantine_policy_enabled"
+}

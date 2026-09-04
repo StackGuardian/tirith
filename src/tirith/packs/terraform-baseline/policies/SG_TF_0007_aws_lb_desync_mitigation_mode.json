@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0007",
+    "name": "Ensure that ALB is configured with defensive or strictest desync mitigation mode",
+    "description": "Ensure that ALB is configured with defensive or strictest desync mitigation mode",
+    "tags": [
+      "cloud:aws",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "lb_desync_mode",
+      "description": "aws_lb desync_mitigation_mode is not monitor",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_lb",
+        "terraform_resource_attribute": "desync_mitigation_mode"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "monitor"
+        ],
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "alb_desync_mode",
+      "description": "aws_alb desync_mitigation_mode is not monitor",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_alb",
+        "terraform_resource_attribute": "desync_mitigation_mode"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "monitor"
+        ],
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "elb_desync_mode",
+      "description": "aws_elb desync_mitigation_mode is not monitor",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_elb",
+        "terraform_resource_attribute": "desync_mitigation_mode"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "monitor"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "lb_desync_mode && alb_desync_mode && elb_desync_mode"
+}

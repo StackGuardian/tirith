@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0063",
+    "name": "Ensure that Network Interfaces disable IP forwarding",
+    "description": "Ensure that Network Interfaces disable IP forwarding",
+    "tags": [
+      "cloud:azure",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "nic_ip_forwarding_disabled",
+      "description": "azurerm_network_interface.enable_ip_forwarding must not be true (unset is acceptable)",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_network_interface",
+        "terraform_resource_attribute": "enable_ip_forwarding"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          true
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "nic_ip_forwarding_disabled"
+}

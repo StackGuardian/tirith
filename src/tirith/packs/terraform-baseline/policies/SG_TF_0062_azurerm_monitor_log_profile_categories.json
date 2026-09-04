@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0062",
+    "name": "Ensure audit profile captures all the activities",
+    "description": "Ensure audit profile captures all the activities",
+    "tags": [
+      "cloud:azure",
+      "logging"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "captures_write",
+      "description": "azurerm_monitor_log_profile categories contains Write",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_monitor_log_profile",
+        "terraform_resource_attribute": "categories"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "Write",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "captures_delete",
+      "description": "azurerm_monitor_log_profile categories contains Delete",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_monitor_log_profile",
+        "terraform_resource_attribute": "categories"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "Delete",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "captures_action",
+      "description": "azurerm_monitor_log_profile categories contains Action",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_monitor_log_profile",
+        "terraform_resource_attribute": "categories"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "Action",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "captures_write && captures_delete && captures_action"
+}

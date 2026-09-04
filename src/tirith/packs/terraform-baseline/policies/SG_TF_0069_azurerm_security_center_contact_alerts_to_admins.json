@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0069",
+    "name": "Ensure that 'Send email notification for high severity alerts' is set to 'On'",
+    "description": "Ensure that 'Send email notification for high severity alerts' is set to 'On'",
+    "tags": [
+      "cloud:azure",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "alerts_to_admins_enabled",
+      "description": "Every azurerm_security_center_contact must set alerts_to_admins = true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_security_center_contact",
+        "terraform_resource_attribute": "alerts_to_admins"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "alerts_to_admins_enabled"
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0001",
+    "name": "Ensure KMS Key Rotation is enabled",
+    "description": "Ensure KMS Key Rotation is enabled",
+    "tags": [
+      "cloud:alicloud",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "automatic_rotation_enabled",
+      "description": "Every alicloud_kms_key sets automatic_rotation = Enabled; an absent value fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "alicloud_kms_key",
+        "terraform_resource_attribute": "automatic_rotation"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "Enabled",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "automatic_rotation_enabled"
+}

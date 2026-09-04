@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0015",
+    "name": "Ensure no aws_db_security_group resources exist",
+    "description": "Ensure no aws_db_security_group resources exist",
+    "tags": [
+      "cloud:aws",
+      "networking"
+    ],
+    "remediation": "Delete the aws_db_security_group resource and place the RDS instance in a VPC, controlling access with an aws_security_group instead."
+  },
+  "evaluators": [
+    {
+      "id": "no_db_security_group",
+      "description": "The plan must contain zero aws_db_security_group resources; DB security groups only apply to RDS instances outside a VPC",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "aws_db_security_group"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_db_security_group"
+}

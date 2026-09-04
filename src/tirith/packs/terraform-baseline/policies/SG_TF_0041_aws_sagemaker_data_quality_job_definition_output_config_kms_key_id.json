@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0041",
+    "name": "Ensure Amazon Sagemaker Data Quality Job uses KMS to encrypt model artifacts",
+    "description": "Ensure Amazon Sagemaker Data Quality Job uses KMS to encrypt model artifacts",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ],
+    "remediation": "Set data_quality_job_output_config.kms_key_id on every aws_sagemaker_data_quality_job_definition."
+  },
+  "evaluators": [
+    {
+      "id": "output_config_kms_key_id_set",
+      "description": "data_quality_job_output_config.0.kms_key_id must be a non-empty string. A null value, or an absent output config block, fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_sagemaker_data_quality_job_definition",
+        "terraform_resource_attribute": "data_quality_job_output_config.0.kms_key_id"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "output_config_kms_key_id_set"
+}

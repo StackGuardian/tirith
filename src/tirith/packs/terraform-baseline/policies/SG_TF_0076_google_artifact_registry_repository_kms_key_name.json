@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0076",
+    "name": "Ensure Artifact Registry Repositories are encrypted with Customer Supplied Encryption Keys (CSEK)",
+    "description": "Ensure Artifact Registry Repositories are encrypted with Customer Supplied Encryption Keys (CSEK)",
+    "tags": [
+      "cloud:gcp",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "kms_key_name_set",
+      "description": "google_artifact_registry_repository must set kms_key_name to a non-empty value",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_artifact_registry_repository",
+        "terraform_resource_attribute": "kms_key_name"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "kms_key_name_set"
+}

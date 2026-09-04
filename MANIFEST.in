@@ -1,5 +1,6 @@
 include *.lock
 include *.md
+include NOTICE
 include Pipfile
 recursive-include ci *.gitkeep
 recursive-include cli *.sh

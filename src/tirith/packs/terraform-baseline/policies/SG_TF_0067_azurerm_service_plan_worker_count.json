@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0067",
+    "name": "Ensure App Service has a minimum number of instances for failover",
+    "description": "Ensure App Service has a minimum number of instances for failover",
+    "tags": [
+      "cloud:azure",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "worker_count_above_one",
+      "description": "Every azurerm_service_plan must set worker_count greater than 1",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_service_plan",
+        "terraform_resource_attribute": "worker_count"
+      },
+      "condition": {
+        "type": "GreaterThan",
+        "value": 1,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "worker_count_above_one"
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0101",
+    "name": "Ensure Tencent Cloud CBS is encrypted",
+    "description": "Ensure Tencent Cloud CBS is encrypted",
+    "tags": [
+      "cloud:tencentcloud",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "cbs_encrypt_enabled",
+      "description": "tencentcloud_cbs_storage must set encrypt = true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "tencentcloud_cbs_storage",
+        "terraform_resource_attribute": "encrypt"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "cbs_encrypt_enabled"
+}

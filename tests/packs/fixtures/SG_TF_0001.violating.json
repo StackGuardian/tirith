@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "alicloud_kms_key.test",
+      "mode": "managed",
+      "type": "alicloud_kms_key",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "automatic_rotation": "prefix-Enabled-suffix"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

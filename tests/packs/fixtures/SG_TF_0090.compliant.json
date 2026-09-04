@@ -1,0 +1,122 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "kubernetes_pod.test",
+      "mode": "managed",
+      "type": "kubernetes_pod",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "spec": [
+            {
+              "container": [
+                {
+                  "image_pull_policy": "Always"
+                }
+              ]
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "kubernetes_pod_v1.test",
+      "mode": "managed",
+      "type": "kubernetes_pod_v1",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "spec": [
+            {
+              "container": [
+                {
+                  "image_pull_policy": "Always"
+                }
+              ]
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "kubernetes_deployment.test",
+      "mode": "managed",
+      "type": "kubernetes_deployment",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "spec": [
+            {
+              "template": [
+                {
+                  "spec": [
+                    {
+                      "container": [
+                        {
+                          "image_pull_policy": "Always"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "kubernetes_deployment_v1.test",
+      "mode": "managed",
+      "type": "kubernetes_deployment_v1",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "spec": [
+            {
+              "template": [
+                {
+                  "spec": [
+                    {
+                      "container": [
+                        {
+                          "image_pull_policy": "Always"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

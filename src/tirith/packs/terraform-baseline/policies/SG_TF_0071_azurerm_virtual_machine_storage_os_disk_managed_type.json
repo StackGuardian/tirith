@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0071",
+    "name": "Ensure Virtual Machines are utilizing Managed Disks",
+    "description": "Ensure Virtual Machines are utilizing Managed Disks",
+    "tags": [
+      "cloud:azure",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "managed_disk_type_set",
+      "description": "storage_os_disk.managed_disk_type must be set. storage_os_disk is a MaxItems-1 block, so the plan path is storage_os_disk.0.managed_disk_type; IsNotEmpty demands a real non-empty string such as Premium_LRS. A null (unresolved or unset) value fails, and an absent storage_os_disk block is a severity-2 miss that also fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_virtual_machine",
+        "terraform_resource_attribute": "storage_os_disk.0.managed_disk_type"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "no_unmanaged_vhd_uri",
+      "description": "The second half of the requirement: storage_os_disk.vhd_uri must not be set. In the plan the key is present with a null value when unmanaged storage is not used, and IsEmpty is true for null and the empty string, so this passes exactly when no blob URI was supplied and fails on a concrete https://...vhd URI.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_virtual_machine",
+        "terraform_resource_attribute": "storage_os_disk.0.vhd_uri"
+      },
+      "condition": {
+        "type": "IsEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "managed_disk_type_set && no_unmanaged_vhd_uri"
+}

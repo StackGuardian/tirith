@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "oci_identity_authentication_policy.test",
+      "mode": "managed",
+      "type": "oci_identity_authentication_policy",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "password_policy": [
+            {
+              "is_lowercase_characters_required": false
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

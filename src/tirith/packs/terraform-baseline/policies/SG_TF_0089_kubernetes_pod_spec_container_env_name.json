@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0089",
+    "name": "Do not admit privileged containers",
+    "description": "Do not admit privileged containers",
+    "tags": [
+      "cloud:kubernetes",
+      "general_security"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "pod_no_gitsync_git_env",
+      "description": "No container of a kubernetes_pod declares an env entry named GITSYNC_GIT. NotEquals passes on null, so containers with no env block do not fail.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_pod",
+        "terraform_resource_attribute": "spec.0.container.*.env.*.name"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "GITSYNC_GIT",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "pod_v1_no_gitsync_git_env",
+      "description": "No container of a kubernetes_pod_v1 declares an env entry named GITSYNC_GIT. NotEquals passes on null, so containers with no env block do not fail.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_pod_v1",
+        "terraform_resource_attribute": "spec.0.container.*.env.*.name"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "GITSYNC_GIT",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "deployment_no_gitsync_git_env",
+      "description": "No container of a kubernetes_deployment declares an env entry named GITSYNC_GIT. NotEquals passes on null, so containers with no env block do not fail.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_deployment",
+        "terraform_resource_attribute": "spec.0.template.0.spec.0.container.*.env.*.name"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "GITSYNC_GIT",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "deployment_v1_no_gitsync_git_env",
+      "description": "No container of a kubernetes_deployment_v1 declares an env entry named GITSYNC_GIT. NotEquals passes on null, so containers with no env block do not fail.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "kubernetes_deployment_v1",
+        "terraform_resource_attribute": "spec.0.template.0.spec.0.container.*.env.*.name"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "GITSYNC_GIT",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "pod_no_gitsync_git_env && pod_v1_no_gitsync_git_env && deployment_no_gitsync_git_env && deployment_v1_no_gitsync_git_env"
+}

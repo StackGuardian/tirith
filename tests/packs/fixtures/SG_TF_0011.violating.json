@@ -1,0 +1,27 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_athena_workgroup.test",
+      "mode": "managed",
+      "type": "aws_athena_workgroup",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "configuration": [
+            {
+              "enforce_workgroup_configuration": false
+            }
+          ]
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

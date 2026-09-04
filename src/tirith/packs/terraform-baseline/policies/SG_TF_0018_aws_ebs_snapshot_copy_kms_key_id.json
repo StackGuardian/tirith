@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0018",
+    "name": "Ensure EBS Snapshot Copy is encrypted by KMS using a customer managed Key (CMK)",
+    "description": "Ensure EBS Snapshot Copy is encrypted by KMS using a customer managed Key (CMK)",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "snapshot_copy_kms_key_id_set",
+      "description": "Every aws_ebs_snapshot_copy names a KMS key; a null or missing kms_key_id fails.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_ebs_snapshot_copy",
+        "terraform_resource_attribute": "kms_key_id"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "snapshot_copy_kms_key_id_set"
+}

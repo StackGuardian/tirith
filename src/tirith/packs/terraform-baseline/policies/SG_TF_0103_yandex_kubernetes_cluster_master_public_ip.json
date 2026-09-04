@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0103",
+    "name": "Ensure Kubernetes cluster does not have public IP address.",
+    "description": "Ensure Kubernetes cluster does not have public IP address.",
+    "tags": [
+      "cloud:yandex",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "master_public_ip_disabled",
+      "description": "master[0].public_ip must not be true on a yandex_kubernetes_cluster",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "yandex_kubernetes_cluster",
+        "terraform_resource_attribute": "master.0.public_ip"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          true
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "master_public_ip_disabled"
+}

@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0079",
+    "name": "Ensure Stackdriver Logging is set to Enabled on Kubernetes Engine Clusters",
+    "description": "Ensure Stackdriver Logging is set to Enabled on Kubernetes Engine Clusters",
+    "tags": [
+      "cloud:gcp",
+      "kubernetes"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "logging_service_not_none",
+      "description": "google_container_cluster.logging_service must not be 'none'",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "google_container_cluster",
+        "terraform_resource_attribute": "logging_service"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "none"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "logging_service_not_none"
+}

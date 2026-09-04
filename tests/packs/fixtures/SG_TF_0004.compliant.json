@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "alicloud_ram_account_password_policy.test",
+      "mode": "managed",
+      "type": "alicloud_ram_account_password_policy",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "max_password_age": 1
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

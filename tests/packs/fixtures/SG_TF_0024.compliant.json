@@ -1,0 +1,57 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_glue_crawler.test",
+      "mode": "managed",
+      "type": "aws_glue_crawler",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "security_configuration": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_glue_dev_endpoint.test",
+      "mode": "managed",
+      "type": "aws_glue_dev_endpoint",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "security_configuration": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    },
+    {
+      "address": "aws_glue_job.test",
+      "mode": "managed",
+      "type": "aws_glue_job",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "security_configuration": "tirith_corpus_sentinel"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+Tirith
+Copyright StackGuardian
+
+This product includes software developed at StackGuardian (https://stackguardian.io).
+
+--------------------------------------------------------------------------------
+Bundled policy packs
+--------------------------------------------------------------------------------
+
+The policy documents under `src/tirith/packs/` are derived works: their rules were
+translated into Tirith's policy format from open-source policy libraries, then
+re-expressed, re-identified and independently verified against synthesized
+documents. They carry StackGuardian identifiers and no upstream identifier.
+
+The rules they express derive from:
+
+  checkov -- https://github.com/bridgecrewio/checkov
+  Copyright 2019 Bridgecrew, Inc.
+  Licensed under the Apache License, Version 2.0
+  Pinned at commit 9514f12d81ebec7a8f6e70ff1ae8c3783220a59f
+
+Tirith is itself licensed under the Apache License, Version 2.0; see LICENSE.
+Each pack's `pack.json` records the corpus commit its content was generated from.

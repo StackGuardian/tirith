@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0104",
+    "name": "Ensure KMS symmetric key is rotated.",
+    "description": "Ensure KMS symmetric key is rotated.",
+    "tags": [
+      "cloud:yandex",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "rotation_period_set",
+      "description": "yandex_kms_symmetric_key must set a non-empty rotation_period",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "yandex_kms_symmetric_key",
+        "terraform_resource_attribute": "rotation_period"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "rotation_period_set"
+}

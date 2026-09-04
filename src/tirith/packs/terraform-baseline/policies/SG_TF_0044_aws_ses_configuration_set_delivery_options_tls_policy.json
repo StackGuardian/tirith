@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0044",
+    "name": "Ensure SES Configuration Set enforces TLS usage",
+    "description": "Ensure SES Configuration Set enforces TLS usage",
+    "tags": [
+      "cloud:aws",
+      "networking"
+    ],
+    "remediation": "Set delivery_options { tls_policy = \"Require\" } on every aws_ses_configuration_set."
+  },
+  "evaluators": [
+    {
+      "id": "ses_tls_policy_require",
+      "description": "The single delivery_options block of aws_ses_configuration_set must carry tls_policy = 'Require'. delivery_options is a list in the plan, hence the indexed path delivery_options.0.tls_policy; an absent or empty block is a severity-2 miss and fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_ses_configuration_set",
+        "terraform_resource_attribute": "delivery_options.0.tls_policy"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "Require",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "ses_tls_policy_require"
+}

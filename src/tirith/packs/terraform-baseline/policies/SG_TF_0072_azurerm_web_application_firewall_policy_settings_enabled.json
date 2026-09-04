@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0072",
+    "name": "Ensure that Application Gateway uses WAF in \"Detection\" or \"Prevention\" modes",
+    "description": "Ensure that Application Gateway uses WAF in \"Detection\" or \"Prevention\" modes",
+    "tags": [
+      "cloud:azure",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "waf_policy_settings_enabled",
+      "description": "A policy_settings block, when present, must have enabled truthy. policy_settings is a MaxItems-1 block, so the plan path is policy_settings.0.enabled; the deny-list form fails on an explicit false while passing on true or null. error_tolerance is 2 because an omitted policy_settings block leaves the path unresolvable (a severity-2 miss over an empty list), which is not a violation.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_web_application_firewall_policy",
+        "terraform_resource_attribute": "policy_settings.0.enabled"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          false
+        ],
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "waf_policy_settings_enabled"
+}

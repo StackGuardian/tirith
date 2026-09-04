@@ -10,7 +10,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — verdicts
+
+Read this section before upgrading: it changes what some policies report, on inputs where the
+previous answer was wrong.
+
+- `core`: a tolerated provider miss no longer erases a failure recorded by an earlier resource.
+  A check whose provider returned several results — one that violated the policy and one it could
+  not read, tolerated by `error_tolerance` — reported the *skip* if the tolerated one came last,
+  because the skip marker overwrote the verdict unconditionally. The verdict therefore depended on
+  the order the provider happened to emit resources. It now reports the failure regardless of
+  order. Under `--fail-on-error` the affected runs move from exit `1` to exit `3`: previously a
+  real violation could be reported as "nothing was checked". Pass-and-skip is unchanged and still
+  reports skipped, in both orders.
+
 ### Added
+
+- Running many policies in one invocation. `-policy-path` accepts a **directory**, walked
+  recursively for `*.json`, and `--pack NAME` runs a policy pack bundled with Tirith
+  (`--list-packs` lists them). Both are repeatable and combine, so bundled and local rules produce
+  one summary and one exit code. A single policy *file* is untouched — same result document, same
+  exit codes.
+- The first bundled pack: **`terraform-baseline`**, 104 baseline security and configuration checks
+  for Terraform plans across AWS, Azure, GCP, Kubernetes and several smaller providers. Every one
+  is verified end to end in CI against a compliant and a violating document, so an engine change
+  cannot silently turn a check into a no-op.
+- A set run reports `passed / failed / skipped / errored` and prints failures in full. **Skipped is
+  not a failure**: a policy only applies to plans that touch the resource it names, so most of a
+  large pack skips on any given plan, and counting that as an error would make every pack run red.
+  With `--fail-on-error`, a set exits `3` if any policy failed, `0` if none failed and at least one
+  reached a verdict, and `1` if nothing reached one.
 - `tirith ui`: an interactive interface with three tabs.
   - **Explorer** — read an evaluation's results down to the resource behind each one. The result
     document has always carried the resource address, the planned action and the before/after

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0029",
+    "name": "Ensure Kinesis Firehose delivery stream is encrypted",
+    "description": "Ensure Kinesis Firehose delivery stream is encrypted",
+    "tags": [
+      "cloud:aws",
+      "encryption"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "firehose_sse_enabled",
+      "description": "aws_kinesis_firehose_delivery_stream must set server_side_encryption[0].enabled = true",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_kinesis_firehose_delivery_stream",
+        "terraform_resource_attribute": "server_side_encryption.0.enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "firehose_sse_enabled"
+}

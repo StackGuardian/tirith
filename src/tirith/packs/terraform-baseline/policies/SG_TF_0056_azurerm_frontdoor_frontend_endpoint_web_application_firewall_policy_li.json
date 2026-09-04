@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0056",
+    "name": "Ensure that Azure Front Door enables WAF",
+    "description": "Ensure that Azure Front Door enables WAF",
+    "tags": [
+      "cloud:azure",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "frontdoor_endpoint_waf_policy_linked",
+      "description": "The first frontend endpoint of an azurerm_frontdoor must link a WAF policy: frontend_endpoint.0.web_application_firewall_policy_link_id must be non-empty. The segment is indexed, not wildcarded, so only the first endpoint is read. A front door whose first endpoint links no policy is a severity-2 attribute miss and fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_frontdoor",
+        "terraform_resource_attribute": "frontend_endpoint.0.web_application_firewall_policy_link_id"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "frontdoor_endpoint_waf_policy_linked"
+}

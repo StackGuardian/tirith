@@ -1,0 +1,23 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "tencentcloud_clb_listener.test",
+      "mode": "managed",
+      "type": "tencentcloud_clb_listener",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "protocol": "TCP"
+        },
+        "after_unknown": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0055",
+    "name": "Ensure that Azure Container group is deployed into virtual network",
+    "description": "Ensure that Azure Container group is deployed into virtual network",
+    "tags": [
+      "cloud:azure",
+      "networking"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "subnet_ids_set",
+      "description": "azurerm_container_group.subnet_ids must be a non-empty list. IsNotEmpty fails on null and on an empty list, and an unresolvable attribute is a severity-2 miss that fails at tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_container_group",
+        "terraform_resource_attribute": "subnet_ids"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "subnet_ids_set"
+}

@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0057",
+    "name": "Ensure that Managed identity provider is enabled for Azure Event Grid Topic",
+    "description": "Ensure that Managed identity provider is enabled for Azure Event Grid Topic",
+    "tags": [
+      "cloud:azure",
+      "iam"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "eventgrid_topic_identity_type_set",
+      "description": "Every azurerm_eventgrid_topic must declare a managed identity. The identity block is a single-element list in change.after, so the path is identity.0.type and the requirement is a non-empty string; a topic with no identity block yields a severity-2 attribute miss and fails at error_tolerance 1.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_eventgrid_topic",
+        "terraform_resource_attribute": "identity.0.type"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "eventgrid_topic_identity_type_set"
+}

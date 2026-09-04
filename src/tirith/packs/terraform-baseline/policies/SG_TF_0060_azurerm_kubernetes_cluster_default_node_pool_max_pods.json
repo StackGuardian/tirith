@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "SG_TF_0060",
+    "name": "Ensure Azure Kubernetes Cluster (AKS) nodes should use a minimum number of 50 pods.",
+    "description": "Ensure Azure Kubernetes Cluster (AKS) nodes should use a minimum number of 50 pods.",
+    "tags": [
+      "cloud:azure",
+      "kubernetes"
+    ]
+  },
+  "evaluators": [
+    {
+      "id": "cluster_default_node_pool_max_pods",
+      "description": "default_node_pool.max_pods must be at least 50. An unset value is null and never satisfies a numeric comparison, which is the right verdict: the effective default is 30.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_kubernetes_cluster",
+        "terraform_resource_attribute": "default_node_pool.*.max_pods"
+      },
+      "condition": {
+        "type": "GreaterThanEqualTo",
+        "value": 50,
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "node_pool_max_pods",
+      "description": "Standalone node pools must set max_pods >= 50",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_kubernetes_cluster_node_pool",
+        "terraform_resource_attribute": "max_pods"
+      },
+      "condition": {
+        "type": "GreaterThanEqualTo",
+        "value": 50,
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "cluster_default_node_pool_max_pods && node_pool_max_pods"
+}
