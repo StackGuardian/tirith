@@ -17,8 +17,9 @@ Add `--json` to get the result document instead of the pretty printer.
 | `3` | A policy ran and said no |
 | `130` | Interrupted |
 
-`2` is argparse's usage error, so a caller seeing `2` passed a bad argument. Tirith has no timeout
-code: a `platform check` that times out is reported as `1`.
+`2` is never returned. The CLI catches argparse's usage error and exits `1`, so a bad argument or an
+unknown subcommand (`tirith lint` prints "Failed because of System Exit") is `1`, the same as a
+tool or input problem. Tirith has no timeout code: a `platform check` that times out is `1` too.
 
 **`3` is deliberately not `1`.** `3` means a check ran and refused the change. `1` means Tirith
 could not reach a verdict. A job that treats every non-zero code alike reports an outage as a
@@ -67,8 +68,7 @@ looking in the plan for the resource lacking that attribute.
 
 ## A misconfigured policy fails closed
 
-An unsupported `condition.type` or an unknown `required_provider` comes back as an ordinary failed
-check with no error attached — indistinguishable from a real violation, and it exits `3`. It fails
-in the safe direction, but it points at your infrastructure when the fault is in the policy.
-Check the condition type against the closed list in `reference/schema.md`: a typo there is the
-usual cause, and it is not reported as one.
+An unsupported `condition.type` comes back as a failed check, exit `3`, with the `errors` array
+empty. It fails in the safe direction, but a job that branches on the exit code sees a policy
+violation. The result message names the fault (`` `Exists` is not a supported evaluator ``), so
+when a check fails on every resource at once, read the message before reading the plan.

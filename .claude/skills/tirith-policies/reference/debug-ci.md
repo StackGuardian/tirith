@@ -49,10 +49,10 @@ Check `final_result` in the result document.
   path, then whether `error_tolerance` is forgiving the very thing you meant to catch.
 - **No `final_result` at all** — the policy could not be loaded. Usually an unresolved variable;
   read the `errors` array.
-- **A misconfigured policy** — an unsupported `condition.type` or unknown provider arrives as an
-  ordinary failed check and exits `3`, not `1`. Check `condition.type` and every `provider_args`
-  key against `reference/schema.md`: an unknown key is ignored rather than rejected, so the fault
-  is in the policy even though the failure points at infrastructure.
+- **A misconfigured policy** — an unsupported `condition.type` arrives as a failed check and exits
+  `3`, not `1`; its message names the type. An unknown `provider_args` key is ignored rather than
+  rejected, so the check reads nothing. Check both against `reference/schema.md`: the fault is in
+  the policy even though the exit code points at infrastructure.
 
 ## 5. Exit `0` when you expected a failure
 

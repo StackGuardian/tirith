@@ -23,5 +23,5 @@ Things to try:
 - Add `"error_tolerance": 2` inside `condition` and run against `should-fail.json`. The check is
   skipped rather than failed, `final_result` becomes `null`, and the exit is `1`, not `0`.
 - Change `IsNotEmpty` to `Equals` with `"value": "product-123"` to pin one exact value.
-- Change the type to `Exists`. It does not exist, and the run exits `3` with no error attached,
-  which is why an unknown condition type reads like a real violation.
+- Change the type to `Exists`. It does not exist. The run exits `3` with `errors` empty, so CI
+  sees a violation; only the result message says "`Exists` is not a supported evaluator".

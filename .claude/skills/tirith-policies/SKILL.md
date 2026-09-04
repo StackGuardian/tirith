@@ -16,6 +16,7 @@ Not from PyPI. `pip install tirith` installs an **unrelated project**; `py-tirit
 
 ```bash
 pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+tirith --version   # 1.2.0
 ```
 
 ## The one rule
@@ -38,8 +39,8 @@ tirith -policy-path .tirith/policies -input-path should-fail.json --fail-on-erro
 | `1` | No verdict could be reached | Fail the job, but report a **tool or input** problem |
 
 - Never collapse `3` into `1`. A job that cannot tell them apart reports an outage as a violation.
-- `2` is argparse's usage error, not a Tirith verdict. There is no timeout code; a platform
-  timeout exits `1`.
+- `2` is never returned. A bad argument or unknown subcommand exits `1`, as does a platform
+  timeout. `1` means tool, input or usage; it never means a policy said no.
 - **`final_result: null` is not a pass.** Every check was skipped, nothing was evaluated, exit `1`.
 - Without `--fail-on-error` the exit is always `0`. Every real gate needs the flag.
 
@@ -98,8 +99,9 @@ and invert it.
 - **The delete action is spelled `delete`.** `"destroy"` matches nothing and the guard exits `0`.
   `action` emits one result per action: `NotEquals "delete"` blocks deletes and replacements,
   `ContainedIn ["delete"]` with `!` blocks only a pure delete. See `reference/terraform-plan.md`.
-- **An unknown `condition.type` fails with no error attached.** It exits `3` and reads like a
-  real violation. Check the type against the closed list, not your memory.
+- **An unknown `condition.type` exits `3`, not `1`.** The message names it (`` `Exists` is not a
+  supported evaluator ``) but `errors` is empty, so CI sees a violation. Check the type against
+  the closed list, not your memory.
 - **`tirith lint` does not ship.** Do not put it in a pipeline. `reference/validate.md` has
   what to do instead.
 

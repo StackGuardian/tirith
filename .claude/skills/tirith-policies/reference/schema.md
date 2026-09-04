@@ -1,8 +1,9 @@
 # Schema — the closed vocabulary
 
-Both registries are closed. Inventing a value does not raise an error: an unknown
-`condition.type` reaches the engine as an **ordinary failed check with no error attached**, so it
-is indistinguishable from a real violation and sends someone to debug infrastructure that is fine.
+Both registries are closed. Inventing a value does not stop the run: an unknown
+`condition.type` becomes a **failed check**, exit `3`, with `errors` empty, so CI reads it as a
+policy violation rather than a tool problem. The result message does name it
+(`` `Exists` is not a supported evaluator ``), so read the message before debugging infrastructure.
 
 Confirm against the live registry rather than this file. It is the source of truth:
 

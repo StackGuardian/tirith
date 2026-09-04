@@ -3,8 +3,9 @@
 ## `tirith lint` is not in the released package
 
 This is the one place in the pack that explains it; the other files point here. The released CLI
-dispatches `tirith`, `tirith ui` and `tirith platform check` and nothing else, so `tirith lint`
-in a pipeline is a step that fails with an unrecognised argument. A linter is on the roadmap at
+dispatches `tirith`, `tirith ui` and `tirith platform check` and nothing else. `tirith lint` prints
+the usage text and "Failed because of System Exit" and exits `1`, which a pipeline reads as a tool
+failure on every run. A linter is on the roadmap at
 `https://stackguardian.github.io/tirith/roadmap/`; do not assume it has shipped.
 
 Two ways to validate exist today.
@@ -36,7 +37,7 @@ for a reason unrelated to your infrastructure.
 
 | Trap | Why it matters |
 | --- | --- |
-| An invented condition type | There is no `Exists`, `Matches` or `In`. The engine returns an unknown type as an ordinary failed check, so it reads as a real violation rather than a typo. |
+| An invented condition type | There is no `Exists`, `Matches` or `In`. The engine returns an unknown type as a failed check, exit `3`, `errors` empty. The result message does name it; the exit code does not. |
 | A key from the wrong provider | `terraform_plan` reads `terraform_resource_attribute`; `kubernetes` reads `attribute_path`. An unrecognised key is **ignored, not rejected**, so the evaluator reads nothing and the check passes. |
 | An operation that does not ship | `jmespath` and `jq_query` appear in some test fixtures. Neither exists. |
 | `error_tolerance` outside `condition` | It belongs **inside** `condition`. On the evaluator it is silently ignored: no warning, and the check still fails as though the tolerance were never written. |

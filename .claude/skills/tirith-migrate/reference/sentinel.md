@@ -35,6 +35,13 @@ Attribute policies on a single resource type translate exactly. The cloud-agnost
 The `tfplan-functions` library is how most public policies are written. Each helper returns the
 *violations*, so the Tirith condition is the desired state, which is the helper's opposite.
 
+The fidelity column rates the **test**. The **scope** and the **attribute** can still make a
+translation approximate: Sentinel skips no-op and deleted resources and Tirith does not (see
+"Scope differs even when the test is exact"), and an attribute that is computed at apply time,
+such as `region` on a bucket that inherits it from the provider, is absent from `change.after`
+and fails in Tirith where the helper's absence-tolerant flag passed it in Sentinel (see "Unknown
+values"). Check both before marking a row exact.
+
 | Helper | Tirith condition | Fidelity |
 | --- | --- | --- |
 | `find_resources(type)` | `terraform_resource_type` | exact |
