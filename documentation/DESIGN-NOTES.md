@@ -248,6 +248,15 @@ markdown, view it, or open it in ChatGPT or Claude. It serves the `.md` twin tha
 `scripts/generate-llms-full.py` writes for every route, so it is a pointer at something that
 already existed rather than a scrape of the rendered DOM.
 
+Its last two items are **the only place on this site that draws a logo other than Tirith's
+own**, which is a deliberate exception to the rule below and the reason it is written down.
+The marks are the official single-path versions from simple-icons, unmodified, in
+`src/components/docs/brandMarks.js`. The justification is recognition: "Open in ChatGPT"
+beside a generic speech bubble is a control a reader has to read, and beside the real mark it
+is one they can see. Every other glyph in the menu is stroked at the same hairline weight as
+the rest of the design; these two are filled, because stroking a wordless trademark thickens
+it into a blot and is a modification of someone else's mark.
+
 The page bodies are authored Markdown and are not part of this design work.
 
 ---

@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useLocation} from '@docusaurus/router';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import {BRAND} from './brandMarks';
 import styles from './CopyPageMenu.module.css';
 
 /**
@@ -23,20 +24,29 @@ import styles from './CopyPageMenu.module.css';
 const PROMPT = (url) =>
   `Read ${url} so I can ask you questions about it. Reply with a one-line summary when you have.`;
 
-function Icon({d, className}) {
+/*
+ * Two kinds of mark, drawn differently on purpose.
+ *
+ * The interface glyphs below are stroked at 1.6, which is what keeps them in the same weight
+ * as the hairlines everything else on this site is built from. The vendor marks in
+ * brandMarks.js are solid single paths: stroking one would thicken it into a blot and would
+ * also be a modification of someone's trademark. So `solid` swaps stroke for fill and leaves
+ * the path exactly as published.
+ */
+function Icon({d, className, solid}) {
   return (
     <svg
       className={className}
       width="15"
       height="15"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="square"
-      strokeLinejoin="miter"
+      fill={solid ? 'currentColor' : 'none'}
+      stroke={solid ? 'none' : 'currentColor'}
+      strokeWidth={solid ? undefined : '1.6'}
+      strokeLinecap={solid ? undefined : 'square'}
+      strokeLinejoin={solid ? undefined : 'miter'}
       aria-hidden="true">
-      {d}
+      {solid ? <path d={d} /> : d}
     </svg>
   );
 }
@@ -52,16 +62,6 @@ const ICON = {
     <>
       <path d="M14 3H5v18h14V8z" />
       <path d="M14 3v5h5" />
-    </>
-  ),
-  chat: (
-    <>
-      <path d="M20 4H4v12h4v4l5-4h7z" />
-    </>
-  ),
-  spark: (
-    <>
-      <path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18" />
     </>
   ),
   caret: <path d="M6 9l6 6 6-6" />,
@@ -148,26 +148,28 @@ export default function CopyPageMenu() {
     {
       icon: ICON.copy,
       title: 'Copy page',
-      note: 'The markdown source, to your clipboard',
+      note: 'Copy as Markdown format',
       onClick: copy,
     },
     {
       icon: ICON.file,
-      title: 'View as markdown',
-      note: 'The plain source this page is built from',
+      title: 'View as Markdown',
+      note: 'View as plain text',
       href: mdPath,
     },
     {
-      icon: ICON.chat,
+      icon: BRAND.openai,
+      solid: true,
       title: 'Open in ChatGPT',
-      note: 'Ask about this page with it loaded',
+      note: 'Discuss this page in ChatGPT',
       href: `https://chatgpt.com/?hints=search&q=${encodeURIComponent(PROMPT(mdUrl))}`,
       external: true,
     },
     {
-      icon: ICON.spark,
+      icon: BRAND.claude,
+      solid: true,
       title: 'Open in Claude',
-      note: 'Ask about this page with it loaded',
+      note: 'Discuss this page in Claude',
       href: `https://claude.ai/new?q=${encodeURIComponent(PROMPT(mdUrl))}`,
       external: true,
     },
@@ -204,7 +206,7 @@ export default function CopyPageMenu() {
                 target="_blank"
                 rel={it.external ? 'noopener noreferrer' : 'noopener'}
                 onClick={() => setOpen(false)}>
-                <Icon className={styles.glyph} d={it.icon} />
+                <Icon className={styles.glyph} d={it.icon} solid={it.solid} />
                 <span>
                   <span className={styles.itemTitle}>{it.title}</span>
                   <span className={styles.itemNote}>{it.note}</span>
@@ -217,7 +219,7 @@ export default function CopyPageMenu() {
                 className={styles.item}
                 role="menuitem"
                 onClick={it.onClick}>
-                <Icon className={styles.glyph} d={it.icon} />
+                <Icon className={styles.glyph} d={it.icon} solid={it.solid} />
                 <span>
                   <span className={styles.itemTitle}>{it.title}</span>
                   <span className={styles.itemNote}>{it.note}</span>

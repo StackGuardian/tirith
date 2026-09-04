@@ -6,7 +6,7 @@ import Heading from '@theme/Heading';
 import TirithMark from '../components/brand/TirithMark';
 import Colophon from '../components/site/Colophon';
 import Bench from '../components/learn/Bench';
-import {INPUT_DOC, LESSONS, PLAYGROUND_START} from '../data/lessons';
+import {INPUT_DOC, PLAYGROUND_START, TRACKS} from '../data/lessons';
 import {CONDITION_NAMES} from '../data/tirithLite';
 import styles from './learn.module.css';
 import '../css/chrome.module.css';
@@ -170,7 +170,7 @@ export default function Learn() {
             <TirithMark className={styles.letterheadMark} size={40} />
             <span className={styles.letterheadName}>Tirith</span>
             <span className={styles.letterheadRule} aria-hidden="true" />
-            <span className={styles.letterheadNote}>Six lessons and a playground</span>
+            <span className={styles.letterheadNote}>Eleven lessons and a playground</span>
           </div>
 
           <Heading as="h1" className={styles.h1}>
@@ -180,9 +180,10 @@ export default function Learn() {
           <div className={styles.heroPlate}>
             <div className={styles.heroLede}>
               <p className={styles.lede}>
-                Six steps, one document, one policy that grows a rule at a time. Each
-                step is editable — change a value, run it, and watch the verdict, the
-                messages and the exit code move with it.
+                Three providers, a lesson at a time. Start with any JSON document, then
+                the same syntax against an OpenTofu or Terraform plan and a set of
+                Kubernetes manifests. Every step is editable: change a value, run it, and
+                watch the verdict, the messages and the exit code move with it.
               </p>
               <div className={styles.heroLinks}>
                 <a className={styles.btnPrimary} href="#playground">
@@ -198,10 +199,11 @@ export default function Learn() {
               <span className={styles.fieldLabel}>Browser playground</span>
               <p className={styles.caveat}>
                 This runs a Tirith-compatible teaching subset in your browser, not the Python
-                package. Edit either pane and press <strong>Run check</strong>. The examples
-                cover <code>stackguardian/json</code>; install Tirith to evaluate OpenTofu,
-                Terraform,
-                Kubernetes, Infracost, and StackGuardian Workflow inputs.
+                package. Edit either pane and press <strong>Run check</strong>. It implements
+                <code>stackguardian/json</code>, <code>stackguardian/terraform_plan</code> and
+                <code>stackguardian/kubernetes</code>, and its verdicts are checked against the
+                real engine. Install Tirith for Infracost and StackGuardian Workflow inputs,
+                and for anything you intend to trust.
               </p>
               <div className={styles.heroLinks}>
                 <Link className={styles.btnGhost} to="/docs/tirith-reference/evaluators/">
@@ -216,20 +218,37 @@ export default function Learn() {
         </header>
 
         <nav className={styles.toc} aria-label="Lessons">
-          {LESSONS.map((l) => (
+          {TRACKS.flatMap((t) => t.lessons).map((l) => (
             <a key={l.id} className={styles.tocItem} href={`#${l.id}`}>
               <span className={styles.tocNum}>{l.n}</span>
               <span>{l.title}</span>
             </a>
           ))}
           <a className={styles.tocItem} href="#playground">
-            <span className={styles.tocNum}>07</span>
+            <span className={styles.tocNum}>12</span>
             <span>Playground</span>
           </a>
         </nav>
 
-        {LESSONS.map((lesson) => (
-          <Lesson key={lesson.id} lesson={lesson} input={INPUT_DOC} />
+        {/*
+          * One section per provider. The track header carries the provider name because
+          * every policy below it repeats that name in its own meta block, and a reader
+          * who lands on lesson 10 from the contents needs to know which document the
+          * pane on the right is showing them.
+          */}
+        {TRACKS.map((track) => (
+          <div key={track.id}>
+            <section className={styles.track} id={track.id}>
+              <span className={styles.trackProvider}>{track.provider}</span>
+              <Heading as="h2" className={styles.trackTitle}>
+                {track.title}
+              </Heading>
+              <p className={styles.trackLede}>{track.lede}</p>
+            </section>
+            {track.lessons.map((lesson) => (
+              <Lesson key={lesson.id} lesson={lesson} input={track.input} />
+            ))}
+          </div>
         ))}
 
         <Playground />
