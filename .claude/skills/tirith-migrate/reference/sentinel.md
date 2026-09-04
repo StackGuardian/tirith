@@ -74,7 +74,8 @@ The `tfplan-functions` library is how most public policies are written. Each hel
 | `x not in [...]` | `NotContainedIn` |
 | `list contains x` | `Contains` |
 | `x matches "re"` | `RegexMatch` |
-| `x is not null`, `x is defined`, `x else default` | `IsNotEmpty`, or `error_tolerance: 2` to skip resources that lack the attribute |
+| `x is not null`, `x is defined` | `IsNotEmpty`. Handles both an absent key and an explicit `null` |
+| `x else default` | `error_tolerance: 2` skips a resource whose `change.after` lacks the key. It does **not** cover `null`: `terraform show -json` renders an unset optional list such as `cidr_blocks` as `null`, and `Contains`/`NotContains` on `null` is a hard "unsupported data type" failure that no tolerance forgives. A rule with `source_security_group_id` instead of CIDRs is a false positive under a CIDR translation, and there is no workaround today |
 | `x is null`, `x is empty` | `IsEmpty` |
 | `<  <=  >  >=` | `LessThan  LessThanEqualTo  GreaterThan  GreaterThanEqualTo` |
 | `keys(r.tags) contains "Owner"` | `Contains "Owner"` on the `tags` attribute. `Contains` on a map tests its keys |
@@ -86,12 +87,28 @@ The `tfplan-functions` library is how most public policies are written. Each hel
 | `param name default v` | `{{ var.name }}` in the value, with `-var` or `-var-path` |
 | enforcement level in `sentinel.hcl` | `meta.enforcement`, passed through to the result. The CLI treats every policy as hard-mandatory under `--fail-on-error` |
 
-Two engine behaviours to know, both verified:
+Three engine behaviours to know, all verified:
 
 - A present-but-null attribute is **not** a missing attribute. `error_tolerance: 2` skips a
-  resource without the key; `"kms_key_id": null` is evaluated as null and `IsNotEmpty` fails it.
+  resource without the key; `"kms_key_id": null` is evaluated as null. `IsNotEmpty` fails it
+  cleanly; `Contains`, `NotContains`, `ContainedIn` and the ordering conditions fail it as an
+  unsupported type, which reads like a violation.
 - A value unknown until apply is absent from `change.after`. Sentinel policies that accept any
   reference (`kms_key_id = aws_kms_key.x.arn`) see a value; Tirith sees a missing attribute.
+- **A skipped resource can erase an earlier failure** (Tirith issue #293). In one evaluator, a
+  resource tolerated away by `error_tolerance` after a violating resource resets the verdict to
+  `null`. The violation disappears and the exit is `1`. Any translation that relies on
+  `error_tolerance: 2`, including the "where the attribute exists" idiom, is unsafe on plans that
+  mix resources with and without the attribute until #293 is fixed. Say so in the report.
+
+## Scope differs even when the test is exact
+
+`find_resources` and the `actions contains "create" or "update"` idiom exclude no-op and deleted
+resources. Tirith evaluates every `resource_changes` entry of the type, so an unchanged resource
+that already violates the rule fails the plan (Sentinel passes it), and a deleted resource is a
+severity-0 error that is skipped or, per #293, erases a sibling's failure. This applies to every
+row marked exact above: exact on the resources both tools evaluate, not on which resources are
+evaluated.
 
 ## Why 69 of 110 are not exact
 
@@ -112,7 +129,9 @@ In order of how often each was the reason:
 
 ## From a Sentinel mock to a Tirith fixture
 
-Sentinel tests live in `test/<policy>/` with `mock-tfplan-v2.sentinel` files. The
+Sentinel tests live in `test/<policy>/`. Each `*.hcl` there names a mock file and states the
+expected verdict (`main = false` is the failing case); mock filenames vary, so read the `.hcl`
+first. The
 `resource_changes` map in a mock has the same keys as `terraform show -json`: `address`, `type`,
 `name`, `mode`, `change.actions`, `change.before`, `change.after`, `change.after_unknown`.
 Transcribe the failing mock to `should-fail.json` and the passing one to `should-pass.json`,

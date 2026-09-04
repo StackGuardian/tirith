@@ -89,6 +89,9 @@ and invert it.
 - **Missing attribute is severity 2, missing resource type is severity 1.** With
   `error_tolerance: 2` a resource lacking the attribute is *skipped*, not failed. If every
   evaluator is skipped the policy is `final_result: null`, exit `1`. Skipping is not passing.
+- **A skipped resource can erase a failure (issue #293).** In one evaluator, a resource skipped by
+  `error_tolerance` after a violating one resets the verdict to `null`, exit `1`. Destroys do this
+  at every tolerance. Prefer one evaluator per resource type over a wildcard with tolerance.
 - **A type-scoped policy refuses a plan with none of that type.** Severity 1 under the default
   tolerance is exit `3`; with `error_tolerance: 1` it is exit `1`. Neither is `0`. See
   `reference/verdicts.md`.

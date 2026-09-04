@@ -101,6 +101,10 @@ attribute at all. Those raise severity `2`. Decide deliberately:
 - `error_tolerance: 0` — a resource without the attribute **fails**. Right for "everything must be
   tagged".
 - `error_tolerance: 2` — it is **skipped**. Right for "where this attribute exists, it must be X".
+  **Caveat, issue #293:** a skipped resource that follows a failing one in the same evaluator
+  resets the verdict to `null`, so the failure disappears and the exit is `1`. On a plan that mixes
+  resources with and without the attribute, this recipe can hide a violation. Until #293 is fixed,
+  prefer separate evaluators per resource type over a wildcard with tolerance 2 where you can.
 
 On a wildcard policy every message reads identically, and only the resource address in the result
 distinguishes one finding from another.

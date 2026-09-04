@@ -37,6 +37,8 @@ page. Everything below assumes that vocabulary.
    - `not expressible`: needs something Tirith lacks. Name it, and link the tracking issue.
 3. **Translate `exact` and `approximate`.** Carry `meta.name` from the source policy name, put the
    Sentinel enforcement level in `meta.enforcement`, and map every `param` to `{{ var.NAME }}`.
+   If an approximation drops the test a `param` fed, do not ship an unread `variables.json`: name
+   the orphaned parameter in the notes and in the report row.
 4. **Refuse `not expressible` in words.** Write what the policy does, what Tirith cannot see, and
    the issue that would change that. Do not write a policy that checks something adjacent.
 5. **Verify every translation against the source's own tests.** Sentinel policies ship mocks under
@@ -62,8 +64,10 @@ page. Everything below assumes that vocabulary.
   or a value unknown until apply is invisible.
 - Configuration is not the plan. Module sources, variables, outputs, provisioners and expression
   references live in `tfconfig`; Tirith reads none of them.
-- A plan that destroys a resource of the checked type currently turns the evaluator's verdict to
-  `null` (Tirith issue #293). Test with plans that do not destroy, and warn the reader.
+- A resource skipped through `error_tolerance` can erase an earlier resource's failure in the
+  same evaluator (Tirith issue #293). Destroys trigger it at every tolerance; the "where the
+  attribute exists" idiom triggers it at `error_tolerance: 2`. Test with mixed plans, and put the
+  warning in the report.
 
 ## Before you hand it back
 
@@ -71,7 +75,8 @@ page. Everything below assumes that vocabulary.
 2. Does every `approximate` row name the case where verdicts differ, and ship `diverges.json`?
 3. Does every `not expressible` row link a Tirith issue or say "not tracked"?
 4. Did every translated policy exit `3` on `should-fail.json` and `0` on `should-pass.json`?
-5. Is every `param` a `{{ var.NAME }}` with a `variables.json` beside the policy?
+5. Is every `param` a `{{ var.NAME }}` with a `variables.json` beside the policy, or named as
+   orphaned in the report?
 6. Is every condition type and argument key taken from `schema.md`, not recalled?
 
 ## Worked examples
