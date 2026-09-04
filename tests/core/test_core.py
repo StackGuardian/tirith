@@ -215,3 +215,75 @@ def test_generate_evaluator_result_bare_provider_err_ignores_error_tolerance():
 
     assert result["passed"] is False, "a malformed provider call must not be skipped"
     assert result["result"][0]["passed"] is False
+
+
+def _skip(msg="tolerated"):
+    return {"value": ProviderError(severity_value=0), "err": msg}
+
+
+def _rollup(inputs, error_tolerance=0):
+    """Run generate_evaluator_result over `inputs` with MockEvaluator and return the verdict."""
+    evaluator_obj = {
+        "id": "test_evaluator",
+        "provider_args": {"operation_type": "attribute", "key": "value"},
+        "condition": {"type": "Equals", "value": "expected_value", "error_tolerance": error_tolerance},
+    }
+    with patch("tirith.core.core.get_evaluator_inputs_from_provider_inputs", return_value=inputs):
+        with patch("tirith.core.core.EVALUATORS_DICT", {"Equals": MockEvaluator}):
+            return generate_evaluator_result(evaluator_obj, {}, "test_provider")
+
+
+@mark.passing
+@pytest.mark.parametrize(
+    "inputs",
+    [
+        [{"value": "resource2"}, _skip()],  # violation first, then a tolerated skip (issue #293)
+        [_skip(), {"value": "resource2"}],  # the same two resources, swapped
+    ],
+    ids=["fail-then-skip", "skip-then-fail"],
+)
+def test_generate_evaluator_result_skip_never_erases_a_failure(inputs):
+    """A tolerated skip must not turn a failing evaluator into a skipped one, whatever the order.
+
+    Regression for #293: a destroyed resource (severity 0, tolerated at every error_tolerance)
+    after a violating resource used to reset the verdict to None, and the None id was then removed
+    from eval_expression, so the violation vanished.
+    """
+    result = _rollup(inputs)
+    assert result["passed"] is False
+    assert sorted((r["passed"] for r in result["result"]), key=str) == [False, None]
+
+
+@mark.passing
+@pytest.mark.parametrize(
+    "inputs",
+    [
+        [{"value": "resource1"}, _skip()],
+        [_skip(), {"value": "resource1"}],
+        [{"value": "resource1"}, _skip(), {"value": "resource1"}],
+    ],
+    ids=["pass-then-skip", "skip-then-pass", "pass-skip-pass"],
+)
+def test_generate_evaluator_result_skip_never_erases_a_pass(inputs):
+    """A skipped resource alongside passing ones leaves a passing verdict, not a skipped one.
+
+    Before #293 was fixed, [PASS, skip] reported "Passed: 0 Failed: 0 Skipped: 1" and exited 1 for a
+    plan that had a compliant resource next to a destroyed one.
+    """
+    result = _rollup(inputs)
+    assert result["passed"] is True
+
+
+@mark.passing
+def test_generate_evaluator_result_all_skipped_is_none():
+    """Only when every resource was tolerated away is the evaluator skipped as a whole."""
+    result = _rollup([_skip(), _skip()])
+    assert result["passed"] is None
+    assert all(r["passed"] is None for r in result["result"])
+
+
+@mark.passing
+def test_generate_evaluator_result_skip_never_erases_a_bare_provider_error():
+    """A malformed provider call fails hard even when a tolerated skip follows it."""
+    result = _rollup([{"value": None, "err": "attribute_to_get is not supported"}, _skip()])
+    assert result["passed"] is False
