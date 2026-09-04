@@ -171,7 +171,7 @@ pipelines:
           name: Policy gate
           script:
             - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-            # - tirith lint .tirith/policies   # in dev, not in 1.2.0
+            - tirith lint .tirith/policies   # needs a build from main until the next release
             - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
@@ -214,9 +214,10 @@ Catch a broken policy before it is committed, let alone before CI runs it. Tirit
 ```yaml
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: 1.2.0
+    rev: main          # 1.2.0 predates the hook; pin the first tag that includes it
     hooks:
       - id: tirith-lint
+      - id: tirith-fmt
 ```
 
 ```bash
@@ -224,9 +225,9 @@ pre-commit install
 pre-commit run tirith-lint --all-files
 ```
 
-The hook runs only when a file under `.tirith/policies/` or a `*.tirith.json` changes. It lints
-the policy directory rather than the individual changed files, because `tirith lint` takes a
-single path.
+The hooks run only when a file under `.tirith/` or a `*.tirith.json` changes, and lint exactly the
+files that changed. `tirith-fmt` rewrites them into the canonical layout; commit again after it
+does.
 
 [NOTE] Why linting and not evaluation
 Evaluating a policy needs a plan document, and producing one means running `terraform plan` —

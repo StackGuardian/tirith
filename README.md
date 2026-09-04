@@ -51,6 +51,7 @@ verdict, same exit codes. That mode is optional and is the only part that talks 
     - [Builder](#builder)
     - [Playground](#playground)
     - [Serving it on a port](#serving-it-on-a-port)
+- [Lint and format your policies](#lint-and-format-your-policies)
 - [Run it in CI](#run-it-in-ci)
 - [Exit codes](#exit-codes)
 - [Evaluating against your StackGuardian organization](#evaluating-against-your-stackguardian-organization)
@@ -208,6 +209,9 @@ Subcommands:
                                   organization enforces, rather than local files.
    tirith ui --help               Explore results, build policies and experiment in
                                   an interactive interface. Needs the 'tui' extra.
+   tirith lint --help             Check policy files for mistakes that would gate
+                                  nothing or fail as a false violation. No plan needed.
+   tirith fmt --help              Rewrite policy files into the canonical layout.
 
 About Tirith:
 
@@ -347,6 +351,50 @@ behaves identically and there is nothing extra to keep in sync.
 Bind address and port are yours to choose, but note the served interface can read any file path
 the serving process can. Keep it on `localhost` unless you have a reason not to.
 
+## Lint and format your policies
+
+A policy that names a condition type that does not exist, or an argument key another provider
+reads, still parses and still runs — it just checks nothing, or fails as if your infrastructure
+were at fault. `tirith lint` catches that class of mistake without a plan document, so it fits in a
+pre-commit hook and an editor loop:
+
+```
+tirith lint .tirith/policies
+.tirith/policies/tags.json:evaluators[0].condition.type: error: 'Exists' is not an evaluator. Known: ContainedIn, Contains, ...
+1 policy, 1 errors, 0 warnings
+echo $?    # 3 a policy has errors · 1 the path is missing or holds no policies · 0 clean
+```
+
+It checks the shape: every `condition.type` exists, every `provider_args` key is one the chosen
+operation reads, `error_tolerance` is inside `condition`, and `eval_expression` names every check
+and nothing else. Warnings do not change the exit code unless you pass `--strict`. `--json` gives
+the findings as a document for an editor or another tool.
+
+Lint cannot tell you a well-formed policy matches nothing. Only evaluating it against a document
+that should fail does that, so the loop is both:
+
+```
+tirith lint .tirith/policies                                                  # shape
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error    # meaning
+```
+
+`tirith fmt` rewrites policies into one canonical layout — `meta`, `evaluators`, `eval_expression`;
+inside a check `id`, `description`, `provider_args`, `condition` — without changing a value or
+reordering a list. `tirith fmt --check` exits `3` if any file would change, `--diff` shows what.
+
+Both are published as pre-commit hooks:
+
+```yaml
+repos:
+  - repo: https://github.com/StackGuardian/tirith
+    rev: main
+    hooks:
+      - id: tirith-lint
+      - id: tirith-fmt
+```
+
+The full flag reference is in [docs/lint.md](docs/lint.md).
+
 ## Run it in CI
 
 ### GitHub Actions
@@ -386,10 +434,9 @@ GitLab-specific: any runner that can execute a container and produce a plan work
 
 | Code | Meaning |
 |---|---|
-| 0 | Policies passed, or nothing was in scope to gate on |
-| 1 | Tirith could not complete the evaluation — bad input, a policy it could not evaluate, unreachable API |
-| 2 | Timed out waiting for a StackGuardian run |
-| 3 | A policy failed. Only with `--fail-on-error`, on either surface |
+| 0 | Policies passed. For `lint` and `fmt --check`: nothing to report |
+| 1 | Tirith could not complete the evaluation — bad input, a policy it could not evaluate, unreachable API, an unknown command or a path that does not exist |
+| 3 | A policy failed. Only with `--fail-on-error`, on either surface. For `lint`: a policy has errors; for `fmt --check`: a file would change |
 | 130 | Interrupted |
 
 **Gate a CI job with `--fail-on-error`:**
@@ -408,9 +455,9 @@ skipped. A job that treats every non-zero code alike reports an outage as a poli
 cannot tell a working gate from a broken one.
 
 One limit worth stating plainly: a *misconfigured* policy — an unsupported `condition.type`, an unknown
-`required_provider` — comes back from the engine as an ordinary failed check with no error attached, so
-it is indistinguishable from a real violation and exits `3`. It fails closed, which is the safe
-direction, but it will point at your infrastructure when the fault is in the policy.
+`required_provider` — comes back from the engine as a failed check and exits `3`. The result message
+names the fault, but the exit code does not, so a job branching on the code sees a violation. It fails
+closed, which is the safe direction. `tirith lint` catches this class before the policy ever runs.
 
 ## Evaluating against your StackGuardian organization
 

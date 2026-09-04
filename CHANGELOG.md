@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `tirith lint`: check policy files for the mistakes that otherwise reach CI looking like real
+  infrastructure violations — an invented `condition.type`, a `provider_args` key another provider
+  reads, `error_tolerance` beside `condition` instead of inside it, an evaluator the expression
+  never names. It is the validator behind `tirith ui`, run from the command line, and needs neither
+  a plan document nor the `tui` extra. Exit `3` for a policy with errors, `1` for a missing path or
+  nothing to lint, `0` when clean; `--strict` counts warnings, `--json` emits a document.
+- `tirith fmt`: rewrite policies into one canonical layout — `meta`, `evaluators`,
+  `eval_expression`; inside a check `id`, `description`, `provider_args`, `condition` — without
+  changing a value or reordering a list. `--check` exits `3` if a file would change; `--diff`
+  shows what.
+- `.pre-commit-hooks.yaml` publishing `tirith-lint` and `tirith-fmt`, as the documentation had
+  promised.
+- The validator now reports `error_tolerance` placed on the evaluator as an error, and any key
+  the engine does not read, at any level, as a warning.
+- An unknown first argument (`tirith lintx`) is now reported as "not a tirith command" with the
+  list of commands, instead of argparse's "unrecognized arguments" re-labelled "Failed because of
+  System Exit".
 - `tirith ui`: an interactive interface with three tabs.
   - **Explorer** — read an evaluation's results down to the resource behind each one. The result
     document has always carried the resource address, the planned action and the before/after

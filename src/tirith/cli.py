@@ -46,7 +46,13 @@ SUBCOMMAND = "platform"
 # 3.9 and tirith supports 3.8 -- so tui/cli.py reports the missing extra rather than failing on
 # an import here.
 UI_SUBCOMMAND = "ui"
-SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND}
+
+# `lint` and `fmt` follow the same pre-dispatch. Both are pure local computation over policy
+# files and import nothing beyond the engine's registries, so they work in a slim CI image and
+# a pre-commit hook without the 'tui' extra.
+LINT_SUBCOMMAND = "lint"
+FMT_SUBCOMMAND = "fmt"
+SUBCOMMANDS = {SUBCOMMAND, UI_SUBCOMMAND, LINT_SUBCOMMAND, FMT_SUBCOMMAND}
 
 
 def main(args=None) -> ExitStatus:
@@ -65,10 +71,30 @@ def main(args=None) -> ExitStatus:
 
         return tui_cli.main(argv)
 
-    if argv and argv[0] in SUBCOMMANDS:
+    if argv and argv[0] == LINT_SUBCOMMAND:
+        from tirith import lint
+
+        return lint.main(argv)
+
+    if argv and argv[0] == FMT_SUBCOMMAND:
+        from tirith import fmt
+
+        return fmt.main(argv)
+
+    if argv and argv[0] == SUBCOMMAND:
         from tirith.platform import cli as platform_cli
 
         return platform_cli.main(argv)
+
+    if argv and not argv[0].startswith("-"):
+        # The flat parser takes no positional arguments, so a bare first token can only be a
+        # subcommand, and this one is not. Say so by name. Before this, argparse reported
+        # "unrecognized arguments: lint" and the SystemExit handler below re-labelled it
+        # "Failed because of System Exit" with exit 1 -- which for `tirith lint` in a pipeline
+        # read as the linter failing rather than as the linter not existing.
+        eprint(f"tirith: '{argv[0]}' is not a tirith command. Commands: {', '.join(sorted(SUBCOMMANDS))}.")
+        eprint("Run 'tirith --help' for the local-evaluation options.")
+        return ExitStatus.ERROR
 
     try:
 
@@ -87,6 +113,9 @@ def main(args=None) -> ExitStatus:
                                            organization enforces, rather than local files.
             tirith ui --help               Explore results, build policies and experiment in
                                            an interactive interface. Needs the 'tui' extra.
+            tirith lint --help             Check policy files for mistakes that would gate
+                                           nothing or fail as a false violation. No plan needed.
+            tirith fmt --help              Rewrite policy files into the canonical layout.
 
          About Tirith:
          
