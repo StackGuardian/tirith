@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
@@ -6,7 +6,7 @@ import Heading from '@theme/Heading';
 import TirithMark from '../components/brand/TirithMark';
 import Colophon from '../components/site/Colophon';
 import Bench from '../components/learn/Bench';
-import {INPUT_DOC, PLAYGROUND_START, TRACKS} from '../data/lessons';
+import {TRACKS} from '../data/lessons';
 import {CONDITION_NAMES} from '../data/tirithLite';
 import styles from './learn.module.css';
 import '../css/chrome.module.css';
@@ -99,15 +99,22 @@ function Lesson({lesson, input}) {
   );
 }
 
-function Playground() {
-  const [policy, setPolicy] = useState(PLAYGROUND_START);
-  const [input, setInput] = useState(INPUT_DOC);
+/*
+ * The blank bench, seeded from whichever track is open.
+ *
+ * `start` and `doc` are only the *initial* state, so the parent gives this a key of the
+ * track id: changing tracks remounts it rather than trying to reconcile a policy the
+ * reader may have edited with a document it no longer matches.
+ */
+function Playground({start, doc, num}) {
+  const [policy, setPolicy] = useState(start);
+  const [input, setInput] = useState(doc);
 
   return (
     <section className={styles.playground} id="playground">
       <div className={styles.lessonHead}>
         <div className={styles.lessonLabel}>
-          <span className={styles.lessonNum}>07</span>
+          <span className={styles.lessonNum}>{num}</span>
           <Heading as="h2" className={styles.lessonTitle}>
             Playground
           </Heading>
@@ -140,8 +147,8 @@ function Playground() {
           type="button"
           className={styles.reset}
           onClick={() => {
-            setPolicy(PLAYGROUND_START);
-            setInput(INPUT_DOC);
+            setPolicy(start);
+            setInput(doc);
           }}>
           Reset
         </button>
@@ -153,7 +160,60 @@ function Playground() {
   );
 }
 
+/*
+ * The chooser.
+ *
+ * Three providers stacked on one page meant a reader wanting Kubernetes scrolled past nine
+ * lessons about something else to reach two about their own problem. So the page asks first
+ * and shows one track.
+ *
+ * WHY THE HASH IS THE STATE. `/learn/#kubernetes` has to open on Kubernetes, because that is
+ * the link someone sends a colleague, and `#playground` is already linked from the Skills
+ * page and must keep working. Reading it on mount rather than tracking a separate piece of
+ * state means a deep link and a click end up in exactly the same place.
+ *
+ * The initial render is always the first track, deliberately: this page is prerendered at
+ * build time, where there is no location, and a component that renders one thing on the
+ * server and another on the client is a hydration mismatch. The effect below corrects it
+ * after mount, which is one frame on a page whose content is several screens tall.
+ */
+function useTrack() {
+  const [id, setId] = useState(TRACKS[0].id);
+
+  useEffect(() => {
+    const fromHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (!hash) return;
+      // A track id, or any lesson inside one: both mean "open that track".
+      const track =
+        TRACKS.find((t) => t.id === hash) ||
+        TRACKS.find((t) => t.lessons.some((l) => l.id === hash));
+      if (track) setId(track.id);
+    };
+    fromHash();
+    window.addEventListener('hashchange', fromHash);
+    return () => window.removeEventListener('hashchange', fromHash);
+  }, []);
+
+  return [id, setId];
+}
+
 export default function Learn() {
+  const [trackId, setTrackId] = useTrack();
+  const track = TRACKS.find((t) => t.id === trackId) || TRACKS[0];
+
+  /*
+   * Choosing a track rewrites the hash without a navigation, so the back button walks the
+   * reader's choices instead of leaving the page, and a copied URL carries the track. No
+   * scroll, because the selector is what they just clicked and it should stay put.
+   */
+  const choose = useCallback((id) => {
+    setTrackId(id);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `#${id}`);
+    }
+  }, [setTrackId]);
+
   return (
     <Layout
       title="Learn — writing Tirith policies"
@@ -170,7 +230,7 @@ export default function Learn() {
             <TirithMark className={styles.letterheadMark} size={40} />
             <span className={styles.letterheadName}>Tirith</span>
             <span className={styles.letterheadRule} aria-hidden="true" />
-            <span className={styles.letterheadNote}>Eleven lessons and a playground</span>
+            <span className={styles.letterheadNote}>Three providers, eleven lessons</span>
           </div>
 
           <Heading as="h1" className={styles.h1}>
@@ -180,9 +240,9 @@ export default function Learn() {
           <div className={styles.heroPlate}>
             <div className={styles.heroLede}>
               <p className={styles.lede}>
-                Three providers, a lesson at a time. Start with any JSON document, then
-                the same syntax against an OpenTofu or Terraform plan and a set of
-                Kubernetes manifests. Every step is editable: change a value, run it, and
+                Pick the thing you actually need to gate and learn on that. The syntax is
+                the same for all three, so the JSON track teaches it fastest and the other
+                two teach what changes. Every step is editable: change a value, run it, and
                 watch the verdict, the messages and the exit code move with it.
               </p>
               <div className={styles.heroLinks}>
@@ -217,41 +277,77 @@ export default function Learn() {
           </div>
         </header>
 
-        <nav className={styles.toc} aria-label="Lessons">
-          {TRACKS.flatMap((t) => t.lessons).map((l) => (
-            <a key={l.id} className={styles.tocItem} href={`#${l.id}`}>
-              <span className={styles.tocNum}>{l.n}</span>
-              <span>{l.title}</span>
-            </a>
-          ))}
-          <a className={styles.tocItem} href="#playground">
-            <span className={styles.tocNum}>12</span>
-            <span>Playground</span>
-          </a>
-        </nav>
+        {/*
+          * The chooser. Radio semantics rather than buttons, because these are three
+          * states of one setting and a screen reader should be told they are exclusive.
+          */}
+        <section className={styles.chooser} aria-labelledby="choose-provider">
+          <span className={styles.chooserLabel} id="choose-provider">
+            Choose what you want to gate
+          </span>
+          <div className={styles.chooserTabs} role="radiogroup" aria-labelledby="choose-provider">
+            {TRACKS.map((t) => {
+              const active = t.id === track.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  className={active ? styles.tabOn : styles.tab}
+                  onClick={() => choose(t.id)}>
+                  <span className={styles.tabName}>{t.tab}</span>
+                  <span className={styles.tabProvider}>{t.provider}</span>
+                  <span className={styles.tabCount}>
+                    {t.lessons.length} {t.lessons.length === 1 ? 'lesson' : 'lessons'}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/*
-          * One section per provider. The track header carries the provider name because
-          * every policy below it repeats that name in its own meta block, and a reader
-          * who lands on lesson 10 from the contents needs to know which document the
-          * pane on the right is showing them.
+          * The open track. Keyed on the track id so switching remounts every lesson:
+          * each one holds the reader's edits in its own state, and reconciling those
+          * against a different document would leave a policy and an input that do not
+          * belong together.
           */}
-        {TRACKS.map((track) => (
-          <div key={track.id}>
-            <section className={styles.track} id={track.id}>
-              <span className={styles.trackProvider}>{track.provider}</span>
-              <Heading as="h2" className={styles.trackTitle}>
-                {track.title}
-              </Heading>
-              <p className={styles.trackLede}>{track.lede}</p>
-            </section>
-            {track.lessons.map((lesson) => (
-              <Lesson key={lesson.id} lesson={lesson} input={track.input} />
-            ))}
-          </div>
-        ))}
+        <div key={track.id}>
+          <section className={styles.track} id={track.id}>
+            <span className={styles.trackProvider}>{track.provider}</span>
+            <Heading as="h2" className={styles.trackTitle}>
+              {track.title}
+            </Heading>
+            <p className={styles.trackLede}>{track.lede}</p>
+            <p className={styles.trackForYou}>{track.forYou}</p>
+          </section>
 
-        <Playground />
+          <nav className={styles.toc} aria-label={`Lessons: ${track.title}`}>
+            {track.lessons.map((l) => (
+              <a key={l.id} className={styles.tocItem} href={`#${l.id}`}>
+                <span className={styles.tocNum}>{l.n}</span>
+                <span>{l.title}</span>
+              </a>
+            ))}
+            <a className={styles.tocItem} href="#playground">
+              <span className={styles.tocNum}>
+                {String(track.lessons.length + 1).padStart(2, '0')}
+              </span>
+              <span>Playground</span>
+            </a>
+          </nav>
+
+          {track.lessons.map((lesson) => (
+            <Lesson key={lesson.id} lesson={lesson} input={track.input} />
+          ))}
+
+          <Playground
+            start={track.playground}
+            doc={track.input}
+            num={String(track.lessons.length + 1).padStart(2, '0')}
+          />
+        </div>
 
         <section className={styles.finale}>
           <div className={styles.finaleGrid}>

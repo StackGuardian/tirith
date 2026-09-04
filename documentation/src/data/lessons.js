@@ -375,7 +375,7 @@ export const PLAN_DOC = `{
 export const TF_LESSONS = [
   {
     id: 'tf-attribute',
-    n: '07',
+    n: '01',
     title: 'A plan is not a document',
     teaches: 'terraform_resource_type · terraform_resource_attribute',
     body:
@@ -415,7 +415,7 @@ export const TF_LESSONS = [
   },
   {
     id: 'tf-action',
-    n: '08',
+    n: '02',
     title: 'Gate the change, not the value',
     teaches: 'operation_type: action',
     body:
@@ -453,7 +453,7 @@ export const TF_LESSONS = [
   },
   {
     id: 'tf-count',
-    n: '09',
+    n: '03',
     title: 'Zero is an answer',
     teaches: 'operation_type: count · and the error that does not happen',
     body:
@@ -539,7 +539,7 @@ export const K8S_DOC = `[
 export const K8S_LESSONS = [
   {
     id: 'k8s-kind',
-    n: '10',
+    n: '01',
     title: 'Pick a kind, then a path',
     teaches: 'kubernetes_kind · attribute_path',
     body:
@@ -576,7 +576,7 @@ export const K8S_LESSONS = [
   },
   {
     id: 'k8s-wildcard',
-    n: '11',
+    n: '02',
     title: 'The same star, a different meaning',
     teaches: 'why a passing policy can still be wrong',
     body:
@@ -626,34 +626,58 @@ export const TRACKS = [
   {
     id: 'json',
     provider: 'stackguardian/json',
+    tab: 'JSON or YAML',
     title: 'Any JSON or YAML document',
     lede:
       'The provider to learn first, because it reads anything with keys and values and gets ' +
-      'out of the way of the syntax you are actually learning.',
+      'out of the way of the syntax you are actually learning. Six lessons that build one ' +
+      'policy a rule at a time.',
+    /*
+     * What the track teaches, for the reader deciding which one to open. Deliberately not
+     * a summary of the lessons: it is the reason to pick this track over the other two.
+     */
+    forYou: 'Start here if you are new to Tirith, whatever you plan to gate later.',
     input: INPUT_DOC,
     lessons: LESSONS,
+    /*
+     * The playground opens on the track's most representative *correct* policy, which is
+     * not always its last lesson. The Kubernetes track ends on a policy that deliberately
+     * passes while being wrong, and seeding an empty-canvas playground with that would be
+     * handing the reader the trap with none of the explanation attached.
+     */
+    playground: LESSONS[LESSONS.length - 1].policy,
   },
   {
     id: 'terraform',
     provider: 'stackguardian/terraform_plan',
+    tab: 'Terraform plan',
     title: 'An OpenTofu or Terraform plan',
     lede:
       'The provider the tool exists for. Same conditions, same expressions; what changes is ' +
       'that you address a resource type and an attribute instead of a path, and that you can ' +
       'gate on what the change is about to do.',
+    forYou: 'Three lessons. Come here once the syntax is familiar and you want the real thing.',
     input: PLAN_DOC,
     lessons: TF_LESSONS,
+    playground: TF_LESSONS[0].policy,
   },
   {
     id: 'kubernetes',
     provider: 'stackguardian/kubernetes',
+    tab: 'Kubernetes',
     title: 'Kubernetes manifests',
     lede:
       'A list of manifests rather than one document, and one wildcard that behaves the ' +
-      'opposite way to the one you just learned.',
+      'opposite way to the one in the Terraform track.',
+    forYou: 'Two lessons, the second of which is the most useful mistake on this page.',
     input: K8S_DOC,
     lessons: K8S_LESSONS,
+    playground: K8S_LESSONS[0].policy,
   },
 ];
 
-export const PLAYGROUND_START = LESSONS[LESSONS.length - 1].policy;
+/*
+ * Superseded by each track's own `playground` seed, and kept only long enough to say so:
+ * nothing imports this. Delete it on the next pass through this file.
+ */
+export const PLAYGROUND_START = TRACKS[0].playground;
