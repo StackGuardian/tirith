@@ -498,3 +498,56 @@ def test_errors_sort_before_warnings():
     policy["evaluators"][0]["condition"]["type"] = "Nope"  # error
     findings = validate.check_policy(policy)
     assert findings[0].severity == "error"
+
+
+def _minimal():
+    return {
+        "meta": {"version": "v1", "required_provider": "stackguardian/terraform_plan"},
+        "evaluators": [
+            {
+                "id": "a",
+                "provider_args": {
+                    "operation_type": "attribute",
+                    "terraform_resource_type": "*",
+                    "terraform_resource_attribute": "tags",
+                },
+                "condition": {"type": "IsNotEmpty"},
+            }
+        ],
+        "eval_expression": "a",
+    }
+
+
+@mark.passing
+def test_error_tolerance_on_the_evaluator_is_an_error():
+    """core reads condition.get("error_tolerance") and nothing else, so here it does nothing."""
+    policy = _minimal()
+    policy["evaluators"][0]["error_tolerance"] = 2
+
+    findings = validate.check_policy(policy)
+
+    assert [f.where for f in findings if f.severity == "error"] == ["evaluators[0].error_tolerance"]
+    assert "inside `condition`" in findings[0].message
+
+
+@mark.passing
+def test_unknown_keys_at_every_level_are_warnings():
+    policy = _minimal()
+    policy["notes"] = "x"
+    policy["evaluators"][0]["severity"] = "high"
+    policy["evaluators"][0]["condition"]["tolerance"] = 2  # misspelled error_tolerance
+
+    findings = validate.check_policy(policy)
+
+    where = sorted(f.where for f in findings)
+    assert where == ["evaluators[0].condition.tolerance", "evaluators[0].severity", "notes"]
+    assert all(f.severity == "warning" for f in findings)
+
+
+@mark.passing
+def test_schema_key_and_description_are_known():
+    policy = _minimal()
+    policy["$schema"] = "https://example/schema.json"
+    policy["evaluators"][0]["description"] = "d"
+
+    assert validate.check_policy(policy) == []

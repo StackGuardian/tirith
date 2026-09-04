@@ -1,0 +1,23 @@
+# Hooks published by this repository, for use in a consumer's .pre-commit-config.yaml:
+#
+#   repos:
+#     - repo: https://github.com/StackGuardian/tirith
+#       rev: main
+#       hooks:
+#         - id: tirith-lint
+#         - id: tirith-fmt
+#
+# Both run on the changed files pre-commit hands them, so a commit that touches one policy lints
+# one policy. `files` matches the conventional locations; override it if yours differ.
+- id: tirith-lint
+  name: tirith lint
+  description: Check Tirith policies for mistakes that would gate nothing or fail as a false violation.
+  entry: tirith lint --quiet
+  language: python
+  files: (^|/)\.tirith/.*\.json$|\.tirith\.json$
+- id: tirith-fmt
+  name: tirith fmt
+  description: Rewrite Tirith policies into the canonical layout.
+  entry: tirith fmt
+  language: python
+  files: (^|/)\.tirith/.*\.json$|\.tirith\.json$
