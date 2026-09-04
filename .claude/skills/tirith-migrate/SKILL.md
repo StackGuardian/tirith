@@ -83,6 +83,6 @@ libraries, each with its Sentinel source, the Tirith policy, and the plans that 
 | --- | --- | --- |
 | `restrict-instance-type` | exact | `filter_attribute_not_in_list` to `ContainedIn`; `param` to `-var` |
 | `mandatory-tags` | exact | Tag keys via `Contains` on the map; one evaluator per key and type |
-| `prevent-database-destroy` | approximate | `action` catches a delete but not a replacement |
+| `prevent-database-destroy` | exact | `action` emits one result per action; `NotEquals "delete"` catches deletes and replacements |
 | `restrict-ssh-ingress` | approximate | The per-block conjunction collapses to a stricter rule |
 | `require-private-registry-modules` | not expressible | A `tfconfig` policy, refused in words |

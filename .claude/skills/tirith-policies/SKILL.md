@@ -87,8 +87,14 @@ and invert it.
 - **One evaluator, one result per matching resource.** Three buckets give three results from one
   rule, and the check fails if any of them fails.
 - **Missing attribute is severity 2, missing resource type is severity 1.** With
-  `error_tolerance: 2` a resource lacking the attribute is *skipped*, not failed, which can turn
-  the whole policy into `final_result: null`. Skipping is not passing.
+  `error_tolerance: 2` a resource lacking the attribute is *skipped*, not failed. If every
+  evaluator is skipped the policy is `final_result: null`, exit `1`. Skipping is not passing.
+- **A type-scoped policy refuses a plan with none of that type.** Severity 1 under the default
+  tolerance is exit `3`; with `error_tolerance: 1` it is exit `1`. Neither is `0`. See
+  `reference/verdicts.md`.
+- **The delete action is spelled `delete`.** `"destroy"` matches nothing and the guard exits `0`.
+  `action` emits one result per action: `NotEquals "delete"` blocks deletes and replacements,
+  `ContainedIn ["delete"]` with `!` blocks only a pure delete. See `reference/terraform-plan.md`.
 - **An unknown `condition.type` fails with no error attached.** It exits `3` and reads like a
   real violation. Check the type against the closed list, not your memory.
 - **`tirith lint` does not ship.** Do not put it in a pipeline. `reference/validate.md` has

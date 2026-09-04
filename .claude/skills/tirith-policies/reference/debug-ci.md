@@ -13,7 +13,7 @@ echo $?
 | --- | --- | --- |
 | `3` | A policy ran and refused the change | Step 2 — this is a real verdict |
 | `1` | No verdict was reached | Step 4 — this is not a violation |
-| `0` but you expected a failure | Nothing was in scope, or `--fail-on-error` is missing | Step 5 |
+| `0` but you expected a failure | The policy matched nothing (wrong key, wrong operation), or `--fail-on-error` is missing | Step 5 |
 
 A job that collapses `1` and `3` will send you to step 2 for a problem that lives in step 4. Fix
 the job's exit-code handling first if it does that.

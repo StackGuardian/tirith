@@ -56,7 +56,7 @@ examples/sentinel/prevent-database-destroy/notes.md
 examples/sentinel/prevent-database-destroy/policy.json
 examples/sentinel/prevent-database-destroy/should-fail.json
 examples/sentinel/prevent-database-destroy/should-pass.json
-examples/sentinel/prevent-database-destroy/diverges.json
+examples/sentinel/prevent-database-destroy/should-fail-replacement.json
 examples/sentinel/restrict-ssh-ingress/source.sentinel
 examples/sentinel/restrict-ssh-ingress/notes.md
 examples/sentinel/restrict-ssh-ingress/policy.json

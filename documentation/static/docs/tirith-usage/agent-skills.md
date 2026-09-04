@@ -20,8 +20,9 @@ curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
 Two skills under `.claude/skills/`: `tirith-policies`, for writing policies, and `tirith-migrate`,
-for translating existing Sentinel policies. No config file, no restart, and they are picked up in
-any repository you copy them into.
+for translating existing Sentinel policies. No config file, and they are picked up in any
+repository you copy them into. A session that is already running may not see a newly installed
+skill until it is restarted; a new session sees it immediately.
 
 | Flag | |
 |---|---|

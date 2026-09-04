@@ -55,7 +55,7 @@ The `tfplan-functions` library is how most public policies are written. Each hel
 | `filter_attribute_does_not_have_suffix(a, s)` | `RegexMatch "s$"` | exact |
 | `case_insensitive_filter_...` | `RegexMatch "(?i)..."` | exact |
 | `filter_attribute_was_value` | none: reads `change.before` | not expressible, issue #332 |
-| `find_resources_being_destroyed()` | operation `action`, `ContainedIn ["delete"]`, `!` in the expression | approximate: `action` emits one result per action, so a replacement `["delete","create"]` does not fire |
+| `find_resources_being_destroyed()` | operation `action`, `NotEquals "delete"`, no negation | exact. `action` emits one result per action, so this fails on a replacement too. If the source excludes replacements, use `ContainedIn ["delete"]` with `!` instead |
 | `find_providers_by_type` region checks | `provider_config`, `attribute: region` | approximate: a region set from a variable is invisible |
 | `find_all_module_calls`, `get_module_source` | none | not expressible, issue #348 |
 | `find_all_provisioners` | none | not expressible |
