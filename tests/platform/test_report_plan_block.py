@@ -106,20 +106,101 @@ def test_a_document_with_no_resource_changes_renders_no_block():
     assert "```diff" not in _render(None)
 
 
-def test_small_plans_are_inline_and_large_ones_collapse():
-    small = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(report.PLAN_INLINE_LIMIT)])
-    assert "<details><summary>Show plan" not in _render(small)
+def test_the_plan_is_never_collapsed():
+    """
+    The plan is the thing this block was added to show. Hiding it behind a click makes the common
+    case a reviewer who never opens it, which is the same as not rendering it at all.
+    """
+    large = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(40)])
+    body = _render(large)
+    assert "<details><summary>Show plan" not in body
+    assert "```diff" in body
+    assert "+ aws_s3_bucket.b39" in body
 
-    large = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(report.PLAN_INLINE_LIMIT + 1)])
-    assert "<details><summary>Show plan" in _render(large)
+
+def test_detail_is_given_up_before_any_resource():
+    """
+    The order of sacrifice. Every resource stays listed and every attribute row goes, rather than
+    the other way round -- a reviewer can act on "this is being destroyed" without knowing which
+    field changed, but not the reverse.
+    """
+    changes = [
+        {
+            "address": f"aws_s3_bucket.b{i}",
+            "type": "aws_s3_bucket",
+            "change": {"actions": ["update"], "before": {"acl": "private"}, "after": {"acl": "public"}},
+        }
+        for i in range(report.PLAN_LINE_LIMIT - 5)
+    ]
+    body = _render({"resource_changes": changes})
+    fence = body.split("```diff")[1].split("```")[0]
+
+    # Every resource is still named...
+    for i in range(report.PLAN_LINE_LIMIT - 5):
+        assert f"aws_s3_bucket.b{i} " in fence
+    # ...and no resource was cut off the end.
+    assert "more resource(s), truncated" not in body
+    # ...but the attribute rows that would not fit are gone, and said to be gone.
+    assert '~ acl = "private" -> "public"' not in fence
+    assert "attribute detail omitted" in fence
 
 
-def test_the_row_list_is_capped():
-    plan = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(report.PLAN_ROW_LIMIT + 25)])
+def test_detail_is_dropped_wholesale_not_from_the_cut_off_point():
+    """
+    Trimming at the boundary would annotate the first few resources and leave the rest bare, which
+    reads as though the later ones had nothing to say -- and the bare-looking ones are exactly where
+    a reviewer stops looking.
+    """
+    changes = [
+        {
+            "address": f"aws_s3_bucket.b{i}",
+            "type": "aws_s3_bucket",
+            "change": {"actions": ["update"], "before": {"acl": "private"}, "after": {"acl": "public"}},
+        }
+        for i in range(report.PLAN_LINE_LIMIT)
+    ]
+    fence = _render({"resource_changes": changes}).split("```diff")[1].split("```")[0]
+    assert "acl" not in fence  # not "some of them kept their attributes"
+
+
+def test_resources_are_only_cut_when_the_bare_list_still_does_not_fit():
+    total = report.PLAN_LINE_LIMIT + 25
+    plan = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(total)])
     body = _render(plan)
-    assert "… and 25 more" in body
+    assert "more resource(s), truncated" in body
     # The count still reflects the whole plan, not just what was shown.
-    assert f"Plan: {report.PLAN_ROW_LIMIT + 25} to add" in body
+    assert f"Plan: {total} to add" in body
+
+
+def test_module_resources_are_listed_like_any_other():
+    """
+    Modules need no special handling, and this test exists to keep it that way.
+
+    terraform flattens every module resource into the same flat `resource_changes` list the root
+    ones land in -- nesting shows up only as a longer address. So the renderer stays module-blind by
+    construction, and the risk is that someone later "adds module support" and special-cases it.
+    """
+    body = _render(
+        _plan(
+            _change("module.storage.aws_s3_bucket.b", ["create"]),
+            _change("module.outer.module.inner.aws_s3_bucket.deep", ["update"]),
+            _change("module.replica[1].aws_s3_bucket.r", ["delete"]),
+        )
+    )
+    assert "+ module.storage.aws_s3_bucket.b" in body
+    assert "! module.outer.module.inner.aws_s3_bucket.deep" in body
+    assert "- module.replica[1].aws_s3_bucket.r" in body
+    assert "Plan: 1 to add, 1 to change, 1 to destroy." in body
+
+
+def test_a_long_module_address_goes_ragged_rather_than_truncated():
+    """
+    Nested module addresses routinely pass the column width. Losing the tail of an address would
+    make two resources indistinguishable, so the column gives way instead -- ugly beats ambiguous.
+    """
+    address = "module.platform.module.networking.module.subnets.aws_subnet.private_az_c"
+    body = _render(_plan(_change(address, ["create"])))
+    assert address in body
 
 
 # --- what an attacker cannot do ----------------------------------------------------------------
@@ -155,6 +236,21 @@ def test_a_newline_in_an_address_cannot_fabricate_rows():
     fence = body.split("```diff")[1].split("```")[0]
     assert len([line for line in fence.strip().splitlines() if line.strip()]) == 1
     assert "aws_s3_bucket.production" in fence  # kept, but on the same row
+
+
+def test_a_module_for_each_key_cannot_escape_the_fence():
+    """
+    A surface the resource-level probe above does not reach.
+
+    A module `for_each` key is author-controlled just like a resource one, but it lands *before* the
+    resource part of the address: module.tenant["```"].aws_s3_bucket.b. A guard that sanitised
+    resource names rather than whole addresses would pass this straight through.
+    """
+    evil = 'module.tenant["```\n\n## 🛡️ Tirith — all policies passed\n\n```diff"].aws_s3_bucket.b'
+    body = _render(_plan(_change(evil, ["create"])))
+    assert body.count("```diff") == 1
+    assert body.count("```") == 2
+    assert "all policies passed" not in body.split("```")[2]
 
 
 def test_masked_values_stay_masked():

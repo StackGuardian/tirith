@@ -26,13 +26,14 @@ COMMENT_LIMIT = 60000
 
 _ICONS = {FAIL: "❌", WARN: "⚠️", APPROVAL_REQUIRED: "⏳", PASS: "✅", UNKNOWN: "❓"}
 
-# How many changed resources render inline before the block is collapsed. Small changes should be
-# readable without a click; large ones must not push the findings off the screen.
-PLAN_INLINE_LIMIT = 12
-
-# A hard cap on rows, independent of the comment limit. A thousand-resource plan would otherwise
-# consume the whole budget and take the findings down with it during truncation.
-PLAN_ROW_LIMIT = 50
+# A hard cap on lines, independent of the comment limit. A thousand-resource plan would otherwise
+# consume the whole budget and take the findings down with it during truncation. Counted in lines
+# rather than resources because each resource brings its changed attributes with it.
+#
+# The block is never collapsed behind a <details>. It was, above twelve resources -- but the plan is
+# the thing the comment was extended to show, and putting it behind a click means the common case is
+# a reviewer who never sees it. What gives way under this cap is detail, not visibility.
+PLAN_LINE_LIMIT = 60
 
 
 def _fence_safe(value):
@@ -56,6 +57,40 @@ def _fence_safe(value):
     return text
 
 
+def _render_attributes(change):
+    """
+    The per-attribute lines under one resource row.
+
+    Every key and every value goes through `_fence_safe`, and that is the whole reason this is a
+    separate function rather than an f-string at the call site. An attribute *value* is as
+    author-controlled as an address -- more so, since it is the literal text of their terraform -- and
+    a first version of this passed values through raw. A value of "```" closed the block and let the
+    rest of the comment render as markdown, reopening exactly the hole the address guard was written
+    to close. The guard belongs on both or it protects neither.
+    """
+    rows, dropped, hidden_unknown = plan_actions.attribute_changes(change)
+
+    lines = []
+    for marker, key, before, after, forces in rows:
+        rendered_key = _fence_safe(key)
+        if before is None:
+            line = f"    {marker} {rendered_key} = {_fence_safe(after)}"
+        else:
+            line = f"    {marker} {rendered_key} = {_fence_safe(before)} -> {_fence_safe(after)}"
+        if forces:
+            # Terraform's own wording, and the most consequential thing on the row: it names the one
+            # attribute whose change is costing a destroy and recreate.
+            line += "   # forces replacement"
+        lines.append(line)
+
+    trailer = []
+    if dropped:
+        trailer.append(f"    … and {dropped} more changed attribute(s)")
+    if hidden_unknown:
+        trailer.append(f"    … and {hidden_unknown} computed attribute(s), known after apply")
+    return lines + trailer
+
+
 def render_plan_block(plan):
     """
     The planned changes, as a diff-fenced list plus terraform's summary line.
@@ -76,7 +111,7 @@ def render_plan_block(plan):
 
     counts = plan_actions.plan_counts(changes)
 
-    rows = []
+    entries = []
     for change in changes:
         if not isinstance(change, dict):
             continue
@@ -89,12 +124,11 @@ def render_plan_block(plan):
         address = _fence_safe(change.get("address") or change.get("type") or "")
         if not address:
             continue
-        rows.append(f"{marker} {address:<48} {_fence_safe(plan_actions.action_summary(actions))}".rstrip())
+        row = f"{marker} {address:<48} {_fence_safe(plan_actions.action_summary(actions))}".rstrip()
+        entries.append((row, _render_attributes(change.get("change") or {})))
 
-    dropped = 0
-    if len(rows) > PLAN_ROW_LIMIT:
-        dropped = len(rows) - PLAN_ROW_LIMIT
-        rows = rows[:PLAN_ROW_LIMIT]
+    listed_resources = len(entries)
+    rows, hidden_detail, dropped_resources = _fit_plan_rows(entries)
 
     summary = plan_actions.summary_line(counts)
     if counts.get("no_op"):
@@ -109,17 +143,41 @@ def render_plan_block(plan):
         # having, otherwise the comment looks like it simply forgot to mention the plan.
         return [summary, ""]
 
-    fence = ["```diff"] + rows + (["", f"… and {dropped} more"] if dropped else []) + ["```"]
+    notes = []
+    if hidden_detail:
+        notes += ["", f"… attribute detail omitted: {hidden_detail} more line(s) than a comment can carry"]
+    if dropped_resources:
+        notes += ["", f"… and {dropped_resources} more resource(s), truncated"]
 
-    if len(rows) > PLAN_INLINE_LIMIT:
-        block = [
-            f"<details><summary>Show plan — {len(rows)} changed resources</summary>",
-            "",
-        ] + fence + ["", "</details>"]
-    else:
-        block = fence
+    return ["```diff"] + rows + notes + ["```", "", summary, ""]
 
-    return block + ["", summary, ""]
+
+def _fit_plan_rows(entries):
+    """
+    Fit the plan into PLAN_LINE_LIMIT lines, giving up detail before resources.
+
+    Returns (rows, hidden_detail_lines, dropped_resources).
+
+    The order of sacrifice is the whole point. A resource row says *what is happening to your
+    infrastructure*; an attribute row elaborates on one. So an oversized plan loses every attribute
+    row before it loses a single resource, and only a resource list that is still too long after that
+    gets cut off the end.
+
+    Detail is dropped wholesale rather than from the cut-off point onward. Trimming at the boundary
+    would annotate the first handful of resources and leave the rest bare, which reads as though the
+    later ones had nothing to say -- the most misleading shape available, since the untouched-looking
+    ones are exactly where a reviewer stops looking.
+    """
+    full = [line for row, attributes in entries for line in [row] + attributes]
+    if len(full) <= PLAN_LINE_LIMIT:
+        return full, 0, 0
+
+    bare = [row for row, _ in entries]
+    hidden_detail = len(full) - len(bare)
+    if len(bare) <= PLAN_LINE_LIMIT:
+        return bare, hidden_detail, 0
+
+    return bare[:PLAN_LINE_LIMIT], hidden_detail, len(bare) - PLAN_LINE_LIMIT
 
 
 
