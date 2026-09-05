@@ -1,0 +1,13 @@
+# No security group ingress rule may open port 22 to 0.0.0.0/0. tfplan/v2.
+import "tfplan-functions" as plan
+
+groups = plan.find_resources("aws_security_group")
+
+violations = filter groups as address, sg {
+  any sg.change.after.ingress as rule {
+    rule.from_port <= 22 and rule.to_port >= 22 and
+    "0.0.0.0/0" in rule.cidr_blocks
+  }
+}
+
+main = rule { length(violations) is 0 }

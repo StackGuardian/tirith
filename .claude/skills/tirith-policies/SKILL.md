@@ -5,35 +5,32 @@ description: Write, validate, run and debug Tirith IaC governance policies, inst
 
 # Tirith
 
-Tirith evaluates the plan a pipeline already produces against declarative JSON policies, and
-exits non-zero so a violating change never reaches `apply`.
+Tirith evaluates the plan a pipeline already produces against declarative JSON policies and exits
+non-zero so a violating change never reaches `apply`. A policy is **JSON data, not a program**: it
+names a provider, the value to inspect, and the condition that value must satisfy.
 
-A policy is **JSON data, not a program**. It names a provider, the value to inspect, and the
-condition that value must satisfy. Tirith does the traversal and returns resource-level evidence.
+## Install
 
-## Install: not from PyPI
-
-`pip install tirith` installs an **unrelated project of the same name**. `pip install py-tirith`
-finds nothing: that is the package name in `setup.py`, and it is not published. Install from git,
-pinned to a tag:
+Not from PyPI. `pip install tirith` installs an **unrelated project**; `py-tirith` is the
+`setup.py` name and is not published. Install from git, pinned to a tag:
 
 ```bash
 pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+tirith --version   # 1.2.0
 ```
 
 ## The one rule
 
 **Never hand back a policy you have not run against a document that should fail it.**
 
-A policy that matches nothing looks identical to one that works: same shape, same silence. Run it
-against input you expect to be refused. If that run exits `0`, the policy matched nothing and
-gates nothing.
+A policy that matches nothing looks identical to one that works. Run it against input you expect
+to be refused. Exit `0` means it matched nothing and gates nothing.
 
 ```bash
-tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+tirith -policy-path .tirith/policies -input-path should-fail.json --fail-on-error; echo $?   # want 3
 ```
 
-## Exit codes are a contract
+## Exit codes
 
 | Exit | Meaning | What CI should do |
 | --- | --- | --- |
@@ -41,27 +38,23 @@ tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 | `3` | A policy failed | Fail the job: the change was refused |
 | `1` | No verdict could be reached | Fail the job, but report a **tool or input** problem |
 
-`ExitStatus.ERROR_TIMEOUT = 2` is declared in `status.py` and returned nowhere, including on the
-platform path, which maps a timeout to `1`. Do not branch a pipeline on it.
-
-`3` is deliberately not `1`. Collapsing them reports an outage as a policy violation, and a job
-that cannot tell them apart cannot tell a working gate from a broken one.
-
-**`final_result: null` is not a pass.** It means every check was skipped, so the policy evaluated
-nothing. It exits `1`.
+- Never collapse `3` into `1`. A job that cannot tell them apart reports an outage as a violation.
+- `2` is never returned. A bad argument or unknown subcommand exits `1`, as does a platform
+  timeout. `1` means tool, input or usage; it never means a policy said no.
+- **`final_result: null` is not a pass.** Every check was skipped, nothing was evaluated, exit `1`.
+- Without `--fail-on-error` the exit is always `0`. Every real gate needs the flag.
 
 ## Write a policy
 
-Work in this order. Guessing any of the four is the main source of silently-broken policies.
+Decide these four in order. Guessing any of them is the main source of silently broken policies.
 
-1. **Which document are you reading?** An OpenTofu or Terraform plan, a Kubernetes manifest, an
-   Infracost breakdown, or arbitrary JSON or YAML. That fixes `meta.required_provider`. There are
-   five providers and **no CloudFormation provider**: a CloudFormation template is arbitrary JSON,
-   read by `stackguardian/json`.
-2. **Which operation?** Each provider exposes a closed set: see `reference/schema.md`.
-3. **Which key names the value?** It differs per provider, and the wrong one is *ignored* rather
-   than rejected, so the check reads nothing and passes. See `reference/schema.md`.
-4. **Which condition?** Thirteen, listed in `reference/schema.md`. There is no `Exists`.
+1. **Document.** Terraform or OpenTofu plan, Kubernetes manifest, Infracost breakdown, or arbitrary
+   JSON or YAML. This fixes `meta.required_provider`. Five providers ship; there is **no
+   CloudFormation provider**, a template is arbitrary JSON read by `stackguardian/json`.
+2. **Operation.** Each provider exposes a closed set: `reference/schema.md`.
+3. **Key naming the value.** It differs per provider, and a wrong key is *ignored, not rejected*,
+   so the check reads nothing and passes: `reference/schema.md`.
+4. **Condition.** Thirteen, listed in `reference/schema.md`. There is no `Exists`.
 
 ```json
 {
@@ -85,44 +78,56 @@ Work in this order. Guessing any of the four is the main source of silently-brok
 ```
 
 `eval_expression` combines evaluator **ids** with `&&`, `||`, `!` and parentheses. An evaluator
-the expression never names cannot affect the verdict. `!` is the only negation mechanism: there
-are no inverse conditions, so write the positive detector and invert it.
+it never names cannot affect the verdict. `!` is the only negation: write the positive detector
+and invert it.
 
-## Four traps that cost the most time
+## Traps
 
-**`error_tolerance` goes inside `condition`, not on the evaluator.** On the evaluator it is
-silently ignored: no warning, and the check still fails.
+- **`error_tolerance` goes inside `condition`.** On the evaluator it is silently ignored.
+  `{"condition": {"type": "IsNotEmpty", "error_tolerance": 2}}`
+- **One evaluator, one result per matching resource.** Three buckets give three results from one
+  rule, and the check fails if any of them fails.
+- **Missing attribute is severity 2, missing resource type is severity 1.** With
+  `error_tolerance: 2` a resource lacking the attribute is *skipped*, not failed. If every
+  evaluator is skipped the policy is `final_result: null`, exit `1`. Skipping is not passing.
+- **A type-scoped policy refuses a plan with none of that type.** Severity 1 under the default
+  tolerance is exit `3`; with `error_tolerance: 1` it is exit `1`. Neither is `0`. See
+  `reference/verdicts.md`.
+- **The delete action is spelled `delete`.** `"destroy"` matches nothing and the guard exits `0`.
+  `action` emits one result per action: `NotEquals "delete"` blocks deletes and replacements,
+  `ContainedIn ["delete"]` with `!` blocks only a pure delete. See `reference/terraform-plan.md`.
+- **An unknown `condition.type` exits `3`, not `1`.** The message names it (`` `Exists` is not a
+  supported evaluator ``) but `errors` is empty, so CI sees a violation. Check the type against
+  the closed list, not your memory.
+- **`tirith lint` does not ship.** Do not put it in a pipeline. `reference/validate.md` has
+  what to do instead.
 
-```json
-{"condition": {"type": "IsNotEmpty", "error_tolerance": 2}}
+## Test it with the bundled example
+
+`examples/required-tags/` holds the policy above, a plan that violates it and one that satisfies
+it. Copy the pair and edit it when testing a new policy.
+
+```bash
+cd examples/required-tags
+tirith -policy-path policy.json -input-path should-fail.json --fail-on-error; echo $?   # 3
+tirith -policy-path policy.json -input-path should-pass.json --fail-on-error; echo $?   # 0
 ```
-
-**One evaluator produces one result per matching resource.** A plan with three buckets gives three
-results from one rule, and the check fails if any of them fails. That is the mechanism, not a
-wildcard trick.
-
-**A missing attribute is severity 2, a missing resource type is severity 1.** With
-`error_tolerance: 2` a resource lacking the attribute is *skipped* rather than failed, which can
-turn the whole policy into `final_result: null`. Skipping is not passing.
-
-**`tirith lint` is not in the released package.** It is in development. The released CLI dispatches
-`tirith`, `tirith ui` and `tirith platform check` and nothing else, so do not put it in a pipeline
-you are writing for someone. Check policy shape by reading `reference/schema.md` and by running
-the policy. See `reference/validate.md`.
 
 ## Before you hand it back
 
 1. Does `eval_expression` reference every evaluator you wrote?
 2. Is every `condition.type` in the closed list of thirteen?
-3. Is `error_tolerance`, if used, inside `condition`?
-4. Did you **run it** against a document that should fail it, and did it exit `3`?
+3. Is the argument key the one this provider reads?
+4. Is `error_tolerance`, if used, inside `condition`?
+5. Did you **run it** against a document that should fail it, and did it exit `3`?
+6. Did you run it against a document that should pass, and did it exit `0`?
 
 ## Reference
 
 | File | Use it for |
 | --- | --- |
 | `reference/schema.md` | The closed vocabulary: conditions, providers, operations, argument keys |
-| `reference/validate.md` | Checking a policy is well-formed, and the traps to check by hand |
+| `reference/validate.md` | Checking a policy is well-formed, and why `tirith lint` is not the way |
 | `reference/verdicts.md` | Running a policy, exit codes, and finding the resource behind a failure |
 | `reference/terraform-plan.md` | The plan provider's operations, for OpenTofu and Terraform |
 | `reference/other-providers.md` | Kubernetes, Infracost and arbitrary JSON or YAML |
@@ -131,5 +136,7 @@ the policy. See `reference/validate.md`.
 | `reference/pipelines.md` | GitHub Actions, GitLab CI, Bitbucket, Jenkins, Azure DevOps, CircleCI |
 | `reference/platform.md` | Evaluating against an organization's central policies |
 | `reference/debug-ci.md` | Starting from a red build and ending at the rule and the resource |
+| `examples/required-tags/` | A policy, a plan that fails it, and a plan that passes it |
 
-Worked policy/input pairs live in `src/tirith/tui/examples/` in the Tirith repository.
+Translating existing Sentinel policies is a separate skill, `tirith-migrate`, installed alongside
+this one.

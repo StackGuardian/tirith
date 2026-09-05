@@ -207,6 +207,5 @@ it, which is what makes a failure explainable after the fact.
 
 ## Not yet available
 
-A `tirith-lint` pre-commit hook and a VS Code task loop are in development, and both depend on
-`tirith lint`, which is not in the released package. Do not write either into a pipeline today.
-`https://stackguardian.github.io/tirith/roadmap/` tracks them.
+A pre-commit hook and an editor loop depend on `tirith lint`, which does not ship. See
+`reference/validate.md`.

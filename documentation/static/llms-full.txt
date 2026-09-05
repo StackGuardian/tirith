@@ -18,7 +18,7 @@ Summary: Learn how Tirith simplifies security, governance, and compliance for in
 
 Explore a failing evaluation down to the resource that caused it, assemble policies from a form, and
 experiment in a playground with worked examples. Install it with
-`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'` and run
+`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0'` and run
 `tirith ui` — see
 [the interactive interface](tirith-usage/interactive-interface.md).
 
@@ -73,21 +73,39 @@ Summary: This documentation overviews you about the introduction of the Tirith s
 If you simply want to install and start using Tirith, this option provides a fast installation process with minimal setup. Perfect for end users and non-developers who only need basic functionality.
 
 ## Prerequisite
-- Make sure your machine has [Python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/) installed.
+- Make sure your machine has [Python](https://www.python.org/downloads/) 3.8 or newer and [pip](https://pip.pypa.io/en/stable/installation/) installed.
 - Install [Git](https://git-scm.com/downloads) on your machine.
 
 ## Steps to Install Tirith
 
 ### Step 1: Install using the `pip` command
-Run the following command in your terminal to download Tirith directly from the GitHub repository and install it on your local system. This command ensures that you have the latest version.
+
+[DANGER] Not from PyPI
+`pip install tirith` installs an **unrelated project of the same name**, and `pip install py-tirith`
+finds nothing: that is the package name in `setup.py` and it is not published. Installing Tirith
+means installing from git, as below.
+
+Run the following command in your terminal to install Tirith directly from the GitHub repository,
+pinned to a released tag:
 
 ```bash
-pip install git+https://github.com/StackGuardian/tirith.git
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
 ```
-    
+
+Pin the tag rather than tracking the default branch, so an install today and an install next month
+give you the same tool. `1.2.0` is the newest tag;
+`git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists them all.
+
+To use [the interactive interface](../tirith-usage/interactive-interface.md) as well, install the
+optional extra, which needs Python 3.9 or newer:
+
+```bash
+pip install "py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0"
+```
 
 ### Step 2: Verify Installation
-Once installed, verify that Tirith is working by checking its version. You should see a version number (e.g., 1.0.0-beta.12) indicating successful installation.
+Once installed, verify that Tirith is working by checking its version. You should see `1.2.0`,
+which confirms both that the install succeeded and that you got the tag you asked for.
 ```bash
 tirith --version
 ```
@@ -1366,6 +1384,53 @@ When a provider cannot find what an operation asked for, it reports an error ins
 2. **Errors without a severity value.** Some errors (an unsupported `operation_type` in the `json` and `kubernetes` providers, and all errors from the `infracost` and `sg_workflow` providers) carry no severity. These always **fail** the check, regardless of `error_tolerance`.
 
 Each provider page below lists exactly which situation produces which severity. See also [error tolerance](../tirith-policies/tirith-policy-error-tolerance.md).
+
+## Write one for what you actually run
+
+Five providers ship. That is not a claim about what is worth gating, it is a list of what has been written so far, and the interesting policies are usually about the system nobody wrote a provider for yet.
+
+A provider is small. It is one function:
+
+```python
+def provide(provider_args: dict, input_data) -> list[dict]:
+    """Turn a document into values a condition can be run against."""
+```
+
+It receives the `provider_args` from an evaluator and the parsed input document, and it returns a list of outputs: `{"value": ...}` for something a condition can judge, or `{"value": ProviderError(severity_value=1), "err": "..."}` for something it could not find. That is the entire contract. The thirteen conditions, `eval_expression`, `error_tolerance`, the result document, the exit codes and every CI integration already work on top of it. `kubernetes/handler.py` is about fifty lines, and it is a complete provider.
+
+[NOTE] How a provider is registered
+There is no plugin discovery and no entry point to hook: `PROVIDERS_DICT` in `src/tirith/providers/__init__.py` is a literal dictionary, so a new provider is a module plus one line in that dict. In practice that means a pull request, or a fork you install from your own git URL. Making providers loadable from outside the package is a real request and worth opening an issue for if you need it.
+
+### What people ask for
+
+The pattern that makes a good provider is narrow: **a document that describes a proposed change, available before the change is applied.** If you can get that as JSON, you can gate it.
+
+| | |
+|---|---|
+| **Other IaC formats** | CloudFormation change sets, Pulumi previews, ARM and Bicep what-if output, Helm rendered templates and values |
+| **Cloud and SaaS APIs** | AWS Config or Cloud Control, GCP asset inventory, Datadog monitors, PagerDuty schedules, an identity provider's roles |
+| **Your own APIs** | A service catalogue, a CMDB, a deployment API, an internal platform's change request. This is the one nobody else can write for you, and it is usually where the rules that matter to your organisation live |
+| **Supply chain** | An SBOM, a lockfile, a dependency manifest, image provenance and signatures |
+| **Cost and capacity** | Beyond Infracost: quota headroom, commitment coverage, a chargeback model |
+| **Compliance evidence** | Turning a control framework into checks that run on every change instead of once a quarter |
+
+### The one that does not exist yet
+
+Everything above is the same shape as what ships today: a plan, a manifest, an estimate. The shape holds somewhere less obvious.
+
+An AI agent with tools is a system that proposes changes and then applies them. Before it calls a tool, there is a document describing what it is about to do: which tool, which arguments, what it costs, what it can reach. That is a plan, in every sense that matters to a policy engine, and today almost nothing sits between an agent's intention and its action.
+
+**A provider for agent runtime decisions** would let the rules be written the same way the rest of your governance is: this agent may not call a tool that writes to production, may not spend beyond a threshold in one run, may not touch a resource outside its blast radius, may not act at all without a plan a human approved. The same thirteen conditions, the same expression grammar, the same verdict and exit code, evaluated before the call rather than in a review afterwards.
+
+This is **aspirational**. There is no such provider, it is not on the [roadmap](https://stackguardian.github.io/tirith/roadmap/) with a date, and it is written down here because it is the clearest example of the point: the engine does not care what the document is about. If you are building agent infrastructure and want a policy layer with a real evaluator behind it rather than a prompt asking a model to behave, this is worth a conversation.
+
+### Start one
+
+Open an issue describing the document you want to gate and what a rule over it would say. That is enough to work out whether it is a new provider, a new operation on an existing one, or something the `json` provider already does.
+
+- **[Propose a provider](https://github.com/StackGuardian/tirith/issues/new?template=feature_request.md&title=Provider%3A+)**: the system, the document, and one rule you would write
+- **[Read an existing one](https://github.com/StackGuardian/tirith/tree/main/src/tirith/providers/kubernetes)**: the shortest complete example in the repository
+- **[Good first issues](https://github.com/StackGuardian/tirith/labels/good%20first%20issue)**: if you would rather start somewhere smaller
 
 
 ==============================================================================
@@ -2906,17 +2971,26 @@ permissions:
   checks: write          # check run
 
 steps:
-  - run: |
-      terraform plan -out=tfplan -input=false
-      terraform show -json tfplan > plan.json
+  - run: terraform plan -out=tfplan -input=false
 
   - uses: StackGuardian/tirith-iac-governance-action@v2
+    with:
+      plan-file: tfplan
+      fail-on-error: true
 ```
 
-With a `plan.json` in the working directory that is the whole integration — no `with:` block. The
-action finds the document by convention (`plan.json` or `tfplan.json`) and evaluates the policy
-files committed under `.tirith/policies`, on the runner, talking to nothing. Add
-`with: { fail-on-error: true }` to make a failing policy fail the job.
+The two write permissions are the only setup the action cannot do for itself, and are the thing
+most often missing on a first install. `-input=false` matters in CI: without it a missing variable
+waits for a prompt that never comes, and the job hangs instead of failing.
+
+Handing the action the **binary plan** rather than exporting JSON first is one step shorter and
+strictly safer: the action renders it with `terraform show -json` in memory, so no unmasked plan
+JSON is written to the workspace where a later step, a cache or an artifact upload could pick it
+up.
+
+If your pipeline already writes `plan.json`, drop `plan-file` and the action finds the document by
+convention (`plan.json` or `tfplan.json`). Either way it evaluates the policy files committed under
+`.tirith/policies`, on the runner, talking to nothing.
 
 ### Local mode and platform mode
 
@@ -3050,8 +3124,7 @@ pipelines:
             - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
-A complete file is in [`examples/ci/bitbucket-pipelines.yml`](https://github.com/StackGuardian/tirith/blob/main/examples/ci/bitbucket-pipelines.yml),
-and a worked repository is at
+A worked repository is at
 [tirith-bitbucket-demo](https://bitbucket.org/__refeed__/tirith-bitbucket-demo).
 
 ## Jenkins
@@ -3078,12 +3151,18 @@ stage('Policy gate') {
 }
 ```
 
-The full pipeline, including install, lint and artifact archiving, is in
-[`examples/ci/Jenkinsfile`](https://github.com/StackGuardian/tirith/blob/main/examples/ci/Jenkinsfile).
+`returnStatus: true` is what makes this work: without it the shell step throws on any non-zero
+exit and the two cases become one.
 
 ## As a pre-commit hook
 
-Catch a broken policy before it is committed, let alone before CI runs it. Tirith publishes a
+[WARNING] In development
+`tirith lint` is not in 1.2.0 and the `tirith-lint` hook id is not published, so the
+configuration below does not work yet: `pre-commit` cannot resolve the hook and the run fails.
+It is documented here because the design is settled and the shape will not change. Track it on
+the [roadmap](https://stackguardian.github.io/tirith/roadmap/).
+
+Catch a broken policy before it is committed, let alone before CI runs it. Tirith will publish a
 `tirith-lint` hook:
 
 ```yaml
@@ -3151,7 +3230,7 @@ pipeline should pay to install an interface they never open. It needs Python 3.9
 Tirith itself still supports 3.8.
 
 ```bash
-pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
+pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0'
 ```
 
 Tirith is not on PyPI — `pip install py-tirith` finds nothing and `pip install tirith` installs an
@@ -3336,13 +3415,11 @@ Install the Tirith skill and your agent gets the closed condition list, the argu
 provider reads, and the instruction to run a policy before claiming it works:
 
 ```bash
-mkdir -p .claude/skills/tirith-policies/reference
-BASE=https://raw.githubusercontent.com/StackGuardian/tirith/main/.claude/skills/tirith-policies
-curl -sL $BASE/SKILL.md -o .claude/skills/tirith-policies/SKILL.md
+curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Cursor reads `.cursor/rules/tirith-policies.mdc` instead, scoped with globs so it attaches by
-itself when a policy file is open.
+Add `--cursor` for the Cursor rule. [Agent Skills](agent-skills.md) covers what is in the pack,
+the other clients, and how to tell whether it took effect.
 
 Two things make the difference between a drafted policy and a working one:
 
@@ -3361,6 +3438,134 @@ tirith ui --result result.json      # needs the optional [tui] extra
 The explorer names the resource behind each finding — its address, the planned action, and the
 attributes that changed — which the pretty printer does not show. See
 [the interactive interface](interactive-interface.md).
+
+
+==============================================================================
+# Agent Skills
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/agent-skills/
+Summary: Install the Tirith skill pack so a coding agent writes policies from the real vocabulary instead of inventing condition types that look plausible.
+==============================================================================
+
+An agent asked for a Tirith policy will produce one. The JSON will be well formed, the keys will
+look right, and it will very often be wrong in a way that reads as correct: a condition type named
+`Matches` or `Exists`, neither of which exists, or the argument key from a different provider.
+
+That failure is quiet. The policy parses, the evaluator does not match, and the check reports a
+pass. **A rule that gates nothing looks exactly like a rule that found nothing wrong.**
+
+The skill pack fixes the cause: it gives the agent the closed vocabulary instead of leaving it to
+guess from a plausible-looking shape.
+
+## Install it
+
+```bash
+curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
+```
+
+Two skills under `.claude/skills/`: `tirith-policies`, for writing policies, and `tirith-migrate`,
+for translating existing Sentinel policies. No config file, and they are picked up in any
+repository you copy them into. A session that is already running may not see a newly installed
+skill until it is restarted; a new session sees it immediately.
+
+| Flag | |
+|---|---|
+| `--cursor` | Also install `.cursor/rules/tirith-policies.mdc`, scoped with globs |
+| `--global` | Install into `~/.claude/skills/` instead of this repository |
+| `--ref REF` | Install from a branch or tag instead of `main` |
+| `--help` | The same summary, from the script itself |
+
+The script downloads those files and does nothing else: no package is installed, no
+`PATH` is changed, nothing is executed after the download, and it never touches a file it did not
+create. It downloads to a temporary directory and moves the files into place only once all of them
+have arrived, because a half-written skill is worse than none: an agent reads whatever files exist
+and works from a partial vocabulary without saying so.
+
+It is [a committed file in this repository](https://github.com/StackGuardian/tirith/blob/main/documentation/static/skill.sh)
+served from the same origin as this page, so the thing you pipe into a shell is the thing you can
+read first.
+
+### Cursor
+
+```bash
+curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh -s -- --cursor
+```
+
+Cursor reads a single rule file scoped with globs, so it attaches by itself the moment a policy
+file is open and stays out of the way otherwise.
+
+### Codex, Zed, and anything reading `AGENTS.md`
+
+```bash
+curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
+printf '\n## Tirith policies\nSee .claude/skills/tirith-policies/SKILL.md\n' >> AGENTS.md
+```
+
+One file at the repository root is read by a growing number of clients, and the pack beside it
+keeps the references resolvable.
+
+## Check it worked
+
+Ask for a policy in plain words: *every bucket needs an Owner tag*. With the pack loaded your agent
+names a real condition type and the argument key that provider actually takes. Without it, it
+invents one that reads perfectly and gates nothing.
+
+## What is in the pack
+
+`SKILL.md` is the entry point and is loaded first; the references are read on demand, so a client
+with a small context window pays for only what the task needs.
+
+| File | |
+|---|---|
+| `SKILL.md` | Turning an intent into valid policy JSON: provider, operation, condition, expression |
+| `reference/schema.md` | The closed vocabulary. Thirteen condition types, each provider's operations, and the argument key that differs per provider |
+| `reference/validate.md` | The mistakes that produce a policy which looks right and gates nothing |
+| `reference/verdicts.md` | Reading a result document and an exit code |
+| `reference/terraform-plan.md` | The Terraform and OpenTofu plan provider |
+| `reference/other-providers.md` | Kubernetes, Infracost, JSON and StackGuardian Workflow |
+| `reference/variables.md` | One policy across environments |
+| `reference/install.md` | Installing Tirith, and why the install is a git URL |
+| `reference/pipelines.md` | Adding the gate to six CI platforms |
+| `reference/platform.md` | Evaluating an organization's policies |
+| `reference/debug-ci.md` | Diagnosing a red check |
+| `examples/required-tags/` | A policy, a plan that fails it and a plan that passes it, so the agent can prove its own work before it hands it back |
+
+## Migrating from Sentinel
+
+The second skill, `tirith-migrate`, is for teams with existing HashiCorp Sentinel policies. It is a
+projection from a larger language onto a smaller one, and the skill's job is to say what survives.
+Measured against the 110 policies in HashiCorp's public libraries, 41 translate exactly, 40
+approximately, and 29 not at all. Each translation is tagged with that fidelity, every approximate
+one ships a plan on which Sentinel and Tirith disagree, and every impossible one is refused in
+words with the Tirith issue that would change it. Checkov and OPA/Rego are planned next.
+
+## Two things decide whether the policy actually works
+
+The pack teaches vocabulary. It does not run anything, and it is not a substitute for evaluating
+the policy:
+
+1. **Give the agent `tirith` on `PATH`.** It is an ordinary command, so an agent with a shell can
+   evaluate its own work without a protocol server or a plugin. See
+   [Quick Installation](../tirith-installation/quick-intallation.md).
+2. **Give it a document that should fail.** Ask for the policy *and* a plan that violates it, then
+   check the exit code is `3`. If it is `0`, the policy matched nothing, which is the failure this
+   whole page exists to prevent. The pack ships a starting pair in `examples/required-tags/`.
+   See [Exit codes](exit-codes.md).
+
+## Keeping it current
+
+The pack is a copy, so it does not update itself. Re-run the installer to take the current
+version:
+
+```bash
+curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
+```
+
+Re-running is safe: it overwrites the files it owns, in both skills, and leaves everything else alone.
+
+`--ref` takes a branch or a commit, which is worth knowing for a fork or a pull request. It cannot
+yet take a release tag: the pack was added after `1.2.0`, so `main` is the only ref that has it,
+and asking for a tag that predates it fails with exit `1` rather than installing something
+incomplete.
 
 
 ==============================================================================

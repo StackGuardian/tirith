@@ -98,13 +98,11 @@ Install the Tirith skill and your agent gets the closed condition list, the argu
 provider reads, and the instruction to run a policy before claiming it works:
 
 ```bash
-mkdir -p .claude/skills/tirith-policies/reference
-BASE=https://raw.githubusercontent.com/StackGuardian/tirith/main/.claude/skills/tirith-policies
-curl -sL $BASE/SKILL.md -o .claude/skills/tirith-policies/SKILL.md
+curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Cursor reads `.cursor/rules/tirith-policies.mdc` instead, scoped with globs so it attaches by
-itself when a policy file is open.
+Add `--cursor` for the Cursor rule. [Agent Skills](agent-skills.md) covers what is in the pack,
+the other clients, and how to tell whether it took effect.
 
 Two things make the difference between a drafted policy and a working one:
 

@@ -1,0 +1,19 @@
+# Every resource of the listed types must carry every mandatory tag key. tfplan/v2.
+import "tfplan-functions" as plan
+
+param mandatory_tags default ["Name", "Owner", "CostCenter"]
+param resource_types default ["aws_instance", "aws_s3_bucket"]
+
+violations = {}
+for resource_types as type {
+  resources = plan.find_resources(type)
+  for resources as address, r {
+    tags = r.change.after.tags else {}
+    missing = filter mandatory_tags as t { t not in keys(tags) }
+    if length(missing) > 0 {
+      violations[address] = missing
+    }
+  }
+}
+
+main = rule { length(violations) is 0 }

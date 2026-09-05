@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "restrict-instance-type",
+    "description": "aws_instance.instance_type must be in the allow-list",
+    "enforcement": "hard-mandatory"
+  },
+  "evaluators": [{
+    "id": "instance_type_allowed",
+    "description": "instance_type is one of allowed_types",
+    "provider_args": {
+      "operation_type": "attribute",
+      "terraform_resource_type": "aws_instance",
+      "terraform_resource_attribute": "instance_type"
+    },
+    "condition": {"type": "ContainedIn", "value": "{{ var.allowed_types }}", "error_tolerance": 1}
+  }],
+  "eval_expression": "instance_type_allowed"
+}

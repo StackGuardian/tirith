@@ -12,11 +12,14 @@ Add `--json` to get the result document instead of the pretty printer.
 
 | Exit | Meaning |
 | --- | --- |
-| `0` | Policies passed, or nothing was in scope to gate on |
+| `0` | Every check passed |
 | `1` | Tirith could not tell you either way — bad input, an unevaluable policy, or every check skipped |
-| `2` | Timed out waiting for a StackGuardian run (`platform check` only) |
 | `3` | A policy ran and said no |
 | `130` | Interrupted |
+
+`2` is never returned. The CLI catches argparse's usage error and exits `1`, so a bad argument or an
+unknown subcommand (`tirith lint` prints "Failed because of System Exit") is `1`, the same as a
+tool or input problem. Tirith has no timeout code: a `platform check` that times out is `1` too.
 
 **`3` is deliberately not `1`.** `3` means a check ran and refused the change. `1` means Tirith
 could not reach a verdict. A job that treats every non-zero code alike reports an outage as a
@@ -25,6 +28,16 @@ policy violation and cannot tell a working gate from a broken one.
 **Without `--fail-on-error` the exit code is always `0`** and the verdict is only in the output.
 That is the historical behaviour, kept so upgrading cannot turn a passing pipeline red. Any real
 gate needs the flag.
+
+## A type-scoped policy refuses a plan that has none of the type
+
+`terraform_resource_type: "aws_db_instance"` on a plan with no database is severity `1`, "resource
+type not found". Under the default `error_tolerance: 0` that is a **failure, exit `3`**, so the
+policy refuses every unrelated plan. With `error_tolerance: 1` it is skipped instead; if it was the
+only evaluator, `final_result` is `null` and the exit is `1`. There is no setting that yields
+"nothing in scope, pass" for a single-evaluator scoped policy. Choose deliberately: `1` with CI
+treating exit `1` as advisory for that policy, or put several types' checks in one policy so a
+skip on one leaves a verdict from the others. Not tracked as a Tirith issue at the time of writing.
 
 ## `final_result: null` is not a pass
 
@@ -55,8 +68,7 @@ looking in the plan for the resource lacking that attribute.
 
 ## A misconfigured policy fails closed
 
-An unsupported `condition.type` or an unknown `required_provider` comes back as an ordinary failed
-check with no error attached — indistinguishable from a real violation, and it exits `3`. It fails
-in the safe direction, but it points at your infrastructure when the fault is in the policy.
-Check the condition type against the closed list in `reference/schema.md`: a typo there is the
-usual cause, and it is not reported as one.
+An unsupported `condition.type` comes back as a failed check, exit `3`, with the `errors` array
+empty. It fails in the safe direction, but a job that branches on the exit code sees a policy
+violation. The result message names the fault (`` `Exists` is not a supported evaluator ``), so
+when a check fails on every resource at once, read the message before reading the plan.

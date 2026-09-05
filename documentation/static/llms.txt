@@ -57,6 +57,21 @@ https://stackguardian.github.io/tirith/docs/tirith-usage/exit-codes.md
 The whole documentation set as one file, in sidebar order:
 https://stackguardian.github.io/tirith/llms-full.txt
 
+## Working in a repository that uses Tirith
+
+If you are a coding agent about to write a policy, install the skill pack first. It is the
+closed vocabulary: thirteen condition types, the argument key each provider reads, and the
+instruction to run a policy against a document that should fail before calling it done.
+
+```
+curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
+```
+
+Eleven markdown files into .claude/skills/tirith-policies/. Add --cursor for the Cursor rule,
+--global to install into the home directory instead of the repository. The script installs no
+package, changes no PATH and executes nothing after the download; its source is
+documentation/static/skill.sh in the repository.
+
 ## Start here
 
 - [Getting started](https://stackguardian.github.io/tirith/docs/getting-started-with-tirith/): what Tirith is and the shortest path to a first verdict.
@@ -97,7 +112,7 @@ https://stackguardian.github.io/tirith/llms-full.txt
 
 - [Source](https://github.com/StackGuardian/tirith): the repository, Apache-2.0.
 - [Roadmap](https://stackguardian.github.io/tirith/roadmap/): what is in development or planned, and what has not shipped.
-- [Agent skill pack](https://github.com/StackGuardian/tirith/tree/main/.claude/skills/tirith-policies): a self-contained skill for writing Tirith policies, copyable into any repository.
+- [Agent skill pack](https://github.com/StackGuardian/tirith/tree/main/.claude/skills/tirith-policies): a self-contained skill for writing Tirith policies. Install it with the one-line script above, or copy the directory into any repository.
 - [Origins](https://stackguardian.github.io/tirith/origins/): where the name and the mark come from.
 
 ## Optional
