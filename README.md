@@ -179,7 +179,7 @@ pip install -e .
 
 ```
 tirith --version
-tirith 1.2.0
+tirith 1.2.1
 ```
 
 Congratulations! Tirith has been setup in your system

@@ -71,7 +71,7 @@ fabricated one would be worse than an honest `null`.
 ```json
 {
   "schema_version": 1,
-  "generator": {"name": "tirith", "version": "1.2.0"},
+  "generator": {"name": "tirith", "version": "1.2.1"},
   "created_at": "2026-08-12T09:14:03Z",
   "input_kind": "terraform_plan",
   "origin": {"kind": "ci", "trigger_type": "tirith", "ci_run_url": "https://github.com/acme/infra/actions/runs/1"},
