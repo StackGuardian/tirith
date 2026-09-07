@@ -21,6 +21,7 @@ module.exports = {
       label: "Using Tirith",
       items: [
         "tirith-usage/cli-reference",
+        "tirith-usage/lint-and-fmt",
         "tirith-usage/interactive-interface",
         "tirith-usage/editor-and-local",
         "tirith-usage/agent-skills",

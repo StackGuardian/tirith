@@ -23,6 +23,7 @@ const ROUTES = {
   policies: '/docs/tirith-policies/tirith-policy-cookbook/',
   atScale: '/at-scale/',
   ci: '/docs/tirith-usage/ci-integration/',
+  install: '/docs/tirith-installation/quick-installation/',
 };
 
 const hero = {
@@ -77,14 +78,78 @@ const CLIENTS = [
   },
 ];
 
-/* Every entry is a real file under .claude/skills/tirith-policies/. */
+/*
+ * The starred skill. Getting a gate into a pipeline is the first thing anyone does with
+ * Tirith and the thing an agent is best placed to do unattended: it is a known install, a
+ * known plan export and a known exit-code contract, all of which the pack already carries.
+ * It leads the page for that reason, and it is the one skill shown with its commands rather
+ * than only named.
+ */
+const FEATURED = {
+  eyebrow: 'Start here',
+  title: 'Add Tirith to any pipeline',
+  lede:
+    'Ask your agent for a policy gate and, with the pack loaded, it knows the install is a ' +
+    'git URL rather than PyPI, which plan document each provider reads, and that exit 3 and ' +
+    'exit 1 have to reach the job differently.',
+  ask: 'Add a Tirith policy gate to our pipeline',
+  files: [
+    ['reference/pipelines.md', 'GitHub Actions, GitLab, Bitbucket, Jenkins, Azure DevOps, CircleCI, any container runner, and the pre-commit hooks.'],
+    ['reference/install.md', 'Install from git, because the name on PyPI belongs to something else. Pinning a tag, the optional interface, the Python floors.'],
+    ['reference/debug-ci.md', 'Start from a red build and end at the rule and the resource, ordered by what is most often the answer.'],
+  ],
+  /*
+   * Two snippets, because the pair is the whole job: teach the agent, then give it the
+   * command it will write into the job. The second is the universal form from
+   * reference/pipelines.md -- every platform in that file reduces to it.
+   */
+  snippets: [
+    {
+      id: 'pack',
+      label: 'Give your agent the pack',
+      command: `curl -fsSL ${INSTALLER} | sh`,
+    },
+    {
+      id: 'gate',
+      label: 'What it writes into the job',
+      command:
+        'pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"\n' +
+        'tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error',
+    },
+  ],
+};
+
+/*
+ * Every entry is a real file under .claude/skills/tirith-policies/.
+ *
+ * "Get it running" leads: the featured plate above expands the same three files, and a
+ * reader who scrolled past it should meet them again first rather than last. It also
+ * removed a duplicate -- reference/pipelines.md was listed twice, once under a "While you
+ * write" group that held nothing else.
+ */
 const SKILLS = [
+  {
+    group: 'Get it running',
+    items: [
+      ['Add it to a pipeline', 'reference/pipelines.md', 'GitHub Actions, GitLab, Bitbucket, Jenkins, Azure DevOps and CircleCI: the plan step, the install, the pre-commit hooks, and making each exit code do the right thing to the job.'],
+      ['Install Tirith', 'reference/install.md', 'Install from git, because it is not on PyPI, and the name there belongs to something else. Pinning a tag, the optional interface, and the Python floors.'],
+      ['Debug a red build', 'reference/debug-ci.md', 'Start from a failed job and end at the rule and the resource, ordered by what is most often the answer.'],
+    ],
+  },
+  {
+    group: 'From a repository you already have',
+    dir: 'tirith-standards',
+    items: [
+      ['Generate a standards set', 'SKILL.md', 'Read the Terraform or OpenTofu you already run, propose the standards it would support, and write one policy per rule. Includes the guard every type-scoped rule needs to stay green on unrelated changes.'],
+      ['The standards catalogue', 'reference/standards.md', 'Required tags, tag value shape, naming per resource type, allowed regions, forbidden types, size ceilings, encryption, version pinning, and the trap attached to each.'],
+    ],
+  },
   {
     group: 'Write and check',
     items: [
       ['Author a policy', 'SKILL.md', 'Turn an intent, “every resource needs an owner tag”, into valid policy JSON: the provider, the operation, the condition and the expression that ties them together.'],
       ['The schema', 'reference/schema.md', 'The closed vocabulary. Thirteen condition types, each provider’s operations, and the argument key that differs per provider, which is the one an agent otherwise invents.'],
-      ['Validate it', 'reference/validate.md', 'The trap classes that produce a policy which looks right and gates nothing, and why a clean shape is not a working rule. tirith lint is in development; tirith ui validates against the live registries today.'],
+      ['Validate it', 'reference/validate.md', 'The trap classes that produce a policy which looks right and gates nothing, and why a clean shape is not a working rule. tirith lint runs that same check from the command line, and tirith ui runs it as you type.'],
       ['Run it and read the verdict', 'reference/verdicts.md', 'Exit 0, 1 and 3 and what each should do to a job, why final_result: null is not a pass, and how to find the resource behind a failure.'],
       ['Prove it works', 'examples/required-tags/', 'A policy, a plan that fails it and a plan that passes it. The agent runs both before it hands anything back, because a rule only ever seen passing is untested.'],
     ],
@@ -98,17 +163,8 @@ const SKILLS = [
     ],
   },
   {
-    group: 'While you write',
+    group: 'Across repositories',
     items: [
-      ['Run it in a pipeline', 'reference/pipelines.md', 'GitHub Actions, GitLab, Bitbucket, Jenkins, Azure DevOps and CircleCI: the plan step, the install, and making each exit code do the right thing to the job. The editor and pre-commit loop is in development and marked as such.'],
-    ],
-  },
-  {
-    group: 'Set up and ship',
-    items: [
-      ['Install Tirith', 'reference/install.md', 'Install from git, because it is not on PyPI, and the name there belongs to something else. Pinning a tag, the optional interface, and the Python floors.'],
-      ['Add it to a pipeline', 'reference/pipelines.md', 'GitHub Actions, GitLab, Bitbucket, Jenkins, any container CI, and a pre-commit hook, plus making each exit code do the right thing to the job.'],
-      ['Debug a red build', 'reference/debug-ci.md', 'Start from a failed job and end at the rule and the resource, ordered by what is most often the answer.'],
       ['Organization policies', 'reference/platform.md', 'tirith platform check: central policy across many repositories, what is masked on your runner before anything is uploaded, and which flags are required.'],
     ],
   },
@@ -174,11 +230,11 @@ export default function Skills() {
               <div className={styles.heroLinks}>
                 <a
                   className={styles.btnPrimary}
-                  href="#install">
-                  Install the skills <span aria-hidden="true">→</span>
+                  href="#pipeline">
+                  Put a gate in your pipeline <span aria-hidden="true">→</span>
                 </a>
-                <a className={styles.btnGhost} href="#skills">
-                  What it covers <span aria-hidden="true">→</span>
+                <a className={styles.btnGhost} href="#install">
+                  Install the skills <span aria-hidden="true">→</span>
                 </a>
               </div>
             </div>
@@ -224,12 +280,69 @@ export default function Skills() {
           </p>
         </section>
 
-        {/* ================= 02 WHAT IT COVERS ================= */}
-        <section className={styles.section} id="skills">
+        {/* ================= 02 THE STARRED SKILL ================= */}
+        <section className={styles.section} id="pipeline">
           <SectionHead
             num="02"
+            title={FEATURED.title}
+            lede={FEATURED.lede}
+          />
+          <div className={styles.featured}>
+            <div className={styles.featuredAsk}>
+              <span className={styles.featuredEyebrow}>{FEATURED.eyebrow}</span>
+              <p className={styles.featuredQuote}>“{FEATURED.ask}”</p>
+              <p className={styles.featuredNote}>
+                One sentence, and no need to name your CI: the pack covers GitHub Actions,
+                GitLab, Bitbucket, Jenkins, Azure DevOps, CircleCI and any container runner,
+                so the agent writes for whichever one it finds in the repository. What comes
+                back is that pipeline file, a policy under <code>.tirith/policies</code>, and
+                a job that fails on exit <code>3</code> and reports a tooling problem on exit{' '}
+                <code>1</code> instead of confusing the two.
+              </p>
+            </div>
+            <div className={styles.featuredCommands}>
+              {FEATURED.snippets.map((snippet) => (
+                <div className={styles.featuredCommand} key={snippet.id}>
+                  <span className={styles.featuredLabel}>{snippet.label}</span>
+                  <CopyField
+                    onCopy={() => capture(EVENTS.skillCopy, {client: `featured-${snippet.id}`})}
+                    command={snippet.command}
+                    label={`featured-${snippet.id}`}
+                    prompt={false}
+                    tone={snippet.id === 'pack' ? 'primary' : 'quiet'}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <ul className={styles.featuredFiles}>
+            {FEATURED.files.map(([file, what]) => (
+              <li key={file}>
+                <Link
+                  className={styles.skillFile}
+                  href={`${REPO}/blob/main/${SKILL_DIR}/${file}`}>
+                  <code>{file}</code>
+                </Link>
+                <span className={styles.skillWhat}>{what}</span>
+              </li>
+            ))}
+          </ul>
+          <div className={styles.actions}>
+            <Link className={styles.btnPrimary} to={ROUTES.ci}>
+              Every platform, written out <span aria-hidden="true">→</span>
+            </Link>
+            <Link className={styles.btnGhost} to={ROUTES.install}>
+              Install Tirith itself <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* ================= 03 WHAT IT COVERS ================= */}
+        <section className={styles.section} id="skills">
+          <SectionHead
+            num="03"
             title="What it covers"
-            lede="Twelve references, each a file in the skills folder. Your agent loads the entry skill and pulls the rest in as the task needs them."
+            lede="Fourteen references across three skills, each a file in the skills folder. Your agent loads the entry skill and pulls the rest in as the task needs them."
           />
           {SKILLS.map((group) => (
             <div className={styles.skillGroup} key={group.group}>
@@ -240,7 +353,7 @@ export default function Skills() {
                     <span className={styles.skillName}>{name}</span>
                     <Link
                       className={styles.skillFile}
-                      href={`${REPO}/blob/main/${SKILL_DIR}/${file}`}>
+                      href={`${REPO}/blob/main/.claude/skills/${group.dir || 'tirith-policies'}/${file}`}>
                       <code>{file}</code>
                     </Link>
                     <span className={styles.skillWhat}>{what}</span>
@@ -251,10 +364,10 @@ export default function Skills() {
           ))}
         </section>
 
-        {/* ================= 03 THE LOOP ================= */}
+        {/* ================= 04 THE LOOP ================= */}
         <section className={styles.section} id="loop">
           <SectionHead
-            num="03"
+            num="04"
             title="How a policy gets written"
             lede="Their one standing instruction is never to hand back a policy it has not run. A policy that matches nothing looks identical to one that works."
           />
@@ -277,9 +390,9 @@ export default function Skills() {
           </div>
         </section>
 
-        {/* ================= 04 BOUNDARIES ================= */}
+        {/* ================= 05 BOUNDARIES ================= */}
         <section className={styles.section} id="boundaries">
-          <SectionHead num="04" title="What it does not do" />
+          <SectionHead num="05" title="What it does not do" />
           <dl className={styles.defs}>
             {BOUNDARIES.map(([k, v]) => (
               <div className={styles.def} key={k}>

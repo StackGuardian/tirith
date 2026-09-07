@@ -8,8 +8,9 @@
 # its source is documentation/static/skill.sh in StackGuardian/tirith, so the version you
 # are about to pipe into a shell is the version you can read in the repository.
 #
-# What it does: downloads two skills into .claude/skills/ -- tirith-policies (eleven markdown
-# files plus a worked example) and tirith-migrate (Sentinel-to-Tirith translation, with its
+# What it does: downloads three skills into .claude/skills/ -- tirith-policies (eleven markdown
+# files plus a worked example), tirith-standards (generating a policy set from an existing
+# Terraform or OpenTofu repository) and tirith-migrate (Sentinel-to-Tirith translation, with its
 # classified corpus and five worked examples) -- and, with --cursor, one rule file into
 # .cursor/rules/. It creates directories, writes those files, and nothing else. No package is installed, no PATH is changed, nothing is executed
 # after download, and it never touches a file it did not create.
@@ -30,10 +31,20 @@ PACK=".claude/skills/tirith-policies"
 DEST="."
 CURSOR=0
 MIGRATE_PACK=".claude/skills/tirith-migrate"
+STANDARDS_PACK=".claude/skills/tirith-standards"
 
 REFERENCES="schema validate verdicts terraform-plan other-providers variables install pipelines platform debug-ci"
 EXAMPLE="examples/required-tags"
 EXAMPLE_FILES="README.md policy.json should-fail.json should-pass.json"
+
+# tirith-standards, relative to its own pack root. One path per line so the list stays diffable.
+STANDARDS_FILES="SKILL.md
+reference/standards.md
+examples/org-standards/README.md
+examples/org-standards/naming.json
+examples/org-standards/should-fail.json
+examples/org-standards/should-pass.json
+examples/org-standards/no-bucket.json"
 
 # tirith-migrate, relative to its own pack root. One path per line so the list stays diffable.
 MIGRATE_FILES="SKILL.md
@@ -108,6 +119,11 @@ for f in $MIGRATE_FILES; do
   mkdir -p "$TMP/migrate/$(dirname "$f")"
   fetch "$MBASE/$f" "$TMP/migrate/$f"
 done
+SBASE="https://raw.githubusercontent.com/$REPO/$REF/$STANDARDS_PACK"
+for f in $STANDARDS_FILES; do
+  mkdir -p "$TMP/standards/$(dirname "$f")"
+  fetch "$SBASE/$f" "$TMP/standards/$f"
+done
 
 mkdir -p "$TARGET/reference" "$TARGET/$EXAMPLE"
 cp "$TMP/SKILL.md" "$TARGET/SKILL.md"
@@ -124,7 +140,14 @@ for f in $MIGRATE_FILES; do
   cp "$TMP/migrate/$f" "$MTARGET/$f"
 done
 
+STARGET="$DEST/$STANDARDS_PACK"
+for f in $STANDARDS_FILES; do
+  mkdir -p "$STARGET/$(dirname "$f")"
+  cp "$TMP/standards/$f" "$STARGET/$f"
+done
+
 printf 'Installed the Tirith skill: %s\n' "$TARGET"
+printf 'Installed the standards skill: %s\n' "$STARGET"
 printf 'Installed the migration skill: %s\n' "$MTARGET"
 
 if [ "$CURSOR" -eq 1 ]; then

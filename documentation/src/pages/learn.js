@@ -230,7 +230,7 @@ export default function Learn() {
             <TirithMark className={styles.letterheadMark} size={40} />
             <span className={styles.letterheadName}>Tirith</span>
             <span className={styles.letterheadRule} aria-hidden="true" />
-            <span className={styles.letterheadNote}>Three providers, eleven lessons</span>
+            <span className={styles.letterheadNote}>Three providers, twenty-three lessons</span>
           </div>
 
           <Heading as="h1" className={styles.h1}>
@@ -241,9 +241,9 @@ export default function Learn() {
             <div className={styles.heroLede}>
               <p className={styles.lede}>
                 Pick the thing you actually need to gate and learn on that. The syntax is
-                the same for all three, so the JSON track teaches it fastest and the other
-                two teach what changes. Every step is editable: change a value, run it, and
-                watch the verdict, the messages and the exit code move with it.
+                the same for all three, so the Terraform track teaches it in full and the
+                other two teach only what changes. Every step is editable: change a value,
+                run it, and watch the verdict, the messages and the exit code move with it.
               </p>
               <div className={styles.heroLinks}>
                 <a className={styles.btnPrimary} href="#playground">
@@ -319,8 +319,10 @@ export default function Learn() {
             <Heading as="h2" className={styles.trackTitle}>
               {track.title}
             </Heading>
-            <p className={styles.trackLede}>{track.lede}</p>
-            <p className={styles.trackForYou}>{track.forYou}</p>
+            {/* Through md(), like every other prose field: these strings carry backticks
+                and rendering them raw prints the punctuation. */}
+            <p className={styles.trackLede}>{md(track.lede)}</p>
+            <p className={styles.trackForYou}>{md(track.forYou)}</p>
           </section>
 
           <nav className={styles.toc} aria-label={`Lessons: ${track.title}`}>

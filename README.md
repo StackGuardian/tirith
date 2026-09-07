@@ -208,6 +208,9 @@ Subcommands:
                                   organization enforces, rather than local files.
    tirith ui --help               Explore results, build policies and experiment in
                                   an interactive interface. Needs the 'tui' extra.
+   tirith lint --help             Check policy files for mistakes that would gate
+                                  nothing or fail as a false violation. No plan needed.
+   tirith fmt --help              Rewrite policy files into the canonical layout.
 
 About Tirith:
 

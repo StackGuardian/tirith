@@ -2718,9 +2718,23 @@ tirith -policy-path policy.json -input-path plan.json
 
 Run with no arguments, `tirith` prints its help text and exits `0`.
 
-There is one subcommand, `tirith platform check`, which evaluates against the policies a
-StackGuardian organization enforces instead of local files. It has its own flags and its own page:
-[Platform Check](platform-check.md).
+Four subcommands sit beside it, each with its own flags and its own page:
+
+| Subcommand | What it does |
+|---|---|
+| [`tirith lint`](lint-and-fmt.md) | Check policy files for mistakes that would gate nothing or fail as a false violation. No plan document needed |
+| [`tirith fmt`](lint-and-fmt.md) | Rewrite policy files into the canonical layout |
+| [`tirith ui`](interactive-interface.md) | Explore results, build policies and experiment in an interactive interface. Needs the optional `tui` extra |
+| [`tirith platform check`](platform-check.md) | Evaluate against the policies a StackGuardian organization enforces instead of local files |
+
+A first argument that is not one of those four and does not begin with a dash is rejected by name,
+because the flat command below takes no positional arguments:
+
+```console
+$ tirith lnit .tirith/policies
+tirith: 'lnit' is not a tirith command. Commands: fmt, lint, platform, ui.
+Run 'tirith --help' for the local-evaluation options.
+```
 
 ## Flags
 
@@ -2850,22 +2864,233 @@ This split is deliberate so that redirecting stdout captures only the verdict.
 
 
 ==============================================================================
+# Lint and format
+Source: https://stackguardian.github.io/tirith/docs/tirith-usage/lint-and-fmt/
+Summary: tirith lint checks policy files for mistakes that would gate nothing or fail as a false violation. tirith fmt rewrites them into one canonical layout. Neither needs a plan document.
+==============================================================================
+
+Two commands that read policy files and nothing else. Neither needs a plan document, an account,
+or a network call, which is what lets them run in a pre-commit hook and in a slim CI image without
+the optional `tui` extra.
+
+```bash
+tirith lint .tirith/policies    # is the policy well formed?
+tirith fmt .tirith/policies     # rewrite it into the canonical layout
+```
+
+[NOTE] Not in 1.2.0
+Both commands are on `main` and will arrive in the next release. To use them today, install from
+the branch rather than the `1.2.0` tag:
+
+```bash
+pip install "git+https://github.com/StackGuardian/tirith.git@main"
+```
+
+## `tirith lint`
+
+Lint checks the **shape**, not the meaning. It runs the same validator the
+[interactive interface](interactive-interface.md) runs on every keystroke, so the two never
+disagree, and it catches the class of mistake that otherwise reaches CI looking like a real
+infrastructure violation:
+
+- a condition `type` that does not exist, against the closed list of
+  [thirteen conditions](../tirith-reference/evaluators.md)
+- a `provider_args` key that belongs to a different provider than the one in
+  `meta.required_provider`
+- an evaluator that `eval_expression` never names, so it is computed and then discarded
+- `error_tolerance` placed on the evaluator instead of inside `condition`, where it is silently
+  ignored and the check still fails
+
+What lint cannot tell you is whether a well-formed policy matches anything. Only evaluating it
+against a document that *should* fail answers that:
+
+```bash
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+```
+
+### Usage
+
+```
+tirith lint [PATH ...] [--json] [--strict] [--quiet]
+```
+
+| Flag | What it does |
+|---|---|
+| `--json` | Print the report as a JSON document instead of text |
+| `--strict` | Treat warnings as errors when deciding the exit code |
+| `--quiet` | Print findings only, with no summary line and no skipped files |
+
+Findings are printed one per line, in a form an editor or a log scraper can parse:
+
+```
+.tirith/policies/s3.json:evaluators[0].condition: error: unknown condition type 'EqualTo'
+.tirith/policies/s3.json:eval_expression: warning: evaluator 'bucket_acl' is never referenced
+2 policies, 1 errors, 1 warnings
+```
+
+`--json` returns the same report structured, so an editor integration or another program does not
+have to parse the text:
+
+```json
+{
+  "files": [
+    {
+      "path": ".tirith/policies/s3.json",
+      "findings": [
+        {"severity": "error", "where": "evaluators[0].condition", "message": "unknown condition type 'EqualTo'"}
+      ]
+    }
+  ],
+  "skipped": [],
+  "missing": [],
+  "summary": {"policies": 2, "errors": 1, "warnings": 1, "ignored": 0},
+  "exit_status": 3
+}
+```
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Every policy is clean |
+| `3` | A policy has an error-level finding, or a warning under `--strict` |
+| `1` | A path does not exist, or nothing was found to lint |
+
+`3` rather than `1` for a bad policy is deliberate, and matches the rest of Tirith: the linter
+saying no about a policy is a verdict, not a tool failure. See [exit codes](exit-codes.md).
+
+## `tirith fmt`
+
+Format rewrites a policy into one canonical layout, so that two people writing the same policy
+produce the same bytes and a diff shows a change of meaning rather than a change of key order.
+
+It reorders keys and normalises whitespace. It never changes a value, adds a key, or reorders a
+list, and the result parses back to a document equal to the one it read.
+
+### Usage
+
+```
+tirith fmt [PATH ...] [--check] [--diff]
+```
+
+| Flag | What it does |
+|---|---|
+| `--check` | Do not write. Exit `3` if any file would change |
+| `--diff` | Print a unified diff of what would change. Implies `--check` |
+
+With no flags it rewrites the files in place and prints the path of each one it changed.
+
+### The layout
+
+Whitespace is exactly `json.dumps(indent=2, ensure_ascii=False)` plus one trailing newline, which
+means a policy written by any tool using the Python standard library is already canonical without
+knowing `fmt` exists. Non-ASCII characters stay as written rather than being escaped.
+
+Keys are ordered:
+
+| Object | Order |
+|---|---|
+| top level | `$schema`, `meta`, `evaluators`, `eval_expression` |
+| `meta` | `version`, `required_provider`, `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation` |
+| each evaluator | `id`, `description`, `provider_args`, `condition` |
+| `provider_args` | `operation_type` first, then the provider's own keys in their original order |
+| `condition` | `type`, `value`, `error_tolerance` |
+
+A key the document has that is not in these lists keeps its original relative order after the
+listed ones, so an unrecognised key is preserved rather than dropped or sorted somewhere
+surprising.
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Nothing to change, or the changes were written |
+| `3` | `--check` found files that would change |
+| `1` | A path is missing, a file is not valid JSON, or nothing was found |
+
+## Which files they read
+
+Both commands take any number of paths, and both default to the same place when given none:
+`.tirith/policies` if that directory exists, otherwise the current directory.
+
+A directory is searched recursively for `*.json`. A **policy** is a JSON object with at least one
+of the three top-level keys the engine reads, `meta`, `evaluators` or `eval_expression`; anything
+else that parses as JSON is left alone. That is what lets you point either command at a directory
+that also holds a `package.json` or a plan document without producing findings about files that
+were never policies.
+
+- A JSON file named **explicitly on the command line** that is not a policy is reported as skipped
+  by name, so a typo'd path to a plan document does not read as a clean run.
+- A JSON file met **while walking a directory** that is not a policy is counted rather than
+  listed. Input documents living beside their policies are expected there.
+- A `.json` file inside a policy directory that does not parse at all is reported as an error, not
+  ignored. An unparseable policy is a defect.
+
+These directories are never descended into: `.git`, `.terraform`, `node_modules`, `__pycache__`,
+`.venv`, `venv`. Note that `.tirith` is deliberately not among them, since that is where policies
+conventionally live and skipping dot-directories wholesale would skip the one that matters.
+
+## In a pre-commit hook
+
+This repository publishes both commands as hooks, so a commit that touches one policy lints and
+formats that one policy:
+
+```yaml
+repos:
+  - repo: https://github.com/StackGuardian/tirith
+    rev: main
+    hooks:
+      - id: tirith-lint
+      - id: tirith-fmt
+```
+
+```bash
+pre-commit install
+pre-commit run --all-files
+```
+
+Both hooks match `.tirith/*.json` and `*.tirith.json` by default. Override `files` if your
+policies live somewhere else.
+
+Linting at commit time rather than evaluating is a deliberate choice. Evaluating needs a plan
+document, and producing one means running `terraform plan`, which is too slow for a commit hook
+and needs cloud credentials a hook has no business holding. See
+[CI integration](ci-integration.md) for the full argument, and for where evaluation belongs.
+
+## In CI
+
+`fmt --check` is the CI shape, next to whatever else already checks formatting:
+
+```bash
+tirith fmt --check .tirith/policies
+tirith lint .tirith/policies
+```
+
+Both exit `3` on a finding, so a pipeline that already distinguishes `3` from `1` treats a badly
+formatted or invalid policy exactly as it treats a policy violation, and a missing path as the
+tooling problem it is.
+
+
+==============================================================================
 # Exit Codes
 Source: https://stackguardian.github.io/tirith/docs/tirith-usage/exit-codes/
 Summary: The complete Tirith exit-code contract, and how to gate a CI job on it.
 ==============================================================================
 
-Tirith's exit codes are a contract shared by both surfaces — local evaluation (`tirith`) and
-platform evaluation (`tirith platform check`) — so a caller scripting both only has to learn one
-vocabulary.
+Tirith's exit codes are one contract shared by every surface: local evaluation (`tirith`),
+platform evaluation (`tirith platform check`), and the two file commands, `tirith lint` and
+`tirith fmt`. A caller scripting more than one only has to learn a single vocabulary.
 
 | Code | Meaning |
 |---|---|
-| `0` | Policies passed, or nothing was in scope to gate on |
-| `1` | Tirith could not complete the evaluation — bad input, a policy it could not evaluate, unreachable API |
-| `2` | Timed out waiting for a StackGuardian run (`tirith platform check` only; local evaluation never produces it) |
-| `3` | A policy failed. Only with `--fail-on-error`, on either surface |
+| `0` | Policies passed, nothing was in scope to gate on, or the files were clean |
+| `1` | Tirith could not complete the run: bad input, a policy it could not evaluate, an unreachable API, a path that does not exist |
+| `3` | A policy said no. On the evaluation surfaces only with `--fail-on-error`; `lint` and `fmt` need no flag |
 | `130` | Interrupted (Ctrl-C) |
+
+`2` is deliberately absent. It used to be a timeout code that nothing ever returned, and
+`argparse` already exits `2` of its own accord on a usage error, so a caller seeing `2` has
+passed a bad argument. Do not write a pipeline that branches on it.
 
 ## `3` is deliberately not `1`
 
@@ -2879,6 +3104,21 @@ on `3`.
 Both surfaces **fail closed**: anything that leaves the verdict unknown exits non-zero regardless
 of `--fail-on-error`. That flag governs policy verdicts, not tool health — a run that produced no
 verdict must never look like a pass.
+
+## `tirith lint` and `tirith fmt`
+
+Both use the same three codes, and neither takes `--fail-on-error`: a linter that cannot fail is
+not a linter, and there is no existing green pipeline to protect because nothing has run them
+before.
+
+| Command | `0` | `3` | `1` |
+|---|---|---|---|
+| `tirith lint` | every policy is clean | a policy has an error-level finding, or a warning under `--strict` | a path is missing, or nothing was found to lint |
+| `tirith fmt` | nothing to change, or the changes were written | `--check` found files that would change | a path is missing, a file is not valid JSON, or nothing was found |
+
+"Nothing was found" being `1` rather than `0` is the same fail-closed rule the evaluation
+surfaces follow. A hook pointed at the wrong directory reports a problem instead of quietly
+passing every commit. See [lint and format](lint-and-fmt.md).
 
 ## Without `--fail-on-error`
 
@@ -3119,10 +3359,16 @@ pipelines:
       - step:
           name: Policy gate
           script:
-            - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-            # - tirith lint .tirith/policies   # in dev, not in 1.2.0
+            # @main rather than @1.2.0, because the lint step below is not in 1.2.0 yet.
+            - pip install "git+https://github.com/StackGuardian/tirith.git@main"
+            - tirith lint .tirith/policies
             - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
+
+Linting first is cheap and it fails for a different reason than the gate does: a policy that is
+malformed never gets as far as disagreeing with your infrastructure. It needs no plan document,
+so it can also run in a job that has no cloud credentials at all. See
+[lint and format](lint-and-fmt.md).
 
 A worked repository is at
 [tirith-bitbucket-demo](https://bitbucket.org/__refeed__/tirith-bitbucket-demo).
@@ -3156,31 +3402,30 @@ exit and the two cases become one.
 
 ## As a pre-commit hook
 
-[WARNING] In development
-`tirith lint` is not in 1.2.0 and the `tirith-lint` hook id is not published, so the
-configuration below does not work yet: `pre-commit` cannot resolve the hook and the run fails.
-It is documented here because the design is settled and the shape will not change. Track it on
-the [roadmap](https://stackguardian.github.io/tirith/roadmap/).
+[NOTE] Not in 1.2.0
+`tirith lint` and `tirith fmt` are on `main` and arrive in the next release, so pin `rev` to a
+branch until then. Everything else on this page works on 1.2.0.
 
-Catch a broken policy before it is committed, let alone before CI runs it. Tirith will publish a
-`tirith-lint` hook:
+Catch a broken policy before it is committed, let alone before CI runs it. Tirith publishes a
+`tirith-lint` and a `tirith-fmt` hook:
 
 ```yaml
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: 1.2.0
+    rev: main
     hooks:
       - id: tirith-lint
+      - id: tirith-fmt
 ```
 
 ```bash
 pre-commit install
-pre-commit run tirith-lint --all-files
+pre-commit run --all-files
 ```
 
-The hook runs only when a file under `.tirith/policies/` or a `*.tirith.json` changes. It lints
-the policy directory rather than the individual changed files, because `tirith lint` takes a
-single path.
+Both hooks run only when a file under `.tirith/` or a `*.tirith.json` changes, and both are
+handed the individual changed files rather than the whole directory: `tirith lint` and
+`tirith fmt` each take any number of paths, so a commit touching one policy checks one policy.
 
 [NOTE] Why linting and not evaluation
 Evaluating a policy needs a plan document, and producing one means running `terraform plan` —
@@ -3327,26 +3572,17 @@ path the serving process can. Keep it on `localhost` unless you have a reason no
 ==============================================================================
 # In your editor
 Source: https://stackguardian.github.io/tirith/docs/tirith-usage/editor-and-local/
-Summary: In development — VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy. The lint half is not in the released package yet.
+Summary: VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy.
 ==============================================================================
 
-[WARNING] In development — the lint half has not shipped
+[NOTE] Not in 1.2.0
+`tirith lint` and `tirith fmt` are on `main` and will arrive in the next release. Until then,
+install from the branch rather than the tag:
+`pip install "git+https://github.com/StackGuardian/tirith.git@main"`. Evaluation, the second half
+of the loop, works on any installed version.
 
-`tirith lint`, the pre-commit hook and the VS Code tasks below are **in development**. They are
-not in the released package: `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"`
-gives you `tirith`, `tirith ui` and `tirith platform check`, and no `lint` subcommand. The
-`tirith-lint` hook id and the task file are not in the repository yet either.
-
-**What works today** is the second half of the loop — evaluating a policy against a document with
-`tirith -policy-path … -input-path … --fail-on-error`. That runs locally, offline, on any
-installed version.
-
-This page is published now so the shape is reviewable. Follow
-[the repository](https://github.com/StackGuardian/tirith) for the release, or
-[tell us what the loop is missing](https://github.com/StackGuardian/tirith/issues/new/choose).
-
-CI is the last place a policy should fail. This page is about the loop before that — running
-Tirith on your own machine, while the code is still being written.
+CI is the last place a policy should fail. This page is about the loop before that, running
+Tirith on your own machine while the code is still being written.
 
 It matters most when an agent is drafting the policy for you. Generated policy JSON is plausible
 by construction: it parses, it looks right, and a policy that matches nothing is indistinguishable
@@ -3355,21 +3591,20 @@ from one that works until you evaluate it.
 ## The loop
 
 ```bash
-tirith lint .tirith/policies                                                  # shape — in dev
-tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error    # meaning — ships
+tirith fmt .tirith/policies                                                   # layout
+tirith lint .tirith/policies                                                  # shape
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error    # meaning
 ```
 
-Linting checks the **shape** — that every condition type exists, that no `provider_args` key
-belongs to a different provider, that `eval_expression` names every evaluator. Only evaluation
-checks the **meaning**.
+Linting checks the **shape**: that every condition type exists, that no `provider_args` key
+belongs to a different provider, that `eval_expression` names every evaluator, that
+`error_tolerance` is inside `condition` where the engine reads it. Only evaluation checks the
+**meaning**. [Lint and format](lint-and-fmt.md) covers both commands in full.
 
 Run both against a document that *should* fail. A guardrail only ever seen passing is a guardrail
 nobody has tested.
 
 ## VS Code tasks
-
-**In development.** The lint task below calls a subcommand the released package does not have; the
-evaluate task works today.
 
 Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 
@@ -3377,6 +3612,13 @@ Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 {
   "version": "2.0.0",
   "tasks": [
+    {
+      "label": "Tirith: format policies",
+      "type": "shell",
+      "command": "tirith fmt .tirith/policies",
+      "problemMatcher": [],
+      "group": "test"
+    },
     {
       "label": "Tirith: lint policies",
       "type": "shell",
@@ -3397,29 +3639,29 @@ Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 ```
 
 `Tirith: check the plan` is the default test task, so **⇧⌘B** / **Ctrl+Shift+B** runs the whole
-loop. The complete file — including a task to refresh `plan.json` and one to open the result in
-the interactive explorer — is
-[`.vscode/tasks.json`](https://github.com/StackGuardian/tirith/blob/main/.vscode/tasks.json).
+loop: lint first, then evaluate, because `dependsOn` will not run the second if the first exits
+non-zero.
 
 ## Catch it at commit time
 
-**In development.** The `tirith-lint` hook id is not published yet, so this configuration will not
-resolve — `pre-commit` fails with an unknown hook rather than installing anything.
+Tirith publishes both commands as pre-commit hooks:
 
 ```yaml
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: 1.2.0
+    rev: main
     hooks:
       - id: tirith-lint
+      - id: tirith-fmt
 ```
 
 ```bash
 pre-commit install
 ```
 
-The hook runs only when a policy file changes, needs no network, and exits `3` when a policy has
-an error. See [CI integration](ci-integration.md) for why it lints rather than evaluates.
+Both run only on the policy files a commit actually touches, need no network, and exit `3` on a
+finding. See [CI integration](ci-integration.md) for why they lint rather than evaluate, and
+[lint and format](lint-and-fmt.md) for the flags and the files they read.
 
 ## When an agent is writing the policy
 
@@ -3474,9 +3716,10 @@ guess from a plausible-looking shape.
 curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Two skills under `.claude/skills/`: `tirith-policies`, for writing policies, and `tirith-migrate`,
-for translating existing Sentinel policies. No config file, and they are picked up in any
-repository you copy them into. A session that is already running may not see a newly installed
+Three skills under `.claude/skills/`: `tirith-policies`, for writing policies,
+`tirith-standards`, for generating a policy set from a repository you already have, and
+`tirith-migrate`, for translating existing Sentinel policies. No config file, and they are picked
+up in any repository you copy them into. A session that is already running may not see a newly installed
 skill until it is restarted; a new session sees it immediately.
 
 | Flag | |
@@ -3541,9 +3784,30 @@ with a small context window pays for only what the task needs.
 | `reference/debug-ci.md` | Diagnosing a red check |
 | `examples/required-tags/` | A policy, a plan that fails it and a plan that passes it, so the agent can prove its own work before it hands it back |
 
+## Standards from a repository you already have
+
+`tirith-standards` starts from the Terraform or OpenTofu you already run rather than from a
+catalogue. It reads the code to work out which resource types are in use and which conventions
+are already followed, proposes a set of standards with the count of resources that would pass and
+fail today, and writes one policy per rule: required tags, naming conventions, allowed regions,
+permitted resource types, size ceilings, encryption defaults.
+
+Two things in it are worth knowing even if you never install it, because they decide whether a
+generated policy is usable:
+
+- **The policies never see your HCL.** The skill reads `.tf` files only to decide what to write
+  about; the rules themselves evaluate `terraform show -json`, where variables are resolved,
+  modules are expanded into addressed resources, and a name that is not known until apply is
+  `null`. A rule about a variable or a module block reads nothing.
+- **A rule scoped to one resource type needs a guard.** With the default `error_tolerance` an
+  absent resource type is severity `1` and the check fails, so the rule is red on every plan that
+  does not touch that type. At `error_tolerance: 1` it is skipped instead, every check is skipped,
+  and `final_result` is `null`, which exits `1`. Neither is green. The skill's fix is a `count`
+  evaluator, which returns `0` for an absent type rather than erroring, combined with `||`.
+
 ## Migrating from Sentinel
 
-The second skill, `tirith-migrate`, is for teams with existing HashiCorp Sentinel policies. It is a
+The third skill, `tirith-migrate`, is for teams with existing HashiCorp Sentinel policies. It is a
 projection from a larger language onto a smaller one, and the skill's job is to say what survives.
 Measured against the 110 policies in HashiCorp's public libraries, 41 translate exactly, 40
 approximately, and 29 not at all. Each translation is tagged with that fidelity, every approximate

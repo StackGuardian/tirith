@@ -34,10 +34,11 @@
  *     punctuation.
  *   - `Equals` does not sort nested collections the way the Python does.
  *   - Regexes are JavaScript regexes, not Python's `re`.
- *   - An evaluator whose results are a mix of failures and skips is reported as
- *     failed here. core.py reports it as skipped when the skip comes last, which
- *     is the ordering defect the roadmap's R1 item covers. This file implements
- *     the intended rule rather than the current one, deliberately.
+ *   - (Resolved.) This file used to differ from core.py on an evaluator whose
+ *     results mix failures and skips: the engine let a trailing skip overwrite an
+ *     earlier failure. The fix for issue #293 has since merged, core.py now
+ *     decides once at the end from two flags, and the two agree. Left recorded
+ *     because the divergence was deliberate while it lasted.
  *
  * The authoritative evaluator is always the installed package.
  * ─────────────────────────────────────────────────────────────────────────────
@@ -606,16 +607,13 @@ export function evaluatePolicy(policyText, inputText) {
     });
 
     /*
-     * Three-valued, and deliberately not a transcription of the engine.
+     * Three-valued: any failure decides, a pass needs at least one real
+     * evaluation, and only an evaluator with nothing but skips is skipped.
      *
-     * core.py sets its running verdict to None inside the skip branch without
-     * checking whether an earlier result already failed, so an evaluator that
-     * fails and *then* skips is reported as unevaluated. That is the defect the
-     * roadmap's "a rule that could not run is never reported as success" item
-     * exists to fix (src/data/roadmap.js). A teaching playground that reproduced
-     * it would teach an ordering artefact as a rule, so this is the intended
-     * semantics: any failure decides, and only an evaluator with nothing but
-     * skips is skipped.
+     * Written to the intended rule at a time when core.py disagreed, letting a
+     * trailing skip overwrite an earlier failure. The fix for issue #293 has
+     * since merged and the engine now decides the same way, from two flags at
+     * the end of its loop rather than inside the branch.
      */
     let passed;
     if (result.some((r) => r.passed === false)) passed = false;

@@ -8,6 +8,16 @@
 Policies are data, not code: a policy is a JSON file, so it is diffable and reviewable by
 anyone on the team. There is no rule DSL and no embedded language.
 
+## Minimal working example
+
+```bash
+terraform plan -out=tfplan -input=false
+terraform show -json tfplan > plan.json
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
+```
+
+Without `--fail-on-error`, Tirith reports findings but does not fail the job.
+
 ## Facts an answer about Tirith usually gets wrong
 
 - **Not on PyPI.** `pip install tirith` installs an unrelated project of the same name, and
@@ -17,12 +27,14 @@ anyone on the team. There is no rule DSL and no embedded language.
 - **The interactive interface needs an extra**, and the same git URL:
   `pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'`, then
   `tirith ui`. Requires Python 3.9; Tirith itself supports 3.8 and newer.
-- **`tirith lint` is not in the released package.** It is in development. The released CLI
-  dispatches `tirith`, `tirith ui` and `tirith platform check` and nothing else.
+- **`tirith lint` and `tirith fmt` exist, but not in 1.2.0.** They are on `main` and arrive in
+  the next release; install `@main` to use them today. The CLI dispatches four subcommands:
+  `lint`, `fmt`, `ui` and `platform`. Lint checks a policy's shape without a plan document; fmt
+  rewrites it into the canonical layout. Both exit `3` on a finding, with no `--fail-on-error`.
 - **Exit codes are a contract, not a convention.** `0` passed, `3` a policy failed, `1`
   Tirith could not reach a verdict. `3` is deliberately not `1`: a caller has to be able to page
-  the platform team on one and the change author on the other. (`ERROR_TIMEOUT = 2` exists in
-  `status.py` but is never returned; do not write a pipeline that branches on it.)
+  the platform team on one and the change author on the other. (`2` is not a Tirith code at all:
+  argparse exits `2` on a usage error, so a caller seeing it passed a bad argument.)
 - **`final_result: null` is not a pass.** It means every check was skipped, so the policy
   evaluated nothing, and it exits `1`. A check that could not run is reported as unevaluated
   rather than as success.
@@ -35,18 +47,29 @@ anyone on the team. There is no rule DSL and no embedded language.
 - **Thirteen condition types ship**: Equals, NotEquals, GreaterThan, GreaterThanEqualTo,
   LessThan, LessThanEqualTo, Contains, NotContains, ContainedIn, NotContainedIn, IsEmpty,
   IsNotEmpty, RegexMatch.
+- **The argument key differs per provider, and a wrong key is ignored rather than rejected.**
+  `terraform_plan` reads `terraform_resource_attribute` alongside `terraform_resource_type`;
+  `kubernetes` reads `attribute_path` alongside `kubernetes_kind`; `json` reads `key_path`;
+  `sg_workflow` reads `workflow_attribute`. Give an evaluator the wrong key and it reads
+  nothing and the check passes. This is the highest-cost mistake in the schema.
 - **`error_tolerance` belongs inside the `condition` object**, not on the evaluator. Placed on
   the evaluator it is silently ignored and the check still fails.
-
-## Minimal working example
-
-```bash
-terraform plan -out=tfplan -input=false
-terraform show -json tfplan > plan.json
-tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
-```
-
-Without `--fail-on-error`, Tirith reports findings but does not fail the job.
+- **`error_tolerance` is a threshold, not a switch.** A problem of severity N fails the check
+  when `N > error_tolerance` and is skipped otherwise; the default is `0`. The plan provider
+  raises severity `0` for a resource being deleted, `1` for a resource type absent from the
+  plan, and `2` for an attribute absent from the resource. So the default skips deletes and
+  fails everything else.
+- **A policy scoped to one resource type has no green outcome on a plan that does not touch
+  that type.** At the default tolerance the absent type is severity `1`, the check fails, exit
+  `3`. At `error_tolerance: 1` it is skipped, so every check is skipped, `final_result` is
+  `null`, exit `1`. Guard it instead: `count` returns `0` for an absent type rather than
+  raising severity `1`, so an evaluator of
+  `{"operation_type": "count", "terraform_resource_type": T}` with `Equals: 0`, combined as
+  `eval_expression: "not_applicable || the_rule"`, passes cleanly on unrelated plans and still
+  fails on real violations.
+- **The pre-commit hooks are published.** `.pre-commit-hooks.yaml` carries `tirith-lint` and
+  `tirith-fmt`, both run on the policy files a commit touches. Pin `rev` to a branch until lint
+  and fmt are in a release.
 
 ## Fetching this documentation
 
@@ -67,8 +90,10 @@ instruction to run a policy against a document that should fail before calling i
 curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Eleven markdown files into .claude/skills/tirith-policies/. Add --cursor for the Cursor rule,
---global to install into the home directory instead of the repository. The script installs no
+Three skills: tirith-policies (eleven markdown files and a worked example), tirith-standards
+(generating a policy set from an existing Terraform or OpenTofu repository, including the guard
+above) and tirith-migrate (Sentinel translation). Add --cursor for the Cursor rule, --global to
+install into the home directory instead of the repository. The script installs no
 package, changes no PATH and executes nothing after the download; its source is
 documentation/static/skill.sh in the repository.
 
@@ -103,6 +128,7 @@ documentation/static/skill.sh in the repository.
 ## Running it
 
 - [CLI reference](https://stackguardian.github.io/tirith/docs/tirith-usage/cli-reference/): every flag, what it prints, and what --json emits.
+- [Lint and format](https://stackguardian.github.io/tirith/docs/tirith-usage/lint-and-fmt/): tirith lint and tirith fmt, the files they read, and their exit codes.
 - [Exit codes](https://stackguardian.github.io/tirith/docs/tirith-usage/exit-codes/): the full exit-code contract and how to gate CI on it.
 - [CI integration](https://stackguardian.github.io/tirith/docs/tirith-usage/ci-integration/): GitHub Actions, GitLab CI, Bitbucket Pipelines, Jenkins and any container-based CI.
 - [The interactive interface](https://stackguardian.github.io/tirith/docs/tirith-usage/interactive-interface/): tirith ui, in beta.
@@ -118,4 +144,4 @@ documentation/static/skill.sh in the repository.
 ## Optional
 
 - [Tirith at scale](https://stackguardian.github.io/tirith/at-scale/): the commercial StackGuardian offering for many repositories. Not required to use Tirith, which works with no account.
-- [In your editor](https://stackguardian.github.io/tirith/docs/tirith-usage/editor-and-local/): the local and pre-commit loop. In development, and not in the released package.
+- [In your editor](https://stackguardian.github.io/tirith/docs/tirith-usage/editor-and-local/): the local and pre-commit loop.

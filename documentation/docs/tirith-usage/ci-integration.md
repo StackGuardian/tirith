@@ -191,10 +191,16 @@ pipelines:
       - step:
           name: Policy gate
           script:
-            - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-            # - tirith lint .tirith/policies   # in dev, not in 1.2.0
+            # @main rather than @1.2.0, because the lint step below is not in 1.2.0 yet.
+            - pip install "git+https://github.com/StackGuardian/tirith.git@main"
+            - tirith lint .tirith/policies
             - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
+
+Linting first is cheap and it fails for a different reason than the gate does: a policy that is
+malformed never gets as far as disagreeing with your infrastructure. It needs no plan document,
+so it can also run in a job that has no cloud credentials at all. See
+[lint and format](lint-and-fmt.md).
 
 A worked repository is at
 [tirith-bitbucket-demo](https://bitbucket.org/__refeed__/tirith-bitbucket-demo).
@@ -228,32 +234,31 @@ exit and the two cases become one.
 
 ## As a pre-commit hook
 
-:::warning In development
-`tirith lint` is not in 1.2.0 and the `tirith-lint` hook id is not published, so the
-configuration below does not work yet: `pre-commit` cannot resolve the hook and the run fails.
-It is documented here because the design is settled and the shape will not change. Track it on
-the [roadmap](https://stackguardian.github.io/tirith/roadmap/).
+:::note Not in 1.2.0
+`tirith lint` and `tirith fmt` are on `main` and arrive in the next release, so pin `rev` to a
+branch until then. Everything else on this page works on 1.2.0.
 :::
 
-Catch a broken policy before it is committed, let alone before CI runs it. Tirith will publish a
-`tirith-lint` hook:
+Catch a broken policy before it is committed, let alone before CI runs it. Tirith publishes a
+`tirith-lint` and a `tirith-fmt` hook:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: 1.2.0
+    rev: main
     hooks:
       - id: tirith-lint
+      - id: tirith-fmt
 ```
 
 ```bash
 pre-commit install
-pre-commit run tirith-lint --all-files
+pre-commit run --all-files
 ```
 
-The hook runs only when a file under `.tirith/policies/` or a `*.tirith.json` changes. It lints
-the policy directory rather than the individual changed files, because `tirith lint` takes a
-single path.
+Both hooks run only when a file under `.tirith/` or a `*.tirith.json` changes, and both are
+handed the individual changed files rather than the whole directory: `tirith lint` and
+`tirith fmt` each take any number of paths, so a commit touching one policy checks one policy.
 
 :::note Why linting and not evaluation
 Evaluating a policy needs a plan document, and producing one means running `terraform plan` —
