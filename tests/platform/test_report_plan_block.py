@@ -281,8 +281,6 @@ def test_the_plan_is_dropped_before_any_finding():
         ]
     }
     plan = _plan(*[_change(f"aws_s3_bucket.b{i}", ["create"]) for i in range(20)])
-    body = report.render_markdown(
-        results, "COMPLETED", "https://example.invalid/run", plan=plan, limit=3000
-    )
+    body = report.render_markdown(results, "COMPLETED", "https://example.invalid/run", plan=plan, limit=3000)
     assert "```diff" not in body
     assert "policy-a" in body
