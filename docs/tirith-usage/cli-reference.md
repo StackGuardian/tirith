@@ -132,7 +132,7 @@ passed. This is the flag that makes the command usable as a CI gate; the full co
 
 ### `--version`
 
-Prints the version number (for example `1.2.0`) and exits `0`.
+Prints the version number (for example `1.2.1`) and exits `0`.
 
 ## Output streams
 
