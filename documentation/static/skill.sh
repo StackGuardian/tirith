@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# Install the Tirith policy skill for a coding agent.
+# Install the Tirith skills for a coding agent.
 #
 #   curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 #
@@ -8,12 +8,13 @@
 # its source is documentation/static/skill.sh in StackGuardian/tirith, so the version you
 # are about to pipe into a shell is the version you can read in the repository.
 #
-# What it does: downloads three skills into .claude/skills/ -- tirith-policies (eleven markdown
-# files plus a worked example), tirith-standards (generating a policy set from an existing
-# Terraform or OpenTofu repository) and tirith-migrate (Sentinel-to-Tirith translation, with its
-# classified corpus and five worked examples) -- and, with --cursor, one rule file into
-# .cursor/rules/. It creates directories, writes those files, and nothing else. No package is installed, no PATH is changed, nothing is executed
-# after download, and it never touches a file it did not create.
+# What it does: downloads one archive of the repository at REF, copies every skill under
+# .claude/skills/ out of it into ./.claude/skills/ (tirith-policies, tirith-standards,
+# tirith-migrate today) and, with --cursor, one rule file into .cursor/rules/. It creates
+# directories, writes those files, and nothing else. No package is installed, no PATH is
+# changed, nothing is executed after the download, and it never touches a file it did not
+# create. One request rather than one per file: the first version fetched each file from
+# raw.githubusercontent.com and took ten minutes on a slow link.
 #
 # Flags:
 #   --global   install into ~/.claude/skills/ instead of ./.claude/skills/
@@ -21,111 +22,14 @@
 #   --ref REF  install from a branch or tag instead of main
 #
 # POSIX sh on purpose: it runs under dash, ash and busybox, which is what a slim CI image
-# gives you.
+# gives you. Needs curl and tar.
 
 set -eu
 
 REPO="StackGuardian/tirith"
 REF="main"
-PACK=".claude/skills/tirith-policies"
 DEST="."
 CURSOR=0
-MIGRATE_PACK=".claude/skills/tirith-migrate"
-STANDARDS_PACK=".claude/skills/tirith-standards"
-
-REFERENCES="schema validate verdicts terraform-plan other-providers variables install pipelines platform debug-ci"
-EXAMPLE="examples/required-tags"
-EXAMPLE_FILES="README.md policy.json should-fail.json should-pass.json"
-
-# tirith-standards, relative to its own pack root. One path per line so the list stays diffable.
-STANDARDS_FILES="SKILL.md
-reference/standards.md
-examples/org-standards/README.md
-examples/org-standards/naming.json
-examples/org-standards/should-fail.json
-examples/org-standards/should-pass.json
-examples/org-standards/no-bucket.json"
-
-# tirith-migrate, relative to its own pack root. One path per line so the list stays diffable.
-MIGRATE_FILES="SKILL.md
-reference/azure-policy-corpus.md
-reference/azure-policy.md
-reference/sentinel-corpus.md
-reference/sentinel.md
-examples/azure-policy/README.md
-examples/sentinel/README.md
-examples/azure-policy/allowed-locations/notes.md
-examples/azure-policy/allowed-locations/policy.json
-examples/azure-policy/allowed-locations/should-fail.json
-examples/azure-policy/allowed-locations/should-pass.json
-examples/azure-policy/allowed-locations/source.json
-examples/azure-policy/allowed-locations/variables.json
-examples/azure-policy/allowed-resource-types/notes.md
-examples/azure-policy/allowed-resource-types/policy.json
-examples/azure-policy/allowed-resource-types/should-fail.json
-examples/azure-policy/allowed-resource-types/should-pass.json
-examples/azure-policy/allowed-resource-types/source.json
-examples/azure-policy/allowed-vm-skus/notes.md
-examples/azure-policy/allowed-vm-skus/policy.json
-examples/azure-policy/allowed-vm-skus/should-fail.json
-examples/azure-policy/allowed-vm-skus/should-pass.json
-examples/azure-policy/allowed-vm-skus/source.json
-examples/azure-policy/allowed-vm-skus/variables.json
-examples/azure-policy/inherit-tag-from-resource-group/notes.md
-examples/azure-policy/inherit-tag-from-resource-group/source.json
-examples/azure-policy/not-allowed-resource-types/notes.md
-examples/azure-policy/not-allowed-resource-types/policy.json
-examples/azure-policy/not-allowed-resource-types/should-fail.json
-examples/azure-policy/not-allowed-resource-types/should-pass.json
-examples/azure-policy/not-allowed-resource-types/source.json
-examples/azure-policy/nsg-rdp-from-internet/diverges.json
-examples/azure-policy/nsg-rdp-from-internet/notes.md
-examples/azure-policy/nsg-rdp-from-internet/policy.json
-examples/azure-policy/nsg-rdp-from-internet/should-fail.json
-examples/azure-policy/nsg-rdp-from-internet/should-pass.json
-examples/azure-policy/nsg-rdp-from-internet/source.json
-examples/azure-policy/require-tag/notes.md
-examples/azure-policy/require-tag/policy.json
-examples/azure-policy/require-tag/should-fail-null-tags.json
-examples/azure-policy/require-tag/should-fail.json
-examples/azure-policy/require-tag/should-pass.json
-examples/azure-policy/require-tag/source.json
-examples/azure-policy/require-tag/variables.json
-examples/azure-policy/storage-secure-transfer/notes.md
-examples/azure-policy/storage-secure-transfer/policy.json
-examples/azure-policy/storage-secure-transfer/should-fail-azurerm3.json
-examples/azure-policy/storage-secure-transfer/should-fail.json
-examples/azure-policy/storage-secure-transfer/should-pass.json
-examples/azure-policy/storage-secure-transfer/source.json
-examples/sentinel/mandatory-tags/notes.md
-examples/sentinel/mandatory-tags/policy.json
-examples/sentinel/mandatory-tags/should-fail.json
-examples/sentinel/mandatory-tags/should-pass.json
-examples/sentinel/mandatory-tags/source.sentinel
-examples/sentinel/prevent-database-destroy/notes.md
-examples/sentinel/prevent-database-destroy/policy.json
-examples/sentinel/prevent-database-destroy/should-fail-replacement.json
-examples/sentinel/prevent-database-destroy/should-fail.json
-examples/sentinel/prevent-database-destroy/should-pass.json
-examples/sentinel/prevent-database-destroy/source.sentinel
-examples/sentinel/require-private-registry-modules/notes.md
-examples/sentinel/require-private-registry-modules/source.sentinel
-examples/sentinel/restrict-instance-type/notes.md
-examples/sentinel/restrict-instance-type/policy.json
-examples/sentinel/restrict-instance-type/should-fail.json
-examples/sentinel/restrict-instance-type/should-pass.json
-examples/sentinel/restrict-instance-type/source.sentinel
-examples/sentinel/restrict-instance-type/variables.json
-examples/sentinel/restrict-ssh-ingress/diverges.json
-examples/sentinel/restrict-ssh-ingress/notes.md
-examples/sentinel/restrict-ssh-ingress/policy.json
-examples/sentinel/restrict-ssh-ingress/should-fail.json
-examples/sentinel/restrict-ssh-ingress/should-pass.json
-examples/sentinel/restrict-ssh-ingress/source.sentinel
-examples/azure-policy/storage-secure-transfer/arm/policy.json
-examples/azure-policy/storage-secure-transfer/arm/should-fail.json
-examples/azure-policy/storage-secure-transfer/arm/should-pass-no-storage.json
-examples/azure-policy/storage-secure-transfer/arm/should-pass.json"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -133,7 +37,7 @@ while [ $# -gt 0 ]; do
     --cursor) CURSOR=1 ;;
     --ref)    REF="${2:?--ref needs a branch or tag}"; shift ;;
     -h|--help)
-      sed -n '3,25p' "$0" 2>/dev/null | sed 's/^# \{0,1\}//'
+      sed -n '3,26p' "$0" 2>/dev/null | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *) printf 'skill.sh: unknown option %s\n' "$1" >&2; exit 2 ;;
@@ -142,69 +46,54 @@ while [ $# -gt 0 ]; do
 done
 
 command -v curl >/dev/null 2>&1 || { echo "skill.sh: curl is required" >&2; exit 1; }
+command -v tar  >/dev/null 2>&1 || { echo "skill.sh: tar is required" >&2; exit 1; }
 
-BASE="https://raw.githubusercontent.com/$REPO/$REF/$PACK"
-TARGET="$DEST/$PACK"
+# The archive URL can be overridden for testing against a local `git archive` tarball.
+ARCHIVE="${TIRITH_SKILL_ARCHIVE:-https://codeload.github.com/$REPO/tar.gz/refs/heads/$REF}"
 
-# Download to a temporary directory first, then move into place. A half-written skill is
-# worse than no skill: an agent will read whatever files exist and quietly work from a
-# partial vocabulary.
+# Everything lands in a temporary directory first and is copied into place only once the
+# archive has been read in full. A half-written skill is worse than no skill: an agent will
+# read whatever files exist and quietly work from a partial vocabulary.
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT INT TERM
-mkdir -p "$TMP/reference" "$TMP/$EXAMPLE"
 
-fetch() {
-  curl -fsSL "$1" -o "$2" || { printf 'skill.sh: failed to download %s\n' "$1" >&2; exit 1; }
-}
+if ! curl -fsSL "$ARCHIVE" -o "$TMP/repo.tar.gz"; then
+  # A tag lives under refs/tags, a branch under refs/heads; try the other before giving up.
+  ALT="https://codeload.github.com/$REPO/tar.gz/refs/tags/$REF"
+  [ -n "${TIRITH_SKILL_ARCHIVE:-}" ] || curl -fsSL "$ALT" -o "$TMP/repo.tar.gz" || {
+    printf 'skill.sh: could not download %s (ref %s)\n' "$REPO" "$REF" >&2; exit 1; }
+fi
 
-fetch "$BASE/SKILL.md" "$TMP/SKILL.md"
-for f in $REFERENCES; do
-  fetch "$BASE/reference/$f.md" "$TMP/reference/$f.md"
+mkdir -p "$TMP/x"
+tar -xzf "$TMP/repo.tar.gz" -C "$TMP/x"
+# GitHub archives have one top-level directory named after the ref; a `git archive` tarball
+# has none. Find the skills directory wherever it landed, at most one level down.
+SRC=""
+for candidate in "$TMP/x/.claude/skills" "$TMP"/x/*/.claude/skills; do
+  [ -d "$candidate" ] && { SRC="$candidate"; break; }
 done
-for f in $EXAMPLE_FILES; do
-  fetch "$BASE/$EXAMPLE/$f" "$TMP/$EXAMPLE/$f"
-done
-MBASE="https://raw.githubusercontent.com/$REPO/$REF/$MIGRATE_PACK"
-for f in $MIGRATE_FILES; do
-  mkdir -p "$TMP/migrate/$(dirname "$f")"
-  fetch "$MBASE/$f" "$TMP/migrate/$f"
-done
-SBASE="https://raw.githubusercontent.com/$REPO/$REF/$STANDARDS_PACK"
-for f in $STANDARDS_FILES; do
-  mkdir -p "$TMP/standards/$(dirname "$f")"
-  fetch "$SBASE/$f" "$TMP/standards/$f"
-done
+[ -n "$SRC" ] || { printf 'skill.sh: the archive for ref %s has no .claude/skills directory\n' "$REF" >&2; exit 1; }
+ROOT="$(dirname "$(dirname "$SRC")")"
 
-mkdir -p "$TARGET/reference" "$TARGET/$EXAMPLE"
-cp "$TMP/SKILL.md" "$TARGET/SKILL.md"
-for f in $REFERENCES; do
-  cp "$TMP/reference/$f.md" "$TARGET/reference/$f.md"
+TARGET="$DEST/.claude/skills"
+mkdir -p "$TARGET"
+installed=0
+for pack in "$SRC"/*/; do
+  name="$(basename "$pack")"
+  [ -f "$pack/SKILL.md" ] || continue
+  # Replace the pack wholesale so a file dropped upstream does not linger here.
+  rm -rf "$TARGET/$name"
+  cp -R "$pack" "$TARGET/$name"
+  printf 'Installed %s: %s\n' "$name" "$TARGET/$name"
+  installed=$((installed + 1))
 done
-for f in $EXAMPLE_FILES; do
-  cp "$TMP/$EXAMPLE/$f" "$TARGET/$EXAMPLE/$f"
-done
-
-MTARGET="$DEST/$MIGRATE_PACK"
-for f in $MIGRATE_FILES; do
-  mkdir -p "$MTARGET/$(dirname "$f")"
-  cp "$TMP/migrate/$f" "$MTARGET/$f"
-done
-
-STARGET="$DEST/$STANDARDS_PACK"
-for f in $STANDARDS_FILES; do
-  mkdir -p "$STARGET/$(dirname "$f")"
-  cp "$TMP/standards/$f" "$STARGET/$f"
-done
-
-printf 'Installed the Tirith skill: %s\n' "$TARGET"
-printf 'Installed the standards skill: %s\n' "$STARGET"
-printf 'Installed the migration skill: %s\n' "$MTARGET"
+[ "$installed" -gt 0 ] || { echo "skill.sh: no skills found in the archive" >&2; exit 1; }
 
 if [ "$CURSOR" -eq 1 ]; then
+  RULE="$ROOT/.cursor/rules/tirith-policies.mdc"
+  [ -f "$RULE" ] || { echo "skill.sh: the archive has no .cursor/rules/tirith-policies.mdc" >&2; exit 1; }
   mkdir -p "$DEST/.cursor/rules"
-  fetch "https://raw.githubusercontent.com/$REPO/$REF/.cursor/rules/tirith-policies.mdc" \
-        "$TMP/tirith-policies.mdc"
-  cp "$TMP/tirith-policies.mdc" "$DEST/.cursor/rules/tirith-policies.mdc"
+  cp "$RULE" "$DEST/.cursor/rules/tirith-policies.mdc"
   printf 'Installed the Cursor rule: %s\n' "$DEST/.cursor/rules/tirith-policies.mdc"
 fi
 

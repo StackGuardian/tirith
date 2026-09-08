@@ -44,11 +44,12 @@ skill until it is restarted; a new session sees it immediately.
 | `--ref REF` | Install from a branch or tag instead of `main` |
 | `--help` | The same summary, from the script itself |
 
-The script downloads those files and does nothing else: no package is installed, no
-`PATH` is changed, nothing is executed after the download, and it never touches a file it did not
-create. It downloads to a temporary directory and moves the files into place only once all of them
-have arrived, because a half-written skill is worse than none: an agent reads whatever files exist
-and works from a partial vocabulary without saying so.
+The script downloads one archive of the repository, copies the skills out of it, and does nothing
+else: no package is installed, no `PATH` is changed, nothing is executed after the download, and
+it never touches a file it did not create. It extracts to a temporary directory and copies each
+skill into place only once the whole archive has arrived, because a half-written skill is worse
+than none: an agent reads whatever files exist and works from a partial vocabulary without saying
+so. It needs `curl` and `tar`.
 
 It is [a committed file in this repository](https://github.com/StackGuardian/tirith/blob/main/documentation/static/skill.sh)
 served from the same origin as this page, so the thing you pipe into a shell is the thing you can
@@ -155,7 +156,8 @@ version:
 curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Re-running is safe: it overwrites the files it owns, in both skills, and leaves everything else alone.
+Re-running is safe: it replaces each skill directory it owns wholesale, so a file removed upstream
+does not linger, and it leaves everything else alone.
 
 `--ref` takes a branch or a commit, which is worth knowing for a fork or a pull request. It cannot
 yet take a release tag: the pack was added after `1.2.0`, so `main` is the only ref that has it,
