@@ -1,6 +1,6 @@
 ---
 name: tirith-migrate
-description: Translate existing policy-as-code into Tirith policies. HashiCorp Sentinel today; Checkov, OPA/Rego and conftest are planned. Use when asked to migrate, convert, port or translate policies to Tirith, when a repository contains .sentinel files or a sentinel.hcl, or when asked what a Sentinel policy would look like in Tirith. Requires the tirith-policies skill for the target vocabulary.
+description: Translate existing policy-as-code into Tirith policies. HashiCorp Sentinel and Azure Policy today; Checkov, OPA/Rego and conftest are planned. Use when asked to migrate, convert, port or translate policies to Tirith, when a repository contains .sentinel files or a sentinel.hcl, when given an Azure Policy definition, initiative or assignment (a policyRule with if/then), or when asked what a Sentinel or Azure policy would look like in Tirith. Requires the tirith-policies skill for the target vocabulary.
 ---
 
 # Migrate policies to Tirith
@@ -22,14 +22,16 @@ page. Everything below assumes that vocabulary.
 | Source | Reference | Status |
 | --- | --- | --- |
 | HashiCorp Sentinel | `reference/sentinel.md`, corpus in `reference/sentinel-corpus.md` | Measured against 110 public policies |
+| Azure Policy | `reference/azure-policy.md`, corpus in `reference/azure-policy-corpus.md` | 713 built-ins classified; Terraform and ARM targets |
 | Checkov | | Planned |
 | OPA / Rego, conftest | | Planned |
 
 ## The protocol
 
-1. **Inventory.** List every source policy. Read the policy-set manifest (`sentinel.hcl`) for
-   enforcement levels and parameters. Note which policies are registered twice with different
-   parameters; they translate once.
+1. **Inventory.** List every source policy. Read the policy-set manifest (`sentinel.hcl`, an
+   Azure initiative or assignment) for enforcement levels and parameter values. Note which
+   policies are registered twice with different parameters; they translate once. For Azure,
+   decide the target first: Terraform plan or ARM template.
 2. **Classify before translating.** For each policy, name its pattern from the source reference
    and assign a fidelity:
    - `exact`: a Tirith policy returns the same verdict on every plan.
@@ -80,6 +82,10 @@ page. Everything below assumes that vocabulary.
 6. Is every condition type and argument key taken from `schema.md`, not recalled?
 
 ## Worked examples
+
+`examples/azure-policy/` holds eight Azure built-ins, the ones a customer assigns first, each with
+the verbatim definition, the Tirith policy for a Terraform plan (one also for an ARM template), and
+the plans that prove it. `examples/azure-policy/README.md` is the index.
 
 `examples/sentinel/` holds five translations from the idioms of HashiCorp's public policy
 libraries, each with its Sentinel source, the Tirith policy, and the plans that prove it:

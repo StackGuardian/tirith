@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "e372f825-a257-4fb8-9175-797a8a8627d6",
+    "name": "RDP access from the Internet should be blocked",
+    "description": "Stricter than the source: Azure refuses a rule only when access, direction, port and source all match at once; Tirith cannot bind four tests to one rule, so any inbound allow rule from the Internet is refused whatever its port. Port ranges like 3000-4000 are not expressible.",
+    "enforcement": "audit"
+  },
+  "evaluators": [
+    {
+      "id": "rule_is_inbound_allow_from_internet",
+      "description": "Detects rules whose source is the Internet. With direction and access folded into the plan under review, this is the test that carries the intent",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_network_security_rule",
+        "terraform_resource_attribute": "source_address_prefix"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "*",
+          "Internet",
+          "0.0.0.0/0"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "rule_is_inbound_allow_from_internet"
+}

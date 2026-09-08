@@ -20,7 +20,7 @@ curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
 Two skills under `.claude/skills/`: `tirith-policies`, for writing policies, and `tirith-migrate`,
-for translating existing Sentinel policies. No config file, and they are picked up in any
+for translating existing Sentinel or Azure policies. No config file, and they are picked up in any
 repository you copy them into. A session that is already running may not see a newly installed
 skill until it is restarted; a new session sees it immediately.
 
@@ -88,12 +88,16 @@ with a small context window pays for only what the task needs.
 
 ## Migrating from Sentinel
 
-The second skill, `tirith-migrate`, is for teams with existing HashiCorp Sentinel policies. It is a
+The second skill, `tirith-migrate`, is for teams with existing HashiCorp Sentinel or Azure Policy
+definitions. It is a
 projection from a larger language onto a smaller one, and the skill's job is to say what survives.
 Measured against the 110 policies in HashiCorp's public libraries, 41 translate exactly, 40
 approximately, and 29 not at all. Each translation is tagged with that fidelity, every approximate
 one ships a plan on which Sentinel and Tirith disagree, and every impossible one is refused in
-words with the Tirith issue that would change it. Checkov and OPA/Rego are planned next.
+words with the Tirith issue that would change it. For Azure Policy the reference carries an
+alias-to-azurerm crosswalk, the corpus's classification of 713 built-ins, and eight verified
+translations of the policies a subscription is usually assigned first. Checkov and OPA/Rego are
+planned next.
 
 ## Two things decide whether the policy actually works
 

@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/json",
+    "id": "404c3081-a854-4457-ae30-26a93ef643f9",
+    "name": "Secure transfer to storage accounts should be enabled (ARM template)",
+    "description": "The json provider reads the whole ARM template. The guard passes a template with no storage account; otherwise every storage account's supportsHttpsTrafficOnly must be true and an absent property fails, as Azure's `notEquals true` does.",
+    "enforcement": "audit"
+  },
+  "evaluators": [
+    {
+      "id": "no_storage_account",
+      "description": "Document-scope guard: no Microsoft.Storage/storageAccounts in the template. ARM type strings are case-insensitive in Azure and compared exactly here, so common spellings are listed",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "resources.*.type"
+      },
+      "condition": {
+        "type": "NotContainedIn",
+        "value": [
+          "Microsoft.Storage/storageAccounts",
+          "microsoft.storage/storageaccounts",
+          "Microsoft.Storage/StorageAccounts"
+        ],
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "https_only",
+      "description": "Every storage account's supportsHttpsTrafficOnly is true; absent fails (error_tolerance 1)",
+      "provider_args": {
+        "operation_type": "get_value",
+        "key_path": "resources.*.properties.supportsHttpsTrafficOnly"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": [
+          true,
+          "true"
+        ],
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_storage_account || https_only"
+}
