@@ -31,9 +31,10 @@ guess from a plausible-looking shape.
 curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Two skills under `.claude/skills/`: `tirith-policies`, for writing policies, and `tirith-migrate`,
-for translating existing Sentinel or Azure policies. No config file, and they are picked up in any
-repository you copy them into. A session that is already running may not see a newly installed
+Three skills under `.claude/skills/`: `tirith-policies`, for writing policies,
+`tirith-standards`, for generating a policy set from a repository you already have, and
+`tirith-migrate`, for translating existing Sentinel or Azure policies. No config file, and they are picked
+up in any repository you copy them into. A session that is already running may not see a newly installed
 skill until it is restarted; a new session sees it immediately.
 
 | Flag | |
@@ -98,9 +99,30 @@ with a small context window pays for only what the task needs.
 | `reference/debug-ci.md` | Diagnosing a red check |
 | `examples/required-tags/` | A policy, a plan that fails it and a plan that passes it, so the agent can prove its own work before it hands it back |
 
-## Migrating from Sentinel
+## Standards from a repository you already have
 
-The second skill, `tirith-migrate`, is for teams with existing HashiCorp Sentinel or Azure Policy
+`tirith-standards` starts from the Terraform or OpenTofu you already run rather than from a
+catalogue. It reads the code to work out which resource types are in use and which conventions
+are already followed, proposes a set of standards with the count of resources that would pass and
+fail today, and writes one policy per rule: required tags, naming conventions, allowed regions,
+permitted resource types, size ceilings, encryption defaults.
+
+Two things in it are worth knowing even if you never install it, because they decide whether a
+generated policy is usable:
+
+- **The policies never see your HCL.** The skill reads `.tf` files only to decide what to write
+  about; the rules themselves evaluate `terraform show -json`, where variables are resolved,
+  modules are expanded into addressed resources, and a name that is not known until apply is
+  `null`. A rule about a variable or a module block reads nothing.
+- **A rule scoped to one resource type needs a guard.** With the default `error_tolerance` an
+  absent resource type is severity `1` and the check fails, so the rule is red on every plan that
+  does not touch that type. At `error_tolerance: 1` it is skipped instead, every check is skipped,
+  and `final_result` is `null`, which exits `1`. Neither is green. The skill's fix is a `count`
+  evaluator, which returns `0` for an absent type rather than erroring, combined with `||`.
+
+## Migrating from Sentinel or Azure Policy
+
+The third skill, `tirith-migrate`, is for teams with existing HashiCorp Sentinel or Azure Policy
 definitions. It is a
 projection from a larger language onto a smaller one, and the skill's job is to say what survives.
 Measured against the 110 policies in HashiCorp's public libraries, 41 translate exactly, 40

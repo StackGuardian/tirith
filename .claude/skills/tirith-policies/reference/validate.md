@@ -1,21 +1,34 @@
 # Validate a policy
 
-## `tirith lint` is not in the released package
+## `tirith lint` checks the shape
 
-This is the one place in the pack that explains it; the other files point here. The released CLI
-dispatches `tirith`, `tirith ui` and `tirith platform check` and nothing else. `tirith lint` prints
-the usage text and "Failed because of System Exit" and exits `1`, which a pipeline reads as a tool
-failure on every run. A linter is on the roadmap at
-`https://stackguardian.github.io/tirith/roadmap/`; do not assume it has shipped.
+This is the one place in the pack that explains it; the other files point here.
 
-Two ways to validate exist today.
+```bash
+tirith lint .tirith/policies
+```
 
-## The interactive validator does ship
+It reads the live `EVALUATORS_DICT` and `PROVIDERS_DICT` registries, so it catches every trap in
+the table below except the ones only evaluation can catch. Exit `3` when a policy has an error,
+`1` when a path is missing or nothing was found, `0` when clean. `--strict` counts warnings as
+errors, `--json` emits the findings as a document.
 
-`tirith ui` carries one. `src/tirith/tui/validate.py` reads the live `EVALUATORS_DICT` and
-`PROVIDERS_DICT` and returns errors and warnings as data, and the Playground runs it on every
-keystroke while the Builder refuses to add a check that fails it. So the registry-checking that
-`tirith lint` will do from the command line is already in the product, just interactively:
+With no path it lints `.tirith/policies` if that directory exists, otherwise the current
+directory. JSON that is not a policy is skipped, so pointing it at a directory holding plan
+documents is safe.
+
+**It is not in 1.2.0.** `tirith lint` and `tirith fmt` are on `main` and arrive in the next
+release. Install `@main` rather than the tag if you want them now:
+`pip install "git+https://github.com/StackGuardian/tirith.git@main"`.
+
+`tirith fmt` rewrites a policy into the canonical layout, and `tirith fmt --check` exits `3` if
+a file would change. Neither command needs a plan document, which is why both work in a
+pre-commit hook.
+
+## The same validator, interactively
+
+`tirith ui` carries the one `tirith lint` calls. The Playground runs it on every keystroke while
+the Builder refuses to add a check that fails it:
 
 ```bash
 pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
@@ -25,10 +38,11 @@ tirith ui --policy .tirith/policies/my-policy.json
 It is advisory by design: it reports a malformed policy rather than refusing to evaluate it,
 because experimenting with a half-written policy is the point of a playground.
 
-## Without the interface
+## Without either command
 
-Check the shape against the closed vocabulary by hand, then evaluate the policy against a document
-that should fail it. The second is the one that matters.
+Pinned to `1.2.0` and unable to install `@main`? Check the shape against the closed vocabulary by
+hand, then evaluate the policy against a document that should fail it. The second is the one that
+matters, and it works on every version.
 
 ## Check the shape
 

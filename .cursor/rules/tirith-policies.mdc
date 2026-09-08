@@ -60,8 +60,9 @@ for that test, and exit `0` means it matched nothing.
 tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
-`tirith lint` is **not in the released package**; it is in development. Do not put it in a
-pipeline. The released CLI dispatches `tirith`, `tirith ui` and `tirith platform check`.
+`tirith lint` checks a policy's shape without a plan document, and `tirith fmt` rewrites it into
+the canonical layout. Both are on `main` but **not in `1.2.0`**, so pin `@main` in any job that
+uses them. The CLI dispatches `lint`, `fmt`, `ui` and `platform`.
 
 ## Installing, and adding it to CI
 

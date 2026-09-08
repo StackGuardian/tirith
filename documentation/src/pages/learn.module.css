@@ -909,3 +909,147 @@
 .track:first-of-type {
   margin-top: 3rem;
 }
+
+/* ------------------------------------------------------------------ chooser ---- */
+
+/*
+ * Three providers, one of which is open.
+ *
+ * A row of shared-edge cells rather than three separate controls: the tracks are three
+ * states of one setting, and hairlines between them say that where a gap would not. The
+ * open one is filled ink so the choice survives a glance from across the page, which a
+ * coloured underline on a page this long does not.
+ */
+.chooser {
+  margin: 3rem 0 0;
+}
+
+.chooserLabel {
+  display: block;
+  margin-bottom: 0.85rem;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.chooserTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--tp-rule);
+}
+
+/*
+ * SHARED RULE CARRIES STRUCTURE ONLY. No colour here, and that is load-bearing.
+ *
+ * The obvious way to write this is `.tab, .tabOn {background: paper}` followed by
+ * `.tabOn {background: ink}`, relying on source order between two rules of equal
+ * specificity. It works in development and breaks in the build: cssnano groups rules that
+ * share a declaration block, so `.tabOn`'s ink background was merged into an unrelated
+ * rule that also sets ink on paper (the copy button's hover) and hoisted above the paper
+ * rule. The selected tab then rendered white, with its provider id paper-on-paper and
+ * therefore invisible.
+ *
+ * Giving each state its own background means no element is ever matched by two rules that
+ * declare the same property at the same specificity, so cascade order stops mattering and
+ * the minifier can group whatever it likes.
+ */
+.tab,
+.tabOn {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1.1rem 1.25rem;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+
+.tab + .tab,
+.tab + .tabOn,
+.tabOn + .tab {
+  border-left: 1px solid var(--tp-rule);
+}
+
+.tab {
+  background: var(--tp-paper);
+  color: var(--tp-ink);
+}
+
+.tab:hover {
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+}
+
+.tabOn {
+  background: var(--tp-ink);
+  color: var(--tp-paper);
+}
+
+.tab:focus-visible,
+.tabOn:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: -3px;
+}
+
+.tabName {
+  font-family: var(--tp-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.tabProvider {
+  color: var(--tp-soft);
+  font-family: var(--tp-mono);
+  font-size: 0.68rem;
+  /* The provider id is long, and it must not force the three cells to different widths. */
+  overflow-wrap: anywhere;
+}
+
+.tabOn .tabProvider {
+  /* --tp-soft on ink is under 3:1. The paper token at reduced opacity holds the
+     hierarchy without dropping below contrast. */
+  color: var(--tp-paper);
+  opacity: 0.72;
+}
+
+.tabCount {
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tabOn .tabCount {
+  color: var(--tp-paper);
+  opacity: 0.6;
+}
+
+.trackForYou {
+  margin: 0.9rem 0 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--tp-accent);
+  color: var(--tp-ink);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+/* Stacked below the point where three cells of monospaced provider ids stop fitting. */
+@media (max-width: 720px) {
+  .chooserTabs {
+    grid-template-columns: 1fr;
+  }
+
+  .tab + .tab,
+  .tab + .tabOn,
+  .tabOn + .tab {
+    border-top: 1px solid var(--tp-rule);
+    border-left: 0;
+  }
+}

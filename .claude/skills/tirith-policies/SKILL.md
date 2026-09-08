@@ -99,8 +99,8 @@ and invert it.
 - **An unknown `condition.type` exits `3`, not `1`.** The message names it (`` `Exists` is not a
   supported evaluator ``) but `errors` is empty, so CI sees a violation. Check the type against
   the closed list, not your memory.
-- **`tirith lint` does not ship.** Do not put it in a pipeline. `reference/validate.md` has
-  what to do instead.
+- **`tirith lint` catches most of the above before CI does**, and needs no plan document. It is
+  on `main` but not in `1.2.0`, so pin `@main` to use it. `reference/validate.md` has the detail.
 
 ## Test it with the bundled example
 
@@ -127,7 +127,7 @@ tirith -policy-path policy.json -input-path should-pass.json --fail-on-error; ec
 | File | Use it for |
 | --- | --- |
 | `reference/schema.md` | The closed vocabulary: conditions, providers, operations, argument keys |
-| `reference/validate.md` | Checking a policy is well-formed, and why `tirith lint` is not the way |
+| `reference/validate.md` | Checking a policy is well-formed with `tirith lint`, `tirith fmt` and the interface |
 | `reference/verdicts.md` | Running a policy, exit codes, and finding the resource behind a failure |
 | `reference/terraform-plan.md` | The plan provider's operations, for OpenTofu and Terraform |
 | `reference/other-providers.md` | Kubernetes, Infracost and arbitrary JSON or YAML |

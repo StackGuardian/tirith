@@ -208,6 +208,76 @@ const loop = {
   },
 };
 
+/*
+ * The estate-shaped version of the argument the landing page makes in section 02, and the
+ * one place on this site where the two products are load-bearing for each other.
+ *
+ * Everything asserted here ships. The MCP server is live and publicly documented at
+ * docs.stackguardian.io/docs/mcp-server/, with read access across workflows, stacks,
+ * templates, connectors and policies plus the cloud posture dataset. The skill pack is in
+ * .claude/skills/tirith-policies/. What is NOT claimed is a button: no part of the platform
+ * generates a policy set for you here. Two shipped pieces compose, an agent does the
+ * composing, and saying otherwise would be selling a feature nobody has built.
+ *
+ * "Policy set", never "pack". `--pack` and running many policies in one invocation are an
+ * open pull request, not a release, and the caveat below says so rather than letting the
+ * word imply it.
+ *
+ * No em dashes. See documentation/scripts/find-dashes.py.
+ */
+const estate = {
+  num: '05',
+  title: 'A catalogue cannot know your estate',
+  lede:
+    'A scanner catalogue is built for the mistakes everyone makes, and it is good at ' +
+    'them. At fifty repositories the rules that actually stop your incidents are the ones ' +
+    'only you can state: which module sources are allowed, which accounts a pipeline may ' +
+    'touch, the tag your finance team reconciles against. No catalogue ships those, ' +
+    'because no catalogue has read your estate. Two things you already have can write ' +
+    'them between them.',
+  steps: [
+    {
+      n: '1',
+      k: 'The MCP server reads what you actually run',
+      v:
+        'Read access across workflows, stacks, templates, connectors and policies, and ' +
+        'the cloud posture beside it: which resources are managed, which have drifted, ' +
+        'and which are failing which control. Your agent asks in plain language and gets ' +
+        'your estate back, not a generic example of one.',
+    },
+    {
+      n: '2',
+      k: 'The skill pack turns that into rules',
+      v:
+        'With the Tirith skills loaded, what it read becomes policy JSON against the real ' +
+        'condition list and the argument key each provider actually reads. A ' +
+        'misconfiguration you already carry is the best specification a rule can have: ' +
+        'somebody built it that way once, so somebody will build it that way again.',
+      product: true,
+    },
+    {
+      n: '3',
+      k: 'The gate enforces them, deterministically',
+      v:
+        'The resulting policy set runs in your pipeline, on your runner, through the same ' +
+        'open-source CLI as everything else on this site, and returns the same exit code ' +
+        'every time for the same plan. Nothing about enforcement is agentic: the agent ' +
+        'drafts the rule, the engine rules on the change.',
+    },
+  ],
+  verifyBefore: 'Every generated policy is a draft until it has refused something. ',
+  verifyCmd: 'tirith lint',
+  verifyAfter:
+    ' checks the shape against the engine\'s own registries without needing a plan, and ' +
+    'the skill\'s one standing instruction is never to hand back a policy it has not run ' +
+    'against a document that should fail it. Packaging a set to run in one invocation is ' +
+    'on the roadmap and has not shipped.',
+  mcpHref: 'https://docs.stackguardian.io/docs/mcp-server/',
+  mcpLabel: 'Set up the MCP server',
+  skillsTo: '/skills/',
+  skillsLabel: 'The Tirith skills',
+};
+
 const VIEWS = [
   [
     'Policy enforcement',
@@ -248,6 +318,11 @@ const COMPARISON = [
   ['Central policy, history and plan visualisation', 'None', 'Included'],
   ['Approvals, credential brokering and audit', 'Use your existing CI tools', 'Included'],
   ['Assisted prioritisation and remediation', 'None', 'Included; verify entitlement'],
+  // The OSS column keeps something real on both of these rows. The skill pack is
+  // Apache-2.0 and in this repository, so authoring with an agent needs no relationship;
+  // what needs one is the estate to point it at.
+  ['Author policies with a coding agent', 'Included; skill pack', 'Included'],
+  ['Read the estate from that agent: workflows, templates, cloud posture', 'None', 'Included; MCP server'],
   ['Drift, snapshots, recovery and notifications', 'None', 'Where execution or state is connected'],
   ['Private user-owned runtime', 'Your own CI runner', 'Included'],
 ];
@@ -605,9 +680,46 @@ export default function AtScale() {
           </section>
         )}
 
-        {/* ================= 05 COMPARISON ================= */}
+        {/* ================= 05 YOUR ESTATE ================= */}
+        <section className={styles.section} id="estate">
+          <SectionHead num={estate.num} title={estate.title} lede={estate.lede} />
+
+          <ol className={styles.loop}>
+            {estate.steps.map((step) => (
+              <li key={step.n} data-product={step.product ? 'true' : undefined}>
+                <span className={styles.loopNum}>{step.n}</span>
+                <span className={styles.loopBody}>
+                  <span className={styles.loopTitle}>{step.k}</span>
+                  <span className={styles.loopText}>{step.v}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+
+          {/*
+           * The claim and its qualifier in one paragraph, deliberately. A reader who takes
+           * the three steps above at face value is owed the sentence about what makes a
+           * generated policy trustworthy in the same breath, not two screens later.
+           */}
+          <p className={styles.caveat}>
+            {estate.verifyBefore}
+            <code>{estate.verifyCmd}</code>
+            {estate.verifyAfter}
+          </p>
+
+          <div className={styles.actions}>
+            <Link className={styles.btnPrimary} href={estate.mcpHref}>
+              {estate.mcpLabel} <span aria-hidden="true">→</span>
+            </Link>
+            <Link className={styles.btnGhost} to={estate.skillsTo}>
+              {estate.skillsLabel} <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* ================= 06 COMPARISON ================= */}
         <section className={styles.section} id="comparison">
-          <SectionHead num="05" title="What you already have, and what you would gain" />
+          <SectionHead num="06" title="What you already have, and what you would gain" />
           <table className={styles.table}>
             <thead>
               <tr>
@@ -628,9 +740,9 @@ export default function AtScale() {
           </table>
         </section>
 
-        {/* ================= 06 FAQ ================= */}
+        {/* ================= 07 FAQ ================= */}
         <section className={styles.section} id="faq">
-          <SectionHead num="06" title="Five questions worth asking first" />
+          <SectionHead num="07" title="Five questions worth asking first" />
           <div className={styles.faq}>
             {FAQ.map(([question, answer]) => (
               <details key={question} className={styles.details}>
@@ -649,10 +761,10 @@ export default function AtScale() {
           </p>
         </section>
 
-        {/* ================= 07 CONTACT ================= */}
+        {/* ================= 08 CONTACT ================= */}
         <section className={styles.section} id="contact">
           <SectionHead
-            num="07"
+            num="08"
             title="Tell us how your IaC reaches production today"
             lede="Whatever it looks like now, we will map the shortest route from the pipelines you already run to consistent governance across all of them, with no execution migration, and your apply jobs stay where they are."
           />

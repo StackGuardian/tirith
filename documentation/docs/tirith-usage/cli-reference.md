@@ -19,9 +19,23 @@ tirith -policy-path policy.json -input-path plan.json
 
 Run with no arguments, `tirith` prints its help text and exits `0`.
 
-There is one subcommand, `tirith platform check`, which evaluates against the policies a
-StackGuardian organization enforces instead of local files. It has its own flags and its own page:
-[Platform Check](platform-check.md).
+Four subcommands sit beside it, each with its own flags and its own page:
+
+| Subcommand | What it does |
+|---|---|
+| [`tirith lint`](lint-and-fmt.md) | Check policy files for mistakes that would gate nothing or fail as a false violation. No plan document needed |
+| [`tirith fmt`](lint-and-fmt.md) | Rewrite policy files into the canonical layout |
+| [`tirith ui`](interactive-interface.md) | Explore results, build policies and experiment in an interactive interface. Needs the optional `tui` extra |
+| [`tirith platform check`](platform-check.md) | Evaluate against the policies a StackGuardian organization enforces instead of local files |
+
+A first argument that is not one of those four and does not begin with a dash is rejected by name,
+because the flat command below takes no positional arguments:
+
+```console
+$ tirith lnit .tirith/policies
+tirith: 'lnit' is not a tirith command. Commands: fmt, lint, platform, ui.
+Run 'tirith --help' for the local-evaluation options.
+```
 
 ## Flags
 

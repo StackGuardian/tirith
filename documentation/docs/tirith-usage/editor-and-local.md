@@ -1,8 +1,8 @@
 ---
 id: editor-and-local
 title: In your editor
-sidebar_label: In your editor (in dev)
-description: In development — VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy. The lint half is not in the released package yet.
+sidebar_label: In your editor
+description: VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy.
 keywords:
   - tirith
   - vscode
@@ -13,24 +13,15 @@ site_name: Tirith
 slug: editor-and-local/
 ---
 
-:::warning In development — the lint half has not shipped
-
-`tirith lint`, the pre-commit hook and the VS Code tasks below are **in development**. They are
-not in the released package: `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"`
-gives you `tirith`, `tirith ui` and `tirith platform check`, and no `lint` subcommand. The
-`tirith-lint` hook id and the task file are not in the repository yet either.
-
-**What works today** is the second half of the loop — evaluating a policy against a document with
-`tirith -policy-path … -input-path … --fail-on-error`. That runs locally, offline, on any
-installed version.
-
-This page is published now so the shape is reviewable. Follow
-[the repository](https://github.com/StackGuardian/tirith) for the release, or
-[tell us what the loop is missing](https://github.com/StackGuardian/tirith/issues/new/choose).
+:::note Not in 1.2.0
+`tirith lint` and `tirith fmt` are on `main` and will arrive in the next release. Until then,
+install from the branch rather than the tag:
+`pip install "git+https://github.com/StackGuardian/tirith.git@main"`. Evaluation, the second half
+of the loop, works on any installed version.
 :::
 
-CI is the last place a policy should fail. This page is about the loop before that — running
-Tirith on your own machine, while the code is still being written.
+CI is the last place a policy should fail. This page is about the loop before that, running
+Tirith on your own machine while the code is still being written.
 
 It matters most when an agent is drafting the policy for you. Generated policy JSON is plausible
 by construction: it parses, it looks right, and a policy that matches nothing is indistinguishable
@@ -39,21 +30,20 @@ from one that works until you evaluate it.
 ## The loop
 
 ```bash
-tirith lint .tirith/policies                                                  # shape — in dev
-tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error    # meaning — ships
+tirith fmt .tirith/policies                                                   # layout
+tirith lint .tirith/policies                                                  # shape
+tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error    # meaning
 ```
 
-Linting checks the **shape** — that every condition type exists, that no `provider_args` key
-belongs to a different provider, that `eval_expression` names every evaluator. Only evaluation
-checks the **meaning**.
+Linting checks the **shape**: that every condition type exists, that no `provider_args` key
+belongs to a different provider, that `eval_expression` names every evaluator, that
+`error_tolerance` is inside `condition` where the engine reads it. Only evaluation checks the
+**meaning**. [Lint and format](lint-and-fmt.md) covers both commands in full.
 
 Run both against a document that *should* fail. A guardrail only ever seen passing is a guardrail
 nobody has tested.
 
 ## VS Code tasks
-
-**In development.** The lint task below calls a subcommand the released package does not have; the
-evaluate task works today.
 
 Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 
@@ -61,6 +51,13 @@ Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 {
   "version": "2.0.0",
   "tasks": [
+    {
+      "label": "Tirith: format policies",
+      "type": "shell",
+      "command": "tirith fmt .tirith/policies",
+      "problemMatcher": [],
+      "group": "test"
+    },
     {
       "label": "Tirith: lint policies",
       "type": "shell",
@@ -81,29 +78,29 @@ Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 ```
 
 `Tirith: check the plan` is the default test task, so **⇧⌘B** / **Ctrl+Shift+B** runs the whole
-loop. The complete file — including a task to refresh `plan.json` and one to open the result in
-the interactive explorer — is
-[`.vscode/tasks.json`](https://github.com/StackGuardian/tirith/blob/main/.vscode/tasks.json).
+loop: lint first, then evaluate, because `dependsOn` will not run the second if the first exits
+non-zero.
 
 ## Catch it at commit time
 
-**In development.** The `tirith-lint` hook id is not published yet, so this configuration will not
-resolve — `pre-commit` fails with an unknown hook rather than installing anything.
+Tirith publishes both commands as pre-commit hooks:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: 1.2.0
+    rev: main
     hooks:
       - id: tirith-lint
+      - id: tirith-fmt
 ```
 
 ```bash
 pre-commit install
 ```
 
-The hook runs only when a policy file changes, needs no network, and exits `3` when a policy has
-an error. See [CI integration](ci-integration.md) for why it lints rather than evaluates.
+Both run only on the policy files a commit actually touches, need no network, and exit `3` on a
+finding. See [CI integration](ci-integration.md) for why they lint rather than evaluate, and
+[lint and format](lint-and-fmt.md) for the flags and the files they read.
 
 ## When an agent is writing the policy
 

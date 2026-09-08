@@ -332,6 +332,19 @@ export const PLAN_DOC = `{
   "terraform_version": "1.9.5",
   "resource_changes": [
     {
+      "address": "aws_db_instance.orders",
+      "type": "aws_db_instance",
+      "name": "orders",
+      "change": {
+        "actions": ["update"],
+        "after": {
+          "identifier": "orders",
+          "storage_encrypted": true,
+          "tags": {"Owner": "data"}
+        }
+      }
+    },
+    {
       "address": "aws_s3_bucket.assets",
       "type": "aws_s3_bucket",
       "name": "assets",
@@ -353,7 +366,7 @@ export const PLAN_DOC = `{
         "after": {
           "bucket": "acme-logs",
           "acl": "public-read",
-          "tags": {}
+          "tags": {"Owner": "platform"}
         }
       }
     },
@@ -365,7 +378,11 @@ export const PLAN_DOC = `{
         "actions": ["update"],
         "after": {
           "instance_type": "t3.large",
-          "tags": {"Owner": "ci"}
+          "tags": {"Owner": "ci"},
+          "ebs_block_device": [
+            {"device_name": "/dev/sdf", "encrypted": true},
+            {"device_name": "/dev/sdg", "encrypted": false}
+          ]
         }
       }
     }
@@ -374,23 +391,56 @@ export const PLAN_DOC = `{
 
 export const TF_LESSONS = [
   {
-    id: 'tf-attribute',
-    n: '07',
-    title: 'A plan is not a document',
-    teaches: 'terraform_resource_type · terraform_resource_attribute',
+    id: 'tf-shell',
+    n: '01',
+    title: 'A policy is a document',
+    teaches: 'meta · evaluators · eval_expression',
     body:
-      'Everything you have learned still applies. The conditions are the same thirteen and ' +
-      'the expression grammar is unchanged. What changes is the address: there is no ' +
-      '`key_path` here, because a plan is not a tree you walk. It is a list of resource ' +
-      'changes, so you name a **resource type** and an **attribute on it**, and the provider ' +
-      'returns one value per matching resource.',
+      'Every Tirith policy has the same three parts. `meta` names the provider that will read ' +
+      'your input. `evaluators` is the list of checks. `eval_expression` says how their ' +
+      'results combine into one verdict. Nothing here is a program: it is a description of ' +
+      'what to look for in a plan you are about to apply.',
     aside:
-      'Two buckets match, so one evaluator produces two results and the failing one names ' +
-      'the value that failed. `"*"` as the resource type means every resource in the plan, ' +
-      'and `exclude_resource_types` narrows that back down. A missing resource type is an ' +
-      'error of severity 1, a missing attribute is severity 2, which is why error_tolerance ' +
-      'can tell "you have no buckets" apart from "your bucket has no acl".',
-    tryIt: 'Change `acl` on `aws_s3_bucket.logs` to `private`, and the whole plan passes.',
+      'A plan is not a tree you walk, so there is no path here. It is a list of resource ' +
+      'changes, and you address one by naming a **resource type** and an **attribute on it**. ' +
+      'One database matches, so there is one result.',
+    tryIt: 'Change the value to `false`. The verdict, the message and the exit code all move together.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "db_encrypted",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_db_instance",
+        "terraform_resource_attribute": "storage_encrypted"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    }
+  ],
+  "eval_expression": "db_encrypted"
+}`,
+  },
+  {
+    id: 'tf-many',
+    n: '02',
+    title: 'One check, every matching resource',
+    teaches: 'many results · every one must pass',
+    body:
+      'Name a type that matches more than one resource and the check runs against each of ' +
+      'them separately. The evaluator passes only if **every** result passes, so you write ' +
+      'the rule once and it covers the bucket somebody adds next month without you editing ' +
+      'anything.',
+    aside:
+      'Two buckets, two results, and the failing one names the value that failed rather than ' +
+      'just the rule. That is the difference between a report you can act on and a red cross.',
+    tryIt: 'Change `acl` on `aws_s3_bucket.logs` to `private` and the whole plan passes.',
     policy: `{
   "meta": {
     "version": "v1",
@@ -414,16 +464,104 @@ export const TF_LESSONS = [
 }`,
   },
   {
+    id: 'tf-every',
+    n: '03',
+    title: 'Every resource in the plan',
+    teaches: '"*" · exclude_resource_types',
+    body:
+      '`"*"` as the resource type means every resource the plan touches, whatever it is. This ' +
+      'is how you write the rules that are actually organisational policy rather than ' +
+      'service-specific: everything must be owned, everything must be tagged, nothing may be ' +
+      'created outside a region. `exclude_resource_types` carves out the ones that genuinely ' +
+      'cannot comply.',
+    aside:
+      'Four resources, four results, in plan order. Note what the printed report does *not* ' +
+      'say: results are numbered, not named, so `4. FAILED` means the fourth resource rather ' +
+      'than `aws_instance.runner`. The address is carried in the `--json` output under `meta` ' +
+      'and shown by `tirith ui`; putting it in the printed message is on the roadmap and has ' +
+      'not shipped.',
+    tryIt: 'Change one resource’s `Owner` tag to `""`, then count down the list to find which resource line 4 is.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "everything_owned",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "tags.Owner",
+        "exclude_resource_types": ["aws_iam_policy_document"]
+      },
+      "condition": {
+        "type": "IsNotEmpty"
+      }
+    }
+  ],
+  "eval_expression": "everything_owned"
+}`,
+  },
+  {
+    id: 'tf-combine',
+    n: '04',
+    title: 'Combining checks',
+    teaches: '&& · || · grouping',
+    body:
+      'Each evaluator has an `id`, and `eval_expression` combines those ids with `&&`, `||`, ' +
+      '`!` and parentheses. That is the whole grammar. The evaluators do not know about each ' +
+      'other; the expression is the only place their results meet.',
+    aside:
+      'Both checks run whatever the expression says, so you always see every result. The ' +
+      'expression decides the single verdict at the end, and only that verdict reaches the ' +
+      'exit code.',
+    tryIt: 'Swap `&&` for `||`. One passing check is now enough to carry the whole policy, which is usually not what you want.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "buckets_private",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_s3_bucket",
+        "terraform_resource_attribute": "acl"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "private"
+      }
+    },
+    {
+      "id": "db_encrypted",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_db_instance",
+        "terraform_resource_attribute": "storage_encrypted"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    }
+  ],
+  "eval_expression": "buckets_private && db_encrypted"
+}`,
+  },
+  {
     id: 'tf-action',
-    n: '08',
+    n: '05',
     title: 'Gate the change, not the value',
     teaches: 'operation_type: action',
     body:
-      'This is the operation with no equivalent in the json world, and it is the reason a ' +
-      'plan is worth reading at all. `action` does not ask what a resource *is*. It asks ' +
-      'what Terraform is **about to do to it**: `create`, `update`, `delete`, `no-op`. A ' +
-      'policy over actions gates the change itself, which is the only moment the damage is ' +
-      'still preventable.',
+      'This is the operation with no equivalent in a document, and it is the reason a plan is ' +
+      'worth reading at all. `action` does not ask what a resource *is*. It asks what ' +
+      'Terraform is **about to do to it**: `create`, `update`, `delete`, `no-op`. A policy ' +
+      'over actions gates the change itself, which is the only moment the damage is still ' +
+      'preventable.',
     aside:
       'This is the shape of "no pull request may destroy a database". A resource can carry ' +
       'more than one action, and every one of them is checked, so a replacement, which ' +
@@ -452,8 +590,85 @@ export const TF_LESSONS = [
 }`,
   },
   {
+    id: 'tf-nested',
+    n: '06',
+    title: 'Reaching inside a resource',
+    teaches: 'nested attributes · one result per element',
+    body:
+      'Real resources are not flat. A block that repeats, like `ebs_block_device`, arrives as ' +
+      'a list, and `.*.` walks into it. Each element becomes its **own result**, so one ' +
+      'attached volume that is unencrypted fails the check even though its neighbour on the ' +
+      'same instance is fine.',
+    aside:
+      'Remember this shape. The Kubernetes provider spells its wildcard the same way and ' +
+      'means something different by it, which is the subject of the last lesson in that ' +
+      'track and the easiest way on this whole site to write a policy that gates nothing.',
+    tryIt: 'Set both `encrypted` values to `true`. Then delete the `.*.` and see the attribute stop resolving.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "volumes_encrypted",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_instance",
+        "terraform_resource_attribute": "ebs_block_device.*.encrypted"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    }
+  ],
+  "eval_expression": "volumes_encrypted"
+}`,
+  },
+  {
+    id: 'tf-tolerance',
+    n: '07',
+    title: 'When the attribute is not there',
+    teaches: 'error_tolerance · a skip is not a pass',
+    body:
+      'Nothing in this plan sets `server_side_encryption`, so the provider cannot produce a ' +
+      'value to judge. That is not a violation, and it is not compliance either. Tirith ' +
+      'reports it as an **error with a severity**, and `error_tolerance` decides whether that ' +
+      'error fails the check or skips it.',
+    aside:
+      'Severity 1 means the resource type is not in the plan. Severity 2 means the resource ' +
+      'is there but the attribute is not. `severity > tolerance` fails, anything else skips. ' +
+      'With every check skipped the verdict is neither true nor false, and the exit code is ' +
+      '`1`, not `0`: a policy that evaluated nothing must never look like a policy that ' +
+      'passed.',
+    tryIt: 'Drop `error_tolerance` to `1`. The skip becomes a failure and the exit code changes from 1 to 3.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "bucket_encryption",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_s3_bucket",
+        "terraform_resource_attribute": "server_side_encryption"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "AES256",
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "bucket_encryption"
+}`,
+  },
+  {
     id: 'tf-count',
-    n: '09',
+    n: '08',
     title: 'Zero is an answer',
     teaches: 'operation_type: count · and the error that does not happen',
     body:
@@ -464,8 +679,8 @@ export const TF_LESSONS = [
       'the one you are gating on.',
     aside:
       'Two buckets, so this fails. The same policy against a plan with no buckets at all ' +
-      'returns `0` and passes, with no error and no skip. Worth knowing before you reach ' +
-      'for `count` as a safety net: it cannot tell you that it looked and found nothing.',
+      'returns `0` and passes, with no error and no skip. Worth knowing before you reach for ' +
+      '`count` as a safety net: it cannot tell you that it looked and found nothing.',
     tryIt: 'Raise the value to `2` and it passes. Then delete both buckets from the plan: still passing, on `0`.',
     policy: `{
   "meta": {
@@ -488,6 +703,76 @@ export const TF_LESSONS = [
   "eval_expression": "bucket_budget"
 }`,
   },
+  {
+    id: 'tf-together',
+    n: '09',
+    title: 'The whole thing',
+    teaches: 'a policy you would actually commit',
+    body:
+      'Four rules over one plan: everything is owned, buckets are private, attached volumes ' +
+      'are encrypted, and nothing is destroyed. This is the size of a real starting policy, ' +
+      'and it is the file you would put in `.tirith/policies` and point a pipeline at.',
+    aside:
+      'The report tells you which rule refused and which value refused it, which is what ' +
+      'makes a red build actionable rather than a thing to re-run. Under `--fail-on-error` ' +
+      'this exits `3`, and the pipeline stops before `apply`.',
+    tryIt: 'Fix the plan until it passes: `logs` to private, and the second volume encrypted. The exit code goes to 0.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "everything_owned",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "tags.Owner"
+      },
+      "condition": {
+        "type": "IsNotEmpty"
+      }
+    },
+    {
+      "id": "buckets_private",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_s3_bucket",
+        "terraform_resource_attribute": "acl"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "private"
+      }
+    },
+    {
+      "id": "volumes_encrypted",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_instance",
+        "terraform_resource_attribute": "ebs_block_device.*.encrypted"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    },
+    {
+      "id": "nothing_destroyed",
+      "provider_args": {
+        "operation_type": "action",
+        "terraform_resource_type": "*"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "delete"
+      }
+    }
+  ],
+  "eval_expression": "everything_owned && buckets_private && volumes_encrypted && nothing_destroyed"
+}`,
+  },
 ];
 
 /* ── stackguardian/kubernetes ─────────────────────────────────────────────────
@@ -501,13 +786,19 @@ export const K8S_DOC = `[
   {
     "apiVersion": "apps/v1",
     "kind": "Deployment",
-    "metadata": {"name": "api"},
+    "metadata": {"name": "api", "namespace": "production"},
     "spec": {
       "replicas": 3,
       "template": {
         "spec": {
           "containers": [
-            {"name": "api", "image": "ghcr.io/acme/api:1.4.2"}
+            {
+              "name": "api",
+              "image": "ghcr.io/acme/api:1.4.2",
+              "resources": {"limits": {"cpu": "500m", "memory": "512Mi"}},
+              "securityContext": {"runAsNonRoot": true, "allowPrivilegeEscalation": false},
+              "readinessProbe": {"httpGet": {"path": "/healthz", "port": 8080}}
+            }
           ]
         }
       }
@@ -516,13 +807,17 @@ export const K8S_DOC = `[
   {
     "apiVersion": "apps/v1",
     "kind": "Deployment",
-    "metadata": {"name": "worker"},
+    "metadata": {"name": "worker", "namespace": "production"},
     "spec": {
       "replicas": 1,
       "template": {
         "spec": {
           "containers": [
-            {"name": "worker", "image": "ghcr.io/acme/worker:latest"}
+            {
+              "name": "worker",
+              "image": "docker.io/library/redis:latest",
+              "securityContext": {"runAsNonRoot": false}
+            }
           ]
         }
       }
@@ -531,27 +826,30 @@ export const K8S_DOC = `[
   {
     "apiVersion": "v1",
     "kind": "Service",
-    "metadata": {"name": "api"},
-    "spec": {"type": "LoadBalancer"}
+    "metadata": {"name": "api", "namespace": "production"},
+    "spec": {"type": "ClusterIP", "ports": [{"port": 80, "targetPort": 8080}]}
   }
 ]`;
 
 export const K8S_LESSONS = [
   {
     id: 'k8s-kind',
-    n: '10',
+    n: '01',
     title: 'Pick a kind, then a path',
     teaches: 'kubernetes_kind · attribute_path',
     body:
-      'Kubernetes input is a list of manifests, so the provider needs two things: which ' +
-      '`kind` to look at, and where inside it to look. Manifests of other kinds are ignored ' +
-      'rather than failed, which is what lets one policy run against a whole directory of ' +
-      'YAML. The `Service` in this document is simply not consulted.',
+      'Kubernetes input is a list of manifests, so the provider needs two things: which `kind` ' +
+      'to look at, and where inside it to look. Manifests of other kinds are ignored rather ' +
+      'than failed, which is what lets one policy run against a whole directory of YAML. The ' +
+      '`Service` in this document is simply not consulted.',
     aside:
-      'Two Deployments match, so there are two results and the single-replica one fails. ' +
-      'A kind that appears nowhere is an error of severity 1, so `error_tolerance: 1` turns ' +
-      '"this repository has no Ingress" from a failure into a skip.',
-    tryIt: 'Give `worker` 2 replicas and it passes. Change the kind to `Ingress` to see the severity 1 error instead.',
+      'Two Deployments match, so there are two results. `api` is fine and `worker` is not, ' +
+      'which is the pattern for this whole track: one bad Deployment, and each lesson catches ' +
+      'a different thing wrong with it.',
+    tryIt:
+      'Give `worker` 2 replicas and the check passes. Then change the kind to `Service`: it has no ' +
+      '`spec.replicas`, so the value is null and the failure you get is about comparing types, not ' +
+      'about a missing path.',
     policy: `{
   "meta": {
     "version": "v1",
@@ -575,21 +873,109 @@ export const K8S_LESSONS = [
 }`,
   },
   {
+    id: 'k8s-two-kinds',
+    n: '02',
+    title: 'One policy, two kinds',
+    teaches: 'several evaluators · && · || · grouping',
+    body:
+      'One evaluator reads one kind, so a policy that spans Deployments and Services is two ' +
+      'evaluators and an expression. Each has an `id`, and `eval_expression` combines those ' +
+      'ids with `&&`, `||`, `!` and parentheses. That is the whole grammar; the evaluators ' +
+      'never see each other.',
+    aside:
+      'Both checks run whatever the expression says, so you always see every result: the ' +
+      'Service passes, a Deployment does not, and the expression turns those into one verdict ' +
+      'at the end. Only that verdict reaches the exit code.',
+    tryIt: 'Swap `&&` for `||`. The passing Service now carries the whole policy, which is almost never what you meant.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "not_a_single_point",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.replicas"
+      },
+      "condition": {
+        "type": "GreaterThanEqualTo",
+        "value": 2
+      }
+    },
+    {
+      "id": "not_exposed",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Service",
+        "attribute_path": "spec.type"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "LoadBalancer"
+      }
+    }
+  ],
+  "eval_expression": "not_a_single_point && not_exposed"
+}`,
+  },
+  {
+    id: 'k8s-registry',
+    n: '03',
+    title: 'Where the image came from',
+    teaches: 'indexing into containers · RegexMatch',
+    body:
+      'Containers are a list, so reaching one means indexing it: `containers.0` is the first ' +
+      'container in the pod template. `RegexMatch` then does what an allowlist needs, which is ' +
+      'to say where an image may come from rather than enumerating every image you have ever ' +
+      'approved.',
+    aside:
+      'An unpinned public image is the supply-chain problem stated plainly: `worker` pulls ' +
+      'from Docker Hub, so anything that lands under that name lands in your cluster. The ' +
+      'regex is anchored with `^` on purpose; without it, `ghcr.io/acme/` would match anywhere ' +
+      'in the string and `evil.example.com/ghcr.io/acme/x` would pass.',
+    tryIt: 'Point `worker` at `ghcr.io/acme/worker:0.9.0` and the check passes. Then drop the `^` and see what else it lets through.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "approved_registry",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.template.spec.containers.0.image"
+      },
+      "condition": {
+        "type": "RegexMatch",
+        "value": "^ghcr\\\\.io/acme/"
+      }
+    }
+  ],
+  "eval_expression": "approved_registry"
+}`,
+  },
+  {
     id: 'k8s-wildcard',
-    n: '11',
+    n: '04',
     title: 'The same star, a different meaning',
     teaches: 'why a passing policy can still be wrong',
     body:
       'Put `*` in a Kubernetes `attribute_path` and you do **not** get one value per match. ' +
       'You get a single value that is the whole list. That matters because `Contains` on a ' +
       'list is membership, not substring: `":latest"` is not an element of ' +
-      '`["ghcr.io/acme/worker:latest"]`, so the check below passes while an image really is ' +
-      'pinned to `latest`. A green policy that gates nothing.',
+      '`["docker.io/library/redis:latest"]`, so the check below **passes** while an image ' +
+      'really is pinned to `latest`. A green policy that gates nothing.',
     aside:
-      'Terraform’s `.*.` does the opposite: it emits one result per element, which is why ' +
-      'the same instinct works there and fails here. Naming a container fixes it, at the ' +
-      'cost of only checking that one. This is the failure the whole site is about, and it ' +
-      'is why "the check is green" and "the check is working" are different claims.',
+      'Terraform’s `.*.` does the opposite: it emits one result per element, which is why the ' +
+      'same instinct works there and fails here. Naming a container fixes it, at the cost of ' +
+      'only checking that one. This is why "the check is green" and "the check is working" ' +
+      'are different claims, and why the last lesson here evaluates a policy against a ' +
+      'manifest that should fail it.',
     tryIt: 'Change `containers.*.image` to `containers.0.image`. The verdict flips to failed and names the image.',
     policy: `{
   "meta": {
@@ -613,6 +999,215 @@ export const K8S_LESSONS = [
   "eval_expression": "no_latest_tag"
 }`,
   },
+  {
+    id: 'k8s-limits',
+    n: '05',
+    title: 'A missing path is not an error here',
+    teaches: 'resource limits · null instead of a severity',
+    body:
+      'A container with no memory limit can take the node down and everything scheduled on it ' +
+      'with it, so this is the check most clusters want first. It also shows the sharpest ' +
+      'difference between this provider and the Terraform one: `worker` has no `resources` at ' +
+      'all, and instead of an error with a severity, the provider returns **null** and the ' +
+      'condition judges that.',
+    aside:
+      'That distinction decides what `error_tolerance` can do for you. In a plan, a missing ' +
+      'attribute is severity 2 and can be tolerated into a skip. Here it is an ordinary value ' +
+      'that fails an `IsNotEmpty`, and no tolerance setting will turn it into a skip. Which is ' +
+      'the safer default: absence is a failure unless you say otherwise.',
+    tryIt: 'Add `"resources": {"limits": {"memory": "256Mi"}}` to the worker container and the policy passes.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "memory_limited",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.template.spec.containers.0.resources.limits.memory"
+      },
+      "condition": {
+        "type": "IsNotEmpty"
+      }
+    }
+  ],
+  "eval_expression": "memory_limited"
+}`,
+  },
+  {
+    id: 'k8s-security',
+    n: '06',
+    title: 'Running as root, by default',
+    teaches: 'securityContext · two rules over one container',
+    body:
+      'Kubernetes defaults are permissive: unless a manifest says otherwise, a container runs ' +
+      'as whatever user its image declares, which is very often root, and may escalate ' +
+      'privileges. These are the two settings that a cluster policy almost always pins, and ' +
+      'they are the rules that survive contact with an image you did not build.',
+    aside:
+      '`worker` sets `runAsNonRoot: false` explicitly, so it fails. A manifest that omits ' +
+      '`securityContext` entirely returns null and fails the same way, which is the behaviour ' +
+      'you want: a container is not non-root because nobody mentioned it.',
+    tryIt: 'Set `runAsNonRoot` to `true` on `worker`. It still fails, because that container has no `allowPrivilegeEscalation` at all.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "non_root",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.template.spec.containers.0.securityContext.runAsNonRoot"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    },
+    {
+      "id": "no_escalation",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.template.spec.containers.0.securityContext.allowPrivilegeEscalation"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": false
+      }
+    }
+  ],
+  "eval_expression": "non_root && no_escalation"
+}`,
+  },
+  {
+    id: 'k8s-tolerance',
+    n: '07',
+    title: 'When the kind is not there',
+    teaches: 'error_tolerance · a skip is not a pass',
+    body:
+      'A missing *path* returns null here, but a missing **kind** is different: the provider ' +
+      'cannot look at anything at all, so it reports an error with severity 1. This document ' +
+      'has no `Ingress`, and that is the situation `error_tolerance` exists for. One policy ' +
+      'set runs across many repositories, and not every repository has every kind.',
+    aside:
+      '`severity > tolerance` fails, anything else skips. At tolerance 1 the check is skipped, ' +
+      'and because it is the only check, the verdict is neither true nor false and the exit ' +
+      'code is `1` rather than `0`. A policy that evaluated nothing must never look like a ' +
+      'policy that passed.',
+    tryIt: 'Drop `error_tolerance` to `0`. The skip becomes a failure and the exit code changes from 1 to 3.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "ingress_is_tls",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Ingress",
+        "attribute_path": "spec.tls"
+      },
+      "condition": {
+        "type": "IsNotEmpty",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "ingress_is_tls"
+}`,
+  },
+  {
+    id: 'k8s-together',
+    n: '08',
+    title: 'The whole thing',
+    teaches: 'a policy you would actually commit',
+    body:
+      'Five rules over one directory of manifests: every Deployment is replicated, pulls from ' +
+      'an approved registry, pins a memory limit, runs as non-root, and no Service is exposed ' +
+      'to the internet. This is the size of a real starting policy, and it is the file you ' +
+      'would put in `.tirith/policies` and point at `kubectl kustomize` output.',
+    aside:
+      'The report names the rule that refused and the value that refused it, so a red build ' +
+      'tells you which manifest to open. Under `--fail-on-error` this exits `3`, before ' +
+      '`kubectl apply` ever runs.',
+    tryIt: 'Fix `worker` until it passes: 2 replicas, a ghcr.io image, a memory limit, and runAsNonRoot true.',
+    policy: `{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/kubernetes"
+  },
+  "evaluators": [
+    {
+      "id": "not_a_single_point",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.replicas"
+      },
+      "condition": {
+        "type": "GreaterThanEqualTo",
+        "value": 2
+      }
+    },
+    {
+      "id": "approved_registry",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.template.spec.containers.0.image"
+      },
+      "condition": {
+        "type": "RegexMatch",
+        "value": "^ghcr\\\\.io/acme/"
+      }
+    },
+    {
+      "id": "memory_limited",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.template.spec.containers.0.resources.limits.memory"
+      },
+      "condition": {
+        "type": "IsNotEmpty"
+      }
+    },
+    {
+      "id": "non_root",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Deployment",
+        "attribute_path": "spec.template.spec.containers.0.securityContext.runAsNonRoot"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true
+      }
+    },
+    {
+      "id": "not_exposed",
+      "provider_args": {
+        "operation_type": "attribute",
+        "kubernetes_kind": "Service",
+        "attribute_path": "spec.type"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": "LoadBalancer"
+      }
+    }
+  ],
+  "eval_expression": "not_a_single_point && approved_registry && memory_limited && non_root && not_exposed"
+}`,
+  },
 ];
 
 /**
@@ -624,36 +1219,61 @@ export const K8S_LESSONS = [
  */
 export const TRACKS = [
   {
-    id: 'json',
-    provider: 'stackguardian/json',
-    title: 'Any JSON or YAML document',
-    lede:
-      'The provider to learn first, because it reads anything with keys and values and gets ' +
-      'out of the way of the syntax you are actually learning.',
-    input: INPUT_DOC,
-    lessons: LESSONS,
-  },
-  {
     id: 'terraform',
     provider: 'stackguardian/terraform_plan',
+    tab: 'Terraform plan',
     title: 'An OpenTofu or Terraform plan',
     lede:
-      'The provider the tool exists for. Same conditions, same expressions; what changes is ' +
-      'that you address a resource type and an attribute instead of a path, and that you can ' +
-      'gate on what the change is about to do.',
+      'The provider Tirith exists for, and the one to learn on. Nine lessons that build one ' +
+      'policy a rule at a time, against a plan of the shape your pipeline already produces ' +
+      'with `terraform show -json`.',
+    /*
+     * What the track teaches, for the reader deciding which one to open. Deliberately not a
+     * summary of the lessons: it is the reason to pick this track over the other two.
+     */
+    forYou: 'Start here. The syntax you learn on a plan is the same syntax everywhere else.',
     input: PLAN_DOC,
     lessons: TF_LESSONS,
+    /*
+     * The playground opens on the track's most representative *correct* policy, which is not
+     * always its last lesson. The Kubernetes track ends on a policy that deliberately passes
+     * while being wrong, and seeding an empty-canvas playground with that would be handing
+     * the reader the trap with none of the explanation attached.
+     */
+    playground: TF_LESSONS[TF_LESSONS.length - 1].policy,
   },
   {
     id: 'kubernetes',
     provider: 'stackguardian/kubernetes',
+    tab: 'Kubernetes',
     title: 'Kubernetes manifests',
     lede:
-      'A list of manifests rather than one document, and one wildcard that behaves the ' +
-      'opposite way to the one you just learned.',
+      'A list of manifests rather than one document. Eight lessons over two Deployments and a ' +
+      'Service, one of which is a mess: replicas, registries, limits, `securityContext`, and ' +
+      'the wildcard that behaves the opposite way to the one in the Terraform track.',
+    forYou: 'Eight lessons. Lesson 04 is the most useful mistake on this site.',
     input: K8S_DOC,
     lessons: K8S_LESSONS,
+    playground: K8S_LESSONS[0].policy,
+  },
+  {
+    id: 'json',
+    provider: 'stackguardian/json',
+    tab: 'JSON or YAML',
+    title: 'Any JSON or YAML document',
+    lede:
+      'The provider that reads anything with keys and values, addressed by key path. Useful ' +
+      'for the documents nobody wrote a provider for: a lockfile, an SBOM, a config file, ' +
+      'the response from one of your own APIs.',
+    forYou: 'Six lessons. Come here when the thing you need to gate is not IaC at all.',
+    input: INPUT_DOC,
+    lessons: LESSONS,
+    playground: LESSONS[LESSONS.length - 1].policy,
   },
 ];
 
-export const PLAYGROUND_START = LESSONS[LESSONS.length - 1].policy;
+/*
+ * Superseded by each track's own `playground` seed, and kept only long enough to say so:
+ * nothing imports this. Delete it on the next pass through this file.
+ */
+export const PLAYGROUND_START = TRACKS[0].playground;

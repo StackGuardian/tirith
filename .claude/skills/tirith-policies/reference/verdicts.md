@@ -17,9 +17,12 @@ Add `--json` to get the result document instead of the pretty printer.
 | `3` | A policy ran and said no |
 | `130` | Interrupted |
 
-`2` is never returned. The CLI catches argparse's usage error and exits `1`, so a bad argument or an
-unknown subcommand (`tirith lint` prints "Failed because of System Exit") is `1`, the same as a
-tool or input problem. Tirith has no timeout code: a `platform check` that times out is `1` too.
+`2` is never returned by Tirith itself. An unknown first argument is reported by name
+(`tirith: 'lnit' is not a tirith command`) and exits `1`, the same as a tool or input problem.
+Tirith has no timeout code: a `platform check` that times out is `1` too.
+
+`tirith lint` and `tirith fmt` use the same codes and need no `--fail-on-error`: `3` for a finding,
+`1` for a missing path or nothing found, `0` for clean.
 
 **`3` is deliberately not `1`.** `3` means a check ran and refused the change. `1` means Tirith
 could not reach a verdict. A job that treats every non-zero code alike reports an outage as a

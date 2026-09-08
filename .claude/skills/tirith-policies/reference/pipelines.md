@@ -31,8 +31,9 @@ pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
 Not PyPI: `pip install tirith` fetches an unrelated project. Pin the tag so a job cannot change
 behaviour underneath you. Python 3.8 or newer, so any `python:3.x` image works.
 
-Do **not** add `tirith lint` to a pipeline: it is not in the released package. See
-`reference/validate.md`.
+Add `tirith lint .tirith/policies` as a step before the gate: it needs no plan document, so it
+can run in a job with no cloud credentials, and it fails for a different reason than the gate
+does. It is not in `1.2.0`, so pin `@main` in any job that uses it. See `reference/validate.md`.
 
 ---
 
@@ -205,7 +206,18 @@ tirith --json -policy-path .tirith/policies -input-path plan.json > tirith-resul
 Publish it as a build artifact. It carries every evaluator, its result and the value that produced
 it, which is what makes a failure explainable after the fact.
 
-## Not yet available
+## At commit time
 
-A pre-commit hook and an editor loop depend on `tirith lint`, which does not ship. See
-`reference/validate.md`.
+`.pre-commit-hooks.yaml` publishes `tirith-lint` and `tirith-fmt`, both running on the policy
+files a commit touches:
+
+```yaml
+repos:
+  - repo: https://github.com/StackGuardian/tirith
+    rev: main
+    hooks:
+      - id: tirith-lint
+      - id: tirith-fmt
+```
+
+`rev` is a branch because neither command is in `1.2.0` yet. See `reference/validate.md`.
