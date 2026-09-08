@@ -13,14 +13,6 @@ site_name: Tirith
 slug: editor-and-local/
 ---
 
-:::note Not in 1.2.0
-
-`tirith lint`, `tirith fmt` and the pre-commit hooks are on `main` and will be in the next
-release. `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"` does not have them;
-install from `main` until then.
-
-:::
-
 CI is the last place a policy should fail. This page is about the loop before that — running
 Tirith on your own machine, while the code is still being written.
 
@@ -79,7 +71,7 @@ the interactive explorer — is
 ```yaml title=".pre-commit-config.yaml"
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: main          # 1.2.0 predates the hooks; pin the first tag that includes them
+    rev: 1.2.1         # the first tag that publishes the hooks
     hooks:
       - id: tirith-lint
       - id: tirith-fmt

@@ -3,13 +3,6 @@
 Source: https://stackguardian.github.io/tirith/docs/tirith-usage/editor-and-local/
 Summary: VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy.
 
-[NOTE] Not in 1.2.0
-
-`tirith lint`, `tirith fmt` and the pre-commit hooks are on `main` and will be in the next
-release. `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"` does not have them;
-install from `main` until then.
-
-
 CI is the last place a policy should fail. This page is about the loop before that — running
 Tirith on your own machine, while the code is still being written.
 
@@ -68,7 +61,7 @@ the interactive explorer — is
 ```yaml
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: main          # 1.2.0 predates the hooks; pin the first tag that includes them
+    rev: 1.2.1         # the first tag that publishes the hooks
     hooks:
       - id: tirith-lint
       - id: tirith-fmt
