@@ -28,6 +28,13 @@ from . import schema
 # is left, so an id must survive as a Python name.
 _ID_PATTERN = re.compile(r"^\w+$")
 
+# The keys the engine reads at each level. Anything else is ignored without a message, which
+# is how `error_tolerance` placed beside `condition` instead of inside it produces a check that
+# fails exactly as if the tolerance were never written.
+_TOP_LEVEL_KEYS = frozenset({"$schema", "meta", "evaluators", "eval_expression"})
+_EVALUATOR_KEYS = frozenset({"id", "description", "provider_args", "condition"})
+_CONDITION_KEYS = frozenset({"type", "value", "error_tolerance"})
+
 
 class Finding(NamedTuple):
     severity: str  # "error" | "warning"
@@ -60,6 +67,9 @@ def check_policy(policy: Any) -> List[Finding]:
         return [_error("<root>", f"A policy must be a JSON object, not {type(policy).__name__}.")]
 
     findings: List[Finding] = []
+    for key in policy:
+        if key not in _TOP_LEVEL_KEYS:
+            findings.append(_warning(key, "Not read by the engine; it will be ignored."))
     provider_name = _check_meta(policy, findings)
     declared_ids = _check_evaluators(policy, provider_name, findings)
     _check_eval_expression(policy, declared_ids, findings)
@@ -155,6 +165,18 @@ def _check_evaluators(policy: Dict, provider_name: str, findings: List[Finding])
                         f"dropped from eval_expression.",
                     )
                 )
+
+        for key in evaluator:
+            if key == "error_tolerance":
+                findings.append(
+                    _error(
+                        f"{where}.error_tolerance",
+                        "Belongs inside `condition`. Here it is ignored, and the check fails as if no "
+                        "tolerance were set.",
+                    )
+                )
+            elif key not in _EVALUATOR_KEYS:
+                findings.append(_warning(f"{where}.{key}", "Not read by the engine; it will be ignored."))
 
         _check_provider_args(evaluator, provider_name, where, findings)
         _check_condition(evaluator, where, findings)
@@ -262,6 +284,10 @@ def _check_condition(evaluator: Dict, where: str, findings: List[Finding]) -> No
         findings.append(
             _error(f"{where}.condition.value", f"Missing. {evaluator_name} needs something to compare against.")
         )
+
+    for key in condition:
+        if key not in _CONDITION_KEYS:
+            findings.append(_warning(f"{where}.condition.{key}", "Not read by the engine; it will be ignored."))
 
     tolerance = condition.get("error_tolerance")
     if tolerance is not None and not isinstance(tolerance, int):

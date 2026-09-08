@@ -130,3 +130,23 @@ def test_the_documented_exit_codes_are_the_real_ones():
 
     for status in ExitStatus:
         assert f"| {status.value} |" in table, f"{status.name} ({status.value}) is not in the exit-code table"
+
+
+def test_lint_and_fmt_are_documented_with_every_flag():
+    """
+    Like `platform check`: dispatched before argparse, so they cannot appear in the top-level usage
+    automatically. docs/lint.md embeds both --help texts; a flag added without touching it stops
+    being documented.
+    """
+    text = _readme()
+    assert "tirith lint" in text and "tirith fmt" in text
+    assert os.path.exists(
+        os.path.join(ROOT, ".pre-commit-hooks.yaml")
+    ), "the README advertises hooks that are not published"
+
+    with open(os.path.join(ROOT, "docs", "lint.md")) as f:
+        page = f.read()
+    for command in ("lint", "fmt"):
+        flags = set(re.findall(r"(?<![\w-])--[a-z][a-z0-9-]+", _help(command)))
+        missing = sorted(f for f in flags if f not in page)
+        assert not missing, f"flags accepted by `tirith {command}` but absent from docs/lint.md: {missing}"

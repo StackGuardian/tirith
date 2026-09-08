@@ -7,6 +7,8 @@ without touching a network.
 
 import html
 
+from .. import plan_actions
+
 FAIL = "FAIL"
 WARN = "WARN"
 PASS = "PASS"
@@ -23,6 +25,160 @@ UNKNOWN = "UNKNOWN"
 COMMENT_LIMIT = 60000
 
 _ICONS = {FAIL: "❌", WARN: "⚠️", APPROVAL_REQUIRED: "⏳", PASS: "✅", UNKNOWN: "❓"}
+
+# A hard cap on lines, independent of the comment limit. A thousand-resource plan would otherwise
+# consume the whole budget and take the findings down with it during truncation. Counted in lines
+# rather than resources because each resource brings its changed attributes with it.
+#
+# The block is never collapsed behind a <details>. It was, above twelve resources -- but the plan is
+# the thing the comment was extended to show, and putting it behind a click means the common case is
+# a reviewer who never sees it. What gives way under this cap is detail, not visibility.
+PLAN_LINE_LIMIT = 60
+
+
+def _fence_safe(value):
+    """
+    Make a plan-derived string safe to place inside a ``` fence.
+
+    The same class of bug `_code` exists for, one layer out. A resource address comes from the plan,
+    and the plan comes from terraform a pull-request author controls -- `for_each` keys make
+    `aws_s3_bucket.demo["```"]` a legal address. Inside a fence a triple backtick does not merely
+    close an inline span, it closes the whole block, and everything after it renders as markdown: a
+    forged "all policies passed" banner, a stray </details> hiding the real findings, a link whose
+    text and href disagree.
+
+    Backticks are removed rather than escaped, because there is no escape that works inside a fence.
+    Newlines would fabricate extra rows, so they go too.
+    """
+    text = str(value)
+    text = text.replace("`", "").replace("\r", " ").replace("\n", " ")
+    if len(text) > 200:
+        text = text[:197] + "..."
+    return text
+
+
+def _render_attributes(change):
+    """
+    The per-attribute lines under one resource row.
+
+    Every key and every value goes through `_fence_safe`, and that is the whole reason this is a
+    separate function rather than an f-string at the call site. An attribute *value* is as
+    author-controlled as an address -- more so, since it is the literal text of their terraform -- and
+    a first version of this passed values through raw. A value of "```" closed the block and let the
+    rest of the comment render as markdown, reopening exactly the hole the address guard was written
+    to close. The guard belongs on both or it protects neither.
+    """
+    rows, dropped, hidden_unknown = plan_actions.attribute_changes(change)
+
+    lines = []
+    for marker, key, before, after, forces in rows:
+        rendered_key = _fence_safe(key)
+        if before is None:
+            line = f"    {marker} {rendered_key} = {_fence_safe(after)}"
+        else:
+            line = f"    {marker} {rendered_key} = {_fence_safe(before)} -> {_fence_safe(after)}"
+        if forces:
+            # Terraform's own wording, and the most consequential thing on the row: it names the one
+            # attribute whose change is costing a destroy and recreate.
+            line += "   # forces replacement"
+        lines.append(line)
+
+    trailer = []
+    if dropped:
+        trailer.append(f"    … and {dropped} more changed attribute(s)")
+    if hidden_unknown:
+        trailer.append(f"    … and {hidden_unknown} computed attribute(s), known after apply")
+    return lines + trailer
+
+
+def render_plan_block(plan):
+    """
+    The planned changes, as a diff-fenced list plus terraform's summary line.
+
+    Rendered from the *masked* plan document, never from `terraform show` output. The masking is the
+    only thing keeping a sensitive value out of a public pull-request comment, and text captured from
+    terraform would not carry it. See redact.redact_plan.
+
+    `no-op` resources are counted, not listed. A plan against applied infrastructure carries one for
+    every resource in state, and listing them buries the handful that changed.
+    """
+    if not isinstance(plan, dict):
+        return []
+
+    changes = plan.get("resource_changes")
+    if not isinstance(changes, list) or not changes:
+        return []
+
+    counts = plan_actions.plan_counts(changes)
+
+    entries = []
+    for change in changes:
+        if not isinstance(change, dict):
+            continue
+        actions = (change.get("change") or {}).get("actions") or []
+        if plan_actions.is_no_op(actions):
+            continue
+        marker = plan_actions.action_marker(actions)
+        if not marker:
+            continue
+        address = _fence_safe(change.get("address") or change.get("type") or "")
+        if not address:
+            continue
+        row = f"{marker} {address:<48} {_fence_safe(plan_actions.action_summary(actions))}".rstrip()
+        entries.append((row, _render_attributes(change.get("change") or {})))
+
+    listed_resources = len(entries)
+    rows, hidden_detail, dropped_resources = _fit_plan_rows(entries)
+
+    summary = plan_actions.summary_line(counts)
+    if counts.get("no_op"):
+        # Plain text, not <sub>. Every other <sub> in this module wraps a whole line; wrapping a
+        # fragment mid-line glues an HTML tag onto a line that otherwise reads as terraform output.
+        # The count still earns its place -- it is what explains why the list is shorter than the
+        # plan -- but it does not need to shout, and a sentence is quieter than a tag.
+        summary += f" {counts['no_op']} unchanged."
+
+    if not rows:
+        # Nothing is changing, so there is no list to show -- but the line saying so is still worth
+        # having, otherwise the comment looks like it simply forgot to mention the plan.
+        return [summary, ""]
+
+    notes = []
+    if hidden_detail:
+        notes += ["", f"… attribute detail omitted: {hidden_detail} more line(s) than a comment can carry"]
+    if dropped_resources:
+        notes += ["", f"… and {dropped_resources} more resource(s), truncated"]
+
+    return ["```diff"] + rows + notes + ["```", "", summary, ""]
+
+
+def _fit_plan_rows(entries):
+    """
+    Fit the plan into PLAN_LINE_LIMIT lines, giving up detail before resources.
+
+    Returns (rows, hidden_detail_lines, dropped_resources).
+
+    The order of sacrifice is the whole point. A resource row says *what is happening to your
+    infrastructure*; an attribute row elaborates on one. So an oversized plan loses every attribute
+    row before it loses a single resource, and only a resource list that is still too long after that
+    gets cut off the end.
+
+    Detail is dropped wholesale rather than from the cut-off point onward. Trimming at the boundary
+    would annotate the first handful of resources and leave the rest bare, which reads as though the
+    later ones had nothing to say -- the most misleading shape available, since the untouched-looking
+    ones are exactly where a reviewer stops looking.
+    """
+    full = [line for row, attributes in entries for line in [row] + attributes]
+    if len(full) <= PLAN_LINE_LIMIT:
+        return full, 0, 0
+
+    bare = [row for row, _ in entries]
+    hidden_detail = len(full) - len(bare)
+    if len(bare) <= PLAN_LINE_LIMIT:
+        return bare, hidden_detail, 0
+
+    return bare[:PLAN_LINE_LIMIT], hidden_detail, len(bare) - PLAN_LINE_LIMIT
+
 
 
 def summarize(policy_results):
@@ -256,7 +412,16 @@ def render_cost(breakdown):
 
 
 def render_markdown(
-    policy_results, run_status, run_url, marker=None, limit=COMMENT_LIMIT, cost_breakdown=None, commit=None
+    policy_results,
+    run_status,
+    run_url,
+    marker=None,
+    limit=COMMENT_LIMIT,
+    cost_breakdown=None,
+    commit=None,
+    plan=None,
+    source_dir=None,
+    workflow_id=None,
 ):
     """
     Render the results as markdown, truncating detail before the summary table.
@@ -277,8 +442,17 @@ def render_markdown(
         f"## 🛡️ {headline(counts, verdict_value)}",
         "",
     ]
-    if commit:
-        header += [f"<sub>Scanned commit <code>{_html(_short_commit(commit))}</code></sub>", ""]
+    if commit or source_dir or workflow_id:
+        # One line of provenance. `dir` and the workflow matter when a matrix posts several comments
+        # on one pull request: today only comment-tag distinguishes them, and that is invisible.
+        bits = []
+        if commit:
+            bits.append(f"Scanned commit <code>{_html(_short_commit(commit))}</code>")
+        if source_dir:
+            bits.append(f"dir <code>{_html(source_dir)}</code>")
+        if workflow_id:
+            bits.append(f"workflow <code>{_html(workflow_id)}</code>")
+        header += [f"<sub>{' · '.join(bits)}</sub>", ""]
 
     if verdict_value == "errored":
         # Two different reasons land here, and saying the wrong one is worse than saying nothing:
@@ -306,18 +480,28 @@ def render_markdown(
 
     detail_sections = [_render_detail(f) for f in findings if f["result"] in (FAIL, APPROVAL_REQUIRED, WARN, UNKNOWN)]
 
-    body = "\n".join(header + table + detail_sections + footer)
+    plan_block = render_plan_block(plan)
+
+    body = "\n".join(header + plan_block + table + detail_sections + footer)
     if len(body) <= limit:
         return body
 
-    # Drop detail sections from the end until it fits, keeping the summary table intact -- the
+    # The plan goes first, before any finding is touched. It is context; the findings are the point,
+    # and a comment that keeps the diff while dropping the violation has failed at its job.
+    if plan_block:
+        plan_block = []
+        body = "\n".join(header + plan_block + table + detail_sections + footer)
+        if len(body) <= limit:
+            return body
+
+    # Then drop detail sections from the end until it fits, keeping the summary table intact -- the
     # table is the part a reviewer scans first.
     kept = list(detail_sections)
     while kept and len(body) > limit:
         kept.pop()
         omitted = len(detail_sections) - len(kept)
         note = [f"", f"_… and {omitted} more finding(s). See the full run in StackGuardian._", ""]
-        body = "\n".join(header + table + kept + note + footer)
+        body = "\n".join(header + plan_block + table + kept + note + footer)
 
     if len(body) > limit:
         # Even the table is too large; truncate hard rather than risk a 422.

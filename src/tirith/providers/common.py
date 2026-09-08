@@ -187,6 +187,10 @@ def format_context_prefix(context: Optional[Dict]) -> str:
         count). Only used when ``resource_address`` is absent.
     ``action``
         Planned action(s) for the resource. Rendered next to the subject.
+    ``qualifier``
+        Anything else worth saying about the subject, rendered in the same parenthetical as
+        ``action`` for providers that have no planned action -- how many resources a cost
+        covers, say. Ignored when ``action`` is present.
     ``attribute``
         Name of the attribute being evaluated.
 
@@ -207,6 +211,8 @@ def format_context_prefix(context: Optional[Dict]) -> str:
     '[aws_vpc.main] action: '
     >>> format_context_prefix({"label": "aws_vpc", "attribute": "count"})
     '[aws_vpc] count: '
+    >>> format_context_prefix({"label": "aws_instance", "qualifier": "0 matched", "attribute": "cost"})
+    '[aws_instance (0 matched)] cost: '
     >>> format_context_prefix({"attribute": "terraform_version"})
     'terraform_version: '
     >>> format_context_prefix({"resource_address": "aws_vpc.main", "action": "create"})
@@ -218,7 +224,7 @@ def format_context_prefix(context: Optional[Dict]) -> str:
         return ""
 
     subject = context.get("resource_address") or context.get("label")
-    action = context.get("action")
+    action = context.get("action") or context.get("qualifier")
     attribute = context.get("attribute")
 
     subject_prefix = ""

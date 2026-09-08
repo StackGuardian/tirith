@@ -16,7 +16,11 @@
       },
       "condition": {
         "type": "NotContainedIn",
-        "value": ["public-read", "public-read-write", "authenticated-read"]
+        "value": [
+          "public-read",
+          "public-read-write",
+          "authenticated-read"
+        ]
       }
     },
     {

@@ -119,7 +119,11 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
             # is discarded and `None` is evaluated against the condition, so a typo'd operation_type
             # reads as a genuine violation.
             if evaluator_input.get("err") and not isinstance(evaluator_input["value"], ProviderError):
-                evaluation_results.append({"passed": False, "message": evaluator_input["err"]})
+                context = evaluator_input.get("context")
+                err_result = {"passed": False, "message": format_context_prefix(context) + evaluator_input["err"]}
+                if context:
+                    err_result["context"] = context
+                evaluation_results.append(err_result)
                 has_failure = True
                 continue
 

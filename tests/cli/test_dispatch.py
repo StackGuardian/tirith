@@ -101,10 +101,11 @@ def test_the_subcommand_names_are_exactly_these(capsys):
     `remote` is not quietly still accepted.
 
     `ui` was added alongside it later, on the same terms: dispatched before the flat parser so the
-    local surface and its golden-file output are untouched. The set is pinned rather than merely
-    checked for membership, so a new subcommand has to be a deliberate edit here.
+    local surface and its golden-file output are untouched. `lint` and `fmt` followed. The set is
+    pinned rather than merely checked for membership, so a new subcommand has to be a deliberate
+    edit here.
     """
-    assert cli.SUBCOMMANDS == {"platform", "ui"}
+    assert cli.SUBCOMMANDS == {"platform", "ui", "lint", "fmt"}
 
     status = cli.main(["remote"])
 
@@ -128,3 +129,35 @@ def test_ui_dispatches_to_its_own_parser(capsys):
     error = capsys.readouterr().err
     assert "tirith ui" in error, error
     assert "-policy-path" not in error
+
+
+def test_lint_and_fmt_are_dispatched_to_their_subcommands(capsys):
+    """Each prints its own help, not the local-evaluation help."""
+    for name in ("lint", "fmt"):
+        with pytest.raises(SystemExit) as excinfo:
+            cli.main([name, "--help"])
+        assert excinfo.value.code == 0
+        assert f"tirith {name}" in capsys.readouterr().out
+
+
+def test_an_unknown_command_is_named_and_exits_1(capsys):
+    """
+    Before: argparse said "unrecognized arguments: lint" and main's SystemExit handler re-labelled it
+    "Failed because of System Exit". A pipeline running a subcommand that did not exist yet could not
+    tell that from the subcommand failing.
+    """
+    status = cli.main(["lintx", "policies"])
+
+    assert status == ExitStatus.ERROR
+    err = capsys.readouterr().err
+    assert "'lintx' is not a tirith command" in err
+    assert "lint" in err and "fmt" in err and "platform" in err and "ui" in err
+
+
+def test_the_top_level_help_lists_every_subcommand(capsys):
+    # main() swallows argparse's zero-code SystemExit and returns None; see test_no_arguments_prints_help.
+    cli.main(["--help"])
+
+    out = capsys.readouterr().out
+    for name in sorted(cli.SUBCOMMANDS):
+        assert f"tirith {name}" in out, f"{name} is dispatched but not listed in --help"

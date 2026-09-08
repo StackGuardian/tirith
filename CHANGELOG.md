@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `tirith lint`: check policy files for the mistakes that otherwise reach CI looking like real
+  infrastructure violations — an invented `condition.type`, a `provider_args` key another provider
+  reads, `error_tolerance` beside `condition` instead of inside it, an evaluator the expression
+  never names. It is the validator behind `tirith ui`, run from the command line, and needs neither
+  a plan document nor the `tui` extra. Exit `3` for a policy with errors, `1` for a missing path or
+  nothing to lint, `0` when clean; `--strict` counts warnings, `--json` emits a document.
+- `tirith fmt`: rewrite policies into one canonical layout — `meta`, `evaluators`,
+  `eval_expression`; inside a check `id`, `description`, `provider_args`, `condition` — without
+  changing a value or reordering a list. `--check` exits `3` if a file would change; `--diff`
+  shows what.
+- `.pre-commit-hooks.yaml` publishing `tirith-lint` and `tirith-fmt`, as the documentation had
+  promised.
+- The validator now reports `error_tolerance` placed on the evaluator as an error, and any key
+  the engine does not read, at any level, as a warning.
+- An unknown first argument (`tirith lintx`) is now reported as "not a tirith command" with the
+  list of commands, instead of argparse's "unrecognized arguments" re-labelled "Failed because of
+  System Exit".
 - `tirith ui`: an interactive interface with three tabs.
   - **Explorer** — read an evaluation's results down to the resource behind each one. The result
     document has always carried the resource address, the planned action and the before/after
@@ -47,6 +64,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of repeating the same text once per resource — with `terraform_resource_type: "*"` it was emitted
   once per resource with identical text.
 - `core`: "Could not find input value" now names the provider arguments that produced no value.
+- `infracost`: Cost messages now name the cost that was measured and what it covered, e.g.
+  ``[all resources (2 resources)] total_monthly_cost: `300.1` is not less than or equal to `20` ``
+  instead of ``` `300.1` is not less than or equal to `20` ```. A monthly and an hourly figure of
+  the same size were previously indistinguishable.
+- `infracost`: A `resource_type` that matches no resource now says so — `[aws_instances
+  (0 resources)]` — instead of reporting a genuine-looking `0`. A typo'd resource type silently
+  satisfied a `LessThan` while measuring nothing; the verdict is unchanged, the message is not.
+- `core`: A provider error reported without a `ProviderError` severity now gets the same context
+  prefix as every other message.
 
 ### Fixed
 - **Verdict change.** A resource skipped through `error_tolerance` no longer overwrites the
