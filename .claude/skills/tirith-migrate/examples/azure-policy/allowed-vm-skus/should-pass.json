@@ -1,0 +1,74 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "azurerm_resource_group.rg",
+      "mode": "managed",
+      "type": "azurerm_resource_group",
+      "name": "rg",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "rg-app",
+          "location": "westeurope",
+          "tags": null
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "azurerm_linux_virtual_machine.vm",
+      "mode": "managed",
+      "type": "azurerm_linux_virtual_machine",
+      "name": "vm",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "vm-app",
+          "location": "westeurope",
+          "size": "Standard_D2s_v5",
+          "resource_group_name": "rg-app",
+          "admin_username": "azureuser",
+          "tags": null,
+          "disable_password_authentication": true
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "azurerm_windows_virtual_machine.win",
+      "mode": "managed",
+      "type": "azurerm_windows_virtual_machine",
+      "name": "win",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "vm-win",
+          "location": "westeurope",
+          "size": "Standard_B2s",
+          "admin_username": "azureuser"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    }
+  ]
+}

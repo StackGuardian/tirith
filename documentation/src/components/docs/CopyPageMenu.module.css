@@ -1,0 +1,154 @@
+/*
+ * The copy-page control, in the site's own grammar.
+ *
+ * A split button: the left half does the obvious thing without a detour through a menu, the
+ * right half opens the rest. Square, hairline, no shadow, and it stays in the soft ink until
+ * you reach for it, because it sits above the page title and must not compete with it.
+ */
+
+.root {
+  position: relative;
+  flex: none;
+}
+
+.split {
+  display: flex;
+  border: 1px solid var(--tp-rule);
+}
+
+.main,
+.caret {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--tp-paper);
+  color: var(--tp-soft);
+  cursor: pointer;
+  font-family: var(--tp-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  transition: color 120ms ease-out, background 120ms ease-out;
+}
+
+.main:hover,
+.caret:hover {
+  color: var(--tp-accent);
+}
+
+.caret {
+  padding: 0.4rem 0.45rem;
+  border-left: 1px solid var(--tp-rule);
+}
+
+.main:focus-visible,
+.caret:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: 2px;
+}
+
+.glyph {
+  flex: none;
+  width: 13px;
+  height: 13px;
+}
+
+.caretGlyph,
+.caretGlyphOpen {
+  width: 13px;
+  height: 13px;
+  transition: transform 120ms ease-out;
+}
+
+.caretGlyphOpen {
+  transform: rotate(180deg);
+}
+
+/*
+ * The panel is a hairline box on the page's own ground, not a floating card.
+ *
+ * It does need to sit above the article, so it is the one place on the site with a
+ * z-index and an opaque background behind a border. It gets no shadow and no radius,
+ * which is what keeps it reading as part of the same sheet rather than a browser dialog.
+ */
+.menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 17rem;
+  border: 1px solid var(--tp-rule);
+  background: var(--tp-paper);
+}
+
+.item {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 0;
+  background: transparent;
+  color: var(--tp-ink);
+  cursor: pointer;
+  font-family: var(--tp-text);
+  text-align: left;
+  text-decoration: none;
+  transition: background 120ms ease-out;
+}
+
+.item + .item {
+  border-top: 1px solid var(--tp-rule);
+}
+
+.item:hover {
+  background: var(--tp-surface);
+  color: var(--tp-ink);
+  text-decoration: none;
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--tp-accent);
+  outline-offset: -2px;
+}
+
+.item .glyph {
+  margin-top: 0.15rem;
+  color: var(--tp-faint);
+}
+
+.item:hover .glyph {
+  color: var(--tp-accent);
+}
+
+.itemTitle {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.itemNote {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--tp-soft);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+/*
+ * Below 997px Docusaurus drops the sidebar and the article takes the full width. The control
+ * still fits beside the breadcrumbs there; it is the panel that needs help, because a 17rem
+ * box anchored right can reach past a 360px viewport once the article's padding is counted.
+ */
+@media (max-width: 480px) {
+  .menu {
+    min-width: 0;
+    width: calc(100vw - 3rem);
+  }
+}

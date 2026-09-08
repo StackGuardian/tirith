@@ -23,7 +23,7 @@ pipeline should pay to install an interface they never open. It needs Python 3.9
 Tirith itself still supports 3.8.
 
 ```bash
-pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
+pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0'
 ```
 
 Tirith is not on PyPI — `pip install py-tirith` finds nothing and `pip install tirith` installs an

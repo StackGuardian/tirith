@@ -540,15 +540,20 @@
 
 /* Pushed to the bottom so the three verification lines sit on one baseline however
    long the description above them runs. */
-.clientVerify {
+/*
+ * One verification line for all three clients, not one per column.
+ * The three installs run the same script and load the same pack, so three separate checks were
+ * the same test written three ways. Below the list, spanning it, is also where a reader who has
+ * just run a command looks next.
+ */
+.verify {
   display: grid;
-  gap: 0.3rem;
-  margin: auto 0 0;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--tp-rule);
+  gap: 0.4rem;
+  max-width: 68ch;
+  margin: 1.6rem 0 0;
   color: var(--tp-soft);
-  font-size: 0.82rem;
-  line-height: 1.5;
+  font-size: 0.88rem;
+  line-height: 1.6;
 }
 
 .verifyLabel {
@@ -715,5 +720,110 @@
     grid-column: 1;
     grid-row: auto;
     margin-top: 0.3rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * THE STARRED SKILL
+ *
+ * Two columns: the sentence someone actually types on the left, the two commands on the
+ * right. It reads as one plate rather than a card grid because it is one action, and it
+ * is the only skill on the page shown with its commands: everything under "What it
+ * covers" is a name and a file, which is right for a catalogue and wrong for the entry
+ * point.
+ * ------------------------------------------------------------------------ */
+.featured {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 var(--tp-gut);
+  align-items: start;
+  padding: 1.75rem 0 1.9rem;
+  border-top: 1px solid var(--tp-rule);
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.featuredAsk {
+  display: grid;
+  gap: 0.7rem;
+  align-content: start;
+  min-width: 0;
+}
+
+.featuredEyebrow {
+  color: var(--tp-faint);
+  font-family: var(--tp-mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* The ask is set as the page's own voice rather than in a code field: it is a sentence
+   typed at an agent, not a command with syntax to get right. */
+.featuredQuote {
+  margin: 0;
+  font-family: var(--tp-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.featuredNote {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--tp-soft);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.featuredNote code {
+  font-size: 0.85em;
+}
+
+.featuredCommands {
+  display: grid;
+  gap: 1.1rem;
+  min-width: 0;
+}
+
+.featuredCommand {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.featuredLabel {
+  color: var(--tp-faint);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.featuredFiles {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.featuredFiles > li {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: 0 var(--tp-gut);
+  align-items: baseline;
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .featured {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.6rem;
+  }
+
+  .featuredFiles > li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
   }
 }

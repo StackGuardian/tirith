@@ -1,0 +1,12 @@
+# Restrict aws_instance.instance_type to an allow-list. tfplan/v2, common-functions idiom.
+import "tfplan-functions" as plan
+
+param allowed_types default ["t3.micro", "t3.small", "t3.medium"]
+
+allInstances = plan.find_resources("aws_instance")
+violatingInstances = plan.filter_attribute_not_in_list(allInstances,
+                     "instance_type", allowed_types, true)
+
+main = rule {
+  length(violatingInstances["messages"]) is 0
+}

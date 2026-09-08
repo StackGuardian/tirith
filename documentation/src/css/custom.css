@@ -1,10 +1,130 @@
+/**
+ * Global tokens, and the Infima variables mapped onto them.
+ *
+ * DESIGN-NOTES.md asks for exactly this file: the palette used to be duplicated across five
+ * page stylesheets, so a colour change meant five edits and a sixth place that got missed.
+ * The values here are identical to the block each page declares on `.page`; the pages still
+ * carry their own copy and win on specificity, which is why nothing about them changes.
+ * Consolidating those five blocks onto these names is the follow-up, and it is now a
+ * deletion rather than a rewrite.
+ *
+ * `src/css/chrome.module.css` keeps its own `--tl-*` set for the navbar. It is scoped to
+ * `body` on purpose, to beat what `[data-theme='dark']` on <html> merely passes down, and
+ * that scoping is load-bearing. It is left alone.
+ *
+ * The second half maps Infima's variables onto these tokens. That is the whole reason the
+ * documentation can be restyled without fighting the theme: one variable block moves the
+ * fonts, the accent and every corner radius at once, and `src/css/docs.css` only has to
+ * handle the structure Infima cannot express as a variable.
+ */
+
 :root {
-  --ifm-color-primary: #040084;
-  --ifm-code-font-size: 100%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --tp-paper: #fafaf8;
+  --tp-surface: #f0f0ee;
+  --tp-sunk: #e8e8e5;
+  --tp-ink: #0d0d0d;
+  --tp-soft: #56575b;
+  --tp-faint: #6c6d72;
+  --tp-rule: #d8d8d6;
+  --tp-accent: #1e40af;
+  --tp-alarm: #a5332a;
+  --tp-alarm-wash: #f8ecea;
+  --tp-alarm-edge: #e6cdc9;
+  --tp-display: 'Martian Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --tp-text: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tp-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /*
+   * Syntax colours, read by the Prism theme in docusaurus.config.js.
+   *
+   * They have to be custom properties rather than values in that theme object because
+   * prism-react-renderer writes its colours as inline `style` attributes on every token
+   * span, and an inline style beats any stylesheet. Naming a variable in the theme is the
+   * one way to keep a single theme object that still answers to the colour scheme.
+   *
+   * Two hues, like the rest of the design: a key is ink, a value is the accent. Syntax
+   * highlighting that runs to six colours is decoration, and these pages are mostly JSON
+   * policies where the only distinction that carries meaning is key from value.
+   */
+  --tp-code-key: #0d0d0d;
+  --tp-code-string: #1e40af;
+  --tp-code-num: #6d3f9e;
+  --tp-code-muted: #76777c;
+
+  /* ---- Infima, mapped ---- */
+
+  --ifm-color-primary: #1e40af;
+  --ifm-color-primary-dark: #1b3a9e;
+  --ifm-color-primary-darker: #193694;
+  --ifm-color-primary-darkest: #152d7a;
+  --ifm-color-primary-light: #2148c0;
+  --ifm-color-primary-lighter: #234bca;
+  --ifm-color-primary-lightest: #3159d8;
+
+  --ifm-font-family-base: var(--tp-text);
+  --ifm-font-family-monospace: var(--tp-mono);
+  --ifm-heading-font-family: var(--tp-display);
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.65;
+
+  --ifm-background-color: var(--tp-paper);
+  --ifm-background-surface-color: var(--tp-paper);
+  --ifm-font-color-base: var(--tp-ink);
+  --ifm-heading-color: var(--tp-ink);
+  --ifm-link-color: var(--tp-accent);
+  --ifm-link-hover-color: var(--tp-accent);
+
+  /*
+   * Square corners, everywhere, in one line. No border radius is the first rule in
+   * DESIGN-NOTES.md, and Infima routes every rounded corner it draws through these three.
+   */
+  --ifm-global-radius: 0;
+  --ifm-code-border-radius: 0;
+  --ifm-button-border-radius: 0;
+
+  /* No shadows either. Structure comes from hairlines. */
+  --ifm-global-shadow-lw: none;
+  --ifm-global-shadow-md: none;
+  --ifm-global-shadow-tl: none;
+
+  --ifm-toc-border-color: var(--tp-rule);
+  --ifm-table-border-color: var(--tp-rule);
+  --ifm-table-stripe-background: transparent;
+  --ifm-hr-border-color: var(--tp-rule);
+  --ifm-blockquote-color: var(--tp-soft);
+  --ifm-blockquote-border-color: var(--tp-rule);
+
+  --ifm-code-background: var(--tp-surface);
+  --ifm-code-font-size: 88%;
+  --ifm-pre-background: var(--tp-surface);
+  --docusaurus-highlighted-code-line-bg: rgba(30, 64, 175, 0.09);
 }
 
 [data-theme='dark'] {
-  --ifm-color-primary: #847cc4;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --tp-paper: #0d0d0d;
+  --tp-surface: #17171a;
+  --tp-sunk: #202024;
+  --tp-ink: #f2f2f0;
+  --tp-soft: #9c9ca3;
+  --tp-faint: #8f8f97;
+  --tp-rule: #2b2b2f;
+  --tp-accent: #7c9bff;
+  --tp-alarm: #e59084;
+  --tp-alarm-wash: #231614;
+  --tp-alarm-edge: #452e2a;
+
+  --tp-code-key: #f2f2f0;
+  --tp-code-string: #9db4ff;
+  --tp-code-num: #c9a6ec;
+  --tp-code-muted: #8b8b93;
+
+  --ifm-color-primary: #7c9bff;
+  --ifm-color-primary-dark: #5c81ff;
+  --ifm-color-primary-darker: #4c74ff;
+  --ifm-color-primary-darkest: #1c4cff;
+  --ifm-color-primary-light: #9cb5ff;
+  --ifm-color-primary-lighter: #acc2ff;
+  --ifm-color-primary-lightest: #dce5ff;
+
+  --docusaurus-highlighted-code-line-bg: rgba(124, 155, 255, 0.14);
 }

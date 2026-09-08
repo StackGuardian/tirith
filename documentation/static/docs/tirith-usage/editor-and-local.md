@@ -4,14 +4,13 @@ Source: https://stackguardian.github.io/tirith/docs/tirith-usage/editor-and-loca
 Summary: VS Code tasks, a pre-commit hook, and the local loop to use when an AI agent is drafting the policy.
 
 [NOTE] Not in 1.2.0
+`tirith lint` and `tirith fmt` are on `main` and will arrive in the next release. Until then,
+install from the branch rather than the tag:
+`pip install "git+https://github.com/StackGuardian/tirith.git@main"`. Evaluation, the second half
+of the loop, works on any installed version.
 
-`tirith lint`, `tirith fmt` and the pre-commit hooks are on `main` and will be in the next
-release. `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"` does not have them;
-install from `main` until then.
-
-
-CI is the last place a policy should fail. This page is about the loop before that — running
-Tirith on your own machine, while the code is still being written.
+CI is the last place a policy should fail. This page is about the loop before that, running
+Tirith on your own machine while the code is still being written.
 
 It matters most when an agent is drafting the policy for you. Generated policy JSON is plausible
 by construction: it parses, it looks right, and a policy that matches nothing is indistinguishable
@@ -20,13 +19,15 @@ from one that works until you evaluate it.
 ## The loop
 
 ```bash
+tirith fmt .tirith/policies                                                   # layout
 tirith lint .tirith/policies                                                  # shape
 tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error    # meaning
 ```
 
-Linting checks the **shape** — that every condition type exists, that no `provider_args` key
-belongs to a different provider, that `eval_expression` names every evaluator. Only evaluation
-checks the **meaning**.
+Linting checks the **shape**: that every condition type exists, that no `provider_args` key
+belongs to a different provider, that `eval_expression` names every evaluator, that
+`error_tolerance` is inside `condition` where the engine reads it. Only evaluation checks the
+**meaning**. [Lint and format](lint-and-fmt.md) covers both commands in full.
 
 Run both against a document that *should* fail. A guardrail only ever seen passing is a guardrail
 nobody has tested.
@@ -39,6 +40,13 @@ Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 {
   "version": "2.0.0",
   "tasks": [
+    {
+      "label": "Tirith: format policies",
+      "type": "shell",
+      "command": "tirith fmt .tirith/policies",
+      "problemMatcher": [],
+      "group": "test"
+    },
     {
       "label": "Tirith: lint policies",
       "type": "shell",
@@ -59,16 +67,17 @@ Drop this in `.vscode/tasks.json` and the loop becomes one keystroke:
 ```
 
 `Tirith: check the plan` is the default test task, so **⇧⌘B** / **Ctrl+Shift+B** runs the whole
-loop. The complete file — including a task to refresh `plan.json` and one to open the result in
-the interactive explorer — is
-[`.vscode/tasks.json`](https://github.com/StackGuardian/tirith/blob/main/.vscode/tasks.json).
+loop: lint first, then evaluate, because `dependsOn` will not run the second if the first exits
+non-zero.
 
 ## Catch it at commit time
+
+Tirith publishes both commands as pre-commit hooks:
 
 ```yaml
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: main          # 1.2.0 predates the hooks; pin the first tag that includes them
+    rev: main
     hooks:
       - id: tirith-lint
       - id: tirith-fmt
@@ -78,8 +87,9 @@ repos:
 pre-commit install
 ```
 
-The hook runs only when a policy file changes, needs no network, and exits `3` when a policy has
-an error. See [CI integration](ci-integration.md) for why it lints rather than evaluates.
+Both run only on the policy files a commit actually touches, need no network, and exit `3` on a
+finding. See [CI integration](ci-integration.md) for why they lint rather than evaluate, and
+[lint and format](lint-and-fmt.md) for the flags and the files they read.
 
 ## When an agent is writing the policy
 
@@ -87,13 +97,11 @@ Install the Tirith skill and your agent gets the closed condition list, the argu
 provider reads, and the instruction to run a policy before claiming it works:
 
 ```bash
-mkdir -p .claude/skills/tirith-policies/reference
-BASE=https://raw.githubusercontent.com/StackGuardian/tirith/main/.claude/skills/tirith-policies
-curl -sL $BASE/SKILL.md -o .claude/skills/tirith-policies/SKILL.md
+curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 ```
 
-Cursor reads `.cursor/rules/tirith-policies.mdc` instead, scoped with globs so it attaches by
-itself when a policy file is open.
+Add `--cursor` for the Cursor rule. [Agent Skills](agent-skills.md) covers what is in the pack,
+the other clients, and how to tell whether it took effect.
 
 Two things make the difference between a drafted policy and a working one:
 

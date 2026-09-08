@@ -28,8 +28,7 @@ import TirithMark from '../brand/TirithMark';
  *   anything. Then the project: Source and Slack.
  *
  *   At scale is last, on its own. It is the commercial page, and the footer should not put
- *   a sales route in front of the open-source ones any more than the navbar does. `Skills`
- *   is absent because that route is currently excluded from the build.
+ *   a sales route in front of the open-source ones any more than the navbar does.
  */
 
 const REPO = 'https://github.com/StackGuardian/tirith';
@@ -41,6 +40,7 @@ const LINKS = [
   {label: 'Origins', to: '/origins/'},
   {label: 'Home', to: '/'},
   {label: 'Learn', to: '/learn/'},
+  {label: 'Skills', to: '/skills/'},
   {label: 'Docs', to: '/docs/getting-started-with-tirith/'},
   {label: 'Roadmap', to: '/roadmap/'},
   {label: 'Source', href: REPO},

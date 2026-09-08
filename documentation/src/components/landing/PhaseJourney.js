@@ -31,7 +31,13 @@ export default function PhaseJourney() {
                 onClick={() => setActiveIndex(index)}>
                 <span className={styles.phaseSelectNum}>{item.number}</span>
                 <span className={styles.phaseSelectCopy}>
-                  <span className={styles.phaseSelectGroup}>{item.group}</span>
+                  <span className={styles.phaseSelectGroup}>
+                    {item.group}
+                    {/* Subtle on purpose: it qualifies the step, it does not warn about it. */}
+                    {item.platform ? (
+                      <span className={styles.phasePlatform}>platform mode</span>
+                    ) : null}
+                  </span>
                   <span className={styles.phaseSelectTitle}>{item.title}</span>
                   <span className={styles.phaseSelectSummary}>{item.summary}</span>
                 </span>
@@ -49,6 +55,9 @@ export default function PhaseJourney() {
           <div>
             <span className={styles.phaseEyebrow}>
               Phase {phase.number} · {phase.group}
+              {phase.platform ? (
+                <span className={styles.phasePlatform}>platform mode</span>
+              ) : null}
             </span>
             <h3 className={styles.phaseTitle} id={`phase-title-${phase.number}`}>
               {phase.title}

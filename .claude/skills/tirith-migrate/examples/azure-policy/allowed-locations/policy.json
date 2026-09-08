@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "e56962a6-4747-49cd-b67b-bf8b01975c4c",
+    "name": "Allowed locations",
+    "description": "Every resource that has a location is deployed in one of listOfAllowedLocations. Azure exempts location 'global'; keep it in the list.",
+    "enforcement": "deny"
+  },
+  "evaluators": [
+    {
+      "id": "location_allowed",
+      "description": "location is in listOfAllowedLocations. error_tolerance 2 is Azure's Indexed mode: a resource type without a location is out of scope",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "location"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": "{{ var.listOfAllowedLocations }}",
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "location_allowed"
+}

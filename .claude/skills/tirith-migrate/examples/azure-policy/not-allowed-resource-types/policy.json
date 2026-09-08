@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "6c112d4e-5bc7-47ae-a041-ea2d9dccd749",
+    "name": "Not allowed resource types",
+    "description": "No resource of a forbidden type is in the plan. Microsoft.Network/publicIPAddresses is azurerm_public_ip; Microsoft.Compute/virtualMachines is three azurerm types, one evaluator each.",
+    "enforcement": "deny"
+  },
+  "evaluators": [
+    {
+      "id": "no_public_ip",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "azurerm_public_ip"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0
+      }
+    },
+    {
+      "id": "no_vm_legacy",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "azurerm_virtual_machine"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0
+      }
+    },
+    {
+      "id": "no_vm_linux",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "azurerm_linux_virtual_machine"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0
+      }
+    },
+    {
+      "id": "no_vm_windows",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "azurerm_windows_virtual_machine"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0
+      }
+    }
+  ],
+  "eval_expression": "no_public_ip && no_vm_legacy && no_vm_linux && no_vm_windows"
+}

@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "a08ec900-254a-4555-9bf5-e42af04b5c5c",
+    "name": "Allowed resource types",
+    "description": "Only the listed azurerm types appear in the plan. count over * with the allowed types excluded must be 0. Non-Azure resources (random_*, null_resource, data sources) count too; exclude them explicitly, Azure never sees them.",
+    "enforcement": "deny"
+  },
+  "evaluators": [
+    {
+      "id": "only_allowed_types",
+      "description": "Number of resources whose type is not in the allow-list",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "*",
+        "exclude_resource_types": [
+          "azurerm_resource_group",
+          "azurerm_storage_account",
+          "azurerm_storage_container",
+          "azurerm_role_assignment",
+          "random_id"
+        ]
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0
+      }
+    }
+  ],
+  "eval_expression": "only_allowed_types"
+}

@@ -1,19 +1,34 @@
 # Validate a policy
 
-## `tirith lint` is not in the released package
+## `tirith lint` checks the shape
 
-It is in development. The released CLI dispatches `tirith`, `tirith ui` and `tirith platform
-check` and nothing else, so `tirith lint` in a pipeline you are writing for someone else is a step
-that fails with an unrecognised argument.
+This is the one place in the pack that explains it; the other files point here.
 
-Until it ships there are two ways to validate, and both are available today.
+```bash
+tirith lint .tirith/policies
+```
 
-## The interactive validator does ship
+It reads the live `EVALUATORS_DICT` and `PROVIDERS_DICT` registries, so it catches every trap in
+the table below except the ones only evaluation can catch. Exit `3` when a policy has an error,
+`1` when a path is missing or nothing was found, `0` when clean. `--strict` counts warnings as
+errors, `--json` emits the findings as a document.
 
-`tirith ui` carries one. `src/tirith/tui/validate.py` reads the live `EVALUATORS_DICT` and
-`PROVIDERS_DICT` and returns errors and warnings as data, and the Playground runs it on every
-keystroke while the Builder refuses to add a check that fails it. So the registry-checking that
-`tirith lint` will do from the command line is already in the product, just interactively:
+With no path it lints `.tirith/policies` if that directory exists, otherwise the current
+directory. JSON that is not a policy is skipped, so pointing it at a directory holding plan
+documents is safe.
+
+**It is not in 1.2.0.** `tirith lint` and `tirith fmt` are on `main` and arrive in the next
+release. Install `@main` rather than the tag if you want them now:
+`pip install "git+https://github.com/StackGuardian/tirith.git@main"`.
+
+`tirith fmt` rewrites a policy into the canonical layout, and `tirith fmt --check` exits `3` if
+a file would change. Neither command needs a plan document, which is why both work in a
+pre-commit hook.
+
+## The same validator, interactively
+
+`tirith ui` carries the one `tirith lint` calls. The Playground runs it on every keystroke while
+the Builder refuses to add a check that fails it:
 
 ```bash
 pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'
@@ -23,10 +38,11 @@ tirith ui --policy .tirith/policies/my-policy.json
 It is advisory by design: it reports a malformed policy rather than refusing to evaluate it,
 because experimenting with a half-written policy is the point of a playground.
 
-## Without the interface
+## Without either command
 
-Check the shape against the closed vocabulary by hand, then evaluate the policy against a document
-that should fail it. The second is the one that matters.
+Pinned to `1.2.0` and unable to install `@main`? Check the shape against the closed vocabulary by
+hand, then evaluate the policy against a document that should fail it. The second is the one that
+matters, and it works on every version.
 
 ## Check the shape
 
@@ -35,7 +51,7 @@ for a reason unrelated to your infrastructure.
 
 | Trap | Why it matters |
 | --- | --- |
-| An invented condition type | There is no `Exists`, `Matches` or `In`. The engine returns an unknown type as an ordinary failed check, so it reads as a real violation rather than a typo. |
+| An invented condition type | There is no `Exists`, `Matches` or `In`. The engine returns an unknown type as a failed check, exit `3`, `errors` empty. The result message does name it; the exit code does not. |
 | A key from the wrong provider | `terraform_plan` reads `terraform_resource_attribute`; `kubernetes` reads `attribute_path`. An unrecognised key is **ignored, not rejected**, so the evaluator reads nothing and the check passes. |
 | An operation that does not ship | `jmespath` and `jq_query` appear in some test fixtures. Neither exists. |
 | `error_tolerance` outside `condition` | It belongs **inside** `condition`. On the evaluator it is silently ignored: no warning, and the check still fails as though the tolerance were never written. |
@@ -57,6 +73,9 @@ tirith -policy-path .tirith/policies -input-path should-fail.json --fail-on-erro
 echo "exit: $?"
 ```
 
+`examples/required-tags/` in this pack has a policy with a failing and a passing plan. Copy the
+pair and edit it rather than starting from an empty file.
+
 | Exit | Reading |
 | --- | --- |
 | `3` | The policy works. It refused a change it was supposed to refuse. |
@@ -75,11 +94,3 @@ tirith --json -policy-path .tirith/policies -input-path plan.json > result.json
 The JSON carries every evaluator, its result, and the value that produced it. When a check
 surprises you, the value it actually read is the fastest way to the cause: an evaluator reading
 `None` on every resource is the signature of a key the provider ignored.
-
-## When lint ships
-
-It reads the engine's own registries, so it catches the invented condition type and the
-wrong-provider key from the source of truth rather than from a table that can go stale. It will
-exit `3` for a bad policy and `1` for an unreadable path, matching the rest of Tirith: the linter
-saying no about a policy is a verdict, not a tool failure. Check
-`https://stackguardian.github.io/tirith/roadmap/` before assuming it is available.

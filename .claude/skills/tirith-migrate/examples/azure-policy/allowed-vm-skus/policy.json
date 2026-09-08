@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "cccc23c7-8427-4f53-ad12-b6a63eb452b3",
+    "name": "Allowed virtual machine size SKUs",
+    "description": "Every virtual machine uses a size from listOfAllowedSKUs. sku.name is `size` on the linux and windows resources and `vm_size` on the legacy one.",
+    "enforcement": "deny"
+  },
+  "evaluators": [
+    {
+      "id": "linux_vm_size_allowed",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_linux_virtual_machine",
+        "terraform_resource_attribute": "size"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": "{{ var.listOfAllowedSKUs }}",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "windows_vm_size_allowed",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_windows_virtual_machine",
+        "terraform_resource_attribute": "size"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": "{{ var.listOfAllowedSKUs }}",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "legacy_vm_size_allowed",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_virtual_machine",
+        "terraform_resource_attribute": "vm_size"
+      },
+      "condition": {
+        "type": "ContainedIn",
+        "value": "{{ var.listOfAllowedSKUs }}",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "linux_vm_size_allowed && windows_vm_size_allowed && legacy_vm_size_allowed"
+}

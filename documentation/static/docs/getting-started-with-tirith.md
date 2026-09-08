@@ -7,7 +7,7 @@ Summary: Learn how Tirith simplifies security, governance, and compliance for in
 
 Explore a failing evaluation down to the resource that caused it, assemble policies from a form, and
 experiment in a playground with worked examples. Install it with
-`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'` and run
+`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0'` and run
 `tirith ui` — see
 [the interactive interface](tirith-usage/interactive-interface.md).
 

@@ -13,6 +13,11 @@ import styles from '../../pages/index.module.css';
  *
  * Each target links either to a public demo repository (`url`) or to the documentation that
  * covers it (`to`) -- never both, and never a link that does not exist.
+ *
+ * The delegated route is the first target rather than a strip under the panel. It was a
+ * strip briefly, repeated beneath all five snippets, which said the same thing five times
+ * and still let a reader start typing before meeting it. As the leading tab it is the
+ * panel's opening state, and skipping it costs one click.
  */
 export default function PlatformSetup() {
   const [activeId, setActiveId] = useState(PIPELINE_TARGETS[0].id);

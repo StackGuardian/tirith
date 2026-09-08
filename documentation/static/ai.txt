@@ -18,6 +18,11 @@ Disallow:
 #   /tirith/llms-full.txt   every documentation page in one plain-text file
 #   /tirith/<route>.md      any single page as markdown, beside its HTML route
 #   /tirith/sitemap.xml     every URL
+#
+# One executable file is served deliberately and is not documentation:
+#   /tirith/skill.sh        installs the agent skill pack into a repository
+# It writes eleven markdown files under .claude/skills/tirith-policies/ and does nothing
+# else. Its source is documentation/static/skill.sh in the repository.
 
 Sitemap: https://stackguardian.github.io/tirith/sitemap.xml
 Contact: https://github.com/StackGuardian/tirith/issues
