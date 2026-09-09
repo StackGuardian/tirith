@@ -25,7 +25,7 @@ export const DEMO_PHASES = [
   checks: write
 
 - run: terraform show -json tfplan > plan.json
-- uses: StackGuardian/tirith-iac-governance-action@v2
+- uses: StackGuardian/tirith-iac-governance-action@v2.1.1
   with:
     fail-on-error: true`,
     outcome: {
@@ -54,7 +54,7 @@ export const DEMO_PHASES = [
       'files are removed.',
     delta: '4 files · +5 −77',
     tag: 'Optional platform',
-    code: `- uses: StackGuardian/tirith-iac-governance-action@v2
+    code: `- uses: StackGuardian/tirith-iac-governance-action@v2.1.1
   with:
     sg-api-key: \${{ secrets.SG_API_TOKEN }}
     sg-org: \${{ vars.SG_ORG }}
@@ -154,7 +154,7 @@ export const DEMO_PHASES = [
     tag: 'Post-apply',
     code: `- run: terraform show -json > state.json
 
-- uses: StackGuardian/tirith-iac-governance-action@v2
+- uses: StackGuardian/tirith-iac-governance-action@v2.1.1
   continue-on-error: true
   with:
     input-path: state.json
@@ -212,7 +212,7 @@ export const PIPELINE_TARGETS = [
 steps:
   - run: terraform plan -out=tfplan -input=false
 
-  - uses: StackGuardian/tirith-iac-governance-action@v2
+  - uses: StackGuardian/tirith-iac-governance-action@v2.1.1
     with:
       plan-file: tfplan
       fail-on-error: true`,
@@ -304,7 +304,7 @@ export const DEMO_REPOS = [
 
 steps:
   - run: terraform show -json tfplan > plan.json
-  - uses: StackGuardian/tirith-iac-governance-action@v2
+  - uses: StackGuardian/tirith-iac-governance-action@v2.1.1
     with:
       fail-on-error: true`,
   },

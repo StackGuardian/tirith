@@ -405,7 +405,7 @@ code:
 
 ```yaml
 - run: terraform show -json tfplan > plan.json
-- uses: StackGuardian/tirith-iac-governance-action@v2
+- uses: StackGuardian/tirith-iac-governance-action@v2.1.1
 ```
 
 With a `plan.json` in the working directory that is the whole integration — no `with:` block. Add
