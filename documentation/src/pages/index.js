@@ -130,7 +130,7 @@ const hero = {
        */
       command: `- run: terraform plan -out=tfplan -input=false
 
-- uses: StackGuardian/tirith-iac-governance-action@v2
+- uses: StackGuardian/tirith-iac-governance-action@v2.1.1
   with:
     plan-file: tfplan
     fail-on-error: true`,
