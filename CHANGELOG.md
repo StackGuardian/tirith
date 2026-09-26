@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [Unreleased]
+## [1.2.1] - 2026-09-08
 
 ### Added
 - `tirith lint`: check policy files for the mistakes that otherwise reach CI looking like real

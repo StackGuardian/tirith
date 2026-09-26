@@ -179,7 +179,7 @@ pip install -e .
 
 ```
 tirith --version
-tirith 1.2.0
+tirith 1.2.1
 ```
 
 Congratulations! Tirith has been setup in your system
@@ -405,7 +405,7 @@ code:
 
 ```yaml
 - run: terraform show -json tfplan > plan.json
-- uses: StackGuardian/tirith-iac-governance-action@v2
+- uses: StackGuardian/tirith-iac-governance-action@v2.1.1
 ```
 
 With a `plan.json` in the working directory that is the whole integration — no `with:` block. Add

@@ -12,9 +12,7 @@ from tirith.platform import report
 
 
 def _render(changes):
-    return report.render_markdown(
-        {}, "COMPLETED", "https://example.invalid/run", plan={"resource_changes": changes}
-    )
+    return report.render_markdown({}, "COMPLETED", "https://example.invalid/run", plan={"resource_changes": changes})
 
 
 def _fence(body):
@@ -106,8 +104,10 @@ def test_the_attribute_that_forces_a_replacement_is_named():
     )
     fence = _fence(body)
     assert "# forces replacement" in fence
-    assert [line for line in fence.splitlines() if "forces replacement" in line][0].lstrip().startswith(
-        "~ triggers_replace"
+    assert (
+        [line for line in fence.splitlines() if "forces replacement" in line][0]
+        .lstrip()
+        .startswith("~ triggers_replace")
     )
 
 

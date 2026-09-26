@@ -180,7 +180,6 @@ def _fit_plan_rows(entries):
     return bare[:PLAN_LINE_LIMIT], hidden_detail, len(bare) - PLAN_LINE_LIMIT
 
 
-
 def summarize(policy_results):
     """
     Collapse the results into counts plus a flat finding list.

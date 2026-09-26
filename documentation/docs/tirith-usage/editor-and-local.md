@@ -13,15 +13,8 @@ site_name: Tirith
 slug: editor-and-local/
 ---
 
-:::note Not in 1.2.0
-`tirith lint` and `tirith fmt` are on `main` and will arrive in the next release. Until then,
-install from the branch rather than the tag:
-`pip install "git+https://github.com/StackGuardian/tirith.git@main"`. Evaluation, the second half
-of the loop, works on any installed version.
-:::
-
-CI is the last place a policy should fail. This page is about the loop before that, running
-Tirith on your own machine while the code is still being written.
+CI is the last place a policy should fail. This page is about the loop before that — running
+Tirith on your own machine, while the code is still being written.
 
 It matters most when an agent is drafting the policy for you. Generated policy JSON is plausible
 by construction: it parses, it looks right, and a policy that matches nothing is indistinguishable
@@ -88,7 +81,7 @@ Tirith publishes both commands as pre-commit hooks:
 ```yaml title=".pre-commit-config.yaml"
 repos:
   - repo: https://github.com/StackGuardian/tirith
-    rev: main
+    rev: 1.2.1         # the first tag that publishes the hooks
     hooks:
       - id: tirith-lint
       - id: tirith-fmt
