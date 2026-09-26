@@ -114,25 +114,36 @@ export default function CopyPageMenu() {
    */
   const copy = useCallback(async () => {
     setOpen(false);
-    try {
-      const res = await fetch(mdPath);
+    const markdown = fetch(mdPath).then(async (res) => {
       const text = await res.text();
       // A missing .md is served as the site's 404 page, which is a 200 full of HTML on
       // GitHub Pages. Checking the first character catches that; checking res.ok alone
       // would not.
       if (!res.ok || text.trimStart().startsWith('<')) throw new Error('not markdown');
+      return text;
+    });
+    try {
       try {
-        await navigator.clipboard.writeText(text);
+        // Handed the pending text rather than awaited first: Safari drops the click's user
+        // activation across an awaited fetch and then refuses writeText and execCommand alike.
+        await navigator.clipboard.write([
+          new ClipboardItem({'text/plain': markdown.then((t) => new Blob([t], {type: 'text/plain'}))}),
+        ]);
       } catch {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.setAttribute('readonly', '');
-        ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
-        document.body.appendChild(ta);
-        ta.select();
-        const ok = document.execCommand('copy');
-        document.body.removeChild(ta);
-        if (!ok) throw new Error('copy refused');
+        const text = await markdown;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+          document.body.appendChild(ta);
+          ta.select();
+          const ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          if (!ok) throw new Error('copy refused');
+        }
       }
       setState('done');
     } catch {

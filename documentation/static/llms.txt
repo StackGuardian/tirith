@@ -23,12 +23,12 @@ Without `--fail-on-error`, Tirith reports findings but does not fail the job.
 - **Not on PyPI.** `pip install tirith` installs an unrelated project of the same name, and
   `pip install py-tirith` finds nothing. The package name in `setup.py` is `py-tirith` and it
   is not published. Install from git:
-  `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"`
+  `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"`
 - **The interactive interface needs an extra**, and the same git URL:
   `pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git'`, then
   `tirith ui`. Requires Python 3.9; Tirith itself supports 3.8 and newer.
-- **`tirith lint` and `tirith fmt` exist, but not in 1.2.0.** They are on `main` and arrive in
-  the next release; install `@main` to use them today. The CLI dispatches four subcommands:
+- **`tirith lint` and `tirith fmt` exist since 1.2.1.** They are not in 1.2.0. The CLI
+  dispatches four subcommands:
   `lint`, `fmt`, `ui` and `platform`. Lint checks a policy's shape without a plan document; fmt
   rewrites it into the canonical layout. Both exit `3` on a finding, with no `--fail-on-error`.
 - **Exit codes are a contract, not a convention.** `0` passed, `3` a policy failed, `1`
@@ -68,8 +68,8 @@ Without `--fail-on-error`, Tirith reports findings but does not fail the job.
   `eval_expression: "not_applicable || the_rule"`, passes cleanly on unrelated plans and still
   fails on real violations.
 - **The pre-commit hooks are published.** `.pre-commit-hooks.yaml` carries `tirith-lint` and
-  `tirith-fmt`, both run on the policy files a commit touches. Pin `rev` to a branch until lint
-  and fmt are in a release.
+  `tirith-fmt`, both run on the policy files a commit touches. Pin `rev` to `1.2.1`, the first
+  tag that publishes them.
 
 ## Fetching this documentation
 

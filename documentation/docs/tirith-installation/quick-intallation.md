@@ -53,22 +53,22 @@ Run the following command in your terminal to install Tirith directly from the G
 pinned to a released tag:
 
 ```bash
-pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
 ```
 
 Pin the tag rather than tracking the default branch, so an install today and an install next month
-give you the same tool. `1.2.0` is the newest tag;
+give you the same tool. `1.2.1` is the newest tag;
 `git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists them all.
 
 To use [the interactive interface](../tirith-usage/interactive-interface.md) as well, install the
 optional extra, which needs Python 3.9 or newer:
 
 ```bash
-pip install "py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0"
+pip install "py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.1"
 ```
 
 ### Step 2: Verify Installation
-Once installed, verify that Tirith is working by checking its version. You should see `1.2.0`,
+Once installed, verify that Tirith is working by checking its version. You should see `1.2.1`,
 which confirms both that the install succeeded and that you got the tag you asked for.
 ```bash
 tirith --version

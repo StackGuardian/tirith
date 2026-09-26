@@ -221,10 +221,6 @@ exit and the two cases become one.
 
 ## As a pre-commit hook
 
-[NOTE] Not in 1.2.0
-`tirith lint` and `tirith fmt` are on `main` and arrive in the next release, so pin `rev` to a
-branch until then. Everything else on this page works on 1.2.0.
-
 Catch a broken policy before it is committed, let alone before CI runs it. Tirith publishes a
 `tirith-lint` and a `tirith-fmt` hook:
 

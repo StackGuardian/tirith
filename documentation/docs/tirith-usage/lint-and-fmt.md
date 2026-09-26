@@ -22,12 +22,11 @@ tirith lint .tirith/policies    # is the policy well formed?
 tirith fmt .tirith/policies     # rewrite it into the canonical layout
 ```
 
-:::note Not in 1.2.0
-Both commands are on `main` and will arrive in the next release. To use them today, install from
-the branch rather than the `1.2.0` tag:
+:::note Since 1.2.1
+Both commands shipped in `1.2.1`. On `1.2.0` or earlier, upgrade:
 
 ```bash
-pip install "git+https://github.com/StackGuardian/tirith.git@main"
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
 ```
 :::
 

@@ -366,7 +366,8 @@ function terraformProvide(args, input) {
       if (!matches(rc)) continue;
       resourceFound = true;
       const after = rc.change && rc.change.after;
-      if (!after) {
+      // Python truthiness: an empty `after` counts as no changes, not as a missing attribute.
+      if (!after || (typeof after === 'object' && Object.keys(after).length === 0)) {
         out.push({err: `No Terraform changes found for resource type: '${type}'`, severity: 0});
         continue;
       }

@@ -113,7 +113,7 @@ const FEATURED = {
       id: 'gate',
       label: 'What it writes into the job',
       command:
-        'pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"\n' +
+        'pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"\n' +
         'tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error',
     },
   ],
@@ -342,7 +342,7 @@ export default function Skills() {
           <SectionHead
             num="03"
             title="What it covers"
-            lede="Fourteen references across three skills, each a file in the skills folder. Your agent loads the entry skill and pulls the rest in as the task needs them."
+            lede="Fifteen references across three skills, each a file in the skills folder. Your agent loads the entry skill and pulls the rest in as the task needs them."
           />
           {SKILLS.map((group) => (
             <div className={styles.skillGroup} key={group.group}>

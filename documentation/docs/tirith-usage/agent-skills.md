@@ -41,12 +41,12 @@ skill until it is restarted; a new session sees it immediately.
 |---|---|
 | `--cursor` | Also install `.cursor/rules/tirith-policies.mdc`, scoped with globs |
 | `--global` | Install into `~/.claude/skills/` instead of this repository |
-| `--ref REF` | Install from a branch or tag instead of `main` |
+| `--ref REF` | Install from a branch, tag or commit instead of `main` |
 | `--help` | The same summary, from the script itself |
 
 The script downloads one archive of the repository, copies the skills out of it, and does nothing
-else: no package is installed, no `PATH` is changed, nothing is executed after the download, and
-it never touches a file it did not create. It extracts to a temporary directory and copies each
+else: no package is installed, no `PATH` is changed, and nothing is executed after the download.
+Each skill directory it installs is replaced wholesale, so local edits inside one are lost. It extracts to a temporary directory and copies each
 skill into place only once the whole archive has arrived, because a half-written skill is worse
 than none: an agent reads whatever files exist and works from a partial vocabulary without saying
 so. It needs `curl` and `tar`.
@@ -159,7 +159,6 @@ curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 Re-running is safe: it replaces each skill directory it owns wholesale, so a file removed upstream
 does not linger, and it leaves everything else alone.
 
-`--ref` takes a branch or a commit, which is worth knowing for a fork or a pull request. It cannot
-yet take a release tag: the pack was added after `1.2.0`, so `main` is the only ref that has it,
-and asking for a tag that predates it fails with exit `1` rather than installing something
-incomplete.
+`--ref` takes a branch, a tag or a commit of this repository. A tag only carries the skills that
+existed when it was cut: `1.2.1` has `tirith-policies` alone, and a tag with no skills at all fails
+with exit `1` rather than installing something incomplete.

@@ -17,8 +17,9 @@ Add `--json` to get the result document instead of the pretty printer.
 | `3` | A policy ran and said no |
 | `130` | Interrupted |
 
-`2` is never returned by Tirith itself. An unknown first argument is reported by name
-(`tirith: 'lnit' is not a tirith command`) and exits `1`, the same as a tool or input problem.
+`2` is never a verdict: it is argparse rejecting a flag on `lint`, `fmt` or `platform check`.
+An unknown first argument is reported by name (`tirith: 'lnit' is not a tirith command`) and
+exits `1`, the same as a tool or input problem.
 Tirith has no timeout code: a `platform check` that times out is `1` too.
 
 `tirith lint` and `tirith fmt` use the same codes and need no `--fail-on-error`: `3` for a finding,
@@ -37,10 +38,11 @@ gate needs the flag.
 `terraform_resource_type: "aws_db_instance"` on a plan with no database is severity `1`, "resource
 type not found". Under the default `error_tolerance: 0` that is a **failure, exit `3`**, so the
 policy refuses every unrelated plan. With `error_tolerance: 1` it is skipped instead; if it was the
-only evaluator, `final_result` is `null` and the exit is `1`. There is no setting that yields
-"nothing in scope, pass" for a single-evaluator scoped policy. Choose deliberately: `1` with CI
-treating exit `1` as advisory for that policy, or put several types' checks in one policy so a
-skip on one leaves a verdict from the others. Not tracked as a Tirith issue at the time of writing.
+only evaluator, `final_result` is `null` and the exit is `1`. No `error_tolerance` alone yields
+"nothing in scope, pass". Add a guard instead: a `count` evaluator on the same type with
+`Equals 0`, which returns `0` for an absent type rather than erroring, and an expression of
+`guard || check`. Keep `error_tolerance: 1` on the check so it is skipped rather than failed and
+masked. `tirith-standards` ships this shape in `examples/org-standards/naming.json`.
 
 ## `final_result: null` is not a pass
 

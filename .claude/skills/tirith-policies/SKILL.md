@@ -15,8 +15,8 @@ Not from PyPI. `pip install tirith` installs an **unrelated project**; `py-tirit
 `setup.py` name and is not published. Install from git, pinned to a tag:
 
 ```bash
-pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-tirith --version   # 1.2.0
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
+tirith --version   # 1.2.1
 ```
 
 ## The one rule
@@ -39,8 +39,9 @@ tirith -policy-path .tirith/policies -input-path should-fail.json --fail-on-erro
 | `1` | No verdict could be reached | Fail the job, but report a **tool or input** problem |
 
 - Never collapse `3` into `1`. A job that cannot tell them apart reports an outage as a violation.
-- `2` is never returned. A bad argument or unknown subcommand exits `1`, as does a platform
-  timeout. `1` means tool, input or usage; it never means a policy said no.
+- `2` is only argparse rejecting a flag (`tirith lint --bogus`, `tirith platform check` with a
+  missing flag). An unknown subcommand exits `1`, as does a platform timeout. Neither `1` nor `2`
+  ever means a policy said no.
 - **`final_result: null` is not a pass.** Every check was skipped, nothing was evaluated, exit `1`.
 - Without `--fail-on-error` the exit is always `0`. Every real gate needs the flag.
 
@@ -91,16 +92,16 @@ and invert it.
   `error_tolerance: 2` a resource lacking the attribute is *skipped*, not failed. If every
   evaluator is skipped the policy is `final_result: null`, exit `1`. Skipping is not passing.
 - **A type-scoped policy refuses a plan with none of that type.** Severity 1 under the default
-  tolerance is exit `3`; with `error_tolerance: 1` it is exit `1`. Neither is `0`. See
-  `reference/verdicts.md`.
+  tolerance is exit `3`; with `error_tolerance: 1` it is exit `1`. Neither is `0`; a `count`
+  guard is. See `reference/verdicts.md`.
 - **The delete action is spelled `delete`.** `"destroy"` matches nothing and the guard exits `0`.
   `action` emits one result per action: `NotEquals "delete"` blocks deletes and replacements,
   `ContainedIn ["delete"]` with `!` blocks only a pure delete. See `reference/terraform-plan.md`.
 - **An unknown `condition.type` exits `3`, not `1`.** The message names it (`` `Exists` is not a
   supported evaluator ``) but `errors` is empty, so CI sees a violation. Check the type against
   the closed list, not your memory.
-- **`tirith lint` catches most of the above before CI does**, and needs no plan document. It is
-  on `main` but not in `1.2.0`, so pin `@main` to use it. `reference/validate.md` has the detail.
+- **`tirith lint` catches most of the above before CI does**, and needs no plan document. It ships
+  from `1.2.1`. `reference/validate.md` has the detail.
 
 ## Test it with the bundled example
 

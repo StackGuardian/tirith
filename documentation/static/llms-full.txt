@@ -18,7 +18,7 @@ Summary: Learn how Tirith simplifies security, governance, and compliance for in
 
 Explore a failing evaluation down to the resource that caused it, assemble policies from a form, and
 experiment in a playground with worked examples. Install it with
-`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0'` and run
+`pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.1'` and run
 `tirith ui` — see
 [the interactive interface](tirith-usage/interactive-interface.md).
 
@@ -89,22 +89,22 @@ Run the following command in your terminal to install Tirith directly from the G
 pinned to a released tag:
 
 ```bash
-pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
 ```
 
 Pin the tag rather than tracking the default branch, so an install today and an install next month
-give you the same tool. `1.2.0` is the newest tag;
+give you the same tool. `1.2.1` is the newest tag;
 `git ls-remote --tags https://github.com/StackGuardian/tirith.git` lists them all.
 
 To use [the interactive interface](../tirith-usage/interactive-interface.md) as well, install the
 optional extra, which needs Python 3.9 or newer:
 
 ```bash
-pip install "py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0"
+pip install "py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.1"
 ```
 
 ### Step 2: Verify Installation
-Once installed, verify that Tirith is working by checking its version. You should see `1.2.0`,
+Once installed, verify that Tirith is working by checking its version. You should see `1.2.1`,
 which confirms both that the install succeeded and that you got the tag you asked for.
 ```bash
 tirith --version
@@ -2878,12 +2878,11 @@ tirith lint .tirith/policies    # is the policy well formed?
 tirith fmt .tirith/policies     # rewrite it into the canonical layout
 ```
 
-[NOTE] Not in 1.2.0
-Both commands are on `main` and will arrive in the next release. To use them today, install from
-the branch rather than the `1.2.0` tag:
+[NOTE] Since 1.2.1
+Both commands shipped in `1.2.1`. On `1.2.0` or earlier, upgrade:
 
 ```bash
-pip install "git+https://github.com/StackGuardian/tirith.git@main"
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
 ```
 
 ## `tirith lint`
@@ -3401,10 +3400,6 @@ exit and the two cases become one.
 
 ## As a pre-commit hook
 
-[NOTE] Not in 1.2.0
-`tirith lint` and `tirith fmt` are on `main` and arrive in the next release, so pin `rev` to a
-branch until then. Everything else on this page works on 1.2.0.
-
 Catch a broken policy before it is committed, let alone before CI runs it. Tirith publishes a
 `tirith-lint` and a `tirith-fmt` hook:
 
@@ -3473,7 +3468,7 @@ pipeline should pay to install an interface they never open. It needs Python 3.9
 Tirith itself still supports 3.8.
 
 ```bash
-pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.0'
+pip install 'py-tirith[tui] @ git+https://github.com/StackGuardian/tirith.git@1.2.1'
 ```
 
 Tirith is not on PyPI — `pip install py-tirith` finds nothing and `pip install tirith` installs an
@@ -3719,12 +3714,12 @@ skill until it is restarted; a new session sees it immediately.
 |---|---|
 | `--cursor` | Also install `.cursor/rules/tirith-policies.mdc`, scoped with globs |
 | `--global` | Install into `~/.claude/skills/` instead of this repository |
-| `--ref REF` | Install from a branch or tag instead of `main` |
+| `--ref REF` | Install from a branch, tag or commit instead of `main` |
 | `--help` | The same summary, from the script itself |
 
 The script downloads one archive of the repository, copies the skills out of it, and does nothing
-else: no package is installed, no `PATH` is changed, nothing is executed after the download, and
-it never touches a file it did not create. It extracts to a temporary directory and copies each
+else: no package is installed, no `PATH` is changed, and nothing is executed after the download.
+Each skill directory it installs is replaced wholesale, so local edits inside one are lost. It extracts to a temporary directory and copies each
 skill into place only once the whole archive has arrived, because a half-written skill is worse
 than none: an agent reads whatever files exist and works from a partial vocabulary without saying
 so. It needs `curl` and `tar`.
@@ -3837,10 +3832,9 @@ curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh
 Re-running is safe: it replaces each skill directory it owns wholesale, so a file removed upstream
 does not linger, and it leaves everything else alone.
 
-`--ref` takes a branch or a commit, which is worth knowing for a fork or a pull request. It cannot
-yet take a release tag: the pack was added after `1.2.0`, so `main` is the only ref that has it,
-and asking for a tag that predates it fails with exit `1` rather than installing something
-incomplete.
+`--ref` takes a branch, a tag or a commit of this repository. A tag only carries the skills that
+existed when it was cut: `1.2.1` has `tirith-policies` alone, and a tag with no skills at all fails
+with exit `1` rather than installing something incomplete.
 
 
 ==============================================================================

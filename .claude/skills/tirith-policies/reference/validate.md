@@ -17,9 +17,8 @@ With no path it lints `.tirith/policies` if that directory exists, otherwise the
 directory. JSON that is not a policy is skipped, so pointing it at a directory holding plan
 documents is safe.
 
-**It is not in 1.2.0.** `tirith lint` and `tirith fmt` are on `main` and arrive in the next
-release. Install `@main` rather than the tag if you want them now:
-`pip install "git+https://github.com/StackGuardian/tirith.git@main"`.
+**It ships from 1.2.1.** `tirith lint` and `tirith fmt` are not in `1.2.0`; upgrade with
+`pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"`.
 
 `tirith fmt` rewrites a policy into the canonical layout, and `tirith fmt --check` exits `3` if
 a file would change. Neither command needs a plan document, which is why both work in a
@@ -40,7 +39,7 @@ because experimenting with a half-written policy is the point of a playground.
 
 ## Without either command
 
-Pinned to `1.2.0` and unable to install `@main`? Check the shape against the closed vocabulary by
+Pinned to `1.2.0` and unable to upgrade? Check the shape against the closed vocabulary by
 hand, then evaluate the policy against a document that should fail it. The second is the one that
 matters, and it works on every version.
 
