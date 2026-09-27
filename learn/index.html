@@ -7,393 +7,890 @@
 <link rel="alternate" type="text/plain" title="llms.txt" href="https://stackguardian.github.io/tirith/llms.txt">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"><link rel="stylesheet" href="/tirith/assets/css/styles.7b05523f.css">
-<script src="/tirith/assets/js/runtime~main.96318148.js" defer="defer"></script>
-<script src="/tirith/assets/js/main.ec49a873.js" defer="defer"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"><link rel="stylesheet" href="/tirith/assets/css/styles.dda78fa9.css">
+<script src="/tirith/assets/js/runtime~main.f00e2e50.js" defer="defer"></script>
+<script src="/tirith/assets/js/main.c6908118.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
-<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();t(null!==e?e:"light")}(),function(){try{const n=new URLSearchParams(window.location.search).entries();for(var[t,e]of n)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top navbarHideable_m1mJ"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/tirith/"><div class="navbar__logo"><img src="/tirith/img/tirith-lockup.svg" alt="Tirith, home" class="themedComponent_mlkZ themedComponent--light_NVdE" height="28"><img src="/tirith/img/tirith-lockup-dark.svg" alt="Tirith, home" class="themedComponent_mlkZ themedComponent--dark_xIcU" height="28"></div></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/tirith/learn/">Learn</a><a class="navbar__item navbar__link" href="/tirith/docs/getting-started-with-tirith/">Docs</a></div><div class="navbar__items navbar__items--right"><a class="navbar__item navbar__link" href="/tirith/at-scale/">Tirith at scale</a><a href="https://github.com/StackGuardian/tirith" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0"><main class="page_AxKn"><header class="hero_QGG1"><div class="letterhead_Agip"><svg class="letterheadMark_thjx" width="40" height="40" viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M45.1211 18.6412C46.2318 18.2149 47.4741 18.8466 47.6704 20.02C47.8869 21.3145 48 22.644 48 24C48 37.2548 37.2548 48 24 48C15.4856 48 8.00685 43.5661 3.74648 36.8814C3.10701 35.8781 3.60721 34.577 4.71797 34.1506L13.106 30.9303C14.2965 30.4732 15.6335 30.6112 16.7056 31.3017L22.917 35.3024C23.5765 35.7272 24.4235 35.7272 25.083 35.3024L32.083 30.7938C32.6546 30.4256 33 29.7923 33 29.1124V25.3558C33 24.1138 33.7654 23.0002 34.9249 22.5551L45.1211 18.6412Z"></path><path d="M24 0C32.9579 0 40.7687 4.90815 44.8919 12.1816C45.46 13.1838 44.9485 14.4227 43.8729 14.8355L36.138 17.8044C34.625 18.3851 33 17.2682 33 15.6476C33 14.8832 32.4392 14.2344 31.6828 14.1237L26.8945 13.4234C24.9751 13.1426 23.0249 13.1426 21.1055 13.4234L16.7105 14.0662C15.7282 14.2099 15 15.0524 15 16.0452V23.1699C15 24.8259 13.9795 26.3107 12.4335 26.9042L3.09798 30.4879C2.02273 30.9007 0.813867 30.323 0.565312 29.1984C0.195368 27.5245 0 25.7851 0 24C0 10.7452 10.7452 0 24 0Z"></path></svg><span class="letterheadName_hcg6">Tirith</span><span class="letterheadRule_Rmta" aria-hidden="true"></span><span class="letterheadNote_Mtyl">Six lessons and a playground</span></div><h1 class="h1_l_5v">Learn to write a Tirith policy.</h1><div class="heroPlate_CZ7f"><div class="heroLede_EHVF"><p class="lede_xjmc">Six steps, one document, one policy that grows a rule at a time. Each step is editable — change a value, run it, and watch the verdict, the messages and the exit code move with it.</p><div class="heroLinks_b5Th"><a class="btnPrimary_MyJw" href="#playground">Skip to the playground <span aria-hidden="true">→</span></a><a class="btnGhost_PTVN" href="/tirith/docs/tirith-policies/tirith-policy-structure/">Policy reference <span aria-hidden="true">→</span></a></div></div><div class="heroNote_acvu"><span class="fieldLabel_t7vp">Browser playground</span><p class="caveat_XPww">This runs a Tirith-compatible teaching subset in your browser, not the Python package. Edit either pane and press <strong>Run check</strong>. The examples cover <code>stackguardian/json</code>; install Tirith to evaluate OpenTofu, Terraform, Kubernetes, Infracost, and StackGuardian Workflow inputs.</p><div class="heroLinks_b5Th"><a class="btnGhost_PTVN" href="/tirith/docs/tirith-reference/evaluators/">Every condition <span aria-hidden="true">→</span></a><a class="btnGhost_PTVN" href="/tirith/docs/tirith-usage/interactive-interface/">tirith ui <span aria-hidden="true">→</span></a></div></div></div></header><nav class="toc_ETBo" aria-label="Lessons"><a class="tocItem_JgCc" href="#shell"><span class="tocNum_HLDD">01</span><span>A policy is a document</span></a><a class="tocItem_JgCc" href="#many"><span class="tocNum_HLDD">02</span><span>One check, many values</span></a><a class="tocItem_JgCc" href="#combine"><span class="tocNum_HLDD">03</span><span>Combining checks</span></a><a class="tocItem_JgCc" href="#detector"><span class="tocNum_HLDD">04</span><span>The detector that lies</span></a><a class="tocItem_JgCc" href="#tolerance"><span class="tocNum_HLDD">05</span><span>When the path is not there</span></a><a class="tocItem_JgCc" href="#together"><span class="tocNum_HLDD">06</span><span>The whole thing</span></a><a class="tocItem_JgCc" href="#playground"><span class="tocNum_HLDD">07</span><span>Playground</span></a></nav><section class="lesson_mgLs" id="shell"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">01</span><h2 class="lessonTitle_vQ9i">A policy is a document</h2></div><span class="teaches_v8f3">meta · evaluators · eval_expression</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Every Tirith policy has the same three parts. <code class="inlineCode_Ck7o">meta</code> names the provider that will read your input. <code class="inlineCode_Ck7o">evaluators</code> is the list of checks. <code class="inlineCode_Ck7o">eval_expression</code> says how their results combine into one verdict. Nothing here is a program: it is a description of what to look for.</p><p class="aside_Hio8">The provider decides what kind of document you are allowed to feed in. stackguardian/json reads any JSON or YAML by key path, which is why it is the one this playground implements.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Change the region to <code class="inlineCode_Ck7o">us-east-1</code> and watch the verdict and the exit code move.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="shell-policy">{
+<script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();t(null!==e?e:"light")}(),function(){try{const n=new URLSearchParams(window.location.search).entries();for(var[t,e]of n)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top navbarHideable_m1mJ"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/tirith/"><div class="navbar__logo"><img src="/tirith/img/tirith-lockup.svg" alt="Tirith, home" class="themedComponent_mlkZ themedComponent--light_NVdE" height="28"><img src="/tirith/img/tirith-lockup-dark.svg" alt="Tirith, home" class="themedComponent_mlkZ themedComponent--dark_xIcU" height="28"></div></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/tirith/learn/">Learn</a><a class="navbar__item navbar__link" href="/tirith/skills/">Skills</a><a class="navbar__item navbar__link" href="/tirith/docs/getting-started-with-tirith/">Docs</a></div><div class="navbar__items navbar__items--right"><a class="navbar__item navbar__link" href="/tirith/at-scale/">Tirith at scale</a><a href="https://github.com/StackGuardian/tirith" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0"><main class="page_AxKn"><header class="hero_QGG1"><div class="letterhead_Agip"><svg class="letterheadMark_thjx" width="40" height="40" viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M45.1211 18.6412C46.2318 18.2149 47.4741 18.8466 47.6704 20.02C47.8869 21.3145 48 22.644 48 24C48 37.2548 37.2548 48 24 48C15.4856 48 8.00685 43.5661 3.74648 36.8814C3.10701 35.8781 3.60721 34.577 4.71797 34.1506L13.106 30.9303C14.2965 30.4732 15.6335 30.6112 16.7056 31.3017L22.917 35.3024C23.5765 35.7272 24.4235 35.7272 25.083 35.3024L32.083 30.7938C32.6546 30.4256 33 29.7923 33 29.1124V25.3558C33 24.1138 33.7654 23.0002 34.9249 22.5551L45.1211 18.6412Z"></path><path d="M24 0C32.9579 0 40.7687 4.90815 44.8919 12.1816C45.46 13.1838 44.9485 14.4227 43.8729 14.8355L36.138 17.8044C34.625 18.3851 33 17.2682 33 15.6476C33 14.8832 32.4392 14.2344 31.6828 14.1237L26.8945 13.4234C24.9751 13.1426 23.0249 13.1426 21.1055 13.4234L16.7105 14.0662C15.7282 14.2099 15 15.0524 15 16.0452V23.1699C15 24.8259 13.9795 26.3107 12.4335 26.9042L3.09798 30.4879C2.02273 30.9007 0.813867 30.323 0.565312 29.1984C0.195368 27.5245 0 25.7851 0 24C0 10.7452 10.7452 0 24 0Z"></path></svg><span class="letterheadName_hcg6">Tirith</span><span class="letterheadRule_Rmta" aria-hidden="true"></span><span class="letterheadNote_Mtyl">Three providers, twenty-three lessons</span></div><h1 class="h1_l_5v">Learn to write a Tirith policy.</h1><div class="heroPlate_CZ7f"><div class="heroLede_EHVF"><p class="lede_xjmc">Pick the thing you actually need to gate and learn on that. The syntax is the same for all three, so the Terraform track teaches it in full and the other two teach only what changes. Every step is editable: change a value, run it, and watch the verdict, the messages and the exit code move with it.</p><div class="heroLinks_b5Th"><a class="btnPrimary_MyJw" href="#playground">Skip to the playground <span aria-hidden="true">→</span></a><a class="btnGhost_PTVN" href="/tirith/docs/tirith-policies/tirith-policy-structure/">Policy reference <span aria-hidden="true">→</span></a></div></div><div class="heroNote_acvu"><span class="fieldLabel_t7vp">Browser playground</span><p class="caveat_XPww">This runs a Tirith-compatible teaching subset in your browser, not the Python package. Edit either pane and press <strong>Run check</strong>. It implements<code>stackguardian/json</code>, <code>stackguardian/terraform_plan</code> and<code>stackguardian/kubernetes</code>, and its verdicts are checked against the real engine. Install Tirith for Infracost and StackGuardian Workflow inputs, and for anything you intend to trust.</p><div class="heroLinks_b5Th"><a class="btnGhost_PTVN" href="/tirith/docs/tirith-reference/evaluators/">Every condition <span aria-hidden="true">→</span></a><a class="btnGhost_PTVN" href="/tirith/docs/tirith-usage/interactive-interface/">tirith ui <span aria-hidden="true">→</span></a></div></div></div></header><section class="chooser_PCGv" aria-labelledby="choose-provider"><span class="chooserLabel_n_wN" id="choose-provider">Choose what you want to gate</span><div class="chooserTabs_xjny" role="radiogroup" aria-labelledby="choose-provider"><button type="button" role="radio" aria-checked="true" class="tabOn_vjlt"><span class="tabName_Jewy">Terraform plan</span><span class="tabProvider_c0Ym">stackguardian/terraform_plan</span><span class="tabCount_CVhv">9<!-- --> <!-- -->lessons</span></button><button type="button" role="radio" aria-checked="false" class="tab_OkYA"><span class="tabName_Jewy">Kubernetes</span><span class="tabProvider_c0Ym">stackguardian/kubernetes</span><span class="tabCount_CVhv">8<!-- --> <!-- -->lessons</span></button><button type="button" role="radio" aria-checked="false" class="tab_OkYA"><span class="tabName_Jewy">JSON or YAML</span><span class="tabProvider_c0Ym">stackguardian/json</span><span class="tabCount_CVhv">6<!-- --> <!-- -->lessons</span></button></div></section><div><section class="track_d6RD" id="terraform"><span class="trackProvider_Yryl">stackguardian/terraform_plan</span><h2 class="trackTitle_Z_YQ">An OpenTofu or Terraform plan</h2><p class="trackLede_Jicb">The provider Tirith exists for, and the one to learn on. Nine lessons that build one policy a rule at a time, against a plan of the shape your pipeline already produces with <code class="inlineCode_Ck7o">terraform show -json</code>.</p><p class="trackForYou_Yj4p">Start here. The syntax you learn on a plan is the same syntax everywhere else.</p></section><nav class="toc_ETBo" aria-label="Lessons: An OpenTofu or Terraform plan"><a class="tocItem_JgCc" href="#tf-shell"><span class="tocNum_HLDD">01</span><span>A policy is a document</span></a><a class="tocItem_JgCc" href="#tf-many"><span class="tocNum_HLDD">02</span><span>One check, every matching resource</span></a><a class="tocItem_JgCc" href="#tf-every"><span class="tocNum_HLDD">03</span><span>Every resource in the plan</span></a><a class="tocItem_JgCc" href="#tf-combine"><span class="tocNum_HLDD">04</span><span>Combining checks</span></a><a class="tocItem_JgCc" href="#tf-action"><span class="tocNum_HLDD">05</span><span>Gate the change, not the value</span></a><a class="tocItem_JgCc" href="#tf-nested"><span class="tocNum_HLDD">06</span><span>Reaching inside a resource</span></a><a class="tocItem_JgCc" href="#tf-tolerance"><span class="tocNum_HLDD">07</span><span>When the attribute is not there</span></a><a class="tocItem_JgCc" href="#tf-count"><span class="tocNum_HLDD">08</span><span>Zero is an answer</span></a><a class="tocItem_JgCc" href="#tf-together"><span class="tocNum_HLDD">09</span><span>The whole thing</span></a><a class="tocItem_JgCc" href="#playground"><span class="tocNum_HLDD">10</span><span>Playground</span></a></nav><section class="lesson_mgLs" id="tf-shell"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">01</span><h2 class="lessonTitle_vQ9i">A policy is a document</h2></div><span class="teaches_v8f3">meta · evaluators · eval_expression</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Every Tirith policy has the same three parts. <code class="inlineCode_Ck7o">meta</code> names the provider that will read your input. <code class="inlineCode_Ck7o">evaluators</code> is the list of checks. <code class="inlineCode_Ck7o">eval_expression</code> says how their results combine into one verdict. Nothing here is a program: it is a description of what to look for in a plan you are about to apply.</p><p class="aside_Hio8">A plan is not a tree you walk, so there is no path here. It is a list of resource changes, and you address one by naming a <strong>resource type</strong> and an <strong>attribute on it</strong>. One database matches, so there is one result.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Change the value to <code class="inlineCode_Ck7o">false</code>. The verdict, the message and the exit code all move together.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-shell-policy">{
   &quot;meta&quot;: {
     &quot;version&quot;: &quot;v1&quot;,
-    &quot;required_provider&quot;: &quot;stackguardian/json&quot;
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
   },
   &quot;evaluators&quot;: [
     {
-      &quot;id&quot;: &quot;right_region&quot;,
+      &quot;id&quot;: &quot;db_encrypted&quot;,
       &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;region&quot;
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_db_instance&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;storage_encrypted&quot;
       },
       &quot;condition&quot;: {
         &quot;type&quot;: &quot;Equals&quot;,
-        &quot;value&quot;: &quot;eu-central-1&quot;
+        &quot;value&quot;: true
       }
     }
   ],
-  &quot;eval_expression&quot;: &quot;right_region&quot;
-}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="shell-input">{
-  &quot;environment&quot;: &quot;production&quot;,
-  &quot;region&quot;: &quot;eu-central-1&quot;,
-  &quot;services&quot;: [
+  &quot;eval_expression&quot;: &quot;db_encrypted&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-shell-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
     {
-      &quot;name&quot;: &quot;api&quot;,
-      &quot;replicas&quot;: 3,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/api:1.4.2&quot;
-    },
-    {
-      &quot;name&quot;: &quot;worker&quot;,
-      &quot;replicas&quot;: 1,
-      &quot;public&quot;: false,
-      &quot;image&quot;: &quot;ghcr.io/acme/worker:0.9.0&quot;
-    },
-    {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;replicas&quot;: 2,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/admin:latest&quot;
-    }
-  ]
-}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="passed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>true</strong> · exit<!-- --> <strong>0</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="pass">Check: right_region</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;eu-central-1&quot;` is equal to `&quot;eu-central-1&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 1 Failed: 0 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; right_region</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">0</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="many"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">02</span><h2 class="lessonTitle_vQ9i">One check, many values</h2></div><span class="teaches_v8f3">wildcards · every value must pass</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">A <code class="inlineCode_Ck7o">*</code> in the key path iterates a list or a dict, and the provider returns one value per match. The condition then runs against <strong>each value independently, and the evaluator passes only if every one passes.</strong> Three services, three result lines, one verdict.</p><p class="aside_Hio8">This is the rule that surprises people most often. A wildcard check is not &quot;most of them are fine&quot; — a single value that fails, fails the evaluator.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Drop the value to <code class="inlineCode_Ck7o">1</code>. One failing line is the difference between exit 3 and exit 0.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="many-policy">{
-  &quot;meta&quot;: {
-    &quot;version&quot;: &quot;v1&quot;,
-    &quot;required_provider&quot;: &quot;stackguardian/json&quot;
-  },
-  &quot;evaluators&quot;: [
-    {
-      &quot;id&quot;: &quot;redundant&quot;,
-      &quot;description&quot;: &quot;Every service runs more than one replica&quot;,
-      &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.replicas&quot;
-      },
-      &quot;condition&quot;: {
-        &quot;type&quot;: &quot;GreaterThanEqualTo&quot;,
-        &quot;value&quot;: 2
-      }
-    }
-  ],
-  &quot;eval_expression&quot;: &quot;redundant&quot;
-}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="many-input">{
-  &quot;environment&quot;: &quot;production&quot;,
-  &quot;region&quot;: &quot;eu-central-1&quot;,
-  &quot;services&quot;: [
-    {
-      &quot;name&quot;: &quot;api&quot;,
-      &quot;replicas&quot;: 3,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/api:1.4.2&quot;
-    },
-    {
-      &quot;name&quot;: &quot;worker&quot;,
-      &quot;replicas&quot;: 1,
-      &quot;public&quot;: false,
-      &quot;image&quot;: &quot;ghcr.io/acme/worker:0.9.0&quot;
-    },
-    {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;replicas&quot;: 2,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/admin:latest&quot;
-    }
-  ]
-}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: redundant</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `3` is greater than equal to `2`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `1` is not greater than or equal to `2`</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `2` is greater than equal to `2`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 0 Failed: 1 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; redundant</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="combine"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">03</span><h2 class="lessonTitle_vQ9i">Combining checks</h2></div><span class="teaches_v8f3">&amp;&amp; · || · grouping</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Give each check an <code class="inlineCode_Ck7o">id</code>, then join them in <code class="inlineCode_Ck7o">eval_expression</code>. <code class="inlineCode_Ck7o">a &amp;&amp; b</code> needs both, <code class="inlineCode_Ck7o">a || b</code> needs either, and parentheses group. The expression is the one part of a policy you cannot derive from the checks themselves.</p><p class="aside_Hio8">Because the expression names ids, it is also where a policy documents its own intent. Read the expression first when you are trying to understand someone else&#x27;s rule.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Swap <code class="inlineCode_Ck7o">&amp;&amp;</code> for <code class="inlineCode_Ck7o">||</code>. One passing check is now enough to carry the whole policy.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="combine-policy">{
-  &quot;meta&quot;: {
-    &quot;version&quot;: &quot;v1&quot;,
-    &quot;required_provider&quot;: &quot;stackguardian/json&quot;
-  },
-  &quot;evaluators&quot;: [
-    {
-      &quot;id&quot;: &quot;redundant&quot;,
-      &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.replicas&quot;
-      },
-      &quot;condition&quot;: {
-        &quot;type&quot;: &quot;GreaterThanEqualTo&quot;,
-        &quot;value&quot;: 2
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
       }
     },
     {
-      &quot;id&quot;: &quot;right_region&quot;,
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
+    }
+  ]
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="passed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>true</strong> · exit<!-- --> <strong>0</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="pass">Check: db_encrypted</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `true` is equal to `true`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 1 Failed: 0 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; db_encrypted</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">0</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tf-many"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">02</span><h2 class="lessonTitle_vQ9i">One check, every matching resource</h2></div><span class="teaches_v8f3">many results · every one must pass</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Name a type that matches more than one resource and the check runs against each of them separately. The evaluator passes only if <strong>every</strong> result passes, so you write the rule once and it covers the bucket somebody adds next month without you editing anything.</p><p class="aside_Hio8">Two buckets, two results, and the failing one names the value that failed rather than just the rule. That is the difference between a report you can act on and a red cross.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Change <code class="inlineCode_Ck7o">acl</code> on <code class="inlineCode_Ck7o">aws_s3_bucket.logs</code> to <code class="inlineCode_Ck7o">private</code> and the whole plan passes.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-many-policy">{
+  &quot;meta&quot;: {
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
+  },
+  &quot;evaluators&quot;: [
+    {
+      &quot;id&quot;: &quot;buckets_private&quot;,
       &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;region&quot;
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_s3_bucket&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;acl&quot;
       },
       &quot;condition&quot;: {
         &quot;type&quot;: &quot;Equals&quot;,
-        &quot;value&quot;: &quot;eu-central-1&quot;
+        &quot;value&quot;: &quot;private&quot;
       }
     }
   ],
-  &quot;eval_expression&quot;: &quot;redundant &amp;&amp; right_region&quot;
-}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="combine-input">{
-  &quot;environment&quot;: &quot;production&quot;,
-  &quot;region&quot;: &quot;eu-central-1&quot;,
-  &quot;services&quot;: [
+  &quot;eval_expression&quot;: &quot;buckets_private&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-many-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
     {
-      &quot;name&quot;: &quot;api&quot;,
-      &quot;replicas&quot;: 3,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/api:1.4.2&quot;
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;worker&quot;,
-      &quot;replicas&quot;: 1,
-      &quot;public&quot;: false,
-      &quot;image&quot;: &quot;ghcr.io/acme/worker:0.9.0&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;replicas&quot;: 2,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/admin:latest&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
     }
   ]
-}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: redundant</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `3` is greater than equal to `2`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `1` is not greater than or equal to `2`</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `2` is greater than equal to `2`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="pass">Check: right_region</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;eu-central-1&quot;` is equal to `&quot;eu-central-1&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 1 Failed: 1 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; redundant &amp;&amp; right_region</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="detector"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">04</span><h2 class="lessonTitle_vQ9i">The detector that lies</h2></div><span class="teaches_v8f3">! · and the trap under it</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">You want &quot;no image on a floating tag&quot;. The tempting way: write a check that finds <code class="inlineCode_Ck7o">:latest</code>, then negate it with <code class="inlineCode_Ck7o">!</code>. The output below says PASSED — and it is wrong. Look at <code class="inlineCode_Ck7o">admin</code> in the document. It is on <code class="inlineCode_Ck7o">:latest</code>, and this policy just waved it through.</p><p class="aside_Hio8">Because the condition runs against each value and the evaluator passes only if EVERY value passes, <code class="inlineCode_Ck7o">uses_latest</code> can only pass when all three images are <code class="inlineCode_Ck7o">:latest</code>. One normal image makes it false, and <code class="inlineCode_Ck7o">!false</code> is true. The <code class="inlineCode_Ck7o">!</code> is not the bug — the check underneath it is asking the wrong question.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Fix it: change the condition to <code class="inlineCode_Ck7o">NotContains</code> with value <code class="inlineCode_Ck7o">&quot;:latest&quot;</code>, and change the expression to plain <code class="inlineCode_Ck7o">no_floating_tag</code>. Now each image is judged on its own, <code class="inlineCode_Ck7o">admin</code> fails, and the exit code is 3 — which is what you wanted all along.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="detector-policy">{
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: buckets_private</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;private&quot;` is equal to `&quot;private&quot;`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `&quot;public-read&quot;` is not equal to `&quot;private&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 0 Failed: 1 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; buckets_private</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tf-every"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">03</span><h2 class="lessonTitle_vQ9i">Every resource in the plan</h2></div><span class="teaches_v8f3">&quot;*&quot; · exclude_resource_types</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe"><code class="inlineCode_Ck7o">&quot;*&quot;</code> as the resource type means every resource the plan touches, whatever it is. This is how you write the rules that are actually organisational policy rather than service-specific: everything must be owned, everything must be tagged, nothing may be created outside a region. <code class="inlineCode_Ck7o">exclude_resource_types</code> carves out the ones that genuinely cannot comply.</p><p class="aside_Hio8">Four resources, four results, in plan order. Note what the printed report does *not* say: results are numbered, not named, so <code class="inlineCode_Ck7o">4. FAILED</code> means the fourth resource rather than <code class="inlineCode_Ck7o">aws_instance.runner</code>. The address is carried in the <code class="inlineCode_Ck7o">--json</code> output under <code class="inlineCode_Ck7o">meta</code> and shown by <code class="inlineCode_Ck7o">tirith ui</code>; putting it in the printed message is on the roadmap and has not shipped.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Change one resource’s <code class="inlineCode_Ck7o">Owner</code> tag to <code class="inlineCode_Ck7o">&quot;&quot;</code>, then count down the list to find which resource line 4 is.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-every-policy">{
   &quot;meta&quot;: {
     &quot;version&quot;: &quot;v1&quot;,
-    &quot;required_provider&quot;: &quot;stackguardian/json&quot;
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
   },
   &quot;evaluators&quot;: [
     {
-      &quot;id&quot;: &quot;uses_latest&quot;,
-      &quot;description&quot;: &quot;Finds images pinned to a floating tag&quot;,
+      &quot;id&quot;: &quot;everything_owned&quot;,
       &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.image&quot;
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;*&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;tags.Owner&quot;,
+        &quot;exclude_resource_types&quot;: [&quot;aws_iam_policy_document&quot;]
       },
       &quot;condition&quot;: {
-        &quot;type&quot;: &quot;RegexMatch&quot;,
-        &quot;value&quot;: &quot;:latest$&quot;
+        &quot;type&quot;: &quot;IsNotEmpty&quot;
       }
     }
   ],
-  &quot;eval_expression&quot;: &quot;!uses_latest&quot;
-}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="detector-input">{
-  &quot;environment&quot;: &quot;production&quot;,
-  &quot;region&quot;: &quot;eu-central-1&quot;,
-  &quot;services&quot;: [
+  &quot;eval_expression&quot;: &quot;everything_owned&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-every-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
     {
-      &quot;name&quot;: &quot;api&quot;,
-      &quot;replicas&quot;: 3,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/api:1.4.2&quot;
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;worker&quot;,
-      &quot;replicas&quot;: 1,
-      &quot;public&quot;: false,
-      &quot;image&quot;: &quot;ghcr.io/acme/worker:0.9.0&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;replicas&quot;: 2,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/admin:latest&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
     }
   ]
-}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="passed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>true</strong> · exit<!-- --> <strong>0</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: uses_latest</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="fail">    1. FAILED: `&quot;ghcr.io/acme/api:1.4.2&quot;` does not match regex pattern `&quot;:latest$&quot;`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `&quot;ghcr.io/acme/worker:0.9.0&quot;` does not match regex pattern `&quot;:latest$&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;ghcr.io/acme/admin:latest&quot;` matches regex pattern `&quot;:latest$&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 0 Failed: 1 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; !uses_latest</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">0</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tolerance"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">05</span><h2 class="lessonTitle_vQ9i">When the path is not there</h2></div><span class="teaches_v8f3">error_tolerance · a skip is not a pass</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">If a key path matches nothing, that is an error, not a false. By default the check fails. Raise <code class="inlineCode_Ck7o">error_tolerance</code> to 2 and the provider error is *skipped* instead — and a policy where every check skipped evaluated nothing at all, so it reports <code class="inlineCode_Ck7o">final_result: null</code> and exits <strong>1</strong>, not 0.</p><p class="aside_Hio8">A skip is not a pass. This is the distinction that separates a gate that is working from one that is quietly matching nothing.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Set <code class="inlineCode_Ck7o">error_tolerance</code> to 0. The same missing path now fails the check and the exit code changes from 1 to 3 — different problems, different codes.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tolerance-policy">{
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="passed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>true</strong> · exit<!-- --> <strong>0</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="pass">Check: everything_owned</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;data&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: `&quot;platform&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;platform&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    4. PASSED: `&quot;ci&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 1 Failed: 0 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; everything_owned</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">0</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tf-combine"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">04</span><h2 class="lessonTitle_vQ9i">Combining checks</h2></div><span class="teaches_v8f3">&amp;&amp; · || · grouping</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Each evaluator has an <code class="inlineCode_Ck7o">id</code>, and <code class="inlineCode_Ck7o">eval_expression</code> combines those ids with <code class="inlineCode_Ck7o">&amp;&amp;</code>, <code class="inlineCode_Ck7o">||</code>, <code class="inlineCode_Ck7o">!</code> and parentheses. That is the whole grammar. The evaluators do not know about each other; the expression is the only place their results meet.</p><p class="aside_Hio8">Both checks run whatever the expression says, so you always see every result. The expression decides the single verdict at the end, and only that verdict reaches the exit code.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Swap <code class="inlineCode_Ck7o">&amp;&amp;</code> for <code class="inlineCode_Ck7o">||</code>. One passing check is now enough to carry the whole policy, which is usually not what you want.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-combine-policy">{
   &quot;meta&quot;: {
     &quot;version&quot;: &quot;v1&quot;,
-    &quot;required_provider&quot;: &quot;stackguardian/json&quot;
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
   },
   &quot;evaluators&quot;: [
     {
-      &quot;id&quot;: &quot;budget_set&quot;,
+      &quot;id&quot;: &quot;buckets_private&quot;,
       &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;billing.monthly_budget&quot;
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_s3_bucket&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;acl&quot;
       },
       &quot;condition&quot;: {
-        &quot;type&quot;: &quot;LessThanEqualTo&quot;,
-        &quot;value&quot;: 5000,
+        &quot;type&quot;: &quot;Equals&quot;,
+        &quot;value&quot;: &quot;private&quot;
+      }
+    },
+    {
+      &quot;id&quot;: &quot;db_encrypted&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_db_instance&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;storage_encrypted&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;Equals&quot;,
+        &quot;value&quot;: true
+      }
+    }
+  ],
+  &quot;eval_expression&quot;: &quot;buckets_private &amp;&amp; db_encrypted&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-combine-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
+    {
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
+    }
+  ]
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: buckets_private</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;private&quot;` is equal to `&quot;private&quot;`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `&quot;public-read&quot;` is not equal to `&quot;private&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="pass">Check: db_encrypted</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `true` is equal to `true`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 1 Failed: 1 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; buckets_private &amp;&amp; db_encrypted</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tf-action"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">05</span><h2 class="lessonTitle_vQ9i">Gate the change, not the value</h2></div><span class="teaches_v8f3">operation_type: action</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">This is the operation with no equivalent in a document, and it is the reason a plan is worth reading at all. <code class="inlineCode_Ck7o">action</code> does not ask what a resource *is*. It asks what Terraform is <strong>about to do to it</strong>: <code class="inlineCode_Ck7o">create</code>, <code class="inlineCode_Ck7o">update</code>, <code class="inlineCode_Ck7o">delete</code>, <code class="inlineCode_Ck7o">no-op</code>. A policy over actions gates the change itself, which is the only moment the damage is still preventable.</p><p class="aside_Hio8">This is the shape of &quot;no pull request may destroy a database&quot;. A resource can carry more than one action, and every one of them is checked, so a replacement, which terraform reports as delete then create, cannot slip past a rule written about creation.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Change an <code class="inlineCode_Ck7o">actions</code> array to <code class="inlineCode_Ck7o">[&quot;delete&quot;]</code> and watch a green plan turn red.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-action-policy">{
+  &quot;meta&quot;: {
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
+  },
+  &quot;evaluators&quot;: [
+    {
+      &quot;id&quot;: &quot;nothing_destroyed&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;action&quot;,
+        &quot;terraform_resource_type&quot;: &quot;*&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;NotEquals&quot;,
+        &quot;value&quot;: &quot;delete&quot;
+      }
+    }
+  ],
+  &quot;eval_expression&quot;: &quot;nothing_destroyed&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-action-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
+    {
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
+    }
+  ]
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="passed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>true</strong> · exit<!-- --> <strong>0</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="pass">Check: nothing_destroyed</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;update&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: `&quot;create&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;create&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    4. PASSED: `&quot;update&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 1 Failed: 0 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; nothing_destroyed</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">0</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tf-nested"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">06</span><h2 class="lessonTitle_vQ9i">Reaching inside a resource</h2></div><span class="teaches_v8f3">nested attributes · one result per element</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Real resources are not flat. A block that repeats, like <code class="inlineCode_Ck7o">ebs_block_device</code>, arrives as a list, and <code class="inlineCode_Ck7o">.*.</code> walks into it. Each element becomes its <strong>own result</strong>, so one attached volume that is unencrypted fails the check even though its neighbour on the same instance is fine.</p><p class="aside_Hio8">Remember this shape. The Kubernetes provider spells its wildcard the same way and means something different by it, which is the subject of the last lesson in that track and the easiest way on this whole site to write a policy that gates nothing.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Set both <code class="inlineCode_Ck7o">encrypted</code> values to <code class="inlineCode_Ck7o">true</code>. Then delete the <code class="inlineCode_Ck7o">.*.</code> and see the attribute stop resolving.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-nested-policy">{
+  &quot;meta&quot;: {
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
+  },
+  &quot;evaluators&quot;: [
+    {
+      &quot;id&quot;: &quot;volumes_encrypted&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_instance&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;ebs_block_device.*.encrypted&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;Equals&quot;,
+        &quot;value&quot;: true
+      }
+    }
+  ],
+  &quot;eval_expression&quot;: &quot;volumes_encrypted&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-nested-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
+    {
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
+    }
+  ]
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: volumes_encrypted</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `true` is equal to `true`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `false` is not equal to `true`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 0 Failed: 1 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; volumes_encrypted</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tf-tolerance"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">07</span><h2 class="lessonTitle_vQ9i">When the attribute is not there</h2></div><span class="teaches_v8f3">error_tolerance · a skip is not a pass</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Nothing in this plan sets <code class="inlineCode_Ck7o">server_side_encryption</code>, so the provider cannot produce a value to judge. That is not a violation, and it is not compliance either. Tirith reports it as an <strong>error with a severity</strong>, and <code class="inlineCode_Ck7o">error_tolerance</code> decides whether that error fails the check or skips it.</p><p class="aside_Hio8">Severity 1 means the resource type is not in the plan. Severity 2 means the resource is there but the attribute is not. <code class="inlineCode_Ck7o">severity &gt; tolerance</code> fails, anything else skips. With every check skipped the verdict is neither true nor false, and the exit code is <code class="inlineCode_Ck7o">1</code>, not <code class="inlineCode_Ck7o">0</code>: a policy that evaluated nothing must never look like a policy that passed.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Drop <code class="inlineCode_Ck7o">error_tolerance</code> to <code class="inlineCode_Ck7o">1</code>. The skip becomes a failure and the exit code changes from 1 to 3.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-tolerance-policy">{
+  &quot;meta&quot;: {
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
+  },
+  &quot;evaluators&quot;: [
+    {
+      &quot;id&quot;: &quot;bucket_encryption&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_s3_bucket&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;server_side_encryption&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;Equals&quot;,
+        &quot;value&quot;: &quot;AES256&quot;,
         &quot;error_tolerance&quot;: 2
       }
     }
   ],
-  &quot;eval_expression&quot;: &quot;budget_set&quot;
-}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tolerance-input">{
-  &quot;environment&quot;: &quot;production&quot;,
-  &quot;region&quot;: &quot;eu-central-1&quot;,
-  &quot;services&quot;: [
+  &quot;eval_expression&quot;: &quot;bucket_encryption&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-tolerance-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
     {
-      &quot;name&quot;: &quot;api&quot;,
-      &quot;replicas&quot;: 3,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/api:1.4.2&quot;
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;worker&quot;,
-      &quot;replicas&quot;: 1,
-      &quot;public&quot;: false,
-      &quot;image&quot;: &quot;ghcr.io/acme/worker:0.9.0&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;replicas&quot;: 2,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/admin:latest&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
     }
   ]
-}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="skipped"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>null</strong> · exit<!-- --> <strong>1</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="skip">Check: budget_set</span><span class="termLine_D_Vi" data-kind="skip">  SKIPPED</span><span class="termLine_D_Vi" data-kind="skip">    1. SKIPPED: key_path: `billing.monthly_budget` is not found</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 0 Failed: 0 Skipped: 1</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; budget_set</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">1</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="together"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">06</span><h2 class="lessonTitle_vQ9i">The whole thing</h2></div><span class="teaches_v8f3">a policy you would actually commit</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Four checks, a grouped expression, and a description on each so a failing run explains itself. This is the shape of a file you would put under <code class="inlineCode_Ck7o">.tirith/policies</code> and point a pipeline at.</p><p class="aside_Hio8">Note the tag check is the corrected form from step 04, not the <code class="inlineCode_Ck7o">!</code> version. From here the only things that change are the provider and the key paths. The conditions, the expression language and the exit codes are the same for a terraform plan, a Kubernetes manifest or an Infracost breakdown.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Fix the document instead of the policy: give the worker 2 replicas and pin admin to a real tag, and the whole thing goes green.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="together-policy">{
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="skipped"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>null</strong> · exit<!-- --> <strong>1</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="skip">Check: bucket_encryption</span><span class="termLine_D_Vi" data-kind="skip">  SKIPPED</span><span class="termLine_D_Vi" data-kind="skip">    1. SKIPPED: attribute: &#x27;server_side_encryption&#x27; is not found</span><span class="termLine_D_Vi" data-kind="skip">    2. SKIPPED: attribute: &#x27;server_side_encryption&#x27; is not found</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 0 Failed: 0 Skipped: 1</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; bucket_encryption</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">1</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tf-count"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">08</span><h2 class="lessonTitle_vQ9i">Zero is an answer</h2></div><span class="teaches_v8f3">operation_type: count · and the error that does not happen</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe"><code class="inlineCode_Ck7o">count</code> returns one number: how many resources of a type this change touches. The detail worth knowing is what it does <strong>not</strong> do. Every other operation reports an error when the resource type is absent from the plan, and that error can fail your check. <code class="inlineCode_Ck7o">count</code> reports <code class="inlineCode_Ck7o">0</code>, because zero of something is a real answer and usually the one you are gating on.</p><p class="aside_Hio8">Two buckets, so this fails. The same policy against a plan with no buckets at all returns <code class="inlineCode_Ck7o">0</code> and passes, with no error and no skip. Worth knowing before you reach for <code class="inlineCode_Ck7o">count</code> as a safety net: it cannot tell you that it looked and found nothing.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Raise the value to <code class="inlineCode_Ck7o">2</code> and it passes. Then delete both buckets from the plan: still passing, on <code class="inlineCode_Ck7o">0</code>.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-count-policy">{
   &quot;meta&quot;: {
     &quot;version&quot;: &quot;v1&quot;,
-    &quot;required_provider&quot;: &quot;stackguardian/json&quot;
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
   },
   &quot;evaluators&quot;: [
     {
-      &quot;id&quot;: &quot;redundant&quot;,
-      &quot;description&quot;: &quot;Every service runs more than one replica&quot;,
+      &quot;id&quot;: &quot;bucket_budget&quot;,
       &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.replicas&quot;
+        &quot;operation_type&quot;: &quot;count&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_s3_bucket&quot;
       },
       &quot;condition&quot;: {
-        &quot;type&quot;: &quot;GreaterThanEqualTo&quot;,
-        &quot;value&quot;: 2
-      }
-    },
-    {
-      &quot;id&quot;: &quot;no_floating_tag&quot;,
-      &quot;description&quot;: &quot;No image may sit on a floating tag&quot;,
-      &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.image&quot;
-      },
-      &quot;condition&quot;: {
-        &quot;type&quot;: &quot;NotContains&quot;,
-        &quot;value&quot;: &quot;:latest&quot;
-      }
-    },
-    {
-      &quot;id&quot;: &quot;right_region&quot;,
-      &quot;description&quot;: &quot;Everything lands in the approved region&quot;,
-      &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;region&quot;
-      },
-      &quot;condition&quot;: {
-        &quot;type&quot;: &quot;Equals&quot;,
-        &quot;value&quot;: &quot;eu-central-1&quot;
-      }
-    },
-    {
-      &quot;id&quot;: &quot;named&quot;,
-      &quot;description&quot;: &quot;Every service carries a name&quot;,
-      &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.name&quot;
-      },
-      &quot;condition&quot;: {
-        &quot;type&quot;: &quot;IsNotEmpty&quot;,
-        &quot;value&quot;: &quot;&quot;
+        &quot;type&quot;: &quot;LessThanEqualTo&quot;,
+        &quot;value&quot;: 1
       }
     }
   ],
-  &quot;eval_expression&quot;: &quot;(redundant &amp;&amp; named) &amp;&amp; right_region &amp;&amp; no_floating_tag&quot;
-}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="together-input">{
-  &quot;environment&quot;: &quot;production&quot;,
-  &quot;region&quot;: &quot;eu-central-1&quot;,
-  &quot;services&quot;: [
+  &quot;eval_expression&quot;: &quot;bucket_budget&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-count-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
     {
-      &quot;name&quot;: &quot;api&quot;,
-      &quot;replicas&quot;: 3,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/api:1.4.2&quot;
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;worker&quot;,
-      &quot;replicas&quot;: 1,
-      &quot;public&quot;: false,
-      &quot;image&quot;: &quot;ghcr.io/acme/worker:0.9.0&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;replicas&quot;: 2,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/admin:latest&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
     }
   ]
-}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: redundant</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `3` is greater than equal to `2`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `1` is not greater than or equal to `2`</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `2` is greater than equal to `2`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="fail">Check: no_floating_tag</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: Did not find `&quot;:latest&quot;` inside `&quot;ghcr.io/acme/api:1.4.2&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: Did not find `&quot;:latest&quot;` inside `&quot;ghcr.io/acme/worker:0.9.0&quot;`</span><span class="termLine_D_Vi" data-kind="fail">    3. FAILED: Found `&quot;:latest&quot;` inside `&quot;ghcr.io/acme/admin:latest&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="pass">Check: right_region</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;eu-central-1&quot;` is equal to `&quot;eu-central-1&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="pass">Check: named</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;api&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: `&quot;worker&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;admin&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 2 Failed: 2 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; (redundant &amp;&amp; named) &amp;&amp; right_region &amp;&amp; no_floating_tag</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div></div></div></section><section class="playground_wbZZ" id="playground"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">07</span><h2 class="lessonTitle_vQ9i">Playground</h2></div><span class="teaches_v8f3">both panes yours</span></div><p class="prose_mhCe">Both panes are yours. Edit, run, and read the report — a half-written policy is reported in the output rather than as a crash, because while you are editing, the broken state is the normal state.</p><div class="conditionList_nrbD"><span class="conditionLabel_KN16">Conditions available here</span><span class="conditionNames_Ub2J">Equals  ·  NotEquals  ·  GreaterThan  ·  GreaterThanEqualTo  ·  LessThan  ·  LessThanEqualTo  ·  IsEmpty  ·  IsNotEmpty  ·  RegexMatch  ·  ContainedIn  ·  NotContainedIn  ·  Contains  ·  NotContains</span></div><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="26" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="playground-policy">{
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: bucket_budget</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="fail">    1. FAILED: `2` is not less than or equal to `1`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 0 Failed: 1 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; bucket_budget</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div></div></div></section><section class="lesson_mgLs" id="tf-together"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">09</span><h2 class="lessonTitle_vQ9i">The whole thing</h2></div><span class="teaches_v8f3">a policy you would actually commit</span></div><div class="lessonBody_Uagm"><div class="lessonProse_zeEe"><p class="prose_mhCe">Four rules over one plan: everything is owned, buckets are private, attached volumes are encrypted, and nothing is destroyed. This is the size of a real starting policy, and it is the file you would put in <code class="inlineCode_Ck7o">.tirith/policies</code> and point a pipeline at.</p><p class="aside_Hio8">The report tells you which rule refused and which value refused it, which is what makes a red build actionable rather than a thing to re-run. Under <code class="inlineCode_Ck7o">--fail-on-error</code> this exits <code class="inlineCode_Ck7o">3</code>, and the pipeline stops before <code class="inlineCode_Ck7o">apply</code>.</p><p class="tryIt_imEW"><span class="tryLabel_xjj8">Try it</span>Fix the plan until it passes: <code class="inlineCode_Ck7o">logs</code> to private, and the second volume encrypted. The exit code goes to 0.</p></div><div class="lessonBench_hSQM"><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="tf-together-policy">{
   &quot;meta&quot;: {
     &quot;version&quot;: &quot;v1&quot;,
-    &quot;required_provider&quot;: &quot;stackguardian/json&quot;
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
   },
   &quot;evaluators&quot;: [
     {
-      &quot;id&quot;: &quot;redundant&quot;,
-      &quot;description&quot;: &quot;Every service runs more than one replica&quot;,
+      &quot;id&quot;: &quot;everything_owned&quot;,
       &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.replicas&quot;
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;*&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;tags.Owner&quot;
       },
       &quot;condition&quot;: {
-        &quot;type&quot;: &quot;GreaterThanEqualTo&quot;,
-        &quot;value&quot;: 2
+        &quot;type&quot;: &quot;IsNotEmpty&quot;
       }
     },
     {
-      &quot;id&quot;: &quot;no_floating_tag&quot;,
-      &quot;description&quot;: &quot;No image may sit on a floating tag&quot;,
+      &quot;id&quot;: &quot;buckets_private&quot;,
       &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.image&quot;
-      },
-      &quot;condition&quot;: {
-        &quot;type&quot;: &quot;NotContains&quot;,
-        &quot;value&quot;: &quot;:latest&quot;
-      }
-    },
-    {
-      &quot;id&quot;: &quot;right_region&quot;,
-      &quot;description&quot;: &quot;Everything lands in the approved region&quot;,
-      &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;region&quot;
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_s3_bucket&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;acl&quot;
       },
       &quot;condition&quot;: {
         &quot;type&quot;: &quot;Equals&quot;,
-        &quot;value&quot;: &quot;eu-central-1&quot;
+        &quot;value&quot;: &quot;private&quot;
       }
     },
     {
-      &quot;id&quot;: &quot;named&quot;,
-      &quot;description&quot;: &quot;Every service carries a name&quot;,
+      &quot;id&quot;: &quot;volumes_encrypted&quot;,
       &quot;provider_args&quot;: {
-        &quot;operation_type&quot;: &quot;get_value&quot;,
-        &quot;key_path&quot;: &quot;services.*.name&quot;
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_instance&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;ebs_block_device.*.encrypted&quot;
       },
       &quot;condition&quot;: {
-        &quot;type&quot;: &quot;IsNotEmpty&quot;,
-        &quot;value&quot;: &quot;&quot;
+        &quot;type&quot;: &quot;Equals&quot;,
+        &quot;value&quot;: true
+      }
+    },
+    {
+      &quot;id&quot;: &quot;nothing_destroyed&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;action&quot;,
+        &quot;terraform_resource_type&quot;: &quot;*&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;NotEquals&quot;,
+        &quot;value&quot;: &quot;delete&quot;
       }
     }
   ],
-  &quot;eval_expression&quot;: &quot;(redundant &amp;&amp; named) &amp;&amp; right_region &amp;&amp; no_floating_tag&quot;
+  &quot;eval_expression&quot;: &quot;everything_owned &amp;&amp; buckets_private &amp;&amp; volumes_encrypted &amp;&amp; nothing_destroyed&quot;
+}</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="16" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="tf-together-input">{
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
+    {
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
+    }
+  ]
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="pass">Check: everything_owned</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;data&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: `&quot;platform&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;platform&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    4. PASSED: `&quot;ci&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="fail">Check: buckets_private</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;private&quot;` is equal to `&quot;private&quot;`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `&quot;public-read&quot;` is not equal to `&quot;private&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="fail">Check: volumes_encrypted</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `true` is equal to `true`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `false` is not equal to `true`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="pass">Check: nothing_destroyed</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;update&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: `&quot;create&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;create&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    4. PASSED: `&quot;update&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 2 Failed: 2 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; everything_owned &amp;&amp; buckets_private &amp;&amp; volumes_encrypted &amp;&amp; nothing_destroyed</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div></div></div></section><section class="playground_wbZZ" id="playground"><div class="lessonHead_TzmX"><div class="lessonLabel_pruM"><span class="lessonNum_Atzp">10</span><h2 class="lessonTitle_vQ9i">Playground</h2></div><span class="teaches_v8f3">both panes yours</span></div><p class="prose_mhCe">Both panes are yours. Edit, run, and read the report — a half-written policy is reported in the output rather than as a crash, because while you are editing, the broken state is the normal state.</p><div class="conditionList_nrbD"><span class="conditionLabel_KN16">Conditions available here</span><span class="conditionNames_Ub2J">Equals  ·  NotEquals  ·  GreaterThan  ·  GreaterThanEqualTo  ·  LessThan  ·  LessThanEqualTo  ·  IsEmpty  ·  IsNotEmpty  ·  RegexMatch  ·  ContainedIn  ·  NotContainedIn  ·  Contains  ·  NotContains</span></div><div class="bench_INvV"><div class="benchPanes_NyQU"><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">policy.json</span></div><textarea class="editor_Shlo" rows="26" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="policy.json, editable" name="playground-policy">{
+  &quot;meta&quot;: {
+    &quot;version&quot;: &quot;v1&quot;,
+    &quot;required_provider&quot;: &quot;stackguardian/terraform_plan&quot;
+  },
+  &quot;evaluators&quot;: [
+    {
+      &quot;id&quot;: &quot;everything_owned&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;*&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;tags.Owner&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;IsNotEmpty&quot;
+      }
+    },
+    {
+      &quot;id&quot;: &quot;buckets_private&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_s3_bucket&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;acl&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;Equals&quot;,
+        &quot;value&quot;: &quot;private&quot;
+      }
+    },
+    {
+      &quot;id&quot;: &quot;volumes_encrypted&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;attribute&quot;,
+        &quot;terraform_resource_type&quot;: &quot;aws_instance&quot;,
+        &quot;terraform_resource_attribute&quot;: &quot;ebs_block_device.*.encrypted&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;Equals&quot;,
+        &quot;value&quot;: true
+      }
+    },
+    {
+      &quot;id&quot;: &quot;nothing_destroyed&quot;,
+      &quot;provider_args&quot;: {
+        &quot;operation_type&quot;: &quot;action&quot;,
+        &quot;terraform_resource_type&quot;: &quot;*&quot;
+      },
+      &quot;condition&quot;: {
+        &quot;type&quot;: &quot;NotEquals&quot;,
+        &quot;value&quot;: &quot;delete&quot;
+      }
+    }
+  ],
+  &quot;eval_expression&quot;: &quot;everything_owned &amp;&amp; buckets_private &amp;&amp; volumes_encrypted &amp;&amp; nothing_destroyed&quot;
 }</textarea></div><div class="pane_coj_"><div class="paneHead_MKLp"><span class="paneName_xRGN">input.json</span></div><textarea class="editor_Shlo" rows="26" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="input.json, editable" name="playground-input">{
-  &quot;environment&quot;: &quot;production&quot;,
-  &quot;region&quot;: &quot;eu-central-1&quot;,
-  &quot;services&quot;: [
+  &quot;format_version&quot;: &quot;1.2&quot;,
+  &quot;terraform_version&quot;: &quot;1.9.5&quot;,
+  &quot;resource_changes&quot;: [
     {
-      &quot;name&quot;: &quot;api&quot;,
-      &quot;replicas&quot;: 3,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/api:1.4.2&quot;
+      &quot;address&quot;: &quot;aws_db_instance.orders&quot;,
+      &quot;type&quot;: &quot;aws_db_instance&quot;,
+      &quot;name&quot;: &quot;orders&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;identifier&quot;: &quot;orders&quot;,
+          &quot;storage_encrypted&quot;: true,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;data&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;worker&quot;,
-      &quot;replicas&quot;: 1,
-      &quot;public&quot;: false,
-      &quot;image&quot;: &quot;ghcr.io/acme/worker:0.9.0&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.assets&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;assets&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-assets&quot;,
+          &quot;acl&quot;: &quot;private&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
     },
     {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;replicas&quot;: 2,
-      &quot;public&quot;: true,
-      &quot;image&quot;: &quot;ghcr.io/acme/admin:latest&quot;
+      &quot;address&quot;: &quot;aws_s3_bucket.logs&quot;,
+      &quot;type&quot;: &quot;aws_s3_bucket&quot;,
+      &quot;name&quot;: &quot;logs&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;create&quot;],
+        &quot;after&quot;: {
+          &quot;bucket&quot;: &quot;acme-logs&quot;,
+          &quot;acl&quot;: &quot;public-read&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;platform&quot;}
+        }
+      }
+    },
+    {
+      &quot;address&quot;: &quot;aws_instance.runner&quot;,
+      &quot;type&quot;: &quot;aws_instance&quot;,
+      &quot;name&quot;: &quot;runner&quot;,
+      &quot;change&quot;: {
+        &quot;actions&quot;: [&quot;update&quot;],
+        &quot;after&quot;: {
+          &quot;instance_type&quot;: &quot;t3.large&quot;,
+          &quot;tags&quot;: {&quot;Owner&quot;: &quot;ci&quot;},
+          &quot;ebs_block_device&quot;: [
+            {&quot;device_name&quot;: &quot;/dev/sdf&quot;, &quot;encrypted&quot;: true},
+            {&quot;device_name&quot;: &quot;/dev/sdg&quot;, &quot;encrypted&quot;: false}
+          ]
+        }
+      }
     }
   ]
-}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="fail">Check: redundant</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `3` is greater than equal to `2`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `1` is not greater than or equal to `2`</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `2` is greater than equal to `2`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="fail">Check: no_floating_tag</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: Did not find `&quot;:latest&quot;` inside `&quot;ghcr.io/acme/api:1.4.2&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: Did not find `&quot;:latest&quot;` inside `&quot;ghcr.io/acme/worker:0.9.0&quot;`</span><span class="termLine_D_Vi" data-kind="fail">    3. FAILED: Found `&quot;:latest&quot;` inside `&quot;ghcr.io/acme/admin:latest&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="pass">Check: right_region</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;eu-central-1&quot;` is equal to `&quot;eu-central-1&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="pass">Check: named</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;api&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: `&quot;worker&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;admin&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 2 Failed: 2 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; (redundant &amp;&amp; named) &amp;&amp; right_region &amp;&amp; no_floating_tag</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div><div class="actions_K1qm"><button type="button" class="reset_FqAq">Reset</button><a class="textLink_SCW6" href="/tirith/docs/tirith-reference/evaluators/">Every condition, in full <span aria-hidden="true">→</span></a></div></section><section class="finale_VmNQ"><div class="finaleGrid_Iy5O"><div><h2 class="finaleTitle_rOEZ">Now run it for real.</h2><p class="finaleNote_DRpV">The same policy file, against a terraform plan, in your own pipeline.</p></div><div><span class="fieldLabel_t7vp">Install</span><pre class="installBlock_Wi03"><code>pip install &quot;git+https://github.com/StackGuardian/tirith.git@1.2.0&quot;</code></pre><a class="textLink_SCW6" href="/tirith/docs/getting-started-with-tirith/">Getting started <span aria-hidden="true">→</span></a><a class="textLink_SCW6" href="/tirith/docs/tirith-usage/ci-integration/">Put it in your pipeline <span aria-hidden="true">→</span></a><a class="textLink_SCW6" href="/tirith/docs/tirith-usage/editor-and-local/">Run it as you write <span aria-hidden="true">→</span></a><a class="textLink_SCW6" href="/tirith/at-scale/">Governing many repositories <span aria-hidden="true">→</span></a></div></div></section><footer class="colophon_JM_6"><span class="colophonBrand_jwBh"><svg class="colophonMark_ucuh" width="16" height="16" viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M45.1211 18.6412C46.2318 18.2149 47.4741 18.8466 47.6704 20.02C47.8869 21.3145 48 22.644 48 24C48 37.2548 37.2548 48 24 48C15.4856 48 8.00685 43.5661 3.74648 36.8814C3.10701 35.8781 3.60721 34.577 4.71797 34.1506L13.106 30.9303C14.2965 30.4732 15.6335 30.6112 16.7056 31.3017L22.917 35.3024C23.5765 35.7272 24.4235 35.7272 25.083 35.3024L32.083 30.7938C32.6546 30.4256 33 29.7923 33 29.1124V25.3558C33 24.1138 33.7654 23.0002 34.9249 22.5551L45.1211 18.6412Z"></path><path d="M24 0C32.9579 0 40.7687 4.90815 44.8919 12.1816C45.46 13.1838 44.9485 14.4227 43.8729 14.8355L36.138 17.8044C34.625 18.3851 33 17.2682 33 15.6476C33 14.8832 32.4392 14.2344 31.6828 14.1237L26.8945 13.4234C24.9751 13.1426 23.0249 13.1426 21.1055 13.4234L16.7105 14.0662C15.7282 14.2099 15 15.0524 15 16.0452V23.1699C15 24.8259 13.9795 26.3107 12.4335 26.9042L3.09798 30.4879C2.02273 30.9007 0.813867 30.323 0.565312 29.1984C0.195368 27.5245 0 25.7851 0 24C0 10.7452 10.7452 0 24 0Z"></path></svg>Tirith · StackGuardian</span><span>Apache-2.0</span><span><a href="/tirith/origins/">Origins</a></span><span><a href="/tirith/">Home</a></span><span><a href="/tirith/docs/getting-started-with-tirith/">Docs</a></span><span><a href="/tirith/roadmap/">Roadmap</a></span><span><a href="https://github.com/StackGuardian/tirith" target="_blank" rel="noopener noreferrer">Source</a></span><span><a href="https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ" target="_blank" rel="noopener noreferrer">Slack</a></span><span><a href="/tirith/at-scale/">Tirith at scale</a></span></footer></main></div></div>
+}</textarea></div></div><div class="runBar_UAhT"><button type="button" class="runButton_manP" disabled="">Up to date</button><span class="runHint_ammh">showing the current policy</span></div><div class="term_uDBR" data-verdict="failed"><div class="termBar_ts7y"><span class="termTitle_WRrL">stdout</span><span class="termVerdict_zPLV">final_result <strong>false</strong> · exit<!-- --> <strong>3</strong></span></div><pre class="termBody_XyZ7" aria-live="polite" aria-label="Evaluation output"><code><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> tirith --fail-on-error -policy-path policy.json -input-path input.json</span><span class="termLine_D_Vi" data-kind="pass">Check: everything_owned</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;data&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: `&quot;platform&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;platform&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="pass">    4. PASSED: `&quot;ci&quot;` is not empty</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="fail">Check: buckets_private</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;private&quot;` is equal to `&quot;private&quot;`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `&quot;public-read&quot;` is not equal to `&quot;private&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="fail">Check: volumes_encrypted</span><span class="termLine_D_Vi" data-kind="fail">  FAILED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `true` is equal to `true`</span><span class="termLine_D_Vi" data-kind="fail">    2. FAILED: `false` is not equal to `true`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="pass">Check: nothing_destroyed</span><span class="termLine_D_Vi" data-kind="pass">  PASSED</span><span class="termLine_D_Vi" data-kind="pass">    1. PASSED: `&quot;update&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    2. PASSED: `&quot;create&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    3. PASSED: `&quot;create&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="pass">    4. PASSED: `&quot;update&quot;` is not equal to `&quot;delete&quot;`</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Passed: 2 Failed: 2 Skipped: 0</span><span class="termLine_D_Vi" data-kind="blank"> </span><span class="termLine_D_Vi" data-kind="plain">Final expression used:</span><span class="termLine_D_Vi" data-kind="dim">-&gt; everything_owned &amp;&amp; buckets_private &amp;&amp; volumes_encrypted &amp;&amp; nothing_destroyed</span><span class="termCmd_EdcB"><span class="termPrompt_Af9Z">$</span> echo $?</span><span class="termLine_D_Vi" data-kind="plain">3</span></code></pre></div></div><div class="actions_K1qm"><button type="button" class="reset_FqAq">Reset</button><a class="textLink_SCW6" href="/tirith/docs/tirith-reference/evaluators/">Every condition, in full <span aria-hidden="true">→</span></a></div></section></div><section class="finale_VmNQ"><div class="finaleGrid_Iy5O"><div><h2 class="finaleTitle_rOEZ">Now run it for real.</h2><p class="finaleNote_DRpV">The same policy file, against a terraform plan, in your own pipeline.</p></div><div><span class="fieldLabel_t7vp">Install</span><pre class="installBlock_Wi03"><code>pip install &quot;git+https://github.com/StackGuardian/tirith.git@1.2.0&quot;</code></pre><a class="textLink_SCW6" href="/tirith/docs/getting-started-with-tirith/">Getting started <span aria-hidden="true">→</span></a><a class="textLink_SCW6" href="/tirith/docs/tirith-usage/ci-integration/">Put it in your pipeline <span aria-hidden="true">→</span></a><a class="textLink_SCW6" href="/tirith/docs/tirith-usage/editor-and-local/">Run it as you write <span aria-hidden="true">→</span></a><a class="textLink_SCW6" href="/tirith/at-scale/">Governing many repositories <span aria-hidden="true">→</span></a></div></div></section><footer class="colophon_JM_6"><span class="colophonBrand_jwBh"><svg class="colophonMark_ucuh" width="16" height="16" viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M45.1211 18.6412C46.2318 18.2149 47.4741 18.8466 47.6704 20.02C47.8869 21.3145 48 22.644 48 24C48 37.2548 37.2548 48 24 48C15.4856 48 8.00685 43.5661 3.74648 36.8814C3.10701 35.8781 3.60721 34.577 4.71797 34.1506L13.106 30.9303C14.2965 30.4732 15.6335 30.6112 16.7056 31.3017L22.917 35.3024C23.5765 35.7272 24.4235 35.7272 25.083 35.3024L32.083 30.7938C32.6546 30.4256 33 29.7923 33 29.1124V25.3558C33 24.1138 33.7654 23.0002 34.9249 22.5551L45.1211 18.6412Z"></path><path d="M24 0C32.9579 0 40.7687 4.90815 44.8919 12.1816C45.46 13.1838 44.9485 14.4227 43.8729 14.8355L36.138 17.8044C34.625 18.3851 33 17.2682 33 15.6476C33 14.8832 32.4392 14.2344 31.6828 14.1237L26.8945 13.4234C24.9751 13.1426 23.0249 13.1426 21.1055 13.4234L16.7105 14.0662C15.7282 14.2099 15 15.0524 15 16.0452V23.1699C15 24.8259 13.9795 26.3107 12.4335 26.9042L3.09798 30.4879C2.02273 30.9007 0.813867 30.323 0.565312 29.1984C0.195368 27.5245 0 25.7851 0 24C0 10.7452 10.7452 0 24 0Z"></path></svg>Tirith · StackGuardian</span><span>Apache-2.0</span><span><a href="/tirith/origins/">Origins</a></span><span><a href="/tirith/">Home</a></span><span><a href="/tirith/skills/">Skills</a></span><span><a href="/tirith/docs/getting-started-with-tirith/">Docs</a></span><span><a href="/tirith/roadmap/">Roadmap</a></span><span><a href="https://github.com/StackGuardian/tirith" target="_blank" rel="noopener noreferrer">Source</a></span><span><a href="https://join.slack.com/t/stackguardian-ol78820/shared_invite/zt-2ksag36j9-OjmXqQmyXudgYrV6FmesIQ" target="_blank" rel="noopener noreferrer">Slack</a></span><span><a href="/tirith/at-scale/">Tirith at scale</a></span></footer></main></div></div>
 </body>
 </html>
