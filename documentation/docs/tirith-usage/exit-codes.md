@@ -11,17 +11,20 @@ site_name: Tirith
 slug: exit-codes/
 ---
 
-Tirith's exit codes are a contract shared by both surfaces — local evaluation (`tirith`) and
-platform evaluation (`tirith platform check`) — so a caller scripting both only has to learn one
-vocabulary.
+Tirith's exit codes are one contract shared by every surface: local evaluation (`tirith`),
+platform evaluation (`tirith platform check`), and the two file commands, `tirith lint` and
+`tirith fmt`. A caller scripting more than one only has to learn a single vocabulary.
 
 | Code | Meaning |
 |---|---|
-| `0` | Policies passed, or nothing was in scope to gate on |
-| `1` | Tirith could not complete the evaluation — bad input, a policy it could not evaluate, unreachable API |
-| `2` | Timed out waiting for a StackGuardian run (`tirith platform check` only; local evaluation never produces it) |
-| `3` | A policy failed. Only with `--fail-on-error`, on either surface |
+| `0` | Policies passed, nothing was in scope to gate on, or the files were clean |
+| `1` | Tirith could not complete the run: bad input, a policy it could not evaluate, an unreachable API, a path that does not exist |
+| `3` | A policy said no. On the evaluation surfaces only with `--fail-on-error`; `lint` and `fmt` need no flag |
 | `130` | Interrupted (Ctrl-C) |
+
+`2` is deliberately absent. It used to be a timeout code that nothing ever returned, and
+`argparse` already exits `2` of its own accord on a usage error, so a caller seeing `2` has
+passed a bad argument. Do not write a pipeline that branches on it.
 
 ## `3` is deliberately not `1`
 
@@ -35,6 +38,21 @@ on `3`.
 Both surfaces **fail closed**: anything that leaves the verdict unknown exits non-zero regardless
 of `--fail-on-error`. That flag governs policy verdicts, not tool health — a run that produced no
 verdict must never look like a pass.
+
+## `tirith lint` and `tirith fmt`
+
+Both use the same three codes, and neither takes `--fail-on-error`: a linter that cannot fail is
+not a linter, and there is no existing green pipeline to protect because nothing has run them
+before.
+
+| Command | `0` | `3` | `1` |
+|---|---|---|---|
+| `tirith lint` | every policy is clean | a policy has an error-level finding, or a warning under `--strict` | a path is missing, or nothing was found to lint |
+| `tirith fmt` | nothing to change, or the changes were written | `--check` found files that would change | a path is missing, a file is not valid JSON, or nothing was found |
+
+"Nothing was found" being `1` rather than `0` is the same fail-closed rule the evaluation
+surfaces follow. A hook pointed at the wrong directory reports a problem instead of quietly
+passing every commit. See [lint and format](lint-and-fmt.md).
 
 ## Without `--fail-on-error`
 

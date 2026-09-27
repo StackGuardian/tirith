@@ -1,0 +1,595 @@
+/**
+ * The documentation, in the same design as the rest of the site.
+ *
+ * `src/css/custom.css` maps Infima's variables onto the Tirith tokens, which moves the
+ * palette, the typefaces and every corner radius on its own. This file handles what a
+ * variable cannot express: hairlines where Infima draws cards, micro-labels where it draws
+ * sentence case, and a heading scale that suits a wide monospaced display face.
+ *
+ * GLOBAL, NOT A CSS MODULE, on purpose. Every class here belongs to Infima or to the docs
+ * theme, so a module's hashed class names would never match them.
+ *
+ * ABOUT `[class*='…']`: Docusaurus hashes the class names of its own components between
+ * builds, so `codeBlockTitle_Ktv7` cannot be written down. The semantic prefix in front of
+ * the hash is stable and is the documented way to reach these elements. Everything with a
+ * `theme-` prefix is the theme's public API and is safe as written.
+ *
+ * Scoped to `html.plugin-docs` wherever a rule could otherwise reach a landing page. The
+ * landing pages bring their own complete stylesheet and must not be touched from here.
+ */
+
+/* ------------------------------------------------------------------ layout ---- */
+
+/*
+ * The sidebar's rule and the content's rule are the same hairline the rest of the site is
+ * built from, so the docs read as one more section of the same document rather than a
+ * separate application bolted to the side of it.
+ */
+html.plugin-docs .theme-doc-sidebar-container {
+  border-right: 1px solid var(--tp-rule) !important;
+  background: var(--tp-paper);
+}
+
+/*
+ * Hide the sidebar's copy of the lockup, and give the menu back the space it was holding.
+ *
+ * `navbar.hideOnScroll` makes Docusaurus render a second lockup at the top of the sidebar,
+ * sized to `--ifm-navbar-height` so it sits exactly behind the real navbar and surfaces only
+ * once that scrolls away. That arithmetic depends on the navbar being the height Infima
+ * thinks it is, and `src/css/chrome.module.css` deliberately makes it shorter. The result is
+ * a wordmark clipped in half against the one above it.
+ *
+ * Two ways out: pin `--ifm-navbar-height` to whatever the real bar measures, which is a
+ * number that moves the next time the navigation type changes, or drop the duplicate. The
+ * duplicate goes. Infima gives the sidebar no top padding when it expects the logo to
+ * provide it, so that comes back here.
+ */
+html.plugin-docs a[class*='sidebarLogo'] {
+  display: none;
+}
+
+html.plugin-docs .theme-doc-sidebar-container nav.menu {
+  padding-top: 1.5rem;
+}
+
+/*
+ * A measure, so prose does not run the full width of a 27-inch display.
+ *
+ * 86ch rather than the 70ch a text face would want: these pages are half JSON, and a policy
+ * with four levels of nesting needs the room. The blocks scroll inside themselves anyway
+ * (see the `pre` rule below), so this is about the prose, and prose at 86ch in IBM Plex Sans
+ * at 16px is around 95 characters, which is the outer edge of comfortable and the right
+ * trade for keeping the code legible.
+ */
+html.plugin-docs .theme-doc-markdown {
+  max-width: 86ch;
+}
+
+html.plugin-docs .theme-doc-markdown > header + * {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------- sidebar ---- */
+
+html.plugin-docs .menu {
+  padding: 0 1rem 2rem 0;
+  /* Scroll the list, not the page, on a short viewport. */
+  overflow-y: auto;
+  font-family: var(--tp-text);
+  font-size: 0.875rem;
+}
+
+html.plugin-docs .menu__list-item:not(:first-child) {
+  margin-top: 0.1rem;
+}
+
+html.plugin-docs .menu__link,
+html.plugin-docs .menu__list-item-collapsible {
+  border-radius: 0;
+  color: var(--tp-soft);
+  transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+
+html.plugin-docs .menu__link {
+  padding: 0.4rem 0.75rem;
+  /* A transparent edge held open from the start, so the active rule cannot shift the row
+     sideways by two pixels when it appears. */
+  border-left: 2px solid transparent;
+  line-height: 1.45;
+}
+
+html.plugin-docs .menu__link:hover,
+html.plugin-docs .menu__list-item-collapsible:hover {
+  background: transparent;
+  color: var(--tp-ink);
+}
+
+/*
+ * Active is an accent rule and accent text, not a grey pill.
+ *
+ * The pill was the single most out-of-place object in the documentation: this design has no
+ * filled rounded shapes anywhere else, and a live edge in the accent is how every other page
+ * shows the thing you are looking at.
+ */
+html.plugin-docs .menu__link--active,
+html.plugin-docs .menu__link--active:hover {
+  border-left-color: var(--tp-accent);
+  background: transparent;
+  color: var(--tp-accent);
+  font-weight: 600;
+}
+
+html.plugin-docs .menu__list-item-collapsible--active,
+html.plugin-docs .menu__list-item-collapsible:hover {
+  background: transparent;
+}
+
+/*
+ * Top-level categories are micro-labels: Martian Mono, uppercase, tracked. Same treatment as
+ * the section labels on the landing pages, and it separates a heading from a page at a
+ * glance without indentation having to do all the work.
+ */
+html.plugin-docs .theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible > .menu__link,
+html.plugin-docs .theme-doc-sidebar-item-link-level-1 > .menu__link {
+  color: var(--tp-ink);
+  font-family: var(--tp-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+html.plugin-docs .theme-doc-sidebar-item-link-level-1 > .menu__link--active {
+  color: var(--tp-accent);
+}
+
+/* The nesting is a hairline rather than whitespace, which is the whole grammar of the site. */
+html.plugin-docs .menu__list .menu__list {
+  margin-left: 0.75rem;
+  padding-left: 0.4rem;
+  border-left: 1px solid var(--tp-rule);
+}
+
+html.plugin-docs .menu__caret::before,
+html.plugin-docs .menu__link--sublist-caret::after {
+  opacity: 0.55;
+}
+
+/* ------------------------------------------------------------- breadcrumbs ---- */
+
+html.plugin-docs .breadcrumbs {
+  margin-bottom: 1.25rem;
+}
+
+html.plugin-docs .breadcrumbs__link {
+  padding: 0.15rem 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+html.plugin-docs .breadcrumbs__item:not(:last-child) .breadcrumbs__link:hover {
+  background: transparent;
+  color: var(--tp-accent);
+}
+
+html.plugin-docs .breadcrumbs__item--active .breadcrumbs__link {
+  background: transparent;
+  color: var(--tp-ink);
+}
+
+html.plugin-docs .breadcrumbs__item:not(:last-child)::after {
+  /* Infima's chevron is a background image tinted for its own palette. A slash sets the
+     same relationship in the type already on the page. */
+  content: '/';
+  width: auto;
+  height: auto;
+  margin: 0 0.55rem;
+  background: none;
+  color: var(--tp-rule);
+  font-size: 0.75rem;
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------- headings ---- */
+
+/*
+ * Martian Mono is wide, and it renders a size larger than its nominal setting. The stock
+ * `h1` here was around 40px in a face built for labels, which is why the page read as a
+ * poster rather than a reference. Everything below is a step down from the landing pages'
+ * scale for the same reason: documentation is read, not scanned.
+ */
+html.plugin-docs .theme-doc-markdown h1 {
+  margin-bottom: 1.5rem;
+  font-family: var(--tp-display);
+  font-size: clamp(1.45rem, 2.6vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/*
+ * A rule above every h2. This is the section grammar the landing pages use, and it is what
+ * gives a long reference page a visible spine when you scroll it.
+ */
+html.plugin-docs .theme-doc-markdown h2 {
+  margin-top: 3rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--tp-rule);
+  font-family: var(--tp-display);
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+html.plugin-docs .theme-doc-markdown h3 {
+  margin-top: 2.25rem;
+  font-family: var(--tp-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+html.plugin-docs .theme-doc-markdown h4,
+html.plugin-docs .theme-doc-markdown h5,
+html.plugin-docs .theme-doc-markdown h6 {
+  font-family: var(--tp-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+html.plugin-docs .theme-doc-markdown p,
+html.plugin-docs .theme-doc-markdown li {
+  font-family: var(--tp-text);
+}
+
+html.plugin-docs .theme-doc-markdown a:not(.card) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+/* --------------------------------------------------------------------- code ---- */
+
+/*
+ * Ligatures off, everywhere code appears.
+ *
+ * JetBrains Mono draws `--` as a single long dash, which silently turns `--fail-on-error`
+ * into a flag that does not exist. This is a correctness rule, not a taste one, and it is
+ * the same rule the landing pages carry.
+ */
+html.plugin-docs code,
+html.plugin-docs pre,
+html.plugin-docs kbd {
+  font-family: var(--tp-mono);
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0, 'dlig' 0;
+}
+
+/*
+ * `:not(pre) > code` and not a bare `code`.
+ *
+ * A code block is <pre><code>, so a rule written for inline code reaches inside it too. The
+ * `white-space: nowrap` below then collapses every run of spaces in the block, because
+ * `nowrap` collapses whitespace exactly like `normal` and only changes wrapping, and a JSON
+ * policy loses its entire indentation. Inline code in markdown is always a direct child of
+ * the element around it, so the child combinator separates the two cleanly.
+ */
+html.plugin-docs .theme-doc-markdown :not(pre) > code {
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--tp-rule);
+  background: var(--tp-surface);
+  /*
+   * Never break a flag across two lines.
+   *
+   * `--fail-on-error` wrapped after the double dash and rendered as two fragments that each
+   * read like a different flag. Same class of problem as the ligature rule above: the text
+   * is still correct and a reader copying what they see gets something that does not exist.
+   * Safe because inline code in these pages is a flag, a key or a short value; a long one
+   * has the article's own measure to run into, not the viewport.
+   */
+  white-space: nowrap;
+}
+
+/* Inside a heading the chip competes with the heading. Keep the face, drop the box. */
+html.plugin-docs .theme-doc-markdown :is(h1, h2, h3, h4) > code,
+html.plugin-docs .theme-doc-markdown :is(h1, h2, h3, h4) a > code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 0.94em;
+}
+
+/* An inline code span inside a link should not draw a second, competing box. */
+html.plugin-docs .theme-doc-markdown a > code {
+  border-color: transparent;
+  color: inherit;
+}
+
+html.plugin-docs .theme-code-block,
+html.plugin-docs div[class*='codeBlockContainer'] {
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--tp-rule);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html.plugin-docs div[class*='codeBlockTitle'] {
+  border-bottom: 1px solid var(--tp-rule);
+  background: var(--tp-sunk);
+  color: var(--tp-soft);
+  font-family: var(--tp-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+html.plugin-docs div[class*='codeBlockContent'] > pre,
+html.plugin-docs .theme-code-block pre {
+  background: var(--tp-surface);
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+/*
+ * The copy button is square, hairline and quiet until you reach for it. Infima's version is
+ * a rounded translucent chip, which is the one control on the page that looked like it came
+ * from a different toolkit.
+ */
+html.plugin-docs button[class*='copyButton'] {
+  border: 1px solid var(--tp-rule);
+  border-radius: 0;
+  background: var(--tp-paper);
+  color: var(--tp-soft);
+}
+
+html.plugin-docs button[class*='copyButton']:hover {
+  border-color: var(--tp-accent);
+  background: var(--tp-paper);
+  color: var(--tp-accent);
+}
+
+/* -------------------------------------------------------------------- table ---- */
+
+html.plugin-docs .theme-doc-markdown table {
+  display: table;
+  width: 100%;
+  border: 0;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+html.plugin-docs .theme-doc-markdown table tr {
+  border: 0;
+  background: transparent;
+}
+
+html.plugin-docs .theme-doc-markdown table th {
+  padding: 0.5rem 1rem 0.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--tp-ink);
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+html.plugin-docs .theme-doc-markdown table td {
+  padding: 0.6rem 1rem 0.6rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--tp-rule);
+  vertical-align: top;
+}
+
+html.plugin-docs .theme-doc-markdown table th:last-child,
+html.plugin-docs .theme-doc-markdown table td:last-child {
+  padding-right: 0;
+}
+
+/* --------------------------------------------------------------- admonition ---- */
+
+/*
+ * A left rule and the page's own ground, not a tinted rounded panel.
+ *
+ * Two hues, so the five admonition types resolve to two: the accent for anything
+ * informational, the alarm for anything that can cost you something. A note in green and a
+ * tip in a third colour would put more hues in one box than the whole rest of the site uses.
+ */
+html.plugin-docs .theme-admonition {
+  margin-bottom: 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border: 0;
+  border-left: 2px solid var(--tp-rule);
+  border-radius: 0;
+  background: var(--tp-surface);
+  box-shadow: none;
+  font-size: 0.92rem;
+}
+
+html.plugin-docs .theme-admonition div[class*='admonitionHeading'] {
+  margin-bottom: 0.4rem;
+  color: var(--tp-ink);
+  font-family: var(--tp-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+html.plugin-docs .theme-admonition div[class*='admonitionContent'] > :last-child {
+  margin-bottom: 0;
+}
+
+html.plugin-docs .theme-admonition-info,
+html.plugin-docs .theme-admonition-note,
+html.plugin-docs .theme-admonition-tip {
+  border-left-color: var(--tp-accent);
+}
+
+html.plugin-docs .theme-admonition-warning,
+html.plugin-docs .theme-admonition-danger {
+  border-left-color: var(--tp-alarm);
+  background: var(--tp-alarm-wash);
+}
+
+html.plugin-docs .theme-admonition-warning div[class*='admonitionHeading'],
+html.plugin-docs .theme-admonition-danger div[class*='admonitionHeading'] {
+  color: var(--tp-alarm);
+}
+
+/* The swizzled icons in src/theme/Admonition are flat SVGs; tint them from the border. */
+html.plugin-docs .theme-admonition svg {
+  color: inherit;
+}
+
+/* ---------------------------------------------------------------------- toc ---- */
+
+/*
+ * A labelled column, not an unannounced list of fragments.
+ *
+ * Docusaurus renders the table of contents with no heading, which on a page whose sections
+ * are themselves short leaves four grey lines floating in the right margin with nothing
+ * saying what they are. The label is a ::before on the outer list rather than a swizzle:
+ * `table-of-contents__left-border` is only ever on the root, so it cannot repeat on the
+ * nested lists the way `.table-of-contents` would.
+ */
+html.plugin-docs .table-of-contents {
+  font-size: 0.8rem;
+}
+
+html.plugin-docs .table-of-contents__left-border {
+  padding-left: 1rem;
+  border-left: 1px solid var(--tp-rule);
+}
+
+html.plugin-docs .table-of-contents__left-border::before {
+  content: 'On this page';
+  display: block;
+  margin-bottom: 0.7rem;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+html.plugin-docs .table-of-contents__link {
+  color: var(--tp-soft);
+}
+
+html.plugin-docs .table-of-contents__link:hover,
+html.plugin-docs .table-of-contents__link--active {
+  color: var(--tp-accent);
+  text-decoration: none;
+}
+
+/*
+ * A heading that contains a flag arrives here as a bordered chip inside a 12px line, which
+ * turns the column into a row of boxes. In the margin the entry only has to be recognisable
+ * as the heading it points at, so the code keeps its face and loses its box.
+ */
+html.plugin-docs .table-of-contents code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 0.95em;
+}
+
+/* --------------------------------------------------------------- pagination ---- */
+
+/*
+ * Two links under one rule, not two cards.
+ *
+ * src/theme/PaginatorNavLink supplies the arrows and the labels; the sizing that used to be
+ * inline on that component now lives here, so the two themes can differ without a second
+ * JavaScript branch.
+ */
+html.plugin-docs .pagination-nav {
+  margin-top: 3.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--tp-rule);
+  gap: 1.5rem;
+}
+
+html.plugin-docs .pagination-nav__link {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  transition: color 120ms ease-out;
+}
+
+html.plugin-docs .pagination-nav__link:hover {
+  background: transparent;
+}
+
+html.plugin-docs .pagination-nav__sublabel {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  color: var(--tp-faint);
+  font-family: var(--tp-display);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+html.plugin-docs .pagination-nav__label {
+  color: var(--tp-ink);
+  font-family: var(--tp-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+html.plugin-docs .pagination-nav__link:hover .pagination-nav__label {
+  color: var(--tp-accent);
+}
+
+/* --------------------------------------------------------------------- misc ---- */
+
+html.plugin-docs .theme-doc-markdown blockquote {
+  border-left: 2px solid var(--tp-rule);
+  background: transparent;
+  color: var(--tp-soft);
+}
+
+html.plugin-docs hr {
+  border: 0;
+  border-top: 1px solid var(--tp-rule);
+}
+
+html.plugin-docs .theme-doc-version-badge,
+html.plugin-docs .badge {
+  border-radius: 0;
+}
+
+/* The back-to-top affordance is a circle with a shadow. Neither exists in this design. */
+html.plugin-docs button[class*='backToTopButton'] {
+  border: 1px solid var(--tp-rule);
+  border-radius: 0;
+  background-color: var(--tp-paper);
+  box-shadow: none;
+}
+
+html.plugin-docs .pagination-nav__item--next .pagination-nav__sublabel {
+  justify-content: flex-end;
+}
+
+html.plugin-docs .pagination-nav__item--next {
+  text-align: right;
+}

@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "S3 bucket names follow the acme-<env>-<purpose> convention",
+    "description": "Guarded so a plan touching no bucket passes rather than erroring. Without the guard this policy cannot be green on an unrelated change: at the default tolerance an absent resource type is severity 1 and fails (exit 3), and at error_tolerance 1 it is skipped, which leaves final_result null and exits 1. Buckets using bucket_prefix arrive with a null name and will fail; scope the rule if the repository uses them."
+  },
+  "evaluators": [
+    {
+      "id": "no_bucket_in_this_plan",
+      "description": "True when the plan touches no aws_s3_bucket, so the naming rule does not apply. count returns 0 for an absent type rather than raising severity 1, which is what makes it usable as a guard.",
+      "provider_args": {
+        "operation_type": "count",
+        "terraform_resource_type": "aws_s3_bucket"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": 0
+      }
+    },
+    {
+      "id": "bucket_name_matches_convention",
+      "description": "Every aws_s3_bucket name is acme-, then dev|staging|prod, then a lowercase purpose. error_tolerance 1 skips this cleanly when there is no bucket, rather than failing and relying on the guard to mask it.",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_s3_bucket",
+        "terraform_resource_attribute": "bucket"
+      },
+      "condition": {
+        "type": "RegexMatch",
+        "value": "^acme-(dev|staging|prod)-[a-z0-9-]+$",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_bucket_in_this_plan || bucket_name_matches_convention"
+}

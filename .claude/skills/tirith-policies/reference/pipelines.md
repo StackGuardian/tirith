@@ -25,14 +25,15 @@ answer and the job hangs instead of failing. Locally you can leave it off.
 ## Install
 
 ```bash
-pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
 ```
 
 Not PyPI: `pip install tirith` fetches an unrelated project. Pin the tag so a job cannot change
 behaviour underneath you. Python 3.8 or newer, so any `python:3.x` image works.
 
-Do **not** add `tirith lint` to a pipeline: it is not in the released package. See
-`reference/validate.md`.
+Add `tirith lint .tirith/policies` as a step before the gate: it needs no plan document, so it
+can run in a job with no cloud credentials, and it fails for a different reason than the gate
+does. It ships from `1.2.1`. See `reference/validate.md`.
 
 ---
 
@@ -89,7 +90,7 @@ policy:
   image: python:3.12
   needs: [plan]
   script:
-    - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+    - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
@@ -115,7 +116,7 @@ pipelines:
       - step:
           name: Policy gate
           script:
-            - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+            - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
             - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
@@ -128,7 +129,7 @@ stage('Policy gate') {
   steps {
     script {
       def code = sh(returnStatus: true, script: '''
-        pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+        pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
         tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
       ''')
       if (code == 3)      { error('Tirith: a policy refused this change.') }
@@ -147,7 +148,7 @@ stage('Policy gate') {
   displayName: Terraform plan
 
 - script: |
-    pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+    pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
     tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
   displayName: Policy gate
 ```
@@ -165,7 +166,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace: {at: .}
-      - run: pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+      - run: pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
       - run: tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
@@ -176,7 +177,7 @@ Persist `plan.json` to the workspace from the plan job.
 Anything that can run a container and produce a plan works the same way, including a cron job:
 
 ```bash
-pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
+pip install "git+https://github.com/StackGuardian/tirith.git@1.2.1"
 tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error
 ```
 
@@ -205,8 +206,18 @@ tirith --json -policy-path .tirith/policies -input-path plan.json > tirith-resul
 Publish it as a build artifact. It carries every evaluator, its result and the value that produced
 it, which is what makes a failure explainable after the fact.
 
-## Not yet available
+## At commit time
 
-A `tirith-lint` pre-commit hook and a VS Code task loop are in development, and both depend on
-`tirith lint`, which is not in the released package. Do not write either into a pipeline today.
-`https://stackguardian.github.io/tirith/roadmap/` tracks them.
+`.pre-commit-hooks.yaml` publishes `tirith-lint` and `tirith-fmt`, both running on the policy
+files a commit touches:
+
+```yaml
+repos:
+  - repo: https://github.com/StackGuardian/tirith
+    rev: 1.2.1         # the first tag that publishes the hooks
+    hooks:
+      - id: tirith-lint
+      - id: tirith-fmt
+```
+
+See `reference/validate.md`.

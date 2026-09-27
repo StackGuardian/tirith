@@ -46,6 +46,10 @@ export const DEMO_PHASES = [
   {
     number: '02',
     group: 'Scale · organization',
+    // Neither this phase nor 'Close the loop' works on the open-source path alone: one needs
+    // organization credentials, the other publishes state to the platform. Flagged so the
+    // walkthrough cannot read as five things every reader can do today.
+    platform: true,
     title: 'Share policies across repositories',
     summary: 'Add organization credentials and select centrally managed policies.',
     body:
@@ -145,6 +149,7 @@ export const DEMO_PHASES = [
   {
     number: '05',
     group: 'Close the loop',
+    platform: true,
     title: 'Publish state after apply',
     summary: 'Send the current state without creating another policy verdict.',
     body:
@@ -187,6 +192,16 @@ export const DEMO_PHASES = [
  * the exit codes are identical, because it is the same CLI underneath in every case.
  */
 /**
+ * The one-line skill-pack installer, served from this site's own static/ directory.
+ *
+ * Lives here because three surfaces reference it -- the announcement row, the hero's
+ * install plate and the first pipeline target below, which interpolates it, so this has to
+ * be declared before PIPELINE_TARGETS rather than beside the other exports -- and a command that appears in three places with
+ * two spellings is a command that will eventually be wrong in one of them.
+ */
+export const SKILL_INSTALL = 'curl -fsSL https://stackguardian.github.io/tirith/skill.sh | sh';
+
+/**
  * Everywhere the gate can be wired up, for the switcher in section 03.
  *
  * Separate from DEMO_REPOS on purpose. Two of these -- a generic CI runner and a laptop --
@@ -197,6 +212,32 @@ export const DEMO_PHASES = [
  * the other, never both.
  */
 export const PIPELINE_TARGETS = [
+  /*
+   * First, and therefore the one selected on arrival.
+   *
+   * It is not a sixth platform -- it is the other way of producing any of the five below,
+   * which is exactly why it leads rather than sits at the end as an afterthought. A reader
+   * who already knows which file they want clicks past it in one move; a reader who does
+   * not has just been shown that they do not have to write it themselves.
+   *
+   * The `file` slot names where the pack lands rather than a config path, because that is
+   * the artefact this tab produces on disk.
+   */
+  {
+    id: 'agent',
+    name: 'Coding agent',
+    file: '.claude/skills/tirith-policies/',
+    note:
+      'Covers every target in the tabs beside this one, so the agent writes for whichever ' +
+      'it finds. It carries the install, the plan export and the exit-code contract.',
+    to: '/skills/',
+    linkLabel: 'Claude, Cursor and Codex setup',
+    code: `# 1 · give the agent the vocabulary, once per repository
+${SKILL_INSTALL}
+
+# 2 · then ask for the gate, in your own words
+"Add a Tirith policy gate to our pipeline"`,
+  },
   {
     id: 'github',
     name: 'GitHub Actions',
@@ -237,7 +278,7 @@ tirith:
   needs: [terraform-plan]
   script:
     - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-    # - tirith lint .tirith/policies   # in dev, not in 1.2.0
+    # - tirith lint .tirith/policies   # not in 1.2.0 yet, on main
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
   {
@@ -258,7 +299,7 @@ tirith:
     name: Policy gate
     script:
       - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-      # - tirith lint .tirith/policies   # in dev, not in 1.2.0
+      # - tirith lint .tirith/policies   # not in 1.2.0 yet, on main
       - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
   {
@@ -271,7 +312,7 @@ tirith:
     to: '/docs/tirith-usage/ci-integration/',
     linkLabel: 'Jenkins and other runners',
     code: `pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-# tirith lint .tirith/policies   # in dev, not in 1.2.0
+# tirith lint .tirith/policies   # not in 1.2.0 yet, on main
 tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
   {
@@ -320,7 +361,7 @@ steps:
   needs: [terraform-plan]
   script:
     - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-    # - tirith lint .tirith/policies   # in dev, not in 1.2.0
+    # - tirith lint .tirith/policies   # not in 1.2.0 yet, on main
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
   {
@@ -333,7 +374,7 @@ steps:
     name: Policy gate
     script:
       - pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"
-      # - tirith lint .tirith/policies   # in dev, not in 1.2.0
+      # - tirith lint .tirith/policies   # not in 1.2.0 yet, on main
       - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
   },
 ];
@@ -346,18 +387,17 @@ export const INTEGRATIONS = [
   {
     glyph: '⎇',
     title: 'pre-commit',
-    // Needs .pre-commit-hooks.yaml, which is not in this repository, and `tirith lint`,
-    // which is not in the released CLI.
-    inDev: true,
-    body: 'A tirith-lint hook that will run when a policy file changes. Offline, no plan needed, and it catches the mistakes that read as real violations.',
-    to: '/docs/tirith-usage/editor-and-local/',
+    // .pre-commit-hooks.yaml publishes both ids, and `tirith lint` / `tirith fmt` are on
+    // main. Not in 1.2.0, so the documented `rev` is a branch until the next release.
+    body: 'tirith-lint and tirith-fmt hooks that run on the policy files a commit touches. Offline, no plan needed, and they catch the mistakes that read as real violations.',
+    to: '/docs/tirith-usage/lint-and-fmt/',
   },
   {
     glyph: '{}',
     title: 'Your editor',
-    // Needs .vscode/tasks.json, which is not in this repository, and the same lint command.
-    inDev: true,
-    body: 'VS Code tasks that will lint and evaluate in one keystroke — the loop to use while an agent is drafting the policy for you.',
+    // The tasks are given inline on the docs page; .vscode/tasks.json is not shipped from
+    // this repository, so the page no longer links to it as though it were.
+    body: 'VS Code tasks that lint and evaluate in one keystroke, the loop to use while an agent is drafting the policy for you.',
     to: '/docs/tirith-usage/editor-and-local/',
   },
 ];

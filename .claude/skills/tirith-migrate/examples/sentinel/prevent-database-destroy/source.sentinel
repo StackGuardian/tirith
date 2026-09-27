@@ -1,0 +1,7 @@
+# No aws_db_instance may be destroyed. tfplan/v2, common-functions idiom.
+import "tfplan-functions" as plan
+
+destroyed = plan.find_resources_being_destroyed()
+databases = filter destroyed as address, rc { rc.type is "aws_db_instance" }
+
+main = rule { length(databases) is 0 }

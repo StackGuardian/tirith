@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "mandatory-tags",
+    "description": "aws_instance and aws_s3_bucket carry Name, Owner and CostCenter tags",
+    "enforcement": "hard-mandatory"
+  },
+  "evaluators": [
+    {"id": "instance_name", "provider_args": {"operation_type": "attribute", "terraform_resource_type": "aws_instance", "terraform_resource_attribute": "tags"}, "condition": {"type": "Contains", "value": "Name", "error_tolerance": 1}},
+    {"id": "instance_owner", "provider_args": {"operation_type": "attribute", "terraform_resource_type": "aws_instance", "terraform_resource_attribute": "tags"}, "condition": {"type": "Contains", "value": "Owner", "error_tolerance": 1}},
+    {"id": "instance_costcenter", "provider_args": {"operation_type": "attribute", "terraform_resource_type": "aws_instance", "terraform_resource_attribute": "tags"}, "condition": {"type": "Contains", "value": "CostCenter", "error_tolerance": 1}},
+    {"id": "bucket_name", "provider_args": {"operation_type": "attribute", "terraform_resource_type": "aws_s3_bucket", "terraform_resource_attribute": "tags"}, "condition": {"type": "Contains", "value": "Name", "error_tolerance": 1}},
+    {"id": "bucket_owner", "provider_args": {"operation_type": "attribute", "terraform_resource_type": "aws_s3_bucket", "terraform_resource_attribute": "tags"}, "condition": {"type": "Contains", "value": "Owner", "error_tolerance": 1}},
+    {"id": "bucket_costcenter", "provider_args": {"operation_type": "attribute", "terraform_resource_type": "aws_s3_bucket", "terraform_resource_attribute": "tags"}, "condition": {"type": "Contains", "value": "CostCenter", "error_tolerance": 1}}
+  ],
+  "eval_expression": "instance_name && instance_owner && instance_costcenter && bucket_name && bucket_owner && bucket_costcenter"
+}

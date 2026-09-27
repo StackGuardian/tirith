@@ -9,7 +9,7 @@ import CopyField from '../components/landing/CopyField';
 import PhaseJourney from '../components/landing/PhaseJourney';
 import PlatformSetup from '../components/landing/PlatformSetup';
 import Specimen from '../components/landing/Specimen';
-import {INTEGRATIONS} from '../data/demoPhases';
+import {INTEGRATIONS, SKILL_INSTALL} from '../data/demoPhases';
 import {HIGHLIGHTS} from '../data/roadmap';
 import {AGENT_BRIEF} from '../data/agentBrief';
 import {CONTRIBUTORS} from '../data/contributors';
@@ -70,22 +70,26 @@ const involve = {
     'be large: a tested policy, a CI example for an underserved system, or a reproducible bug ' +
     'report can be far more valuable than a star.',
   /*
-   * One button, because four of them read as four equally weighted decisions at the point
-   * where the page should be asking for one thing.
+   * Two buttons, then the quieter links. Four buttons would read as four equally weighted
+   * decisions at the point where the page should be asking for something.
    *
-   * The button is the good-first-issue list and not the star. The paragraph above it says
-   * a bug report is worth more than a star, so giving the star the loudest element would
-   * have the layout contradicting the copy, and starring is not contributing. The rest run
-   * from the ask that takes real work down to the one that costs nothing.
+   * The good-first-issue list leads, because the paragraph above says a bug report is worth
+   * more than a star and the layout should not contradict the copy. The star gets the same
+   * treatment rather than a louder one: it is the one ask a reader can satisfy in a second,
+   * so it should not be buried in a row of text links, but order carries the hierarchy and
+   * neither button shouts over the other.
    */
   primary: {
     label: 'Find a good first issue',
     href: `${REPO}/labels/good%20first%20issue`,
   },
+  secondary: {
+    label: 'Star on GitHub',
+    href: REPO,
+  },
   more: [
     {label: 'Ask for a feature', href: `${REPO}/issues/new/choose`},
     {label: 'Watch for releases', href: `${REPO}/releases`},
-    {label: 'Star on GitHub', href: REPO},
   ],
 };
 
@@ -111,13 +115,44 @@ const hero = {
    * The last clause is the one no competitor answers, so the sentence ends on it rather
    * than on a feature any scanner could also claim.
    */
+  /*
+   * The four assurances that used to sit in a band under the plate are folded in here.
+   * Three of them were already being made: "checks the plan" and "failures explain why"
+   * by the verdict clause, "local first" by "on your own runner". Only "policies are
+   * JSON" was a claim this paragraph did not make, so only that one arrives as new words,
+   * and the band goes. Net saving is about forty words and a full-width row.
+   */
   lede:
-    'Plug IaC governance into any pipeline you already run. Tirith evaluates the plan on ' +
-    'your own runner, enforces one policy set across repositories when you want one, and ' +
-    'returns a single actionable verdict before the change is applied, including the ' +
-    'outcome every scanner reports as success: a check that never ran.',
+    'Plug IaC governance into any pipeline you already run. Policies are JSON, not a ' +
+    'program in Rego or Python. Tirith evaluates the plan on your own runner, enforces ' +
+    'one policy set across repositories when you want one, and returns a single verdict ' +
+    'before the change is applied.',
   // "On your own runner" is the lede's line now, so this no longer repeats it.
   actions: [
+    /*
+     * First here for the same reason it leads the tabs in section 03: it is not a sixth
+     * platform, it is the other way of producing any of the five after it. Being first
+     * also makes it the plate's opening state, which is the point -- a reader who already
+     * knows they want the Action clicks past it in one move.
+     *
+     * It replaced the "Rather delegate?" line that used to sit under this plate. A tab
+     * named Coding agent and a sentence underneath offering the same thing were the same
+     * offer made twice, and the tab is the one that can carry the command.
+     */
+    {
+      id: 'agent',
+      label: 'Coding agent',
+      command:
+        `${SKILL_INSTALL}\n` +
+        '\n' +
+        '# then, in your agent:\n' +
+        '"Add a Tirith policy gate to our pipeline"',
+      prompt: false,
+      facts: ['Any agent with a shell', 'Reads the real schema', 'You review the PR'],
+      // Deliberately the shortest caveat of the six. The argument for this route is made
+      // once, in section 02; repeating it here made the default tab the wordiest thing
+      // above the fold.        'this one, so you need not name your CI. It drafts; the engine still decides.',
+    },
     {
       id: 'github',
       label: 'GitHub Actions',
@@ -139,16 +174,11 @@ const hero = {
       // check run. It is the only setup step the Action cannot do for you, and the one
       // thing people get wrong on a first install.
       facts: ['Needs two write permissions', 'Runs on your runner', 'No plan JSON on disk'],
-      caveat:
-        'The Action runs Tirith on the GitHub runner and reports the verdict on the pull ' +
-        'request. Handing it the binary plan rather than exporting JSON first is one step ' +
-        'shorter, and renders the plan in memory, so no unmasked plan JSON is written to ' +
-        'the workspace. The setup below adds the policy and the permissions.',
     },
     {
       id: 'gitlab',
       label: 'GitLab CI',
-      // Two jobs, not one: the caveat says the gate consumes the plan as an artifact, and
+      // Two jobs, not one: the gate consumes the plan as an artifact, and
       // the producing job is what makes that sentence mean something.
       command: `plan:
   script:
@@ -164,14 +194,11 @@ tirith:
     - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
       prompt: false,
       facts: ['No wrapper to install', 'Runs on your runner', 'Plan as an artifact'],
-      caveat:
-        'No wrapper to install — GitLab calls the CLI directly, which is what the GitHub ' +
-        'Action does underneath. The job consumes the plan as an artifact.',
     },
     {
       id: 'bitbucket',
       label: 'Bitbucket',
-      // "Plan in one step, gate in the next" -- the caveat already promised two steps and
+      // Plan in one step, gate in the next: the snippet has to show both, and
       // the block only ever showed the second one.
       command: `- step:
     name: Terraform plan
@@ -187,34 +214,26 @@ tirith:
       - tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error`,
       prompt: false,
       facts: ['Any Python 3.8 image', 'Runs on your runner', 'Two steps'],
-      caveat:
-        'Plan in one step, gate in the next, passing plan.json between them as an ' +
-        'artifact. The same CLI as every other pipeline.',
     },
     {
       id: 'anyci',
       label: 'Any CI',
-      // `tirith lint` is commented, not dropped: it is in development and not in 1.2.0,
-      // so a reader pasting this block would get a failing step. A comment is inert in
-      // shell and in YAML, which keeps the block runnable and still shows what is coming.
+      // `tirith lint` stays commented while 1.2.0 is the pinned release: it is on main but
+      // not in that tag, so a reader pasting this block would get a failing step. A comment
+      // is inert in shell and in YAML, which keeps the block runnable and still shows it.
       command:
         'pip install "git+https://github.com/StackGuardian/tirith.git@1.2.0"\n' +
-        '# tirith lint .tirith/policies   # in dev, not in 1.2.0\n' +
+        '# tirith lint .tirith/policies   # not in 1.2.0 yet, on main\n' +
         'tirith -policy-path .tirith/policies -input-path plan.json --fail-on-error',
       prompt: false,
       facts: ['Gate on the exit code', 'Any runner', 'Two commands'],
-      caveat:
-        'Two commands on anything that can produce a plan — Jenkins, Azure DevOps, CircleCI, ' +
-        'a cron job. Gate on the exit code, which every CI system already does. The lint step ' +
-        'is commented out because it has not shipped yet.',
     },
     {
       id: 'cli',
       label: 'Local CLI',
       /*
-       * The install line is here rather than in the caveat, which used to say "install
-       * Tirith first" and then not say how -- the one tab whose whole job is the bare
-       * command was the one that could not be run from what it showed.
+       * The install line is in the snippet itself. The tab whose whole job is the bare
+       * command has to be runnable from what it shows.
        *
        * Not PyPI: `py-tirith` is unpublished and the bare `tirith` name belongs to an
        * unrelated monitoring package, so `pip install tirith` would quietly install
@@ -233,28 +252,6 @@ tirith:
         'tirith --fail-on-error -policy-path .tirith/policies -input-path plan.json',
       prompt: false,
       facts: ['Nothing leaves your machine', 'Runs on your machine', 'No account'],
-      caveat:
-        'The same CLI every pipeline above calls. Point it at a policy or a directory of ' +
-        'policies and the document you want to check — any JSON or YAML document, not only ' +
-        'a plan.',
-    },
-  ],
-  assurances: [
-    {
-      k: 'Checks the plan',
-      v: 'Evaluate the proposed change while the pipeline can still stop it.',
-    },
-    {
-      k: 'Policies are JSON',
-      v: 'Describe allowed values without maintaining a program in Rego or Python.',
-    },
-    {
-      k: 'Failures explain why',
-      v: 'See which check failed, which value was rejected, and why it failed.',
-    },
-    {
-      k: 'Local first',
-      v: 'Keep policies beside your code. Organization mode remains optional.',
     },
   ],
 };
@@ -272,128 +269,131 @@ tirith:
  * reading BETA would label it without announcing anything -- but it is also a beta,
  * and the reference page opens by saying so, so the sentence says so too rather than
  * setting a second tag a few pixels from the first.
+ *
+ * Two entries, and two is the cap: a row of announcements announces nothing. Each cell is
+ * its own link, so a reader aiming at one cannot land on the other. An empty array removes
+ * the row. The skill pack leads: it is the newer thing and the one the rest of the page is
+ * built around, and the first cell is the one a reader's eye lands on.
  */
-const announcement = {
-  tag: 'New',
-  // No backticks: this is JSX text, not markdown, so they would render literally.
-  // The renderer sets the command in <code>.
-  command: 'tirith ui',
-  // A banner is read at a glance or not at all, so it carries the two things the tool is
-  // for and nothing else. Validation as you type and serving the playground to a team are
-  // the page it links to, not this line.
-  body:
-    'explores a failing evaluation down to the resource that caused it, and builds ' +
-    'policies from a form.',
-  to: '/docs/tirith-usage/interactive-interface/',
-  linkLabel: 'Read more',
-};
+const announcements = [
+  {
+    id: 'skills',
+    tag: 'New',
+    // Named, not explained. This row is the smallest of the three places the pack appears,
+    // and its whole job is that a reader learns the option exists before they start typing.
+    command: 'skill pack',
+    body: 'teaches your coding agent the real schema, and how to put a gate in a pipeline.',
+    to: '/skills/',
+    linkLabel: 'Set it up',
+  },
+  {
+    id: 'ui',
+    tag: 'New',
+    // No backticks: this is JSX text, not markdown, so they would render literally.
+    // The renderer sets the command in <code>.
+    command: 'tirith ui',
+    // A banner is read at a glance or not at all, so it carries the two things the tool is
+    // for and nothing else. Validation as you type and serving the playground to a team are
+    // the page it links to, not this line.
+    body:
+      'explores a failing evaluation down to the resource that caused it, and builds ' +
+      'policies from a form.',
+    to: '/docs/tirith-usage/interactive-interface/',
+    linkLabel: 'Read more',
+  },
+];
+
 
 /*
- * Cut roughly in half. This is the first section after the hero, where a reader is still
- * deciding whether to keep going, and three points that each took two sentences to make one
- * argument were the densest thing above the fold.
+ * The delegated route, shown in three sizes rather than as a section of its own.
  *
- * Nothing was dropped. Each point kept its concrete example, which is the part that carries
- * it, and lost the clause restating the heading: "can slip through a busy pull request"
- * after a heading reading "manual review can miss things" says the same thing twice.
+ * It was a section once. That was wrong: handing the job to an agent is not a fourth thing
+ * to do after the three steps, it is the same three steps typed at something else, and a
+ * section implied a reader had to choose it deliberately rather than notice it while
+ * choosing a platform. So it now appears beside the commands themselves, at whatever size
+ * the surrounding surface can carry:
+ *
+ *   announcement  a name, in the row that already announces `tirith ui`
+ *   hero          the leading tab of the install plate, with the command
+ *   03 setup      the leading tab of the platform panel, with the command
+ *
+ * One installer string for all three, so there is one thing to keep correct.
  */
-const gap = {
-  num: '01',
-  title: 'Why add a policy gate?',
-  lede:
-    'A valid plan can still break a rule your team depends on, and the pipeline is the ' +
-    'last place that can stop it.',
-  points: [
-    {
-      k: 'Review misses things',
-      v: 'An empty owner tag, an oversized volume, a destroy hidden inside a replacement.',
-    },
-    {
-      k: 'After apply is too late',
-      v: 'Cleanup and rollback, for something the plan already showed you.',
-    },
-    {
-      k: 'Scripts rot',
-      v: 'Every one-off check carries its own parsing, exit codes and upkeep.',
-    },
-  ],
-};
+/* The installer itself lives in ../data/demoPhases, imported at the top of this file. */
 
+/*
+ * One section, two registers per step.
+ *
+ * This was two sections telling the same story: a four-step narrative of what happens, then
+ * a three-step instruction for what you do, whose steps mapped onto the narrative almost
+ * one to one (export the plan = step 1, commit a policy = step 3, run the gate = step 4).
+ * Each step now carries both: the sentence says what happens, the `do` line says what you
+ * type. The platform tabs sit underneath, answering "and how do I invoke that here" for
+ * whichever runner you use.
+ *
+ * All four note bullets went to the docs, which already carry them. None of them was a
+ * reason to adopt, and the CI integration page is where someone setting this up is reading.
+ */
 const how = {
-  num: '02',
-  title: 'Put Tirith between plan and apply.',
-  lede:
-    'Tirith fits into the pipeline you already have. Your IaC tool produces the plan, ' +
-    'Tirith checks it, and the exit code tells the pipeline whether to continue.',
+  num: '01',
+  title: 'Add Tirith to your pipeline',
+  // One line. The four steps below say the rest, and the tabs make the last clause obvious.
+  lede: 'Your IaC tool produces the plan, Tirith checks it, and the exit code decides.',
   steps: [
-    {n: '1', k: 'Your IaC tool plans', v: 'OpenTofu or Terraform exports the proposed change as plan.json.'},
+    {
+      n: '1',
+      k: 'Your IaC tool plans',
+      do: 'tofu show -json tfplan > plan.json',
+    },
     {
       n: '2',
       k: 'Tirith reads the plan',
-      v: 'The plan provider finds the resources and attributes each policy asks for, from either tool.',
+      do: '-input-path plan.json',
       product: true,
     },
-    {n: '3', k: 'Policies test the change', v: 'JSON conditions check each matching value and produce one verdict.'},
-    {n: '4', k: 'CI continues or stops', v: 'A pass moves on to apply. A failure explains the rejected values and, with fail-on-error, exits 3.'},
-  ],
-};
-
-const setup = {
-  num: '03',
-  title: 'Add Tirith to your pipeline',
-  lede:
-    'Three pieces make the gate work, and they are the same three everywhere: a policy, ' +
-    'the plan as JSON, and Tirith running with fail-on-error. Only the way you invoke it ' +
-    'changes between platforms.',
-  steps: [
-    {n: '1', k: 'Commit a policy', v: 'Put one or more JSON rules under .tirith/policies/.'},
-    {n: '2', k: 'Export the plan', v: 'Run tofu show -json tfplan > plan.json (or terraform show).'},
-    {n: '3', k: 'Run the gate', v: 'Set fail-on-error so a failed policy blocks the job.'},
-  ],
-  notes: [
-    'OpenTofu works identically — swap terraform for tofu; the plan JSON is the same',
-    'Policies are JSON files committed under .tirith/policies',
-    'On GitHub the Action adds the pull-request comment and check run, which need the two write permissions',
-    'Without fail-on-error, Tirith reports findings but does not block the job',
+    {
+      n: '3',
+      k: 'Policies test the change',
+      do: 'commit rules under .tirith/policies',
+    },
+    {
+      n: '4',
+      k: 'CI continues or stops',
+      do: '--fail-on-error, so a violation exits 3',
+    },
   ],
 };
 
 const proof = {
-  num: '04',
+  num: '02',
   title: 'Watch it catch a real mistake',
-  lede:
-    'Five chapters, played out in a public demo repository on each of the three forges ' +
-    'above: add the local gate, watch it block an empty Owner tag, clear the failure with ' +
-    'a one-line fix, then move policy to the organization and publish state.',
+  lede: 'Five chapters in a public demo repository, from first gate to published state.',
 };
 
 /*
- * Both halves of this section are unshipped. The pre-commit hook needs
- * .pre-commit-hooks.yaml and the editor loop needs .vscode/tasks.json; neither file is in
- * this repository, and both drive `tirith lint`, which is not in the released CLI either
- * -- src/tirith/cli.py dispatches `platform` and `ui` and nothing else.
- *
- * Tagged rather than cut: the docs page it links to is written and the work is real. The
- * tense moves to the conditional so the section describes a plan, not a feature.
+ * Restored once `tirith lint` and `tirith fmt` landed and .pre-commit-hooks.yaml started
+ * publishing both ids. The tense is present because the commands exist; the one thing this
+ * repository still does not ship is .vscode/tasks.json, so the docs page gives those tasks
+ * inline rather than linking to a file that is not there.
  */
 const anywhere = {
-  num: '05',
+  num: '03',
   title: 'Catch it before you push',
-  tag: 'In dev',
-  planned: true,
-  lede:
-    'The gate will not have to wait for CI. The same checks are being wired into a ' +
-    'pre-commit hook and an editor task, which is where a policy an agent just wrote ' +
-    'should be proved. Neither has shipped yet.',
+  /*
+   * Corrected. This used to read "the gate does not have to wait for CI, the same checks
+   * run in a pre-commit hook", which was false in the way that matters: the hooks run
+   * `tirith lint` and `tirith fmt`, and both read the policy file, never the change. Shape,
+   * not meaning, in lint.py's own words. The old sentence even carried its own refutation
+   * ("neither needs a plan document"): a check that needs no plan cannot be the gate.
+   */
+  // The two cards carry the detail. This only has to draw the distinction.
+  lede: 'Two checks, and only one of them needs a plan.',
 };
 
 const specimenPlate = {
-  // '06' until the section above it was hidden. See the restore note there before changing.
-  num: '05',
+  num: '04',
   title: 'See exactly what a policy checks',
-  lede:
-    'A policy answers three questions: what to read, which values to inspect, and what ' +
-    'must be true. Change the threshold below and watch the verdict update.',
+  lede: 'Change the threshold below and watch the verdict update.',
 };
 
 const explore = {
@@ -420,18 +420,37 @@ const explore = {
     {
       glyph: 'org',
       title: 'Tirith at scale',
-      body: 'Share policies across repositories and keep run history in StackGuardian.',
+      body: 'One rule scales the same way: the platform reads what you already run, your agent writes the rules to match.',
       to: '/at-scale/',
       tag: 'Optional',
     },
   ],
 };
 
+/*
+ * The close, and the only place the "write your own rule" argument is now made.
+ *
+ * It was a numbered section as well, under this exact heading, which meant the page argued
+ * the point in the middle and then repeated the headline at the bottom. The points moved
+ * down here because this is where a reader is deciding what to do next, and the note that
+ * was already here is the instruction those three points justify. Proving a policy before
+ * trusting it is the skill pack's standing instruction and the docs' job, not a line the
+ * close has to carry.
+ *
+ * The at-scale bridge folded into the explore card of the same name rather than sitting as
+ * its own line: a sentence and a card linking to the same page, two lines apart, is one
+ * link too many.
+ */
 const finale = {
   title: 'Start with one rule.',
   note:
-    'Choose something your team already checks by hand, commit it as a JSON policy, ' +
-    'and run it against the next plan.',
+    'A catalogue covers the mistakes everyone makes. Pick the rule only you can state: ' +
+    'something your team already checks by hand.',
+  points: [
+    {k: 'A policy is data', v: 'JSON with conditions in it. No rule language, no plugin.'},
+    {k: 'So an agent can write it', v: 'The skill pack gives it the real condition list, so it cannot invent one.'},
+    {k: 'The engine decides, not the model', v: 'Same evaluator, same exit code, your runner.'},
+  ],
   links: [
     {to: '/docs/tirith-installation/quick-installation/', label: 'Installation'},
     {to: '/learn/', label: 'Learn to write a policy'},
@@ -565,10 +584,10 @@ function AgentView() {
           <span>the route plus .md, beside the HTML</span>
         </li>
         <li>
-          <Link href="https://github.com/StackGuardian/tirith/tree/main/.claude/skills/tirith-policies">
-            skill pack
+          <Link href="https://github.com/StackGuardian/tirith/tree/main/.claude/skills">
+            skill packs
           </Link>
-          <span>drop-in instructions for a coding agent</span>
+          <span>writing policies, generating a set from your IaC, migrating from Sentinel</span>
         </li>
       </ul>
     </section>
@@ -598,20 +617,25 @@ export default function Home() {
          * Out here it is the navbar's neighbour, .hero's top padding opens every page on
          * the same line, and the strip still precedes the letterhead.
          *
-         * The whole row is the link -- a reader aiming at "Read more" should not be able
-         * to miss and hit nothing.
+         * Each cell is a link across its full width -- a reader aiming at "Read more"
+         * should not be able to miss and hit nothing -- but the row is no longer one
+         * link, because it now carries two destinations.
          */}
-        {announcement ? (
-          <Link className={styles.announce} to={announcement.to}>
-            <span className={styles.betaTag}>{announcement.tag}</span>
-            <span className={styles.announceBody}>
-              <code className={styles.announceCommand}>{announcement.command}</code>{' '}
-              {announcement.body}
-            </span>
-            <span className={styles.announceLink}>
-              {announcement.linkLabel} <span aria-hidden="true">→</span>
-            </span>
-          </Link>
+        {announcements.length ? (
+          <div className={styles.announce}>
+            {announcements.map((item) => (
+              <Link className={styles.announceItem} key={item.id} to={item.to}>
+                <span className={styles.betaTag}>{item.tag}</span>
+                <span className={styles.announceBody}>
+                  <code className={styles.announceCommand}>{item.command}</code>{' '}
+                  {item.body}
+                </span>
+                <span className={styles.announceLink}>
+                  {item.linkLabel} <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            ))}
+          </div>
         ) : null}
 
         {/* ================= HERO ================= */}
@@ -695,12 +719,10 @@ export default function Home() {
                     <li key={f}>{f}</li>
                   ))}
                 </ul>
-                <p className={styles.caveat}>{heroAction.caveat}</p>
               </div>
 
               <div className={styles.heroLede}>
                 <p className={styles.lede}>{hero.lede}</p>
-                <p className={styles.cost}>{hero.cost}</p>
                 <div className={styles.heroLinks}>
                   <a className={styles.btnPrimary} href="#setup">
                     Add the gate <span aria-hidden="true">→</span>
@@ -714,15 +736,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* What it costs you, before anything asks the visitor to read further. */}
-            <ul className={styles.assure}>
-              {hero.assurances.map((a) => (
-                <li key={a.k}>
-                  <span className={styles.assureK}>{a.k}</span>
-                  <span className={styles.assureV}>{a.v}</span>
-                </li>
-              ))}
-            </ul>
             </>
           )}
         </header>
@@ -731,57 +744,24 @@ export default function Home() {
           <AgentView />
         ) : (
           <>
-          {/* ================= 01 GAP ================= */}
-          <section className={styles.section}>
-            <SectionHead {...gap} />
-            <dl className={styles.defs}>
-              {gap.points.map((p) => (
-                <div className={styles.def} key={p.k}>
-                  <dt>{p.k}</dt>
-                  <dd>{p.v}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-
-          {/* ================= 02 HOW IT WORKS ================= */}
-          <section className={styles.section}>
+          {/* ================= 01 ADD IT TO YOUR PIPELINE ================= */}
+          <section className={styles.section} id="setup">
             <SectionHead {...how} />
             <ol className={styles.howFlow}>
               {how.steps.map((step) => (
                 <li className={step.product ? styles.howProduct : undefined} key={step.n}>
                   <span className={styles.howNum}>{step.n}</span>
                   <h3>{step.k}</h3>
-                  <p>{step.v}</p>
+                  {/* What you type for that step, so the flow is also the instructions. */}
+                  <p className={styles.howDo}>
+                    <code>{step.do}</code>
+                  </p>
                 </li>
               ))}
             </ol>
-          </section>
-
-          {/* ================= 03 QUICK START ================= */}
-          <section className={styles.section} id="setup">
-            <SectionHead {...setup} />
-            <div className={styles.quickStart}>
-              <ol className={styles.quickSteps}>
-                {setup.steps.map((step) => (
-                  <li key={step.n}>
-                    <span className={styles.stepNum}>{step.n}</span>
-                    <div>
-                      <h3>{step.k}</h3>
-                      <p>{step.v}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              <div className={styles.quickCode}>
-                <PlatformSetup />
-              </div>
+            <div className={styles.quickCode}>
+              <PlatformSetup />
             </div>
-            <ul className={styles.quickNotes}>
-              {setup.notes.map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-            </ul>
             <div className={styles.quickLinks}>
               <Link to="/docs/tirith-installation/quick-installation/">
                 Full installation guide <span aria-hidden="true">→</span>
@@ -790,59 +770,42 @@ export default function Home() {
                 Start with a worked policy <span aria-hidden="true">→</span>
               </Link>
             </div>
+
           </section>
 
-          {/* ================= 04 REAL PROOF ================= */}
+          {/* ================= 02 REAL PROOF ================= */}
           <section className={styles.section}>
             <SectionHead {...proof} />
             <PhaseJourney />
           </section>
 
-          {/*
-           * ================= RUNS ANYWHERE: HIDDEN =================
-           *
-           * Removed for now. Both halves of it were unshipped anyway: the pre-commit hook
-           * needs .pre-commit-hooks.yaml and the editor loop needs .vscode/tasks.json, and
-           * both drive `tirith lint`, none of which are in the released package. It was
-           * already tagged In dev for that reason, so the page lost a tag rather than a
-           * feature.
-           *
-           * A `false` guard rather than a comment: JSX children cannot take a line comment,
-           * and the guard keeps the markup parsed so it cannot rot while switched off.
-           *
-           * TO RESTORE: change `false` to `true`, and put `specimenPlate.num` back to '06'.
-           * It was moved to '05' to close the gap this left, because the section numerals are
-           * set large on this page and 04 followed by 06 reads as a fault rather than a
-           * choice. `anywhere` and the INTEGRATIONS import are both still in place.
-           */}
-          {false && (
-            <section className={styles.section}>
-              <SectionHead {...anywhere} />
-              <ul className={styles.integrations}>
-                {INTEGRATIONS.map((item) => (
-                  <li key={item.title}>
-                    <Link className={styles.integration} to={item.to}>
-                      <span className={styles.integrationGlyph} aria-hidden="true">
-                        {item.glyph}
+          {/* ================= 03 RUNS ANYWHERE ================= */}
+          <section className={styles.section}>
+            <SectionHead {...anywhere} />
+            <ul className={styles.integrations}>
+              {INTEGRATIONS.map((item) => (
+                <li key={item.title}>
+                  <Link className={styles.integration} to={item.to}>
+                    <span className={styles.integrationGlyph} aria-hidden="true">
+                      {item.glyph}
+                    </span>
+                    <span className={styles.integrationBody}>
+                      <span className={styles.integrationTitle}>
+                        {item.title}
+                        {item.inDev ? (
+                          <span className={styles.tagPlanned}>In dev</span>
+                        ) : null}
                       </span>
-                      <span className={styles.integrationBody}>
-                        <span className={styles.integrationTitle}>
-                          {item.title}
-                          {item.inDev ? (
-                            <span className={styles.tagPlanned}>In dev</span>
-                          ) : null}
-                        </span>
-                        <span className={styles.integrationText}>{item.body}</span>
-                      </span>
-                      <span className={styles.cardArrow} aria-hidden="true">→</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+                      <span className={styles.integrationText}>{item.body}</span>
+                    </span>
+                    <span className={styles.cardArrow} aria-hidden="true">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-          {/* ================= 05 THE SPECIMEN ================= */}
+          {/* ================= 04 THE SPECIMEN ================= */}
           <section className={styles.section}>
             <SectionHead {...specimenPlate} />
             <Specimen />
@@ -868,6 +831,14 @@ export default function Home() {
                 ))}
               </div>
             </div>
+            <dl className={styles.defs}>
+              {finale.points.map((pt) => (
+                <div className={styles.def} key={pt.k}>
+                  <dt>{pt.k}</dt>
+                  <dd>{pt.v}</dd>
+                </div>
+              ))}
+            </dl>
             <p className={styles.routeLabel}>Explore the focused guides</p>
             <ul className={styles.exploreCards}>
               {explore.items.map((item) => (
@@ -949,10 +920,13 @@ export default function Home() {
               </figure>
               <p className={styles.involveNote}>{involve.community}</p>
               <p className={styles.involveNote}>{involve.note}</p>
-              {/* Wrapped, because a bare grid child would stretch the button full width. */}
+              {/* Wrapped, because bare grid children would stretch the buttons full width. */}
               <div className={styles.involveLinks}>
                 <Link className={styles.btnGhost} href={involve.primary.href}>
                   {involve.primary.label} <span aria-hidden="true">→</span>
+                </Link>
+                <Link className={styles.btnGhost} href={involve.secondary.href}>
+                  {involve.secondary.label} <span aria-hidden="true">→</span>
                 </Link>
               </div>
               <div className={styles.involveMore}>

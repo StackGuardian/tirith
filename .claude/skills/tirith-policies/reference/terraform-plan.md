@@ -29,27 +29,45 @@ Arguments: `terraform_resource_type` selects the resources (`"*"` = every type),
 ## `attribute` cannot see a destroy
 
 `attribute` reads **`change.after` only**. A resource being destroyed has `after: null`, so
-nothing about a destroy is visible through it. Use `action`:
+nothing about a destroy is visible through it. Use `action`.
+
+## `action` emits one result per action
+
+A resource's `change.actions` is a list: `["create"]`, `["update"]`, `["delete"]`, or for a
+replacement `["delete", "create"]` / `["create", "delete"]`. The `action` operation emits **one
+result per element**, and the evaluator fails if any element fails. Two forms follow from that,
+and they mean different things:
+
+**Block every delete, including a replacement.** The universal form: every action must be
+something other than `delete`. No negation.
 
 ```json
 {
-  "id": "no_database_destroy",
-  "provider_args": {
-    "operation_type": "action",
-    "terraform_resource_type": "aws_db_instance"
-  },
-  "condition": {"type": "ContainedIn", "value": ["destroy"]}
+  "id": "no_database_delete",
+  "provider_args": {"operation_type": "action", "terraform_resource_type": "aws_db_instance"},
+  "condition": {"type": "NotEquals", "value": "delete"}
 }
 ```
 
-with `"eval_expression": "!no_database_destroy"` — the check *detects* a destroy, and `!` turns
-detection into refusal.
+with `"eval_expression": "no_database_delete"`. Exit `3` on `["delete"]` and on
+`["delete", "create"]`; exit `0` on `["update"]`.
 
-## Replacement is two actions, not one
+**Block only a pure delete, allow a replacement.** The detector form: `ContainedIn ["delete"]`
+passes on a `delete` element and fails on any other, so on a replacement the evaluator has one
+pass and one fail, fails as a whole, and `!` turns that into a pass.
 
-A replacement appears as `["delete", "create"]` or `["create", "delete"]`, and the order matters:
-destroy-first means downtime, create-first does not. If the distinction matters to your rule, test
-the ordering rather than the presence of `delete`.
+```json
+{"condition": {"type": "ContainedIn", "value": ["delete"]}}
+```
+
+with `"eval_expression": "!no_database_delete"`. Exit `3` only on `["delete"]`.
+
+Two traps, both verified against the engine:
+
+- The action is spelled `delete`, never `destroy`. `"value": ["destroy"]` matches nothing and the
+  policy exits `0` on a real delete.
+- The order of `["delete", "create"]` versus `["create", "delete"]` cannot be tested. Each element
+  is evaluated on its own.
 
 ## `count` measures the module, not the change
 
@@ -83,6 +101,8 @@ attribute at all. Those raise severity `2`. Decide deliberately:
 - `error_tolerance: 0` — a resource without the attribute **fails**. Right for "everything must be
   tagged".
 - `error_tolerance: 2` — it is **skipped**. Right for "where this attribute exists, it must be X".
+  A skipped resource does not touch the verdict of the others: the evaluator still fails if any
+  resource fails, and is skipped as a whole only when every resource was tolerated away.
 
 On a wildcard policy every message reads identically, and only the resource address in the result
 distinguishes one finding from another.

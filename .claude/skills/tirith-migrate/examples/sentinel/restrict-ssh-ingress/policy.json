@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "restrict-ssh-ingress",
+    "description": "No security group ingress block admits 0.0.0.0/0 (stricter than the Sentinel original, which only refused it on port 22)",
+    "enforcement": "hard-mandatory"
+  },
+  "evaluators": [{
+    "id": "ingress_open_to_world",
+    "description": "Detects 0.0.0.0/0 in any ingress block's cidr_blocks",
+    "provider_args": {
+      "operation_type": "attribute",
+      "terraform_resource_type": "aws_security_group",
+      "terraform_resource_attribute": "ingress.*.cidr_blocks"
+    },
+    "condition": {"type": "NotContains", "value": "0.0.0.0/0", "error_tolerance": 2}
+  }],
+  "eval_expression": "ingress_open_to_world"
+}

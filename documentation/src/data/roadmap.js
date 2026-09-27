@@ -8,8 +8,7 @@
  *
  * Status is two values and they mean different things.
  *
- *   inDev   there is code. `tirith lint` runs today outside the released package; the
- *           clearer result messages are an open pull request.
+ *   inDev   there is code, on `main` or in an open pull request, but not in a release.
  *   planned specified, sized, ordered, and not started. Most of this list.
  *
  * Nothing here is shipped. Anything shipped belongs in the documentation instead, and the
@@ -203,9 +202,9 @@ export const RELEASES = [
         title: 'Installed the way you install anything else',
         status: 'planned',
         body:
-          'Homebrew, a container image, a dev container feature, a pre-commit hook, and the ' +
-          'Action listed on the Marketplace. Today installation is a git URL, which is the ' +
-          'single most friction-heavy thing about starting.',
+          'Homebrew, a container image, a dev container feature, and the Action listed on ' +
+          'the Marketplace. Today installation is a git URL, which is the single most ' +
+          'friction-heavy thing about starting. The pre-commit hooks are already published.',
       },
     ],
   },
