@@ -171,6 +171,14 @@ def build_parser():
     run.add_argument("--trigger-details-json", default=None, help="JSON object describing what triggered this run.")
     run.add_argument("--trigger-details-file", default=None, help="File containing that JSON object.")
     run.add_argument("--timeout", type=int, default=1800, help="Seconds to wait for the run. Default: 1800")
+    run.add_argument(
+        "--repo-scan",
+        action="store_true",
+        help=(
+            "Also scan the packed source for repository posture (CI credentials, untrusted actions, risky "
+            "triggers, state backend, lock file). Advisory: reported as warnings, never fails the check."
+        ),
+    )
 
     output = check.add_argument_group("output")
     output.add_argument("--output-json", default=None, help="Write the result document here.")

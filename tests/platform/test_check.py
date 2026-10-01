@@ -281,6 +281,29 @@ def test_the_run_tells_the_step_whether_state_is_managed():
     assert data["managedTerraformState"] is False
 
 
+def test_repo_scan_is_not_sent_unless_asked_for():
+    """Absent rather than false, so SG_REPO_SCAN set on the workflow still turns it on."""
+    step = check.policy_step(None, "b.tar.gz")
+
+    assert "repoScan" not in step["wfStepInputData"]["data"]
+
+
+def test_repo_scan_reaches_the_per_run_step():
+    step = check.policy_step(None, "b.tar.gz", repo_scan=True)
+
+    assert step["wfStepInputData"]["data"]["repoScan"] is True
+
+
+def test_repo_scan_flag_parses():
+    from tirith.platform import cli
+
+    parser = cli.build_parser()
+    base = ["check", "--org", "o", "--workflow-id", "w"]
+
+    assert parser.parse_args(base).repo_scan is False
+    assert parser.parse_args(base + ["--repo-scan"]).repo_scan is True
+
+
 def test_the_workflow_never_takes_a_managed_state_backend():
     """And the claim the passthrough rests on: these workflows do not manage state in the first place."""
     config = check.terraform_config("1.5.7", None)

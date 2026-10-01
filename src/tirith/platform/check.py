@@ -153,7 +153,7 @@ POLICY_STEP_NAME = "tirith-iac-governance"
 POLICY_STEP_TIMEOUT = 1800
 
 
-def policy_step(step_template_id, bundle_path):
+def policy_step(step_template_id, bundle_path, repo_scan=False):
     """
     The pre-plan step entry, naming the bundle this run should evaluate.
 
@@ -162,7 +162,7 @@ def policy_step(step_template_id, bundle_path):
     shallow -- supplying `prePlanWfStepsConfig` replaces the whole list -- so the entry has to carry
     its template id and timeout too, not just the path.
     """
-    return {
+    step = {
         "name": POLICY_STEP_NAME,
         "wfStepTemplateId": step_template_id or POLICY_STEP_TEMPLATE,
         "timeout": POLICY_STEP_TIMEOUT,
@@ -182,6 +182,10 @@ def policy_step(step_template_id, bundle_path):
             },
         },
     }
+    # Only sent when asked for, so it never overrides SG_REPO_SCAN set on the workflow.
+    if repo_scan:
+        step["wfStepInputData"]["data"]["repoScan"] = True
+    return step
 
 
 def terraform_config(terraform_version, step_template_id):
@@ -583,7 +587,7 @@ def run_check(opts):
             opts.workflow_group,
             opts.workflow_id,
             opts.trigger_details,
-            pre_plan_steps=[policy_step(opts.step_template_id, bundle_name)],
+            pre_plan_steps=[policy_step(opts.step_template_id, bundle_name, getattr(opts, "repo_scan", False))],
         )
     except SGError as e:
         raise CheckError(str(e))

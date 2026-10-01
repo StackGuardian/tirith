@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
 
+### Added
+- `tirith platform check --repo-scan`: ask the StackGuardian policy step to also scan the packed
+  source for repository posture (CI credentials, untrusted actions, risky triggers, state backend,
+  lock file). Advisory: findings are warnings under `__sg.repo-scan` and never fail the check. Sent
+  only when set, so `SG_REPO_SCAN` on the workflow still turns it on without the flag.
 
 ## [1.2.1] - 2026-09-08
 
