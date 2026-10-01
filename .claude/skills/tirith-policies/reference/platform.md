@@ -45,8 +45,7 @@ The same contract as local evaluation, plus one:
 | Exit | Meaning |
 | --- | --- |
 | `0` | Passed |
-| `1` | Could not reach a verdict — bad input, unreachable API |
-| `2` | Timed out waiting for the run |
+| `1` | Could not reach a verdict — bad input, unreachable API, or the run timed out |
 | `3` | A policy failed (with `--fail-on-error`) |
 
 ## Credentials

@@ -1,0 +1,14 @@
+/*
+ * The breadcrumbs bring their own bottom margin, so the row takes none: collapsing it here
+ * and re-adding it would only give the two children different baselines.
+ */
+.row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.row > nav {
+  min-width: 0;
+}

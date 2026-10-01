@@ -88,3 +88,51 @@ When a provider cannot find what an operation asked for, it reports an error ins
 2. **Errors without a severity value.** Some errors (an unsupported `operation_type` in the `json` and `kubernetes` providers, and all errors from the `infracost` and `sg_workflow` providers) carry no severity. These always **fail** the check, regardless of `error_tolerance`.
 
 Each provider page below lists exactly which situation produces which severity. See also [error tolerance](../tirith-policies/tirith-policy-error-tolerance.md).
+
+## Write one for what you actually run
+
+Five providers ship. That is not a claim about what is worth gating, it is a list of what has been written so far, and the interesting policies are usually about the system nobody wrote a provider for yet.
+
+A provider is small. It is one function:
+
+```python
+def provide(provider_args: dict, input_data) -> list[dict]:
+    """Turn a document into values a condition can be run against."""
+```
+
+It receives the `provider_args` from an evaluator and the parsed input document, and it returns a list of outputs: `{"value": ...}` for something a condition can judge, or `{"value": ProviderError(severity_value=1), "err": "..."}` for something it could not find. That is the entire contract. The thirteen conditions, `eval_expression`, `error_tolerance`, the result document, the exit codes and every CI integration already work on top of it. `kubernetes/handler.py` is about fifty lines, and it is a complete provider.
+
+:::note How a provider is registered
+There is no plugin discovery and no entry point to hook: `PROVIDERS_DICT` in `src/tirith/providers/__init__.py` is a literal dictionary, so a new provider is a module plus one line in that dict. In practice that means a pull request, or a fork you install from your own git URL. Making providers loadable from outside the package is a real request and worth opening an issue for if you need it.
+:::
+
+### What people ask for
+
+The pattern that makes a good provider is narrow: **a document that describes a proposed change, available before the change is applied.** If you can get that as JSON, you can gate it.
+
+| | |
+|---|---|
+| **Other IaC formats** | CloudFormation change sets, Pulumi previews, ARM and Bicep what-if output, Helm rendered templates and values |
+| **Cloud and SaaS APIs** | AWS Config or Cloud Control, GCP asset inventory, Datadog monitors, PagerDuty schedules, an identity provider's roles |
+| **Your own APIs** | A service catalogue, a CMDB, a deployment API, an internal platform's change request. This is the one nobody else can write for you, and it is usually where the rules that matter to your organisation live |
+| **Supply chain** | An SBOM, a lockfile, a dependency manifest, image provenance and signatures |
+| **Cost and capacity** | Beyond Infracost: quota headroom, commitment coverage, a chargeback model |
+| **Compliance evidence** | Turning a control framework into checks that run on every change instead of once a quarter |
+
+### The one that does not exist yet
+
+Everything above is the same shape as what ships today: a plan, a manifest, an estimate. The shape holds somewhere less obvious.
+
+An AI agent with tools is a system that proposes changes and then applies them. Before it calls a tool, there is a document describing what it is about to do: which tool, which arguments, what it costs, what it can reach. That is a plan, in every sense that matters to a policy engine, and today almost nothing sits between an agent's intention and its action.
+
+**A provider for agent runtime decisions** would let the rules be written the same way the rest of your governance is: this agent may not call a tool that writes to production, may not spend beyond a threshold in one run, may not touch a resource outside its blast radius, may not act at all without a plan a human approved. The same thirteen conditions, the same expression grammar, the same verdict and exit code, evaluated before the call rather than in a review afterwards.
+
+This is **aspirational**. There is no such provider, it is not on the [roadmap](https://stackguardian.github.io/tirith/roadmap/) with a date, and it is written down here because it is the clearest example of the point: the engine does not care what the document is about. If you are building agent infrastructure and want a policy layer with a real evaluator behind it rather than a prompt asking a model to behave, this is worth a conversation.
+
+### Start one
+
+Open an issue describing the document you want to gate and what a rule over it would say. That is enough to work out whether it is a new provider, a new operation on an existing one, or something the `json` provider already does.
+
+- **[Propose a provider](https://github.com/StackGuardian/tirith/issues/new?template=feature_request.md&title=Provider%3A+)**: the system, the document, and one rule you would write
+- **[Read an existing one](https://github.com/StackGuardian/tirith/tree/main/src/tirith/providers/kubernetes)**: the shortest complete example in the repository
+- **[Good first issues](https://github.com/StackGuardian/tirith/labels/good%20first%20issue)**: if you would rather start somewhere smaller

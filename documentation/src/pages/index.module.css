@@ -128,7 +128,7 @@
  * The hero is the sheet's title plate and nothing else. The interactive specimen
  * used to sit beside it in a third pane, which split the opening three ways and
  * left the headline and the install command competing for the same attention.
- * The instrument now has its own plate below (§01), where it can be as dense as
+ * The instrument now has its own plate below (§06), where it can be as dense as
  * it likes without taxing the first viewport.
  */
 .hero {
@@ -158,24 +158,50 @@
  * are three different sizes, and centring them lines up their boxes while leaving
  * the type they contain visibly astray.
  */
+/*
+ * Two cells on one rule, divided rather than stacked: the row has to stay one line tall,
+ * because it sits above the letterhead and any height it takes is height the hero loses.
+ */
 .announce {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-bottom: 1px solid var(--tp-rule);
+}
+
+.announceItem {
   display: flex;
   align-items: baseline;
   gap: 0.75rem;
+  min-width: 0;
   padding: 0.85rem var(--tp-pad);
-  border-bottom: 1px solid var(--tp-rule);
   color: var(--tp-soft);
   font-size: 0.8rem;
   line-height: 1.5;
 }
 
-/* The row is the link, so the underline the theme would add belongs to nothing. */
-.announce:hover {
+.announceItem + .announceItem {
+  border-left: 1px solid var(--tp-rule);
+}
+
+/* The cell is the link, so the underline the theme would add belongs to nothing. */
+.announceItem:hover {
   color: var(--tp-ink);
   text-decoration: none;
 }
 
-.announce .betaTag {
+/* One column below the fold-width where two cells would each get half a sentence. */
+@media (max-width: 860px) {
+  .announce {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .announceItem + .announceItem {
+    border-top: 1px solid var(--tp-rule);
+    border-left: 0;
+  }
+}
+
+.announceItem .betaTag {
   flex: none;
   /* Baseline alignment drops a bordered inline box by its own padding; this puts the
      tag's cap-height back on the sentence's baseline instead of below it. */
@@ -331,15 +357,6 @@
   margin-bottom: 1.25rem;
 }
 
-.cost {
-  max-width: 52ch;
-  margin: 0 0 2rem;
-  padding-left: 0.9rem;
-  border-left: 2px solid var(--tp-accent);
-  color: var(--tp-ink);
-  font-size: 1rem;
-  line-height: 1.55;
-}
 
 .heroAction {
   min-width: 0;
@@ -394,52 +411,11 @@
   text-transform: uppercase;
 }
 
-/*
- * The assurance band. Same hairline-ruled cells as .defs, but seated inside the hero
- * so it is read as part of the offer rather than as the first section of the
- * argument. It answers the question the StackGuardian mark in the navbar provokes.
- */
-.assure {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--tp-rule);
-}
 
-.assure li {
-  min-width: 0;
-  padding: 1.15rem var(--tp-gut) 1.4rem 0;
-  border-right: 1px solid var(--tp-rule);
-}
 
-.assure li:last-child {
-  border-right: 0;
-  padding-right: 0;
-}
 
-.assure li:not(:first-child) {
-  padding-left: var(--tp-gut);
-}
 
-.assureK {
-  display: block;
-  margin-bottom: 0.4rem;
-  font-family: var(--tp-display);
-  font-size: 0.73rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
 
-.assureV {
-  display: block;
-  max-width: 36ch;
-  color: var(--tp-soft);
-  font-size: 0.94rem;
-  line-height: 1.55;
-}
 
 /* ------------------------------------------------------- the copy field ----- */
 
@@ -480,6 +456,7 @@
      and this one is the page's primary action. */
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  border-right: 1px solid var(--tp-rule);
 }
 
 .copyPrompt {
@@ -504,8 +481,13 @@
   align-self: flex-start;
   min-width: 5.5rem;
   padding: 0.7rem 0.9rem;
+  /*
+   * No border-left. The button is a top-aligned chip, so an edge on it rendered as a short
+   * line floating beside a taller field rather than as a divider. The divider is
+   * .copyCommand's right edge instead, which stretches with the field however many lines
+   * the command wraps to.
+   */
   border: 0;
-  border-left: 1px solid var(--tp-rule);
   background: var(--tp-ink);
   color: var(--tp-paper);
   font-family: var(--tp-display);
@@ -574,23 +556,7 @@
   color: var(--tp-faint);
 }
 
-.caveat {
-  max-width: 48ch;
-  margin: 0.9rem 0 0;
-  color: var(--tp-soft);
-  font-size: 0.85rem;
-  line-height: 1.55;
-}
 
-.caveat code {
-  padding: 0.05em 0.3em;
-  border: 0;
-  border-radius: 0;
-  background: var(--tp-surface);
-  color: var(--tp-soft);
-  font-size: 0.95em;
-  vertical-align: baseline;
-}
 
 .heroLinks {
   display: flex;
@@ -1823,15 +1789,19 @@
   font-weight: 700;
 }
 
-.howFlow h3,
-.quickSteps h3 {
+/*
+ * These two were `.howFlow h3, .quickSteps h3` and `.howFlow p, .quickSteps p`. Removing the
+ * dead `.quickSteps` halves matched the second line of each selector and deleted through the
+ * closing brace, orphaning `.howFlow h3,` and `.howFlow p,` onto the block below, which is
+ * how every heading and paragraph in the flow ended up painted with the accent card's fill.
+ */
+.howFlow h3 {
   margin: 0;
   font-size: 0.86rem;
   line-height: 1.35;
 }
 
-.howFlow p,
-.quickSteps p {
+.howFlow p {
   margin: 0.6rem 0 0;
   color: var(--tp-soft);
   font-size: 0.94rem;
@@ -1841,6 +1811,61 @@
 .howFlow .howProduct {
   border-color: var(--tp-accent);
   background: var(--tp-accent);
+  color: #fff;
+}
+
+/*
+ * The h3 needs naming explicitly, and this is why: Infima ships
+ * `h1,h2,h3,h4,h5,h6{color:var(--ifm-heading-color)}` and this site points that variable at
+ * --tp-ink. A direct rule on the element beats a colour inherited from `.howProduct` on the
+ * li, so the card's own title rendered in body ink on the accent fill while the paragraph
+ * beside it, which did have an explicit override, looked correct. The title is the one
+ * thing on the card that has to carry, so it takes full white rather than the 0.82 the
+ * supporting text uses.
+ */
+/*
+ * The instruction line in each flow cell. Mono and quieter than the sentence above it: the
+ * cell says what happens, this says what you type, and they must not read as one voice.
+ */
+/* `.howFlow .howDo` rather than `.howDo !important`: `.howFlow p` already sets a margin at
+   (0,1,1), so the flat class lost and the fix was reached for with a hammer. */
+/* No divider: the sentence it used to separate the command from is gone, so a rule directly
+   under the title would be dividing a heading from its own instruction. */
+.howFlow .howDo {
+  margin: 0.8rem 0 0;
+}
+
+/*
+ * The chip is not ours: Infima styles every bare <code> with its own background and border.
+ * Recolouring only the text is what broke the accent card, where near-white ink landed on
+ * Infima's light grey chip and became unreadable. Both states now set background, border
+ * and colour together, so the chip can never be lit from one palette and inked from another.
+ */
+.howFlow .howDo code {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: var(--tp-paper);
+  color: var(--tp-soft);
+  font-family: var(--tp-mono);
+  font-size: 0.74rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+
+.howFlow .howProduct .howDo code {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+
+[data-theme='dark'] .howFlow .howProduct .howDo code {
+  border-color: rgba(13, 13, 13, 0.3);
+  background: rgba(13, 13, 13, 0.12);
+  color: #0d0d0d;
+}
+
+.howFlow .howProduct h3 {
   color: #fff;
 }
 
@@ -1858,6 +1883,12 @@
   color: #0d0d0d;
 }
 
+/* Dark mode flips the accent to a light periwinkle, so the card's text goes dark to keep
+   contrast. Same Infima override needed here, in the other direction. */
+[data-theme='dark'] .howFlow .howProduct h3 {
+  color: #0d0d0d;
+}
+
 [data-theme='dark'] .howFlow .howProduct .howNum,
 [data-theme='dark'] .howFlow .howProduct p {
   color: rgba(13, 13, 13, 0.78);
@@ -1867,35 +1898,9 @@
   color: #0d0d0d;
 }
 
-/* --------------------------------------------------------- 03 quick start --- */
 
-.quickStart {
-  display: grid;
-  grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
-  border-top: 1px solid var(--tp-rule);
-  border-left: 1px solid var(--tp-rule);
-}
 
-.quickSteps {
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
 
-.quickSteps li {
-  display: grid;
-  grid-template-columns: 1.8rem minmax(0, 1fr);
-  gap: 0.85rem;
-  padding: 1.2rem 1.25rem;
-  border-right: 1px solid var(--tp-rule);
-  border-bottom: 1px solid var(--tp-rule);
-}
-
-.quickSteps .stepNum {
-  width: 1.8rem;
-  height: 1.8rem;
-}
 
 .quickCode {
   min-width: 0;
@@ -1910,32 +1915,6 @@
   border-color: var(--tp-rule);
   background: var(--tp-paper);
   font-size: 0.72rem;
-}
-
-.quickNotes {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 0;
-  padding: 0;
-  border-left: 1px solid var(--tp-rule);
-  list-style: none;
-}
-
-.quickNotes li {
-  min-width: 0;
-  padding: 0.9rem 1.1rem;
-  border-right: 1px solid var(--tp-rule);
-  border-bottom: 1px solid var(--tp-rule);
-  color: var(--tp-soft);
-  font-size: 0.82rem;
-  line-height: 1.5;
-}
-
-.quickNotes li::before {
-  content: '✓';
-  margin-right: 0.55rem;
-  color: var(--tp-accent);
-  font-family: var(--tp-mono);
 }
 
 .quickLinks {
@@ -2061,6 +2040,25 @@
 .phaseEyebrow,
 .phaseOutcomeLabel {
   color: var(--tp-faint);
+}
+
+/*
+ * Marks the two walkthrough steps that need a StackGuardian organization. Set as a hairline
+ * chip in the eyebrow rather than a coloured tag: it is a qualification, not a warning, and
+ * anything louder would read as the step being unavailable rather than optional.
+ */
+.phasePlatform {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.05rem 0.34rem;
+  border: 1px solid var(--tp-rule);
+  border-radius: 2px;
+  color: var(--tp-faint);
+  font-size: 0.9em;
+  letter-spacing: 0.08em;
+  /* The eyebrow is uppercase; this stays lower case so it reads as an aside to it. */
+  text-transform: lowercase;
+  white-space: nowrap;
 }
 
 .phaseSelectTitle {
@@ -2338,19 +2336,6 @@
   gap: 0.85rem;
 }
 
-.stepNum {
-  display: grid;
-  place-items: center;
-  width: 1.55rem;
-  height: 1.55rem;
-  flex: none;
-  border: 1px solid var(--tp-accent);
-  color: var(--tp-accent);
-  font-family: var(--tp-display);
-  font-size: 0.7rem;
-  font-weight: 700;
-  align-self: center;
-}
 
 .stepTitle {
   margin: 0;
@@ -3113,9 +3098,7 @@
     padding-left: 0;
   }
 
-  .howFlow,
-  .quickStart,
-  .quickNotes {
+  .howFlow {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -3123,9 +3106,7 @@
     content: none !important;
   }
 
-  .quickSteps li,
   .quickCode,
-  .quickNotes li,
   .exploreCard {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -3180,21 +3161,6 @@
   .proto {
     padding-left: 1rem;
     padding-right: 1rem;
-  }
-
-  .assure li {
-    padding-right: 0;
-    padding-left: 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--tp-rule);
-  }
-
-  .assure li:not(:first-child) {
-    padding-left: 0;
-  }
-
-  .assure li:last-child {
-    border-bottom: 0;
   }
 
   .uiTabs li {
@@ -3401,3 +3367,6 @@
     padding-right: 0;
   }
 }
+
+
+

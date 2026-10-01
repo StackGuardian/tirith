@@ -1,0 +1,64 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "azurerm_network_security_rule.allow-rdp-vpn",
+      "mode": "managed",
+      "type": "azurerm_network_security_rule",
+      "name": "allow-rdp-vpn",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "allow-rdp-vpn",
+          "priority": 100,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "source_port_range": "*",
+          "destination_port_range": "3389",
+          "source_address_prefix": "10.0.0.0/8",
+          "destination_address_prefix": "*",
+          "resource_group_name": "rg-app",
+          "network_security_group_name": "nsg-app"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "azurerm_network_security_rule.allow-https",
+      "mode": "managed",
+      "type": "azurerm_network_security_rule",
+      "name": "allow-https",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "allow-https",
+          "priority": 100,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "source_port_range": "*",
+          "destination_port_range": "443",
+          "source_address_prefix": "10.0.0.0/8",
+          "destination_address_prefix": "*",
+          "resource_group_name": "rg-app",
+          "network_security_group_name": "nsg-app"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    }
+  ]
+}

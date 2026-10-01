@@ -1,0 +1,79 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.5",
+  "resource_changes": [
+    {
+      "address": "azurerm_resource_group.rg",
+      "mode": "managed",
+      "type": "azurerm_resource_group",
+      "name": "rg",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "rg-app",
+          "location": "westeurope",
+          "tags": {
+            "CostCenter": "cc-42",
+            "Owner": "platform"
+          }
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "azurerm_storage_account.sa",
+      "mode": "managed",
+      "type": "azurerm_storage_account",
+      "name": "sa",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "name": "stapp001",
+          "location": "westeurope",
+          "resource_group_name": "rg-app",
+          "account_tier": "Standard",
+          "account_replication_type": "LRS",
+          "https_traffic_only_enabled": true,
+          "min_tls_version": "TLS1_2",
+          "tags": {
+            "Owner": "platform"
+          }
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "azurerm_role_assignment.reader",
+      "mode": "managed",
+      "type": "azurerm_role_assignment",
+      "name": "reader",
+      "provider_name": "registry.terraform.io/hashicorp/azurerm",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "scope": "/subscriptions/x/resourceGroups/rg-app",
+          "role_definition_name": "Reader",
+          "principal_id": "00000000-0000-0000-0000-000000000000"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    }
+  ]
+}

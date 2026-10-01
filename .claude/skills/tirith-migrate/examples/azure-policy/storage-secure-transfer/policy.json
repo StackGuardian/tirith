@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "404c3081-a854-4457-ae30-26a93ef643f9",
+    "name": "Secure transfer to storage accounts should be enabled",
+    "description": "supportsHttpsTrafficOnly is true on every storage account. azurerm 4.x names it https_traffic_only_enabled, 3.x enable_https_traffic_only; one evaluator per name, OR-ed, each skipping when its name is absent.",
+    "enforcement": "audit"
+  },
+  "evaluators": [
+    {
+      "id": "https_only_v4",
+      "description": "azurerm >= 4.0 attribute name",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_storage_account",
+        "terraform_resource_attribute": "https_traffic_only_enabled"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 2
+      }
+    },
+    {
+      "id": "https_only_v3",
+      "description": "azurerm 3.x attribute name",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "azurerm_storage_account",
+        "terraform_resource_attribute": "enable_https_traffic_only"
+      },
+      "condition": {
+        "type": "Equals",
+        "value": true,
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "https_only_v4 || https_only_v3"
+}

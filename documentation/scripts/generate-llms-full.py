@@ -57,10 +57,12 @@ ORDER = [
     "tirith-reference/evaluators.md",
     "tirith-reference/eval-expressions.md",
     "tirith-usage/cli-reference.md",
+    "tirith-usage/lint-and-fmt.md",
     "tirith-usage/exit-codes.md",
     "tirith-usage/ci-integration.md",
     "tirith-usage/interactive-interface.md",
     "tirith-usage/editor-and-local.md",
+    "tirith-usage/agent-skills.md",
     "tirith-usage/platform-check.md",
 ]
 

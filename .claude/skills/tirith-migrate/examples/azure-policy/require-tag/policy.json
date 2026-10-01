@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "id": "871b6d14-10aa-478d-b590-94f262ecfa99",
+    "name": "Require a tag on resources",
+    "description": "Every resource that supports tags carries the tag named by tagName. Azure evaluates tags['<tagName>'] exists; Tirith tests the key of the tags map.",
+    "enforcement": "deny"
+  },
+  "evaluators": [
+    {
+      "id": "tag_present",
+      "description": "tags map contains the key tagName. error_tolerance 2 is Indexed mode: a type with no tags attribute is out of scope. A resource that supports tags but sets none has tags: null in the plan, which Contains fails, so the untagged resource is refused as Azure would refuse it",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "*",
+        "terraform_resource_attribute": "tags"
+      },
+      "condition": {
+        "type": "Contains",
+        "value": "{{ var.tagName }}",
+        "error_tolerance": 2
+      }
+    }
+  ],
+  "eval_expression": "tag_present"
+}

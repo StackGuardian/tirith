@@ -1,0 +1,10 @@
+# Every module call must come from the organisation's private registry. tfconfig/v2.
+import "tfconfig-functions" as config
+import "strings"
+
+allModules = config.find_all_module_calls()
+violations = filter allModules as address, m {
+  not strings.has_prefix(m.source, "app.terraform.io/acme/")
+}
+
+main = rule { length(violations) is 0 }
