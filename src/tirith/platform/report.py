@@ -234,9 +234,7 @@ def _extract_detail(rule):
     resources = []
     fails = (rule.get("evaluations") or {}).get("fails") or []
 
-    # A failed evaluator reports every resource it checked, so the ones that passed are listed beside
-    # the one that failed it. They are dropped unless nothing failed at all -- a negated rule such as
-    # `!owner_tag` fails *because* its evaluator passed, and those passes are then the explanation.
+    # Passing resources are dropped unless nothing failed: a negated rule (`!owner_tag`) fails *because* they passed.
     any_failed = any(
         evaluation.get("passed") is not True for entry in fails for evaluation in entry.get("result") or []
     )
@@ -260,9 +258,7 @@ def _extract_detail(rule):
         # the blank block above for cost rules. This is additive: a Checkov entry has no `result`,
         # so its loop is a no-op.
         #
-        # A tirith evaluator's `description` is not reported. It restates what the rule checks, which
-        # the rule name already says, and it read as one more finding in a list of findings. Local
-        # mode drops it before it gets here, so this also makes the two modes render alike.
+        # Beside a `result`, the description is a tirith evaluator's: it restates the rule, so it is not reported.
         description = entry.get("description")
         if description and not entry.get("result"):
             messages.append(description)
