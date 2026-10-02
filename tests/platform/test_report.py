@@ -468,7 +468,11 @@ def test_an_empty_description_does_not_hide_the_finding():
 
 
 def test_an_entry_carrying_both_shapes_reports_both():
-    """Reading both is additive, so neither shape can mask the other."""
+    """
+    Reading both is additive, so neither shape can mask the other: the resources come from `keys` and
+    `meta` alike. The description is the exception -- beside a `result` it is a tirith evaluator's,
+    which is not reported.
+    """
     messages, resources = render._extract_detail(
         {
             "evaluations": {
@@ -485,8 +489,57 @@ def test_an_entry_carrying_both_shapes_reports_both():
         }
     )
 
-    assert messages == ["Ensure RDS is encrypted at rest", "`false` is not equal to `true`"]
+    assert messages == ["`false` is not equal to `true`"]
     assert resources == ["aws_db_instance.db"]
+
+
+def _owner_tag_rule(results):
+    return {
+        "evaluations": {
+            "fails": [
+                {
+                    "id": "owner_tag",
+                    "description": "Owner tag on every planned S3 bucket",
+                    "result": results,
+                    "passed": False,
+                }
+            ]
+        }
+    }
+
+
+_ANALYTICS_FAILS = {
+    "passed": False,
+    "message": '[aws_s3_bucket.analytics (create)] tags.Owner: `""` is empty',
+    "meta": {"address": "aws_s3_bucket.analytics"},
+}
+_ARTIFACTS_PASSES = {
+    "passed": True,
+    "message": '[aws_s3_bucket.artifacts (no-op)] tags.Owner: `"rafid.aslam"` is not empty',
+    "meta": {"address": "aws_s3_bucket.artifacts"},
+}
+
+
+def test_a_tirith_evaluator_description_is_not_reported_as_a_finding():
+    messages, _resources = render._extract_detail(_owner_tag_rule([_ANALYTICS_FAILS]))
+
+    assert messages == [_ANALYTICS_FAILS["message"]]
+
+
+def test_only_the_resources_that_failed_are_reported():
+    """A failed evaluator reports every bucket it checked; the passing one is not why it failed."""
+    messages, resources = render._extract_detail(_owner_tag_rule([_ANALYTICS_FAILS, _ARTIFACTS_PASSES]))
+
+    assert messages == [_ANALYTICS_FAILS["message"]]
+    assert resources == ["aws_s3_bucket.analytics"]
+
+
+def test_passes_are_reported_when_nothing_failed():
+    """A negated rule (`!owner_tag`) fails because its evaluator passed, so the passes explain it."""
+    messages, resources = render._extract_detail(_owner_tag_rule([_ARTIFACTS_PASSES]))
+
+    assert messages == [_ARTIFACTS_PASSES["message"]]
+    assert resources == ["aws_s3_bucket.artifacts"]
 
 
 def test_an_engine_error_is_still_surfaced_verbatim():
