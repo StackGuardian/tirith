@@ -80,6 +80,43 @@ Please use GitHub Discussions to submit feedback and engage with community [http
 - Please work on only one issue at a time.
 - Please ask for assignee before working, and if there's no update for about a week on a particular issue, we'll remove the assignee.
 
+## AI use policy
+
+This policy covers every contribution to Tirith: code, docs, issues, reviews and discussion. AI tools are welcome; unreviewed AI output is not. You own every line you submit, and "the AI wrote it" is never an answer to "why is this change correct?"
+
+> [!WARNING]
+> **PRs that look AI-generated and untested are closed without review.** Maintainer time is the scarcest thing in this project; send us your best work.
+
+### Writing code with an assistant
+
+1. Read the code you are changing first (the evaluator, provider or test the issue names), so you can judge what the assistant gives you.
+2. Check every claim an assistant makes about Tirith against the source or the docs. Assistants often invent condition types, provider operations and CLI flags that do not exist.
+3. Start from an open issue and get it assigned to you before writing code. Don't ask an assistant to scan the repo for things to fix.
+4. Run `pytest tests/` yourself, and for policy changes run the policy against a real plan; paste the output in the PR.
+5. Keep the diff to what the issue asks: no reformatting, no unrelated files, and coherent commits even if the assistant produced everything at once.
+6. Don't have an assistant add comments across the code. Add a comment only where the code cannot say it, and keep it short.
+
+### Writing PRs, reviews and messages
+
+1. A PR description explains *why*. Leave out what the diff already shows (files touched, functions renamed).
+2. Answer review comments in your own words. Never paste an assistant's reply into a review thread.
+3. Everything you write must be accurate, including what the change does and how you tested it. Misreporting your testing gets the PR closed.
+4. Fill in every field of the PR template; don't overwrite it with generated text.
+5. Short and clear beats polished. Spelling, grammar and translation tools are fine; if an assistant edits your text, it must not get longer.
+6. Link primary sources (a line of Tirith code, the Terraform provider docs, a CIS control) instead of quoting an assistant. If you must quote one, put it in a quote block so it is clearly not your own words.
+7. Write your own messages in Slack and GitHub discussions. We want to hear from you, not a model.
+
+Rule of thumb: if you wouldn't carefully read the output yourself, don't ask a maintainer to.
+
+### When a PR is closed as `invalid`
+
+- It touches files unrelated to its issue, or reformats code it did not change.
+- It uses functions, flags, condition types or policy fields that do not exist in Tirith.
+- It claims test results that were not run.
+- Its author cannot answer a reviewer's follow-up question about their own change.
+
+Adapted from [Zulip's AI use policy](https://github.com/zulip/zulip/blob/main/docs/contributing/contributing.md).
+
 Thank you for taking the time to help improve our project!
 
 
