@@ -43,7 +43,7 @@ def provide(provider_args: Dict, input_data: Dict) -> List[Dict]:
     op_handler = SUPPORTED_OPS.get(operation_type)
 
     if op_handler is None:
-        results.append(create_result_dict(err=f"operation_type: {operation_type} is not supported"))
+        results.append(create_result_dict(err=f"operation_type: '{operation_type}' is not supported"))
         return results
 
     op_handler(provider_args, input_data, results)

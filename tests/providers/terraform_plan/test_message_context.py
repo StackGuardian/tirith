@@ -240,5 +240,5 @@ def test_provider_argument_errors_stay_uncontextualised():
     # This error is about the policy rather than about a resource, so there is nothing to name
     result = evaluate_provider_args({"operation_type": "nope"}, {"type": "Equals", "value": 1}, "input.json")
 
-    assert messages_of(result) == ["operation_type: 'nope' is not supported (severity_value: 99)"]
+    assert messages_of(result) == ["operation_type: 'nope' is not supported"]
     assert contexts_of(result) == [None]
