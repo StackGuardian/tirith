@@ -308,7 +308,7 @@ def provide(provider_inputs, input_data):
         outputs.append(
             {
                 "value": ProviderError(severity_value=99),
-                "err": f"operation_type: '{input_type}' is not supported (severity_value: 99)",
+                "err": f"operation_type: '{input_type}' is not supported",
             }
         )
     return outputs
