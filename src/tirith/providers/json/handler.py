@@ -34,7 +34,7 @@ def provide(provider_args: Dict, input_data: Dict) -> List[Dict]:
         # TODO: We should think of a mechanism to tell the core that this error message
         # should be marked as yellow so it gets the attention of the user,
         # perhaps by prefixing the error message with `WARN:` or `ERR:`
-        return [create_result_dict(err=f"operation_type: {operation_type} is not supported")]
+        return [create_result_dict(err=f"operation_type: '{operation_type}' is not supported")]
 
     results = op_handler(provider_args, input_data)
     return results
