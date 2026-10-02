@@ -232,8 +232,14 @@ def _extract_detail(rule):
     """Pull human-readable messages and resource addresses out of a rule's evaluations."""
     messages = []
     resources = []
+    fails = (rule.get("evaluations") or {}).get("fails") or []
 
-    for entry in (rule.get("evaluations") or {}).get("fails") or []:
+    # Passing resources are dropped unless nothing failed: a negated rule (`!owner_tag`) fails *because* they passed.
+    any_failed = any(
+        evaluation.get("passed") is not True for entry in fails for evaluation in entry.get("result") or []
+    )
+
+    for entry in fails:
         if "exec_err" in entry:
             # An engine/config problem rather than a policy violation -- surfaced verbatim so a
             # malformed policy is not mistaken for a real finding.
@@ -251,8 +257,10 @@ def _extract_detail(rule):
         # Checkov shape, found nothing to say, and skipped the `result` loop -- reproducing exactly
         # the blank block above for cost rules. This is additive: a Checkov entry has no `result`,
         # so its loop is a no-op.
+        #
+        # Beside a `result`, the description is a tirith evaluator's: it restates the rule, so it is not reported.
         description = entry.get("description")
-        if description:
+        if description and not entry.get("result"):
             messages.append(description)
         for key in entry.get("keys") or []:
             # `aws_instance.app.root_block_device` -> `aws_instance.app`. The suffix is the
@@ -262,6 +270,8 @@ def _extract_detail(rule):
                 resources.append(address)
 
         for evaluation in entry.get("result") or []:
+            if any_failed and evaluation.get("passed") is True:
+                continue
             message = evaluation.get("message")
             if message:
                 messages.append(message)
