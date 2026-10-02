@@ -295,6 +295,7 @@ EVALUATORS: Dict[str, EvaluatorInfo] = {
     "IsEmpty": EvaluatorInfo("IsEmpty", "Value is empty.", "none"),
     "IsNotEmpty": EvaluatorInfo("IsNotEmpty", "Value is not empty.", "none"),
     "RegexMatch": EvaluatorInfo("RegexMatch", "Value matches this regular expression.", "regex"),
+    "NotRegexMatch": EvaluatorInfo("NotRegexMatch", "Value does not match this regular expression.", "regex"),
 }
 
 

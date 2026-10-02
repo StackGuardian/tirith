@@ -211,6 +211,30 @@ An **invalid pattern** does not abort the run: the check returns false and the m
 | `"eu-central-1"` | fails |
 | `42` (against pattern `"4"`) | fails — numbers are not coerced |
 
+## NotRegexMatch
+
+Passes when the regular expression in `condition.value` is **not** found anywhere in the input value. Patterns use Python regular expression syntax and are case-sensitive.
+
+Input handling is identical to [`RegexMatch`](#regexmatch):
+
+- a **string** input is matched directly (multi-line strings included);
+- a **list** or **dictionary** input is first converted to its Python string form and the pattern is checked against that text;
+- **numbers, booleans, and `null` are never coerced**: the check returns false.
+
+The pattern itself must be a string; a non-string `condition.value` returns false.
+
+An **invalid pattern** does not abort the run: the check returns false and the message carries the regex error.
+
+```json
+"condition": { "type": "NotRegexMatch", "value": ".*\\.metal" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"t3.micro"` | passes |
+| `"m5.metal"` | fails |
+| `42` | fails — numbers are not coerced |
+
 ## ContainedIn
 
 Asks: **is the input value inside `condition.value`?** The condition value is the container. Which check runs depends on the types of both sides:
