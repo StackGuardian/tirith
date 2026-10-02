@@ -1,0 +1,66 @@
+name: Bug report
+description: Report a reproducible problem with Tirith
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: input
+    id: tirith-version
+    attributes:
+      label: Tirith version
+      description: Run `tirith --version` and enter the output.
+      placeholder: "Example: Tirith 1.2.3"
+    validations:
+      required: true
+
+  - type: input
+    id: provider
+    attributes:
+      label: Provider
+      description: Which Terraform provider is involved?
+      placeholder: "Example: AWS"
+    validations:
+      required: true
+
+  - type: textarea
+    id: policy-json
+    attributes:
+      label: Policy JSON
+      description: Paste the policy JSON that reproduces the issue.
+      render: json
+    validations:
+      required: true
+
+  - type: textarea
+    id: minimal-input
+    attributes:
+      label: Minimal input
+      description: Provide the smallest input that reproduces the issue.
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: command
+    attributes:
+      label: Command run
+      description: What Tirith command did you run?
+      placeholder: "Example: tirith scan plan.json"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-output
+    attributes:
+      label: Expected output
+      description: What did you expect Tirith to do or output?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-output
+    attributes:
+      label: Actual output
+      description: What did Tirith actually do or output?
+    validations:
+      required: true

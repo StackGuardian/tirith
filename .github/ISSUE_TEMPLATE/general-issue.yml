@@ -1,0 +1,53 @@
+name: General Issue
+description: Report an issue or question that does not fit the other forms
+title: "[General Issue] - "
+labels:
+  - question
+  - discussion
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the issue or question in detail.
+      placeholder: Explain what you need help with.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What behavior did you expect?
+      placeholder: Describe the expected behavior.
+    validations:
+      required: false
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: What behavior did you observe?
+      placeholder: Describe the actual behavior.
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: If applicable, list the steps needed to reproduce the issue.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: Add logs, screenshots, links, or any other useful information.
+    validations:
+      required: false
