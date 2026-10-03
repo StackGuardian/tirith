@@ -1,0 +1,39 @@
+import re
+
+from .base_evaluator import BaseEvaluator
+from tirith.utils import json_format_value
+
+
+class NotRegexMatch(BaseEvaluator):
+    def evaluate(self, evaluator_input, evaluator_data):
+        evaluation_result = {"passed": False, "message": "Not evaluated"}
+        try:
+            match = 0
+            if type(evaluator_input) in (str, list, dict) and type(evaluator_data) == str:
+                evaluator_input = str(evaluator_input)
+                match = re.search(evaluator_data, evaluator_input)
+                if match is None:
+                    evaluation_result = {
+                        "passed": True,
+                        "message": "{} does not match regex pattern {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        ),
+                    }
+                else:
+                    evaluation_result = {
+                        "passed": False,
+                        "message": "{} matches regex pattern {}".format(
+                            json_format_value(evaluator_input), json_format_value(evaluator_data)
+                        ),
+                    }
+            else:
+                evaluation_result = {
+                    "passed": False,
+                    "message": "{} does not match regex pattern {}".format(
+                        json_format_value(evaluator_input), json_format_value(evaluator_data)
+                    ),
+                }
+            return evaluation_result
+        except Exception as e:
+            evaluation_result["message"] = str(e)
+            return evaluation_result
