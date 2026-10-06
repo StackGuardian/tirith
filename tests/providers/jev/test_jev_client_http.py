@@ -88,12 +88,13 @@ def test_a_redirect_is_not_followed_so_the_key_goes_nowhere_else(server, status)
 
 
 def test_a_validation_error_surfaces_the_api_message(server):
-    server.replies = [(422, {"Content-Type": "application/json"}, b'{"detail": "criteria is required"}')]
+    body = b'{"detail": [{"loc": ["body", "questions"], "msg": "Field required", "input": "hunter2"}]}'
+    server.replies = [(422, {"Content-Type": "application/json"}, body)]
 
     with pytest.raises(client.JevRequestError) as raised:
         client.ask("state", "jev-latest", QUESTION)
 
-    assert str(raised.value) == 'Jev API returned HTTP 422: {"detail": "criteria is required"}'
+    assert str(raised.value) == "Jev API returned HTTP 422: body.questions: Field required"
     assert len(server.seen) == 1
 
 
@@ -102,3 +103,20 @@ def test_an_overloaded_reply_is_retried(server):
 
     assert client.ask("state", "jev-latest", QUESTION)["answer"]["noul"] == 0.95
     assert len(server.seen) == 2
+
+
+def test_a_key_a_header_cannot_carry_is_named_and_nothing_is_sent(server, monkeypatch):
+    monkeypatch.setenv(client.API_KEY_ENV_VAR, "sk-first\nsk-second")
+
+    with pytest.raises(client.JevRequestError) as raised:
+        client.ask("state", "jev-latest", QUESTION)
+
+    assert str(raised.value) == "TYPESAFE_API_KEY holds characters an HTTP header cannot carry"
+    assert server.seen == []
+
+
+def test_a_reply_cut_short_while_reading_an_error_is_still_a_request_error(server):
+    server.replies = [(422, {"Content-Length": "500"}, b"")]
+
+    with pytest.raises(client.JevRequestError, match="HTTP 422"):
+        client.ask("state", "jev-latest", QUESTION)

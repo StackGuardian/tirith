@@ -201,7 +201,7 @@ def _check_provider_args(evaluator: Dict, provider_name: str, where: str, findin
 
     if not described.uses_operation_type:
         (only_operation,) = described.operations
-        _check_args_against(provider_args, only_operation, f"{where}.provider_args", findings)
+        _check_args_against(provider_args, only_operation, f"{where}.provider_args", findings, described)
         return
 
     operation_name = provider_args.get("operation_type")
@@ -221,10 +221,12 @@ def _check_provider_args(evaluator: Dict, provider_name: str, where: str, findin
         )
         return
 
-    _check_args_against(provider_args, operation, f"{where}.provider_args", findings)
+    _check_args_against(provider_args, operation, f"{where}.provider_args", findings, described)
 
 
-def _check_args_against(provider_args: Dict, operation: schema.Operation, where: str, findings: List[Finding]) -> None:
+def _check_args_against(
+    provider_args: Dict, operation: schema.Operation, where: str, findings: List[Finding], provider: schema.Provider
+) -> None:
     for arg in operation.args:
         if arg.required and arg.name not in provider_args:
             findings.append(_error(f"{where}.{arg.name}", f"Required by operation '{operation.name}'. {arg.help}"))
@@ -234,7 +236,11 @@ def _check_args_against(provider_args: Dict, operation: schema.Operation, where:
 
     known_names = {arg.name for arg in operation.args} | {"operation_type"}
     for key in provider_args:
-        if key not in known_names:
+        if key not in known_names and provider.rejects_unknown_args:
+            findings.append(
+                _error(f"{where}.{key}", f"Not accepted by operation '{operation.name}'; the check will fail.")
+            )
+        elif key not in known_names:
             # A warning, not an error: providers ignore arguments they do not read, so this
             # runs -- it just does not do what the extra key suggests. Usually a typo.
             findings.append(

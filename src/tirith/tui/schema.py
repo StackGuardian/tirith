@@ -54,6 +54,11 @@ class Provider(NamedTuple):
     # sg_workflow takes `workflow_attribute` and no `operation_type`. Rather than pretend it
     # has one, the flag says so and the builder omits the key entirely.
     uses_operation_type: bool = True
+    # The playground evaluates on every pause in typing. A provider that sends the input to a
+    # network service must not run like that, so it waits for the Run button.
+    calls_network: bool = False
+    # Providers ignore an argument they do not read, except this kind, which fails the check.
+    rejects_unknown_args: bool = False
 
 
 # Shared by several terraform_plan operations.
@@ -240,6 +245,8 @@ PROVIDERS: Dict[str, Provider] = {
         name="stackguardian/jev",
         summary="Ask the Jev model a typed question about the document. Calls api.typesafe.ai.",
         input_hint="any JSON or YAML document; the part selected is sent to api.typesafe.ai",
+        calls_network=True,
+        rejects_unknown_args=True,
         operations=[
             Operation(
                 "noul",

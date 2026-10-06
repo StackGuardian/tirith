@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from tirith.providers.common import ProviderError
@@ -137,8 +139,9 @@ def test_an_answer_below_min_confidence_is_a_severity_1_error(ask):
     assert result["context"] == _context("choice")
 
 
-def test_min_confidence_needs_a_confidence_in_the_answer(ask):
-    answer = {"type": "choice", "choice": "routine"}
+@pytest.mark.parametrize("confidence", [None, float("nan"), 5, -1, "0.9", True])
+def test_min_confidence_needs_a_usable_confidence_in_the_answer(ask, confidence):
+    answer = {"type": "choice", "choice": "routine", "confidence": confidence}
     ask(dict(CHOICE, answer=answer))
 
     (result,) = handler.provide(dict(CHOICE_ARGS, min_confidence=0.5), INPUT)
@@ -176,6 +179,8 @@ INVALID_ARGS = [
     (dict(CHOICE_ARGS, min_confidence=True), "min_confidence must be a number from 0 to 1"),
     (dict(CHOICE_ARGS, min_confidence=1.5), "min_confidence must be a number from 0 to 1"),
     (dict(SCORE_ARGS, min_confidence=-0.1), "min_confidence must be a number from 0 to 1"),
+    (dict(NOUL_ARGS, statePath="resource_changes"), "unsupported arguments: statePath"),
+    (dict(CHOICE_ARGS, min_confidance=0.9, key_path="a"), "unsupported arguments: key_path, min_confidance"),
 ]
 
 
@@ -195,6 +200,7 @@ STATE_CASES = [
     ("count", INPUT, "3"),
     ("enabled", INPUT, "true"),
     ("nothing", INPUT, "null"),
+    ("metadata.created", {"metadata": {"created": datetime.date(2026, 1, 2)}}, '"2026-01-02"'),
 ]
 
 
@@ -251,6 +257,13 @@ MALFORMED_ANSWERS = [
     (NOUL_ARGS, {"type": "noul", "noul": True}),
     (CHOICE_ARGS, {"type": "choice", "choice": 3, "confidence": 0.9}),
     (SCORE_ARGS, {"type": "score", "score": None, "confidence": 0.9}),
+    (NOUL_ARGS, {"type": "noul", "noul": -3}),
+    (NOUL_ARGS, {"type": "noul", "noul": 1.5}),
+    (NOUL_ARGS, {"type": "noul", "noul": float("nan")}),
+    (SCORE_ARGS, {"type": "score", "score": -1, "confidence": 0.9}),
+    (SCORE_ARGS, {"type": "score", "score": 2.5, "confidence": 0.9}),
+    (SCORE_ARGS, {"type": "score", "score": float("inf"), "confidence": 0.9}),
+    (CHOICE_ARGS, {"type": "choice", "choice": "not-an-option", "confidence": 0.9}),
 ]
 
 

@@ -19,8 +19,8 @@ class FakeResponse:
     def __init__(self, body):
         self._body = body
 
-    def read(self):
-        return self._body
+    def read(self, amount=None):
+        return self._body if amount is None else self._body[:amount]
 
     def __enter__(self):
         return self
@@ -34,7 +34,12 @@ def _ok(answer=NOUL_ANSWER):
     return FakeResponse(json.dumps(body).encode("utf-8"))
 
 
-def _http_error(code, body=b'{"detail": "what went wrong"}'):
+API_ERROR_BODY = (
+    b'{"detail": {"error_type": "authentication_error", "message": "Cannot authenticate with the server."}}'
+)
+
+
+def _http_error(code, body=API_ERROR_BODY):
     return urllib.error.HTTPError(client.API_URL, code, "error", {}, io.BytesIO(body))
 
 
@@ -118,13 +123,13 @@ def test_client_errors_fail_at_once_with_the_api_message(transport, status):
     with pytest.raises(client.JevRequestError) as raised:
         client.ask("state", "jev-latest", QUESTION)
 
-    assert str(raised.value) == 'Jev API returned HTTP {}: {{"detail": "what went wrong"}}'.format(status)
+    assert str(raised.value) == "Jev API returned HTTP {}: Cannot authenticate with the server.".format(status)
     assert len(transport.requests) == 1
     assert transport.sleeps == []
 
 
-def test_a_long_error_body_is_truncated(transport):
-    transport.script = [_http_error(422, b"x" * 5000)]
+def test_a_long_error_message_is_truncated(transport):
+    transport.script = [_http_error(422, json.dumps({"detail": "x" * 5000}).encode("utf-8"))]
 
     with pytest.raises(client.JevRequestError) as raised:
         client.ask("state", "jev-latest", QUESTION)
@@ -189,9 +194,17 @@ def test_a_response_without_an_answer_is_a_request_error(transport, body):
         client.ask("state", "jev-latest", QUESTION)
 
 
-@pytest.mark.parametrize("failure", ["401", "422"] + sorted(TRANSIENT_FAILURES))
+ECHOING_FAILURES = dict(
+    TRANSIENT_FAILURES,
+    echoed_in_message=lambda: _http_error(401, json.dumps({"detail": {"message": "bad key " + API_KEY}}).encode()),
+    echoed_in_detail=lambda: _http_error(401, json.dumps({"detail": API_KEY + " is not valid"}).encode()),
+    echoed_by_the_network=lambda: urllib.error.URLError("proxy rejected Bearer " + API_KEY),
+)
+
+
+@pytest.mark.parametrize("failure", sorted(ECHOING_FAILURES))
 def test_the_api_key_never_appears_in_an_error(transport, failure):
-    make = TRANSIENT_FAILURES.get(failure, lambda: _http_error(int(failure)))
+    make = ECHOING_FAILURES[failure]
     transport.script = [make(), make(), make()]
 
     with pytest.raises((client.JevRequestError, client.JevUnavailableError)) as raised:
@@ -214,3 +227,117 @@ def test_non_ascii_state_survives_the_round_trip(transport):
     client.ask("naïve — 日本", "jev-latest", QUESTION)
 
     assert json.loads(transport.requests[0].data.decode("utf-8"))["state"] == "naïve — 日本"
+
+
+VALIDATION_BODY = json.dumps(
+    {
+        "detail": [
+            {
+                "type": "missing",
+                "loc": ["body", "questions", "answer", "criteria"],
+                "msg": "Field required",
+                "input": {"db_password": "hunter2"},
+            }
+        ]
+    }
+).encode("utf-8")
+
+
+def test_a_validation_error_names_the_field_and_never_echoes_the_input(transport):
+    transport.script = [_http_error(422, VALIDATION_BODY)]
+
+    with pytest.raises(client.JevRequestError) as raised:
+        client.ask({"db_password": "hunter2"}, "jev-latest", QUESTION)
+
+    assert str(raised.value) == "Jev API returned HTTP 422: body.questions.answer.criteria: Field required"
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        b"<html>Forbidden: hunter2</html>",
+        b'{"error": "hunter2"}',
+        b'["hunter2"]',
+        b'{"detail": {"input": "hunter2"}}',
+        b"",
+    ],
+)
+def test_an_error_body_in_an_unknown_shape_is_not_shown(transport, body):
+    transport.script = [_http_error(403, body)]
+
+    with pytest.raises(client.JevRequestError) as raised:
+        client.ask("state", "jev-latest", QUESTION)
+
+    assert str(raised.value) == "Jev API returned HTTP 403"
+
+
+def test_control_characters_in_an_error_message_are_dropped(transport):
+    transport.script = [_http_error(401, json.dumps({"detail": "bad\x1b[31m key\n::error::x"}).encode("utf-8"))]
+
+    with pytest.raises(client.JevRequestError) as raised:
+        client.ask("state", "jev-latest", QUESTION)
+
+    assert str(raised.value) == "Jev API returned HTTP 401: bad[31m key::error::x"
+
+
+def test_an_error_body_that_cannot_be_read_still_gives_a_request_error(transport):
+    class Truncated(io.BytesIO):
+        def read(self, *args):
+            raise http.client.IncompleteRead(b"")
+
+    transport.script = [urllib.error.HTTPError(client.API_URL, 422, "error", {}, Truncated())]
+
+    with pytest.raises(client.JevRequestError) as raised:
+        client.ask("state", "jev-latest", QUESTION)
+
+    assert str(raised.value) == "Jev API returned HTTP 422"
+
+
+@pytest.mark.parametrize("number", ["NaN", "Infinity", "-Infinity", "1e999"])
+def test_a_number_json_does_not_define_is_a_request_error(transport, number):
+    body = '{"answers": {"answer": {"type": "noul", "noul": %s}}}' % number
+    transport.script = [FakeResponse(body.encode("utf-8"))]
+
+    with pytest.raises(client.JevRequestError, match="not JSON"):
+        client.ask("state", "jev-latest", QUESTION)
+
+
+def test_an_oversized_response_is_a_request_error(transport):
+    transport.script = [FakeResponse(b" " * (client.MAX_RESPONSE_BYTES + 1))]
+
+    with pytest.raises(client.JevRequestError, match="larger than"):
+        client.ask("state", "jev-latest", QUESTION)
+
+
+def test_a_deeply_nested_response_is_a_request_error(transport):
+    transport.script = [FakeResponse(b"[" * 100000)]
+
+    with pytest.raises(client.JevRequestError, match="not JSON"):
+        client.ask("state", "jev-latest", QUESTION)
+
+
+def test_whitespace_around_the_api_key_is_ignored(transport, monkeypatch):
+    monkeypatch.setenv(client.API_KEY_ENV_VAR, API_KEY + "\n")
+    transport.script = [_ok()]
+
+    client.ask("state", "jev-latest", QUESTION)
+
+    assert transport.requests[0].get_header("Authorization") == "Bearer " + API_KEY
+
+
+def _circular():
+    state = []
+    state.append(state)
+    return state
+
+
+@pytest.mark.parametrize(
+    "state",
+    [{datetime.date(2026, 1, 2): "shipped"}, {("a", "b"): 1}, _circular()],
+    ids=["date key", "tuple key", "circular"],
+)
+def test_a_state_json_cannot_carry_is_a_request_error_and_nothing_is_sent(transport, state):
+    with pytest.raises(client.JevRequestError, match="cannot be encoded as JSON"):
+        client.ask(state, "jev-latest", QUESTION)
+
+    assert transport.requests == []

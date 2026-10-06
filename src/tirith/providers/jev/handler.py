@@ -12,6 +12,7 @@ LOW_CONFIDENCE_SEVERITY = 1
 STATE_NOT_FOUND_SEVERITY = 2
 UNAVAILABLE_SEVERITY = 2
 ANSWER_META_KEYS = ("confidence", "probabilities", "legend")
+KNOWN_ARGS = frozenset(("operation_type", "instructions", "criteria", "state_path", "model", "min_confidence"))
 
 
 def _noul_criteria_error(criteria: Any) -> Optional[str]:
@@ -39,8 +40,9 @@ SUPPORTED_OPS: Dict[str, Callable] = {
 }
 
 
-def _is_number(value: Any) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+def _is_number_between(value: Any, low: float, high: float) -> bool:
+    # False for NaN, which would otherwise slip through every threshold comparison
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and low <= value <= high
 
 
 def _min_confidence_error(min_confidence: Any, operation_type: str) -> Optional[str]:
@@ -48,12 +50,16 @@ def _min_confidence_error(min_confidence: Any, operation_type: str) -> Optional[
         return None
     if operation_type == "noul":
         return "min_confidence is not supported for operation_type 'noul', which reports no confidence"
-    if not _is_number(min_confidence) or not 0 <= min_confidence <= 1:
+    if not _is_number_between(min_confidence, 0, 1):
         return "min_confidence must be a number from 0 to 1"
     return None
 
 
 def _args_error(provider_args: Dict, operation_type: str) -> Optional[str]:
+    # Other providers ignore a key they do not read. Here a mistyped state_path would send the whole document
+    unknown_args = sorted(set(provider_args) - KNOWN_ARGS)
+    if unknown_args:
+        return f"unsupported arguments: {', '.join(unknown_args)}"
     if not provider_args.get("instructions"):
         return "instructions must be provided"
     criteria_error = SUPPORTED_OPS[operation_type](provider_args.get("criteria"))
@@ -81,7 +87,7 @@ def _question(provider_args: Dict, operation_type: str) -> Dict:
 def _state(values: List[Any]) -> Any:
     state = values[0] if len(values) == 1 else values
     # Jev accepts a string, an object or an array, so a bare number, boolean or null goes as its JSON text
-    return state if isinstance(state, (str, dict, list)) else json.dumps(state)
+    return state if isinstance(state, (str, dict, list)) else json.dumps(state, default=str)
 
 
 def _meta(response: Dict) -> Dict:
@@ -94,16 +100,25 @@ def _meta(response: Dict) -> Dict:
     return {key: value for key, value in candidates.items() if value is not None}
 
 
-def _result_from_response(response: Dict, operation_type: str, min_confidence: Any, context: Dict) -> Dict:
+def _is_usable_value(value: Any, operation_type: str, criteria: Any) -> bool:
+    if operation_type == "choice":
+        return isinstance(value, str) and value in criteria
+    highest = 1 if operation_type == "noul" else len(criteria) - 1
+    return _is_number_between(value, 0, highest)
+
+
+def _result_from_response(response: Dict, provider_args: Dict, context: Dict) -> Dict:
+    operation_type = provider_args["operation_type"]
     answer = response["answer"]
     value = answer.get(operation_type)
-    is_usable = isinstance(value, str) if operation_type == "choice" else _is_number(value)
-    if not is_usable:
+    # A value outside the question's own terms is not an answer, and judging it could pass a check
+    if not _is_usable_value(value, operation_type, provider_args.get("criteria")):
         return _result(context, err=f"Jev API response carries no usable `{operation_type}` value")
 
+    min_confidence = provider_args.get("min_confidence")
     if min_confidence is not None:
         confidence = answer.get("confidence")
-        if not _is_number(confidence):
+        if not _is_number_between(confidence, 0, 1):
             return _result(context, err="Jev API response carries no confidence to compare with min_confidence")
         if confidence < min_confidence:
             return _result(
@@ -154,4 +169,4 @@ def provide(provider_args: Dict, input_data: Any) -> List[Dict]:
             )
         ]
 
-    return [_result_from_response(response, operation_type, provider_args.get("min_confidence"), context)]
+    return [_result_from_response(response, provider_args, context)]

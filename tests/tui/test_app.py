@@ -59,6 +59,52 @@ K8S_EXAMPLE_DIR = os.path.join(REPO_ROOT, "src", "tirith", "tui", "examples", "0
 TERMINAL_SIZE = (140, 45)
 
 
+@mark.passing
+@drives_the_app
+async def test_playground_sends_nothing_to_a_network_provider_until_run_is_pressed(monkeypatch):
+    """
+    The playground evaluates on every pause in typing. For a provider that calls a network
+    service that would send a half-written policy's whole document, so it waits for Run.
+    """
+    sent = []
+
+    def fake_ask(state, model, question):
+        sent.append(state)
+        return {"answer": {"type": "noul", "noul": 0.05}, "model": "jev-1.13.0", "usage": None}
+
+    monkeypatch.setattr("tirith.providers.jev.handler.client.ask", fake_ask)
+    policy = {
+        "meta": {"version": "v1", "required_provider": "stackguardian/jev"},
+        "evaluators": [
+            {
+                "id": "not_public",
+                "provider_args": {"operation_type": "noul", "instructions": "Is anything public?"},
+                "condition": {"type": "LessThanEqualTo", "value": 0.2},
+            }
+        ],
+        "eval_expression": "not_public",
+    }
+
+    app = build_app()
+    async with app.run_test(size=TERMINAL_SIZE) as pilot:
+        await pilot.pause()
+        playground = app.query_one("#playground-view", PlaygroundView)
+        app.query_one("#policy-editor").text = json.dumps(policy)
+        app.query_one("#input-editor").text = '{"db_password": "hunter2"}'
+        playground.evaluate_now()
+        # Long enough for the debounced evaluation an edit schedules to have fired as well.
+        await pilot.pause(1)
+
+        assert sent == []
+        assert "Press Run" in _text_of(app.query_one("#playground-status"))
+
+        app.query_one("#run-now", Button).press()
+        await pilot.pause()
+
+        assert sent == [{"db_password": "hunter2"}]
+        assert "Press Run" not in _text_of(app.query_one("#playground-status"))
+
+
 @fixture
 def failing_report():
     """A real evaluation with failures, resource addresses and an attribute diff."""

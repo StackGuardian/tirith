@@ -122,12 +122,13 @@ def test_low_confidence_fails_when_not_tolerated(jev):
 
 
 @pytest.mark.parametrize("tolerance, expected", [(None, False), (1, False), (2, None)])
-def test_an_outage_fails_closed_unless_tolerance_reaches_2(jev, tolerance, expected):
+def test_an_outage_fails_closed_and_is_never_a_pass(jev, tolerance, expected):
     jev(error=client.JevUnavailableError("Jev API returned HTTP 529"))
 
     result = start_policy_evaluation_from_dict(_with_tolerance(tolerance), INPUT)
 
     assert [evaluator["passed"] for evaluator in result["evaluators"]] == [expected] * 3
+    assert result["final_result"] is expected
 
 
 def test_a_rejected_request_fails_whatever_the_tolerance(jev):
