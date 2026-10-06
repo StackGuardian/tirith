@@ -33,10 +33,11 @@ platform mode Tirith rules and Checkov findings come back in one verdict instead
 have to reconcile by hand.
 
 It is Apache-2.0 and needs no account. Policies are JSON files in your repository, evaluation happens
-on your own runner, and nothing is sent anywhere. If you would rather keep policy in one place across
+on your own runner, and by default nothing is sent anywhere. If you would rather keep policy in one place across
 many repositories, `tirith platform check` evaluates against the policies a
 [StackGuardian](https://www.stackguardian.io/) organization enforces instead — same document, same
-verdict, same exit codes. That mode is optional and is the only part that talks to a network.
+verdict, same exit codes. That mode is optional. It and a policy that names the [Jev provider](#jev)
+are the only parts that talk to a network.
 
 ## Content
 

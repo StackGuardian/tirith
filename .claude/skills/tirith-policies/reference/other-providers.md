@@ -106,6 +106,9 @@ contain secrets, so set `state_path` rather than sending the whole document. Do 
 when a value can be read directly: a condition over an attribute is deterministic and a model's
 answer is not.
 
+Unlike the other providers, an argument it does not read **fails the check** instead of being
+ignored, so a mistyped `state_path` cannot send the whole document.
+
 Severities: an answer below `min_confidence` is `1`; a `state_path` that matches nothing, or the
 service being unavailable after retries, is `2`. A rejected request or a missing key has no
 severity and always fails.
