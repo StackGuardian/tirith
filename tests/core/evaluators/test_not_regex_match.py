@@ -133,7 +133,7 @@ def test_not_regex_match_multiple_malformed_regex_patterns(malformed_regex):
     result = evaluator.evaluate("some string", malformed_regex)
     assert result["passed"] is False
     assert "message" in result
-    
+
     msg = result["message"]
     assert bool(msg), "Error message should not be empty"
     assert msg != "Not evaluated", "Evaluator did not run"
