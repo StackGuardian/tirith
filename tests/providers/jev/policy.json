@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/jev"
+  },
+  "evaluators": [
+    {
+      "id": "no_public_exposure",
+      "provider_args": {
+        "operation_type": "noul",
+        "state_path": "resource_changes",
+        "instructions": "Does any resource expose a service to the public internet?"
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 0.2
+      }
+    },
+    {
+      "id": "change_kind",
+      "provider_args": {
+        "operation_type": "choice",
+        "model": "jev-1.13.0",
+        "min_confidence": 0.6,
+        "instructions": "What kind of change is this?",
+        "criteria": {
+          "routine": "Config or scaling tweaks",
+          "destructive": "Deletes or replaces stateful resources"
+        }
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "routine",
+        "error_tolerance": 1
+      }
+    },
+    {
+      "id": "blast_radius",
+      "provider_args": {
+        "operation_type": "score",
+        "instructions": "How much of production could this change take down?",
+        "criteria": ["Nothing", "One service", "Several services or shared infrastructure"]
+      },
+      "condition": {
+        "type": "LessThan",
+        "value": 1.5
+      }
+    }
+  ],
+  "eval_expression": "no_public_exposure && change_kind && blast_radius"
+}
