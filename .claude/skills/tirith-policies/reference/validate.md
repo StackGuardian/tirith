@@ -56,7 +56,7 @@ for a reason unrelated to your infrastructure.
 | `error_tolerance` outside `condition` | It belongs **inside** `condition`. On the evaluator it is silently ignored: no warning, and the check still fails as though the tolerance were never written. |
 | An evaluator nothing references | If `eval_expression` never names it, it cannot affect the verdict, however carefully it was written. |
 | A single `&` where `&&` was meant | `&` and `\|` are not operators. |
-| A provider that does not exist | Five ship. There is no `stackguardian/cloudformation`: a CloudFormation template is read by `stackguardian/json`. |
+| A provider that does not exist | Six ship. There is no `stackguardian/cloudformation`: a CloudFormation template is read by `stackguardian/json`. |
 
 The closed lists are in `reference/schema.md`. Read them rather than recalling them: the cost of a
 wrong key is a policy that passes everything.

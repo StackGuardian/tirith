@@ -60,6 +60,7 @@ verdict, same exit codes. That mode is optional and is the only part that talks 
     - [StackGuardian Workflow Policy](#stackguardian-workflow-policy-using-sg-workflow-provider)
     - [JSON](#json)
     - [Kubernetes](#kubernetes)
+    - [Jev](#jev)
 - [Getting Started](#getting-started)
 - [Want to contribute?](#want-to-contribute)
   - [Getting an issue assigned](#getting-an-issue-assigned)
@@ -1415,6 +1416,68 @@ Example output:
    "eval_expression": "!kinds_have_null_liveness_probe"
 }
 ```
+
+</details>
+
+### Jev
+<details>
+<summary>Jev — example policy</summary>
+
+Jev (using Jev provider)
+
+The Jev provider asks the [Jev](https://docs.typesafe.ai/introduction) model a question about the
+input, for a rule that has no attribute to read. It is the only provider that calls a network
+service: the state you select is sent to `api.typesafe.ai`, and `TYPESAFE_API_KEY` must be set.
+Plans can contain secrets, so use `state_path` to send only what the question needs.
+
+#### Example
+- Make sure that a change does not expose a service to the public internet, and that it is routine
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/jev"
+  },
+  "evaluators": [
+    {
+      "id": "no_public_exposure",
+      "provider_args": {
+        "operation_type": "noul",
+        "state_path": "resource_changes",
+        "instructions": "Does any resource expose a service to the public internet?"
+      },
+      "condition": {
+        "type": "LessThanEqualTo",
+        "value": 0.2
+      }
+    },
+    {
+      "id": "change_kind",
+      "provider_args": {
+        "operation_type": "choice",
+        "model": "jev-1.13.0",
+        "min_confidence": 0.6,
+        "instructions": "What kind of change is this?",
+        "criteria": {
+          "routine": "Config or scaling tweaks",
+          "destructive": "Deletes or replaces stateful resources"
+        }
+      },
+      "condition": {
+        "type": "Equals",
+        "value": "routine",
+        "error_tolerance": 1
+      }
+    }
+  ],
+  "eval_expression": "no_public_exposure && change_kind"
+}
+```
+
+`noul` returns the probability, from 0 to 1, that the answer is yes. `choice` returns the option
+chosen; an answer less confident than `min_confidence` is a severity 1 error, which
+`error_tolerance: 1` turns into a skip rather than a failure.
 
 </details>
 

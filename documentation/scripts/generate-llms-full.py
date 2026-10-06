@@ -52,6 +52,7 @@ ORDER = [
     "tirith-providers/terraform-plan.md",
     "tirith-providers/json.md",
     "tirith-providers/kubernetes.md",
+    "tirith-providers/jev.md",
     "tirith-providers/infracost.md",
     "tirith-providers/sg-workflow.md",
     "tirith-reference/evaluators.md",

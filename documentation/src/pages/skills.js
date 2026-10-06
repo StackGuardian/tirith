@@ -181,7 +181,7 @@ const BOUNDARIES = [
   ['Nothing here changes your infrastructure.', 'The commands read documents and return verdicts. An agent may propose a code change; a human reviews and merges it, as before.'],
   ['A drafted policy is a draft.', 'Generated JSON is worth no more than the evaluation that follows it.'],
   ['The engine decides, not the model.', 'Every verdict comes from the same evaluator your pipeline runs.'],
-  ['Evaluation stays on your machine.', 'Your agent may be a hosted model, which is between you and your agent. Tirith itself makes no network call unless you use organization mode.'],
+  ['Evaluation stays on your machine.', 'Your agent may be a hosted model, which is between you and your agent. Tirith itself makes no network call unless you use organization mode or a policy names the stackguardian/jev provider.'],
 ];
 
 /* --------------------------------------------------------------------------- */
