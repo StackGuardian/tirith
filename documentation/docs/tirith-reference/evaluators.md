@@ -73,6 +73,7 @@ Without `--fail-on-error`, the process exits **0** regardless of the verdict; th
 | [`IsEmpty`](#isempty) | input is `null`, `""`, `[]`, or `{}` | ignored | returns false for numbers and booleans (never an error) |
 | [`IsNotEmpty`](#isnotempty) | input is a **non-empty string, list, or dictionary** | ignored | returns false for numbers, booleans, and `null` |
 | [`RegexMatch`](#regexmatch) | the pattern is found in the input | string (regular expression) | returns false for non-string/list/dict input; invalid pattern returns false with the regex error message |
+| [`NotRegexMatch`](#notregexmatch) | the pattern is **not** found in the input | string (regular expression) | returns false for non-string/list/dict input; invalid pattern returns false with the regex error message |
 | [`ContainedIn`](#containedin) | the input value occurs inside the condition value | string, list, or dictionary | returns false with an "unsupported data type" message |
 | [`NotContainedIn`](#notcontainedin) | the input value does **not** occur inside the condition value | string, list, or dictionary | returns false (not true) with an "unsupported data type" message |
 | [`Contains`](#contains) | the condition value occurs inside the input value | any JSON (input must be string, list, or dictionary) | returns false with an "unsupported data type" message |
@@ -209,6 +210,22 @@ An **invalid pattern** does not abort the run: the check returns false and the m
 | --- | --- |
 | `"us-east-1"` | passes |
 | `"eu-central-1"` | fails |
+| `42` (against pattern `"4"`) | fails — numbers are not coerced |
+
+## NotRegexMatch
+
+The exact negation of [`RegexMatch`](#regexmatch), passing when the regular expression in `condition.value` is **not** found anywhere in the input value. Like `RegexMatch`, it requires a string, list, or dictionary input, and a string pattern.
+
+If the input is an unsupported data type (like a number or boolean), the check **fails** (it returns false, it does not pass). An invalid pattern also returns false and the message carries the regex error.
+
+```json
+"condition": { "type": "NotRegexMatch", "value": "^us-(east|west)-[12]$" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"eu-central-1"` | passes |
+| `"us-east-1"` | fails |
 | `42` (against pattern `"4"`) | fails — numbers are not coerced |
 
 ## ContainedIn
