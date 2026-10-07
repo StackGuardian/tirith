@@ -551,3 +551,41 @@ def test_schema_key_and_description_are_known():
     policy["evaluators"][0]["description"] = "d"
 
     assert validate.check_policy(policy) == []
+
+
+def _jev_policy(**extra_args):
+    provider_args = dict({"operation_type": "noul", "instructions": "Is anything public?"}, **extra_args)
+    return {
+        "meta": {"version": "v1", "required_provider": "stackguardian/jev"},
+        "evaluators": [
+            {
+                "id": "check0",
+                "provider_args": provider_args,
+                "condition": {"type": "LessThanEqualTo", "value": 0.2},
+            }
+        ],
+        "eval_expression": "check0",
+    }
+
+
+@mark.passing
+def test_an_argument_jev_does_not_read_is_an_error_not_an_ignored_key():
+    """
+    Every other provider ignores a key it does not read, so the validator warns. The jev
+    provider rejects one, because a mistyped state_path would send the whole document.
+    """
+    assert _errors(_jev_policy(state_path="resource_changes")) == []
+
+    (finding,) = _errors(_jev_policy(statePath="resource_changes"))
+
+    assert finding.where.endswith("provider_args.statePath")
+    assert "the check will fail" in finding.message
+    assert not any("will be ignored" in f.message for f in validate.check_policy(_jev_policy(statePath="x")))
+
+
+@mark.passing
+def test_min_confidence_on_a_noul_question_is_an_error():
+    """noul reports no confidence, and the engine fails the check rather than ignoring the key."""
+    (finding,) = _errors(_jev_policy(min_confidence=0.6))
+
+    assert finding.where.endswith("provider_args.min_confidence")

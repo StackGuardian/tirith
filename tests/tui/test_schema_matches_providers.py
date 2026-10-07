@@ -47,6 +47,7 @@ _DIRNAMES = {
     "stackguardian/terraform_plan": "terraform_plan",
     "stackguardian/json": "json",
     "stackguardian/kubernetes": "kubernetes",
+    "stackguardian/jev": "jev",
     "stackguardian/infracost": "infracost",
     "stackguardian/sg_workflow": "sg_workflow",
 }

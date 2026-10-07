@@ -189,7 +189,7 @@ class PlaygroundView(Vertical):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         actions = {
-            "run-now": self.evaluate_now,
+            "run-now": lambda: self.evaluate_now(run_requested=True),
             "reset-example": self._reset_example,
             "toggle-about": self._toggle_about,
             "copy-policy": lambda: self._copy("#policy-editor", "Policy"),
@@ -308,7 +308,7 @@ class PlaygroundView(Vertical):
             self._timer.stop()
         self._timer = self.set_timer(DEBOUNCE_SECONDS, self.evaluate_now)
 
-    def evaluate_now(self) -> None:
+    def evaluate_now(self, run_requested: bool = False) -> None:
         policy_text = self.query_one("#policy-editor", TextArea).text
         input_text = self.query_one("#input-editor", TextArea).text
 
@@ -343,6 +343,14 @@ class PlaygroundView(Vertical):
         provider = policy.get("meta", {}).get("required_provider", "")
         self._label_expected_input(provider)
         findings = findings + validate.check_input_document(input_document, provider)
+
+        described = schema.PROVIDERS.get(provider)
+        if described and described.calls_network and not run_requested:
+            # Typing must never send a half-written policy's whole document to a third party.
+            self._show_findings(findings)
+            self._set_status(f"[yellow]▲ Not sent. {provider} calls a network service: Press Run to evaluate[/yellow]")
+            self.query_one("#playground-output", Static).update("")
+            return
 
         try:
             raw_result = start_policy_evaluation_from_dict(policy, input_document)
