@@ -1,0 +1,42 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.5.7",
+  "resource_changes": [
+    {
+      "address": "aws_db_instance.private_db",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "private_db",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "identifier": "private-db",
+          "publicly_accessible": false,
+          "allocated_storage": 20,
+          "instance_class": "db.t3.micro"
+        },
+        "after_unknown": { "arn": true }
+      }
+    },
+    {
+      "address": "aws_db_instance.public_db",
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "public_db",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {
+          "identifier": "public-db",
+          "publicly_accessible": true,
+          "allocated_storage": 20,
+          "instance_class": "db.t3.micro"
+        },
+        "after_unknown": { "arn": true }
+      }
+    }
+  ]
+}
