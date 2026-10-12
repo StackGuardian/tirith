@@ -28,6 +28,7 @@ EXPECTED_VERDICTS = {
     "03-cost-ceiling": results.PASSED,
     "04-block-destroy": results.FAILED,
     "05-kubernetes-probes": results.FAILED,
+    "06-rds-not-public": results.FAILED,
 }
 
 ALL_EXAMPLES = examples.load_examples()
