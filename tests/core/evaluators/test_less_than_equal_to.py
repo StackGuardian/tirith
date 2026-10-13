@@ -29,3 +29,32 @@ def test_evaluate_failing():
         "passed": False,
         "message": f"{json_format_value(evaluator_input2)} is not less than or equal to {json_format_value(evaluator_data2)}",
     }
+
+
+@mark.parametrize(
+    "value,other,passed,message",
+    [
+        (5, 5, True, "`5` is less than equal to `5`"),
+        (1.5, 1.25, False, "`1.5` is not less than or equal to `1.25`"),
+        (1.25, 1.5, True, "`1.25` is less than equal to `1.5`"),
+        (2.5, 2, False, "`2.5` is not less than or equal to `2`"),
+    ],
+    ids=["equal", "greater-floats", "lesser-floats", "float-and-integer"],
+)
+def test_evaluate_numeric_edge_cases(value, other, passed, message):
+    assert evaluator.evaluate(value, other) == {"passed": passed, "message": message}
+
+
+@mark.failing
+@mark.parametrize(
+    "value,other,message",
+    [
+        (None, 1, "'<=' not supported between instances of 'NoneType' and 'int'"),
+        (None, None, "'<=' not supported between instances of 'NoneType' and 'NoneType'"),
+        ("5", 5, "'<=' not supported between instances of 'str' and 'int'"),
+        (5, "5", "'<=' not supported between instances of 'int' and 'str'"),
+    ],
+    ids=["none-and-number", "none-and-none", "string-and-number", "number-and-string"],
+)
+def test_evaluate_invalid_comparisons(value, other, message):
+    assert evaluator.evaluate(value, other) == {"passed": False, "message": message}
