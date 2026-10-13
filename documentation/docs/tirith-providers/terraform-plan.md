@@ -10,7 +10,7 @@ slug: terraform-plan-provider/
 ---
 
 ```
-required_provider: stackguardian/terraform_plan
+provider: stackguardian/terraform_plan
 ```
 
 Inspects a Terraform plan: attribute values of changed resources, the actions applied to them, resource counts, explicit dependencies, references between resources, provider configuration, and the Terraform version.
@@ -67,7 +67,7 @@ Example (adapted from a test fixture; requires every resource in the plan to car
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -111,7 +111,7 @@ Example (adapted from a test fixture; fails when a virtual network would be dele
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -180,7 +180,7 @@ Example (verified against a test fixture; requires every EC2 instance to declare
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -253,7 +253,7 @@ Example (from a test fixture; every S3 bucket must have an intelligent-tiering c
 ```json
 {
   "meta": {
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "version": "v1"
   },
   "evaluators": [

@@ -286,7 +286,7 @@ Here is the `policy.json` file:
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/json"
+        "provider": "stackguardian/json"
     },
     "evaluators": [
         {
@@ -385,7 +385,7 @@ Tirith policies are written in JSON format, following a structured approach that
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -417,7 +417,7 @@ A Tirith policy is a single JSON document with exactly three top-level keys. It 
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -452,7 +452,7 @@ If `meta`, `evaluators`, or `eval_expression` is missing, the run aborts before 
 
 | Key | Required | Type | Default | Behavior |
 |---|---|---|---|---|
-| `required_provider` | effectively yes | string | `"core"` | Selects the provider used by every evaluator in the policy. See [below](#metarequired_provider). |
+| `provider` | effectively yes | string | `"core"` | Selects the provider used by every evaluator in the policy. See [below](#metaprovider). |
 | `version` | no | string | none | Not interpreted. Always echoed into the result `meta` (as `null` when absent). |
 | `id` | no | any (conventionally string) | none | Not interpreted. Echoed verbatim into the result `meta` only when present. |
 | `name` | no | any (conventionally string) | none | Same as `id`. |
@@ -464,7 +464,7 @@ If `meta`, `evaluators`, or `eval_expression` is missing, the run aborts before 
 
 An empty `meta` object (`"meta": {}`) is accepted; the policy then falls back to the default provider, which fails every check (see next section).
 
-### `meta.required_provider`
+### `meta.provider`
 
 The registered providers are:
 
@@ -476,7 +476,9 @@ The registered providers are:
 
 Each provider defines its own `provider_args`; see the [provider documentation](../tirith-providers/overview.md).
 
-When `required_provider` is absent it defaults to `"core"`, and no provider named `core` is registered. An unregistered provider name — the default included — is **not** a hard error: every evaluator in the policy simply receives no values and fails with the message `Could not find input value`. The final verdict is a failure (exit code `3` under `--fail-on-error`), which can be mistaken for a genuine policy violation. Always set `required_provider` explicitly.
+When `provider` is absent it defaults to `"core"`, and no provider named `core` is registered. An unregistered provider name — the default included — is **not** a hard error: every evaluator in the policy simply receives no values and fails with the message `Could not find input value`. The final verdict is a failure (exit code `3` under `--fail-on-error`), which can be mistaken for a genuine policy violation. Always set `provider` explicitly.
+
+For backward compatibility, `meta.required_provider` is still accepted as a legacy alias. If both keys are present, `meta.provider` takes precedence. The result document continues to report the selected provider as `meta.required_provider`, preserving the existing JSON output contract.
 
 ### `meta.enforcement`
 
@@ -504,7 +506,7 @@ Each entry in the `evaluators` array is an object with these keys:
 | Key | Required | Type | Default | Behavior |
 |---|---|---|---|---|
 | `id` | yes | string | — | The name this check is referenced by in `eval_expression`. Missing `id` aborts the run (`ERROR`, exit `1`). |
-| `provider_args` | yes | object | — | Arguments for the provider selected by `meta.required_provider`. Missing `provider_args` aborts the run (`ERROR`, exit `1`). |
+| `provider_args` | yes | object | — | Arguments for the provider selected by `meta.provider`. Missing `provider_args` aborts the run (`ERROR`, exit `1`). |
 | `condition` | yes | object | — | The comparison applied to every value the provider extracts. Missing `condition` aborts the run (`ERROR`, exit `1`). |
 | `description` | no | string | none | Informational. Echoed into the result for this check (as `null` when absent). |
 
@@ -690,7 +692,7 @@ literal string, so the check quietly measures the wrong thing instead of failing
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -782,7 +784,7 @@ Every `aws_instance` in a Terraform plan must use an instance type from an appro
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "allowed-instance-types",
     "name": "Only approved EC2 instance types",
     "description": "Every aws_instance in the plan must use an instance type from the approved list.",
@@ -869,7 +871,7 @@ With `terraform_resource_type` set to `"*"`, the check runs against every resour
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "require-environment-tag",
     "name": "Every resource carries an Environment tag",
     "description": "Every resource in the plan must be tagged with Environment set to dev, staging, or prod."
@@ -968,7 +970,7 @@ A public-ingress check. The attribute path `ingress.*.cidr_blocks` extracts the 
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "no-public-ingress",
     "name": "No security group ingress from 0.0.0.0/0",
     "description": "No ingress rule of any aws_security_group may allow traffic from 0.0.0.0/0.",
@@ -1054,7 +1056,7 @@ Uses the `stackguardian/infracost` provider against an [Infracost](https://www.i
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/infracost",
+    "provider": "stackguardian/infracost",
     "id": "monthly-cost-ceiling",
     "name": "Monthly cost stays under the ceiling",
     "description": "The estimated total monthly cost of all resources must not exceed 500 USD."
@@ -1130,7 +1132,7 @@ By default a value the provider cannot find fails the check. `error_tolerance` t
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json",
+    "provider": "stackguardian/json",
     "id": "encryption-and-optional-logging",
     "name": "Encryption required, logging checked when configured",
     "description": "Encryption must be enabled. The logging level is validated only when the logging block exists."
@@ -1220,7 +1222,7 @@ The same cost-ceiling policy, with the limit supplied at run time. A variable re
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/infracost",
+    "provider": "stackguardian/infracost",
     "id": "parameterized-cost-ceiling",
     "name": "Monthly cost stays under a configurable ceiling",
     "description": "The estimated total monthly cost must not exceed the ceiling supplied as a variable."
@@ -1309,13 +1311,13 @@ A **provider** is the part of Tirith that knows how to read one specific kind of
 
 ## Selecting a provider
 
-The provider is selected once for the whole policy with `meta.required_provider`:
+The provider is selected once for the whole policy with `meta.provider`:
 
 ```json
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [ ... ],
   "eval_expression": "..."
@@ -1324,7 +1326,7 @@ The provider is selected once for the whole policy with `meta.required_provider`
 
 The value must be one of the exact strings below. If the string does not match any known provider, every evaluator in the policy fails with an error.
 
-| `required_provider` | Summary | Expected input document |
+| `provider` | Summary | Expected input document |
 |---|---|---|
 | [`stackguardian/terraform_plan`](terraform-plan.md) | Inspects resource changes, actions, counts, dependencies, references, provider configuration, and the Terraform version in a Terraform plan. | Terraform plan in JSON form (`terraform show -json <plan-file>`) |
 | [`stackguardian/infracost`](infracost.md) | Sums estimated monthly or hourly costs from an Infracost breakdown. | Infracost output (`infracost breakdown --format json`) |
@@ -1440,7 +1442,7 @@ Summary: Reference for the stackguardian/terraform_plan provider - operation typ
 ==============================================================================
 
 ```
-required_provider: stackguardian/terraform_plan
+provider: stackguardian/terraform_plan
 ```
 
 Inspects a Terraform plan: attribute values of changed resources, the actions applied to them, resource counts, explicit dependencies, references between resources, provider configuration, and the Terraform version.
@@ -1497,7 +1499,7 @@ Example (adapted from a test fixture; requires every resource in the plan to car
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -1541,7 +1543,7 @@ Example (adapted from a test fixture; fails when a virtual network would be dele
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -1610,7 +1612,7 @@ Example (verified against a test fixture; requires every EC2 instance to declare
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -1683,7 +1685,7 @@ Example (from a test fixture; every S3 bucket must have an intelligent-tiering c
 ```json
 {
   "meta": {
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "version": "v1"
   },
   "evaluators": [
@@ -1814,7 +1816,7 @@ Summary: Reference for the stackguardian/json provider - the get_value operation
 ==============================================================================
 
 ```
-required_provider: stackguardian/json
+provider: stackguardian/json
 ```
 
 Extracts values from any JSON or YAML document by key path. Use this provider when no specialized provider exists for your input format.
@@ -1862,7 +1864,7 @@ Verified end-to-end against the test fixtures:
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -1923,7 +1925,7 @@ The provider also works on YAML — this policy checks an Ansible playbook (a YA
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -1952,7 +1954,7 @@ Summary: Reference for the stackguardian/kubernetes provider - the attribute ope
 ==============================================================================
 
 ```
-required_provider: stackguardian/kubernetes
+provider: stackguardian/kubernetes
 ```
 
 Extracts attribute values from Kubernetes manifests of a chosen `kind` (Pod, Deployment, Service, ...).
@@ -2000,7 +2002,7 @@ Verified end-to-end against the test fixtures — every container of every `Pod`
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -2033,7 +2035,7 @@ Summary: Reference for the stackguardian/infracost provider - operation types, p
 ==============================================================================
 
 ```
-required_provider: stackguardian/infracost
+provider: stackguardian/infracost
 ```
 
 Sums estimated costs from an Infracost cost breakdown, either for all resources or for a chosen set of resource types.
@@ -2082,7 +2084,7 @@ Verified end-to-end against the test fixtures — the total monthly cost of the 
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/infracost"
+    "provider": "stackguardian/infracost"
   },
   "evaluators": [
     {
@@ -2122,7 +2124,7 @@ Summary: Reference for the stackguardian/sg_workflow provider - supported workfl
 ==============================================================================
 
 ```
-required_provider: stackguardian/sg_workflow
+provider: stackguardian/sg_workflow
 ```
 
 Reads attributes of a StackGuardian workflow definition.
@@ -2185,7 +2187,7 @@ Verified end-to-end against the test fixtures:
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/sg_workflow"
+    "provider": "stackguardian/sg_workflow"
   },
   "evaluators": [
     {
@@ -2299,6 +2301,7 @@ Without `--fail-on-error`, the process exits **0** regardless of the verdict; th
 | [`IsEmpty`](#isempty) | input is `null`, `""`, `[]`, or `{}` | ignored | returns false for numbers and booleans (never an error) |
 | [`IsNotEmpty`](#isnotempty) | input is a **non-empty string, list, or dictionary** | ignored | returns false for numbers, booleans, and `null` |
 | [`RegexMatch`](#regexmatch) | the pattern is found in the input | string (regular expression) | returns false for non-string/list/dict input; invalid pattern returns false with the regex error message |
+| [`NotRegexMatch`](#notregexmatch) | the pattern is **not** found in the input | string (regular expression) | returns false for non-string/list/dict input; invalid pattern returns false with the regex error message |
 | [`ContainedIn`](#containedin) | the input value occurs inside the condition value | string, list, or dictionary | returns false with an "unsupported data type" message |
 | [`NotContainedIn`](#notcontainedin) | the input value does **not** occur inside the condition value | string, list, or dictionary | returns false (not true) with an "unsupported data type" message |
 | [`Contains`](#contains) | the condition value occurs inside the input value | any JSON (input must be string, list, or dictionary) | returns false with an "unsupported data type" message |
@@ -2437,6 +2440,22 @@ An **invalid pattern** does not abort the run: the check returns false and the m
 | `"eu-central-1"` | fails |
 | `42` (against pattern `"4"`) | fails — numbers are not coerced |
 
+## NotRegexMatch
+
+The exact negation of [`RegexMatch`](#regexmatch), passing when the regular expression in `condition.value` is **not** found anywhere in the input value. Like `RegexMatch`, it requires a string, list, or dictionary input, and a string pattern.
+
+If the input is an unsupported data type (like a number or boolean), the check **fails** (it returns false, it does not pass). An invalid pattern also returns false and the message carries the regex error.
+
+```json
+"condition": { "type": "NotRegexMatch", "value": "^us-(east|west)-[12]$" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"eu-central-1"` | passes |
+| `"us-east-1"` | fails |
+| `42` (against pattern `"4"`) | fails — numbers are not coerced |
+
 ## ContainedIn
 
 Asks: **is the input value inside `condition.value`?** The condition value is the container. Which check runs depends on the types of both sides:
@@ -2535,7 +2554,7 @@ Policy (`policy.json`), using the `stackguardian/json` provider:
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -2598,7 +2617,7 @@ A policy's top-level `eval_expression` is a boolean expression over the `id`s of
 
 ```json
 {
-  "meta": { "version": "v1", "required_provider": "stackguardian/json" },
+  "meta": { "version": "v1", "provider": "stackguardian/json" },
   "evaluators": [
     { "id": "check_region",  "provider_args": { "...": "..." }, "condition": { "...": "..." } },
     { "id": "check_tags",    "provider_args": { "...": "..." }, "condition": { "...": "..." } },
@@ -2895,7 +2914,7 @@ infrastructure violation:
 - a condition `type` that does not exist, against the closed list of
   [thirteen conditions](../tirith-reference/evaluators.md)
 - a `provider_args` key that belongs to a different provider than the one in
-  `meta.required_provider`
+  `meta.provider`
 - an evaluator that `eval_expression` never names, so it is computed and then discarded
 - `error_tolerance` placed on the evaluator instead of inside `condition`, where it is silently
   ignored and the check still fails
@@ -2990,7 +3009,7 @@ Keys are ordered:
 | Object | Order |
 |---|---|
 | top level | `$schema`, `meta`, `evaluators`, `eval_expression` |
-| `meta` | `version`, `required_provider`, `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation` |
+| `meta` | `version`, `provider`, `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation` |
 | each evaluator | `id`, `description`, `provider_args`, `condition` |
 | `provider_args` | `operation_type` first, then the provider's own keys in their original order |
 | `condition` | `type`, `value`, `error_tolerance` |
@@ -3147,7 +3166,7 @@ found nothing — checked precisely nothing, and reporting that as green is exac
 exists to prevent. It is not a violation either, so it is `1` rather than `3`.
 
 **One limit worth stating plainly:** a *misconfigured* policy — an unsupported `condition.type`,
-an unknown `required_provider` — comes back from the engine as an ordinary failed check with no
+an unknown `provider` — comes back from the engine as an ordinary failed check with no
 error attached, so it is indistinguishable from a real violation and exits `3`. It fails closed,
 which is the safe direction, but it will point at your infrastructure when the fault is in the
 policy.

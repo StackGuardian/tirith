@@ -6,7 +6,7 @@ and the check does not measure what you think.
 
 ## Kubernetes
 
-`"required_provider": "stackguardian/kubernetes"`, reading YAML or JSON manifests. Multi-document
+`"provider": "stackguardian/kubernetes"`, reading YAML or JSON manifests. Multi-document
 YAML is supported.
 
 - `operation_type`: `attribute`
@@ -33,7 +33,7 @@ one container has a probe, which is the wrong question. Test for the presence of
 
 ## Infracost
 
-`"required_provider": "stackguardian/infracost"`, reading an `infracost breakdown --format json`
+`"provider": "stackguardian/infracost"`, reading an `infracost breakdown --format json`
 document.
 
 - `operation_type`: `total_monthly_cost` or `total_hourly_cost`
@@ -54,7 +54,7 @@ exceed the ceiling, and prefer `["*"]` unless you specifically need one type.
 
 ## JSON — anything else
 
-`"required_provider": "stackguardian/json"` reads any JSON document: a Terraform state file, an API
+`"provider": "stackguardian/json"` reads any JSON document: a Terraform state file, an API
 response, a CI configuration, a lockfile.
 
 - `operation_type`: `get_value`
@@ -73,6 +73,6 @@ condition is applied to each.
 
 ## StackGuardian workflows
 
-`"required_provider": "stackguardian/sg_workflow"` reads a workflow definition, naming the value
+`"provider": "stackguardian/sg_workflow"` reads a workflow definition, naming the value
 with **`workflow_attribute`**, for rules about the pipeline itself rather than the infrastructure —
 for example that a Terraform workflow requires approval before apply.

@@ -10,7 +10,7 @@ slug: infracost-provider/
 ---
 
 ```
-required_provider: stackguardian/infracost
+provider: stackguardian/infracost
 ```
 
 Sums estimated costs from an Infracost cost breakdown, either for all resources or for a chosen set of resource types.
@@ -59,7 +59,7 @@ Verified end-to-end against the test fixtures — the total monthly cost of the 
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/infracost"
+    "provider": "stackguardian/infracost"
   },
   "evaluators": [
     {

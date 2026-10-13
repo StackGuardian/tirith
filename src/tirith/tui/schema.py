@@ -44,7 +44,7 @@ class Operation(NamedTuple):
 
 
 class Provider(NamedTuple):
-    """One provider, as named in a policy's `meta.required_provider`."""
+    """One provider, as named in a policy's `meta.provider`."""
 
     name: str
     summary: str

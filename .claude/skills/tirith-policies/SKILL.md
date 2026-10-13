@@ -50,7 +50,7 @@ tirith -policy-path .tirith/policies -input-path should-fail.json --fail-on-erro
 Decide these four in order. Guessing any of them is the main source of silently broken policies.
 
 1. **Document.** Terraform or OpenTofu plan, Kubernetes manifest, Infracost breakdown, or arbitrary
-   JSON or YAML. This fixes `meta.required_provider`. Five providers ship; there is **no
+   JSON or YAML. This fixes `meta.provider`. Five providers ship; there is **no
    CloudFormation provider**, a template is arbitrary JSON read by `stackguardian/json`.
 2. **Operation.** Each provider exposes a closed set: `reference/schema.md`.
 3. **Key naming the value.** It differs per provider, and a wrong key is *ignored, not rejected*,
@@ -61,7 +61,7 @@ Decide these four in order. Guessing any of them is the main source of silently 
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "name": "Every resource carries a costcenter tag"
   },
   "evaluators": [{

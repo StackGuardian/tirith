@@ -10,7 +10,7 @@ slug: sg-workflow-provider/
 ---
 
 ```
-required_provider: stackguardian/sg_workflow
+provider: stackguardian/sg_workflow
 ```
 
 Reads attributes of a StackGuardian workflow definition.
@@ -73,7 +73,7 @@ Verified end-to-end against the test fixtures:
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/sg_workflow"
+    "provider": "stackguardian/sg_workflow"
   },
   "evaluators": [
     {
