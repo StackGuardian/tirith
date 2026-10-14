@@ -2,21 +2,23 @@ from tirith.core.evaluators import IsNotEmpty
 from pytest import mark
 from tirith.utils import json_format_value
 
-evaluator_input1 = "abc"
-evaluator_input2 = ""
+checks_passing = ("abc", " ", {"a": None})
+checks_failing = ("", 0, False)
 
 evaluator = IsNotEmpty()
 
 
 # pytest -v -m passing
 @mark.passing
-def test_evaluate_passing():
-    result = evaluator.evaluate(evaluator_input1)
-    assert result == {"passed": True, "message": f"{json_format_value(evaluator_input1)} is not empty"}
+@mark.parametrize("evaluator_input", checks_passing)
+def test_evaluate_passing(evaluator_input):
+    result = evaluator.evaluate(evaluator_input)
+    assert result == {"passed": True, "message": f"{json_format_value(evaluator_input)} is not empty"}
 
 
-# pytest -v -m passing
+# pytest -v -m failing
 @mark.failing
-def test_evaluate_passing():
-    result = evaluator.evaluate(evaluator_input2)
-    assert result == {"passed": False, "message": f"{json_format_value(evaluator_input2)} is empty"}
+@mark.parametrize("evaluator_input", checks_failing)
+def test_evaluate_failing(evaluator_input):
+    result = evaluator.evaluate(evaluator_input)
+    assert result == {"passed": False, "message": f"{json_format_value(evaluator_input)} is empty"}
