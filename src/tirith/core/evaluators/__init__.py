@@ -15,6 +15,8 @@ from .not_regex_match import NotRegexMatch
 from .not_equals import NotEquals
 from .not_contained_in import NotContainedIn
 from .not_contains import NotContains
+from .starts_with import StartsWith
+from .ends_with import EndsWith
 
 EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
     "ContainedIn": ContainedIn,
@@ -31,4 +33,6 @@ EVALUATORS_DICT: Dict[str, Type[BaseEvaluator]] = {
     "NotEquals": NotEquals,
     "NotContainedIn": NotContainedIn,
     "NotContains": NotContains,
+    "StartsWith": StartsWith,
+    "EndsWith": EndsWith,
 }
