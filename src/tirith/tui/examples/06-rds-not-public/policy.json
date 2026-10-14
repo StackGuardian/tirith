@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan",
+    "name": "No public RDS instances",
+    "severity": "high"
+  },
+  "evaluators": [
+    {
+      "id": "rds_is_not_public",
+      "description": "RDS instances must not be publicly accessible",
+      "provider_args": {
+        "operation_type": "attribute",
+        "terraform_resource_type": "aws_db_instance",
+        "terraform_resource_attribute": "publicly_accessible"
+      },
+      "condition": {
+        "type": "NotEquals",
+        "value": true
+      }
+    }
+  ],
+  "eval_expression": "rds_is_not_public"
+}
