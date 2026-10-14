@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "6c112d4e-5bc7-47ae-a041-ea2d9dccd749",
     "name": "Not allowed resource types",
     "description": "No resource of a forbidden type is in the plan. Microsoft.Network/publicIPAddresses is azurerm_public_ip; Microsoft.Compute/virtualMachines is three azurerm types, one evaluator each.",

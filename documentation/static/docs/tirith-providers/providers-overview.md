@@ -1,7 +1,7 @@
 # Providers Overview
 
 Source: https://stackguardian.github.io/tirith/docs/tirith-providers/providers-overview/
-Summary: What a Tirith provider is, how required_provider selects one, how provider_args are passed, and the list of available providers.
+Summary: What a Tirith provider is, how provider selects one, how provider_args are passed, and the list of available providers.
 
 A **provider** is the part of Tirith that knows how to read one specific kind of input document and extract values from it. The policy declares which provider to use; each evaluator in the policy then asks the provider for values (via `provider_args`), and the evaluator's `condition` is applied to every value the provider returns.
 

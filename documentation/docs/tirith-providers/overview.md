@@ -2,7 +2,7 @@
 id: providers-overview
 title: Providers Overview
 sidebar_label: Overview
-description: What a Tirith provider is, how required_provider selects one, how provider_args are passed, and the list of available providers.
+description: What a Tirith provider is, how provider selects one, how provider_args are passed, and the list of available providers.
 keywords:
   - tirith
 site_name: Tirith

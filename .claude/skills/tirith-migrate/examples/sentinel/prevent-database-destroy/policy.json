@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "name": "prevent-database-destroy",
     "description": "No aws_db_instance is deleted by this plan",
     "enforcement": "hard-mandatory"

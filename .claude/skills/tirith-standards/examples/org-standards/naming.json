@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "name": "S3 bucket names follow the acme-<env>-<purpose> convention",
     "description": "Guarded so a plan touching no bucket passes rather than erroring. Without the guard this policy cannot be green on an unrelated change: at the default tolerance an absent resource type is severity 1 and fails (exit 3), and at error_tolerance 1 it is skipped, which leaves final_result null and exits 1. Buckets using bucket_prefix arrive with a null name and will fail; scope the rule if the repository uses them."
   },

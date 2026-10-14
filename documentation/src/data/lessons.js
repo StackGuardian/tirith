@@ -52,7 +52,7 @@ export const LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -88,7 +88,7 @@ export const LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -125,7 +125,7 @@ export const LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -174,7 +174,7 @@ export const LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -214,7 +214,7 @@ export const LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -254,7 +254,7 @@ export const LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -408,7 +408,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -444,7 +444,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -484,7 +484,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -520,7 +520,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -571,7 +571,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -607,7 +607,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -646,7 +646,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -685,7 +685,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -720,7 +720,7 @@ export const TF_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -853,7 +853,7 @@ export const K8S_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -890,7 +890,7 @@ export const K8S_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -940,7 +940,7 @@ export const K8S_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -980,7 +980,7 @@ export const K8S_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -1019,7 +1019,7 @@ export const K8S_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -1055,7 +1055,7 @@ export const K8S_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -1105,7 +1105,7 @@ export const K8S_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -1142,7 +1142,7 @@ export const K8S_LESSONS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {

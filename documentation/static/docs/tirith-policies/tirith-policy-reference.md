@@ -68,7 +68,7 @@ The registered providers are:
 
 Each provider defines its own `provider_args`; see the [provider documentation](../tirith-providers/overview.md).
 
-When `provider` is absent it defaults to `"core"`, and no provider named `core` is registered. An unregistered provider name — the default included — is **not** a hard error: every evaluator in the policy simply receives no values and fails with the message `Could not find input value`. The final verdict is a failure (exit code `3` under `--fail-on-error`), which can be mistaken for a genuine policy violation. Always set `provider` explicitly.
+When both `provider` and its legacy alias `required_provider` are absent, the provider defaults to `"core"`, and no provider named `core` is registered. An unregistered provider name — the default included — is **not** a hard error: every evaluator in the policy simply receives no values and fails with the message `Could not find input value`. The final verdict is a failure (exit code `3` under `--fail-on-error`), which can be mistaken for a genuine policy violation. Always set `provider` explicitly.
 
 For backward compatibility, `meta.required_provider` is still accepted as a legacy alias. If both keys are present, `meta.provider` takes precedence. The result document continues to report the selected provider as `meta.required_provider`, preserving the existing JSON output contract.
 
