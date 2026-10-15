@@ -265,13 +265,6 @@ def main(args=None) -> ExitStatus:
                 eprint("ERROR")
             return ExitStatus.ERROR
 
-        # TODO: move to core
-        # if not args.inputType:
-        #     print("'--input-type' argument is required")
-        #     return ExitStatus.ERROR
-
-        # inputType = args.inputType
-
     except KeyboardInterrupt:
         eprint("\nFailed because of Keyboard Interrupt")
         return ExitStatus.ERROR_CTRL_C
