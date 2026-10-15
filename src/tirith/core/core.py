@@ -3,9 +3,8 @@ import json
 import logging
 import re
 import yaml
-from types import CodeType
 
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
 
 from tirith.providers.common import ProviderError, format_context_prefix
 from ..providers import PROVIDERS_DICT
@@ -170,85 +169,83 @@ def generate_evaluator_result(evaluator_obj, input_data, provider_module):
     return result
 
 
-def generate_compiled_code_without_none_and_variables(eval_str: str) -> Tuple[Optional[CodeType], List[str]]:
-    # To make sure that the AST tree loop doesn't run forever
-    MAX_TRIES = 2000
+# An eval_expression is a handful of ids joined by `&&`, `||`, `!` and parentheses. 10k characters is
+# orders of magnitude beyond any real policy and keeps a hostile expression from exhausting the parser.
+MAX_EVAL_EXPRESSION_LENGTH = 10_000
 
-    logger.debug(f"eval_str: {eval_str}")
+# The only AST node types an expression may contain after `&&`/`||`/`!` have been rewritten to
+# `and`/`or`/`not`. This is an allow-list: anything not named here (calls, lambdas, attribute access,
+# subscripts, comprehensions, comparisons, arithmetic, f-strings, ...) is rejected before evaluation.
+_ALLOWED_EVAL_NODES = (
+    ast.Expression,
+    ast.BoolOp,
+    ast.And,
+    ast.Or,
+    ast.UnaryOp,
+    ast.Not,
+    ast.Constant,
+    ast.Name,
+    ast.Load,  # the read-context marker every ast.Name carries; it is not an operation
+)
 
-    deleted_var_names: List[str] = []
 
-    class RemoveNoneConstantAndName(ast.NodeTransformer):
-        def visit_Constant(self, node: ast.Constant) -> Any:
-            if node.value is None:
-                return None
-            self.generic_visit(node)
-            return node
+def _unsupported_eval_nodes(tree: ast.AST) -> List[str]:
+    """
+    List the node types in `tree` that an eval_expression is not allowed to contain, in source order.
 
-        def visit_Name(self, node: ast.Name) -> Any:
-            deleted_var_names.append(node.id)
-            return None
-
-    class FixBoolOp(ast.NodeTransformer):
-        def visit_BoolOp(self, node: ast.BoolOp) -> Any:
-            if len(node.values) == 1:
-                # When there's only one child of a BoolOp, make that child
-                # as the parent so the tree becomes valid
-                return node.values[0]
-            if len(node.values) == 0:
-                # Consider if we need to return a True node here instead
-                return None
-            self.generic_visit(node)
-            return node
-
-    class FixUnaryOp(ast.NodeTransformer):
-        def visit_UnaryOp(self, node: ast.UnaryOp) -> Any:
-            if getattr(node, "operand", None) is None:
-                # When UnaryOp has no child, delete the node
-                return None
-            self.generic_visit(node)
-            return node
-
-    tree = ast.parse(eval_str, mode="eval")
-
-    # `&` and `|` parse as BinOp, which nothing below handles: the tree stays uncompilable, the retry
-    # loop exhausts, and the caller reports "Could not evaluate the eval expression. Please report this
-    # error" -- telling a user to file a bug against their own typo. The README documented `&` in two
-    # examples, so this was reachable by copying the docs. Name the operator instead.
+    Constants other than True, False and None (numbers, strings, ...) are rejected too: the language
+    has no literals, and nothing in a policy expression needs one.
+    """
+    found: List[str] = []
     for node in ast.walk(tree):
-        if isinstance(node, ast.BinOp):
-            operators = {ast.BitAnd: ("&", "&&"), ast.BitOr: ("|", "||")}
-            wrong, right = operators.get(type(node.op), (None, None))
-            if wrong:
-                raise ValueError(f"Unsupported operator '{wrong}' in eval_expression. Use '{right}' instead.")
-            raise ValueError("Unsupported operator in eval_expression. Only '&&', '||' and '!' are supported.")
-
-    compiled_code = None
-    tries_count = 0
-    is_tree_compilable = False
-    while not is_tree_compilable and tries_count <= MAX_TRIES:
-        try:
-            tries_count += 1
-            # Clean the tree from None (skip mark) and any variable names
-            tree = RemoveNoneConstantAndName().visit(tree)
-
-            if getattr(tree, "body", None) is None:
-                tree.body = ast.Constant(value=None)
-
-            ast.fix_missing_locations(tree)
-            compiled_code = compile(tree, "<string>", "eval")
-            is_tree_compilable = True
-        except ValueError as e:
-            logger.debug(e)
-            tree = FixBoolOp().visit(tree)
-        except TypeError as e:
-            logger.debug(e)
-            tree = FixUnaryOp().visit(tree)
-
-    return compiled_code, deleted_var_names
+        if not isinstance(node, _ALLOWED_EVAL_NODES):
+            name = type(node).__name__
+        elif isinstance(node, ast.Constant) and not (node.value is None or isinstance(node.value, bool)):
+            name = "Constant"
+        else:
+            continue
+        if name not in found:
+            found.append(name)
+    return found
 
 
-def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]]) -> Tuple[bool, List[str]]:
+def _evaluate_tree(node: ast.AST, deleted_var_names: List[str]) -> Optional[bool]:
+    """
+    Evaluate an already-validated expression tree without compiling or executing any Python code.
+
+    Tri-state: returns True/False, or None for "nothing left to evaluate". A skipped check (substituted
+    as the literal `None`) and an undefined id are both dropped from the expression rather than being
+    treated as false: a `not` of a dropped operand is dropped, a `and`/`or` ignores dropped operands,
+    and if every operand is dropped the whole thing is dropped. Undefined ids are appended to
+    `deleted_var_names`.
+
+    Every operand is visited even when the result is already decided, so that all undefined ids are
+    reported, not only those before the first short-circuit.
+
+    :param node:              A node from a tree that passed `_unsupported_eval_nodes`
+    :param deleted_var_names: Collects the undefined ids that were dropped
+    """
+    if isinstance(node, ast.Expression):
+        return _evaluate_tree(node.body, deleted_var_names)
+    if isinstance(node, ast.Constant):
+        return node.value  # True, False or None; anything else was rejected by the allow-list
+    if isinstance(node, ast.Name):
+        deleted_var_names.append(node.id)
+        return None
+    if isinstance(node, ast.UnaryOp):  # only `not` is on the allow-list
+        operand = _evaluate_tree(node.operand, deleted_var_names)
+        return None if operand is None else (not operand)
+    if isinstance(node, ast.BoolOp):
+        operands = [_evaluate_tree(value, deleted_var_names) for value in node.values]
+        operands = [operand for operand in operands if operand is not None]
+        if not operands:
+            return None
+        return all(operands) if isinstance(node.op, ast.And) else any(operands)
+    # Unreachable while the allow-list and this function agree; failing closed if they ever stop doing so.
+    raise ValueError(f"Unsupported syntax in eval_expression: {type(node).__name__}")
+
+
+def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]]) -> Tuple[Optional[bool], List[str]]:
     """
     Evaluate a given boolean expression string `eval_string` based on the boolean
     values provided by `eval_id_values`.
@@ -260,6 +257,13 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]])
     All variables that are used within `eval_string` but not in `eval_id_values` will be
     removed from the `eval_string` prior processing the `eval_string`.
 
+    The expression is parsed into a syntax tree and walked by `_evaluate_tree`; it is never compiled
+    to code or passed to `eval`. Only ids, `&&`, `||`, `!` and parentheses are accepted. Anything else
+    makes this return `(False, [<error>])` without evaluating any part of the expression.
+
+    :raises ValueError:  If the expression uses `&` or `|`, other operators, or is too long
+    :raises SyntaxError: If the expression cannot be parsed
+
     Example usage:
     >>> final_evaluator("(!(pol_check_1  &&  pol_check_2)  && pol_check_3 ) && pol_check_4", {
         "pol_check_1":False,
@@ -269,32 +273,45 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]])
     })
     """
     logger.debug("Running final evaluator")
+    if len(eval_string) > MAX_EVAL_EXPRESSION_LENGTH:
+        raise ValueError(f"eval_expression is longer than the {MAX_EVAL_EXPRESSION_LENGTH} characters allowed.")
+
     for key in eval_id_values:
-        regex_string = "\\b" + key + "\\b"
+        regex_string = "\\b" + re.escape(key) + "\\b"
         eval_string = re.sub(regex_string, str(eval_id_values[key]), eval_string)
-        # eval_string = eval_string.replace(key, str(eval_id_values[key]["passed"]))
-        # print (eval_string)
 
     # TODO: shall we use and, or and not instead of symbols?
     eval_string = (
         eval_string.replace(" ", "").replace("&&", " and ").replace("||", " or ").replace("!", " not ").strip()
     )
+    logger.debug(f"eval_str: {eval_string}")
 
-    compiled_code, deleted_var_names = generate_compiled_code_without_none_and_variables(eval_string)
-    if compiled_code is None:
-        return False, [
-            "Could not evaluate the eval expression. Please report this error to https://github.com/StackGuardian/tirith"
-        ]
+    try:
+        tree = ast.parse(eval_string, mode="eval")
 
-    if compiled_code.co_names:
-        # Since every variables has been replaced by its literal value (True, False, None) or removed
-        # prior to this (if undefined or None), any names that exist after this are mostly trying
-        # to do some kind of malicious act
-        error = "The following symbols are not allowed: " + ", ".join(compiled_code.co_names)
-        return False, [error]
+        # `&` and `|` parse as BinOp. Name the operator instead of telling a user to file a bug against
+        # their own typo -- the README documented `&` in two examples, so this was reachable by copying
+        # the docs. Raised, not returned: an unparseable expression aborts the run (documented, exit 1).
+        for node in ast.walk(tree):
+            if isinstance(node, ast.BinOp):
+                operators = {ast.BitAnd: ("&", "&&"), ast.BitOr: ("|", "||")}
+                wrong, right = operators.get(type(node.op), (None, None))
+                if wrong:
+                    raise ValueError(f"Unsupported operator '{wrong}' in eval_expression. Use '{right}' instead.")
+                raise ValueError("Unsupported operator in eval_expression. Only '&&', '||' and '!' are supported.")
 
-    # Remove local and global variables scope from eval environment so that it is safe
-    final_eval_result = eval(compiled_code, {"__builtins__": {}}, {})
+        unsupported = _unsupported_eval_nodes(tree)
+        if unsupported:
+            return False, [
+                "Unsupported syntax in eval_expression: "
+                + ", ".join(unsupported)
+                + ". Only evaluator ids, '&&', '||', '!' and parentheses are allowed."
+            ]
+
+        deleted_var_names: List[str] = []
+        final_eval_result = _evaluate_tree(tree, deleted_var_names)
+    except RecursionError:
+        raise ValueError("eval_expression is nested too deeply to evaluate.")
 
     if deleted_var_names:
         error = "The following evaluator ids are not defined and have been removed: " + ", ".join(deleted_var_names)

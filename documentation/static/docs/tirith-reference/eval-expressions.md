@@ -79,7 +79,13 @@ The reverse — an evaluator defined but never mentioned in the expression — s
 
 If the expression cannot be parsed at all — a syntax error such as `check1 &&`, an empty string, a single `&`/`|`, or leftover text from a missing id that is not a valid identifier — the evaluation **aborts**: no result document is produced (with `--json`, the output is `{}`), and the process exits with code **1** regardless of `--fail-on-error`. This is the "tool error" exit code, distinct from a policy failure.
 
-As a safety measure the expression is evaluated with no access to builtins, and any symbol that survives id substitution is rejected (`The following symbols are not allowed: ...`) with `final_result: false`; the expression language cannot call functions or reach interpreter internals.
+As a safety measure the expression is never executed as Python. It is parsed, and only evaluator ids, `&&`, `||`, `!` and parentheses are accepted. Anything else — a function call, `lambda`, attribute access (`a.b`), subscript, comprehension, comparison, or a number or string literal — is rejected before any part of the expression is evaluated, with `final_result: false` and an error such as:
+
+```
+Unsupported syntax in eval_expression: Lambda, Call. Only evaluator ids, '&&', '||', '!' and parentheses are allowed.
+```
+
+Expressions longer than 10,000 characters, or nested too deeply to evaluate, abort the run like any other unparseable expression.
 
 ## From expression result to exit code
 
