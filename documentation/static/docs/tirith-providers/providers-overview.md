@@ -1,19 +1,19 @@
 # Providers Overview
 
 Source: https://stackguardian.github.io/tirith/docs/tirith-providers/providers-overview/
-Summary: What a Tirith provider is, how required_provider selects one, how provider_args are passed, and the list of available providers.
+Summary: What a Tirith provider is, how provider selects one, how provider_args are passed, and the list of available providers.
 
 A **provider** is the part of Tirith that knows how to read one specific kind of input document and extract values from it. The policy declares which provider to use; each evaluator in the policy then asks the provider for values (via `provider_args`), and the evaluator's `condition` is applied to every value the provider returns.
 
 ## Selecting a provider
 
-The provider is selected once for the whole policy with `meta.required_provider`:
+The provider is selected once for the whole policy with `meta.provider`:
 
 ```json
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [ ... ],
   "eval_expression": "..."
@@ -22,7 +22,7 @@ The provider is selected once for the whole policy with `meta.required_provider`
 
 The value must be one of the exact strings below. If the string does not match any known provider, every evaluator in the policy fails with an error.
 
-| `required_provider` | Summary | Expected input document |
+| `provider` | Summary | Expected input document |
 |---|---|---|
 | [`stackguardian/terraform_plan`](terraform-plan.md) | Inspects resource changes, actions, counts, dependencies, references, provider configuration, and the Terraform version in a Terraform plan. | Terraform plan in JSON form (`terraform show -json <plan-file>`) |
 | [`stackguardian/infracost`](infracost.md) | Sums estimated monthly or hourly costs from an Infracost breakdown. | Infracost output (`infracost breakdown --format json`) |

@@ -21,7 +21,7 @@ Every `aws_instance` in a Terraform plan must use an instance type from an appro
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "allowed-instance-types",
     "name": "Only approved EC2 instance types",
     "description": "Every aws_instance in the plan must use an instance type from the approved list.",
@@ -108,7 +108,7 @@ With `terraform_resource_type` set to `"*"`, the check runs against every resour
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "require-environment-tag",
     "name": "Every resource carries an Environment tag",
     "description": "Every resource in the plan must be tagged with Environment set to dev, staging, or prod."
@@ -207,7 +207,7 @@ A public-ingress check. The attribute path `ingress.*.cidr_blocks` extracts the 
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "no-public-ingress",
     "name": "No security group ingress from 0.0.0.0/0",
     "description": "No ingress rule of any aws_security_group may allow traffic from 0.0.0.0/0.",
@@ -293,7 +293,7 @@ Uses the `stackguardian/infracost` provider against an [Infracost](https://www.i
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/infracost",
+    "provider": "stackguardian/infracost",
     "id": "monthly-cost-ceiling",
     "name": "Monthly cost stays under the ceiling",
     "description": "The estimated total monthly cost of all resources must not exceed 500 USD."
@@ -369,7 +369,7 @@ By default a value the provider cannot find fails the check. `error_tolerance` t
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json",
+    "provider": "stackguardian/json",
     "id": "encryption-and-optional-logging",
     "name": "Encryption required, logging checked when configured",
     "description": "Encryption must be enabled. The logging level is validated only when the logging block exists."
@@ -459,7 +459,7 @@ The same cost-ceiling policy, with the limit supplied at run time. A variable re
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/infracost",
+    "provider": "stackguardian/infracost",
     "id": "parameterized-cost-ceiling",
     "name": "Monthly cost stays under a configurable ceiling",
     "description": "The estimated total monthly cost must not exceed the ceiling supplied as a variable."

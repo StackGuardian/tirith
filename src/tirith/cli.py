@@ -244,7 +244,7 @@ def main(args=None) -> ExitStatus:
             # exited 3.
             #
             # Known limit, worth stating rather than pretending otherwise: a *misconfigured* policy -- an
-            # unsupported `condition.type`, an unknown `required_provider` -- surfaces from the engine as
+            # unsupported `condition.type`, an unknown `provider` -- surfaces from the engine as
             # an ordinary failed evaluator with no error attached, so it is indistinguishable from a
             # violation here and exits 3. Fixing that means the engine reporting it distinctly, not this
             # branch guessing from free text.

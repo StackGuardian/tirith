@@ -453,7 +453,7 @@ skipped. A job that treats every non-zero code alike reports an outage as a poli
 cannot tell a working gate from a broken one.
 
 One limit worth stating plainly: a *misconfigured* policy — an unsupported `condition.type`, an unknown
-`required_provider` — comes back from the engine as a failed check and exits `3`. The result message
+`provider` — comes back from the engine as a failed check and exits `3`. The result message
 names the fault, but the exit code does not, so a job branching on the code sees a violation. It fails
 closed, which is the safe direction. `tirith lint` catches this class before the policy ever runs.
 
@@ -494,6 +494,12 @@ discovery, the sticky pull-request comment, the check run and the exit codes for
 
 ## Example Tirith policies
 
+> [!NOTE]
+> New policies should use `meta.provider`. `meta.required_provider` remains accepted as a legacy
+> alias, and `meta.provider` wins when both are present. Result JSON continues to expose the
+> selected provider as `meta.required_provider` for output compatibility.
+
+
 [Examples using various providers](tests/providers)
 
 ### `error_tolerance`, and the third outcome
@@ -529,7 +535,7 @@ VPC and EC2 instance policy
 ```json
 {
   "meta": {
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "version": "v1"
   },
   "evaluators": [
@@ -565,7 +571,7 @@ Make sure that all `aws_s3_bucket` are referenced by `aws_s3_bucket_intelligent_
 ```json
 {
   "meta": {
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "version": "v1"
   },
   "evaluators": [
@@ -594,7 +600,7 @@ Make sure that all AWS ELBs are attached to security group (using Terraform plan
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -621,7 +627,7 @@ Policy:
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/terraform_plan"
+        "provider": "stackguardian/terraform_plan"
     },
     "evaluators": [
         {
@@ -860,7 +866,7 @@ Cost control policy
 ```json
 {
   "meta": {
-    "required_provider": "stackguardian/infracost",
+    "provider": "stackguardian/infracost",
     "version": "v1"
   },
   "evaluators": [
@@ -886,7 +892,7 @@ Policy:
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/infracost"
+        "provider": "stackguardian/infracost"
     },
     "evaluators": [
         {
@@ -1008,7 +1014,7 @@ JSON Output:
 ```json
 {
   "meta": {
-    "required_provider": "stackguardian/sg_workflow",
+    "provider": "stackguardian/sg_workflow",
     "version": "v1"
   },
   "evaluators": [
@@ -1036,7 +1042,7 @@ Policy:
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/sg_workflow"
+        "provider": "stackguardian/sg_workflow"
     },
     "evaluators": [
         {
@@ -1162,7 +1168,7 @@ Example Policy
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/json"
+        "provider": "stackguardian/json"
     },
     "evaluators": [
         {
@@ -1367,7 +1373,7 @@ Kubernetes (using Kubernetes provider)
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -1447,7 +1453,7 @@ Create two files, one for input.json one for policy.json.
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/json"
+        "provider": "stackguardian/json"
     },
     "evaluators": [
         {

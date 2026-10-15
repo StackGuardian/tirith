@@ -19,7 +19,7 @@ literal string, so the check quietly measures the wrong thing instead of failing
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {

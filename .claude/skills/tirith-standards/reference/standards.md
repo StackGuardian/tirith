@@ -1,7 +1,7 @@
 # The standards catalogue
 
 One row per standard. Every `provider_args` block below is
-`"required_provider": "stackguardian/terraform_plan"` unless it says otherwise, and every
+`"provider": "stackguardian/terraform_plan"` unless it says otherwise, and every
 `error_tolerance` goes **inside `condition`**.
 
 **Every entry scoped to a resource type needs the guard evaluator from `SKILL.md`**, not just the

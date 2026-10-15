@@ -23,7 +23,7 @@ FIXTURES_ROOT = os.path.join(REPO_ROOT, "tests", "providers")
 
 def _valid_policy():
     return {
-        "meta": {"version": "v1", "required_provider": "stackguardian/json"},
+        "meta": {"version": "v1", "provider": "stackguardian/json"},
         "evaluators": [
             {
                 "id": "check0",
@@ -109,6 +109,22 @@ def test_accepts_a_minimal_policy():
 
 
 @mark.passing
+def test_accepts_legacy_required_provider():
+    policy = _valid_policy()
+    policy["meta"]["required_provider"] = policy["meta"].pop("provider")
+
+    assert validate.check_policy(policy) == []
+
+
+@mark.passing
+def test_provider_takes_precedence_over_legacy_required_provider():
+    policy = _valid_policy()
+    policy["meta"]["required_provider"] = "stackguardian/nope"
+
+    assert validate.check_policy(policy) == []
+
+
+@mark.passing
 def test_missing_meta_is_an_error_not_an_exception():
     """
     The engine raises AttributeError on this input; the whole point is to report it instead.
@@ -128,7 +144,7 @@ def test_non_dict_policy_is_reported():
 @mark.passing
 def test_unknown_provider_is_reported():
     policy = _valid_policy()
-    policy["meta"]["required_provider"] = "stackguardian/nope"
+    policy["meta"]["provider"] = "stackguardian/nope"
     assert any("Unknown provider" in f.message for f in _errors(policy))
 
 
@@ -445,6 +461,21 @@ def test_an_unhashable_provider_is_reported_not_raised(bad):
     Reachable by an ordinary mistake: the neighbouring resource_type argument really is a list.
     """
     policy = _valid_policy()
+    policy["meta"]["provider"] = bad
+
+    assert any("Must be a string" in f.message for f in _errors(policy))
+
+
+@mark.passing
+@mark.parametrize("bad", [["stackguardian/json"], {"name": "x"}], ids=["list", "dict"])
+def test_an_unhashable_legacy_required_provider_is_reported_not_raised(bad):
+    """
+    The legacy required_provider alias must remain safe when it is the only
+    provider key. Invalid unhashable values should be reported instead of
+    escaping as TypeError.
+    """
+    policy = _valid_policy()
+    del policy["meta"]["provider"]
     policy["meta"]["required_provider"] = bad
 
     assert any("Must be a string" in f.message for f in _errors(policy))

@@ -3,7 +3,7 @@
 Source: https://stackguardian.github.io/tirith/docs/tirith-reference/evaluators/
 Summary: Complete reference for all Tirith condition types, their parameters, type handling, and pass/fail semantics.
 
-Every evaluator in a Tirith policy applies a **condition** to one or more values extracted by a provider. This page is the complete reference for all 13 condition types, including exactly how each one treats strings, numbers, lists, dictionaries, and `null`.
+Every evaluator in a Tirith policy applies a **condition** to one or more values extracted by a provider. This page is the complete reference for all 15 condition types, including exactly how each one treats strings, numbers, lists, dictionaries, and `null`.
 
 ## Anatomy of a condition
 
@@ -27,7 +27,7 @@ The `condition` object accepts three keys:
 
 | Key | Required | Meaning |
 | --- | --- | --- |
-| `type` | yes | One of the 13 evaluator names listed below. The name is case-sensitive. |
+| `type` | yes | One of the 15 evaluator names listed below. The name is case-sensitive. |
 | `value` | yes, except for `IsEmpty` and `IsNotEmpty`, which ignore it | The value the extracted input is compared against. Any JSON type is accepted; each evaluator defines which types it supports. |
 | `error_tolerance` | no (default `0`) | The maximum provider error severity that is *skipped* instead of failing the evaluator. See [Error Tolerance](../tirith-policies/tirith-policy-error-tolerance.md). |
 
@@ -67,6 +67,9 @@ Without `--fail-on-error`, the process exits **0** regardless of the verdict; th
 | [`IsEmpty`](#isempty) | input is `null`, `""`, `[]`, or `{}` | ignored | returns false for numbers and booleans (never an error) |
 | [`IsNotEmpty`](#isnotempty) | input is a **non-empty string, list, or dictionary** | ignored | returns false for numbers, booleans, and `null` |
 | [`RegexMatch`](#regexmatch) | the pattern is found in the input | string (regular expression) | returns false for non-string/list/dict input; invalid pattern returns false with the regex error message |
+| [`NotRegexMatch`](#notregexmatch) | the pattern is **not** found in the input | string (regular expression) | returns false for non-string/list/dict input; invalid pattern returns false with the regex error message |
+| [`StartsWith`](#startswith) | the input starts with the condition string | string | returns false for non-string input and names its type |
+| [`EndsWith`](#endswith) | the input ends with the condition string | string | returns false for non-string input and names its type |
 | [`ContainedIn`](#containedin) | the input value occurs inside the condition value | string, list, or dictionary | returns false with an "unsupported data type" message |
 | [`NotContainedIn`](#notcontainedin) | the input value does **not** occur inside the condition value | string, list, or dictionary | returns false (not true) with an "unsupported data type" message |
 | [`Contains`](#contains) | the condition value occurs inside the input value | any JSON (input must be string, list, or dictionary) | returns false with an "unsupported data type" message |
@@ -205,6 +208,52 @@ An **invalid pattern** does not abort the run: the check returns false and the m
 | `"eu-central-1"` | fails |
 | `42` (against pattern `"4"`) | fails — numbers are not coerced |
 
+## NotRegexMatch
+
+The exact negation of [`RegexMatch`](#regexmatch), passing when the regular expression in `condition.value` is **not** found anywhere in the input value. Like `RegexMatch`, it requires a string, list, or dictionary input, and a string pattern.
+
+If the input is an unsupported data type (like a number or boolean), the check **fails** (it returns false, it does not pass). An invalid pattern also returns false and the message carries the regex error.
+
+```json
+"condition": { "type": "NotRegexMatch", "value": "^us-(east|west)-[12]$" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"eu-central-1"` | passes |
+| `"us-east-1"` | fails |
+| `42` (against pattern `"4"`) | fails — numbers are not coerced |
+
+## StartsWith
+
+Passes when the input string starts with `condition.value`. Matching is case-sensitive; an empty condition string matches every string. Non-string input returns false with a message naming its type.
+
+```json
+"condition": { "type": "StartsWith", "value": "acme-" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"acme-bucket"` | passes |
+| `"other-bucket"` | fails |
+| `"anything"` with condition value `""` | passes |
+| `42` | fails — message names `int` |
+
+## EndsWith
+
+Passes when the input string ends with `condition.value`. Matching is case-sensitive; an empty condition string matches every string. Non-string input returns false with a message naming its type.
+
+```json
+"condition": { "type": "EndsWith", "value": "-hardened" }
+```
+
+| Input value | Result |
+| --- | --- |
+| `"ami-hardened"` | passes |
+| `"ami-default"` | fails |
+| `"anything"` with condition value `""` | passes |
+| `42` | fails — message names `int` |
+
 ## ContainedIn
 
 Asks: **is the input value inside `condition.value`?** The condition value is the container. Which check runs depends on the types of both sides:
@@ -303,7 +352,7 @@ Policy (`policy.json`), using the `stackguardian/json` provider:
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {

@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes",
+    "provider": "stackguardian/kubernetes",
     "name": "Pods declare liveness probes and pinned images"
   },
   "evaluators": [

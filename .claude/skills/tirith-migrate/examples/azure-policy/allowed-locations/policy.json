@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "e56962a6-4747-49cd-b67b-bf8b01975c4c",
     "name": "Allowed locations",
     "description": "Every resource that has a location is deployed in one of listOfAllowedLocations. Azure exempts location 'global'; keep it in the list.",

@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "871b6d14-10aa-478d-b590-94f262ecfa99",
     "name": "Require a tag on resources",
     "description": "Every resource that supports tags carries the tag named by tagName. Azure evaluates tags['<tagName>'] exists; Tirith tests the key of the tags map.",

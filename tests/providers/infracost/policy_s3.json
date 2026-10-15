@@ -18,7 +18,7 @@
         }
     ],
     "meta": {
-        "required_provider": "stackguardian/infracost",
+        "provider": "stackguardian/infracost",
         "version": "v1"
     },
     "eval_expression": "monthly_cost_below_30"

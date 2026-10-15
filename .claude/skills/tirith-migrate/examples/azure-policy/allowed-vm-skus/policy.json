@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "cccc23c7-8427-4f53-ad12-b6a63eb452b3",
     "name": "Allowed virtual machine size SKUs",
     "description": "Every virtual machine uses a size from listOfAllowedSKUs. sku.name is `size` on the linux and windows resources and `vm_size` on the legacy one.",

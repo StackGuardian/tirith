@@ -378,7 +378,7 @@ class BuilderView(Vertical):
     def build_policy(self) -> dict:
         """The policy as currently assembled."""
         return {
-            "meta": {"version": "v1", "required_provider": self._provider_name},
+            "meta": {"version": "v1", "provider": self._provider_name},
             "evaluators": list(self._checks),
             "eval_expression": self.current_expression(),
         }

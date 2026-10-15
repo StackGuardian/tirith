@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/infracost",
+    "provider": "stackguardian/infracost",
     "name": "Monthly spend stays under budget"
   },
   "evaluators": [

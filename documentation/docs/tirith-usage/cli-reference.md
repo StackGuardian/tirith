@@ -60,7 +60,7 @@ The policy file to evaluate — a JSON document with `meta`, `evaluators` and an
 See the [policy reference](../tirith-policies/tirith-policy-reference.md) for the schema, the
 [evaluators reference](../tirith-reference/evaluators.md) for the available condition types, and the
 [providers overview](../tirith-providers/overview.md) for what kinds of input each
-`required_provider` reads.
+`provider` reads.
 
 If the flag is missing, `tirith` prints an error to stderr and exits `1`.
 

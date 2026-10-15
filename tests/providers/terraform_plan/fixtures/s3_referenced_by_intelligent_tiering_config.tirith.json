@@ -1,6 +1,6 @@
 {
   "meta": {
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "version": "v1"
   },
   "evaluators": [

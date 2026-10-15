@@ -561,7 +561,9 @@ export function evaluatePolicy(policyText, inputText) {
   }
 
   const meta = policy.meta || {};
-  const provider = meta.required_provider || 'stackguardian/json';
+  const provider = Object.hasOwn(meta, 'provider')
+    ? meta.provider
+    : (meta.required_provider ?? 'stackguardian/json');
   const provide = PROVIDERS[provider];
   if (!provide) {
     return {
@@ -636,9 +638,12 @@ export function evaluatePolicy(policyText, inputText) {
     return {document: null, fatal: e.message};
   }
 
+  const resultMeta = {...meta, required_provider: provider};
+  delete resultMeta.provider;
+
   return {
     document: {
-      meta,
+      meta: resultMeta,
       final_result: finalResult,
       evaluators: reported,
       errors,

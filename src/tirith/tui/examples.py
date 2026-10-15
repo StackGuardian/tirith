@@ -88,7 +88,7 @@ def _load_one(key: str) -> Optional[Example]:
         about=about,
         policy=policy,
         input_document=input_document,
-        provider=policy.get("meta", {}).get("required_provider", ""),
+        provider=policy.get("meta", {}).get("provider", policy.get("meta", {}).get("required_provider", "")),
     )
 
 

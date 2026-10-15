@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json",
+    "provider": "stackguardian/json",
     "policy_name": "Mixed Query Language Example",
     "policy_description": "Demonstrates using both JMESPath and jq_query in the same policy"
   },
