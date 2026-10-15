@@ -55,6 +55,7 @@ module.exports = {
         "tirith-providers/infracost-provider",
         "tirith-providers/json-provider",
         "tirith-providers/kubernetes-provider",
+        "tirith-providers/jev-provider",
         "tirith-providers/sg-workflow-provider",
       ]
     },

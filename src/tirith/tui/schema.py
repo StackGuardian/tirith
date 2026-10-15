@@ -54,6 +54,11 @@ class Provider(NamedTuple):
     # sg_workflow takes `workflow_attribute` and no `operation_type`. Rather than pretend it
     # has one, the flag says so and the builder omits the key entirely.
     uses_operation_type: bool = True
+    # The playground evaluates on every pause in typing. A provider that sends the input to a
+    # network service must not run like that, so it waits for the Run button.
+    calls_network: bool = False
+    # Providers ignore an argument they do not read, except this kind, which fails the check.
+    rejects_unknown_args: bool = False
 
 
 # Shared by several terraform_plan operations.
@@ -83,6 +88,32 @@ _INFRACOST_RESOURCE_TYPE = Arg(
     True,
     'Resource types to sum, as a JSON list. ["*"] totals the whole plan.',
     placeholder='["*"]',
+)
+
+# Shared by the three stackguardian/jev operations.
+_JEV_INSTRUCTIONS = Arg(
+    "instructions",
+    True,
+    "The question Jev answers about the state.",
+    placeholder="Does any resource expose a service to the public internet?",
+)
+_JEV_STATE_PATH = Arg(
+    "state_path",
+    False,
+    "Dotted path to the part of the input to send. Omit to send the whole document.",
+    placeholder="resource_changes",
+)
+_JEV_MODEL = Arg(
+    "model",
+    False,
+    "Model id. Pin a version so the gate does not change when the alias moves.",
+    placeholder="jev-1.13.0",
+)
+_JEV_MIN_CONFIDENCE = Arg(
+    "min_confidence",
+    False,
+    "From 0 to 1. A less confident answer is a severity 1 error instead of a verdict.",
+    placeholder="0.6",
 )
 
 PROVIDERS: Dict[str, Provider] = {
@@ -208,6 +239,62 @@ PROVIDERS: Dict[str, Provider] = {
                     ),
                 ],
             )
+        ],
+    ),
+    "stackguardian/jev": Provider(
+        name="stackguardian/jev",
+        summary="Ask the Jev model a typed question about the document. Calls api.typesafe.ai.",
+        input_hint="any JSON or YAML document; the part selected is sent to api.typesafe.ai",
+        calls_network=True,
+        rejects_unknown_args=True,
+        operations=[
+            Operation(
+                "noul",
+                "Probability, from 0 to 1, that the answer to a yes/no question is yes.",
+                [
+                    _JEV_INSTRUCTIONS,
+                    Arg(
+                        "criteria",
+                        False,
+                        "What a yes and a no mean, as a JSON object.",
+                        placeholder='{"true": "Reachable from 0.0.0.0/0", "false": "Private only"}',
+                    ),
+                    _JEV_STATE_PATH,
+                    _JEV_MODEL,
+                ],
+            ),
+            Operation(
+                "choice",
+                "The one option, of those listed, that fits best.",
+                [
+                    _JEV_INSTRUCTIONS,
+                    Arg(
+                        "criteria",
+                        True,
+                        "The options, as a JSON object of option to description.",
+                        placeholder='{"routine": "Config tweaks", "destructive": "Deletes data"}',
+                    ),
+                    _JEV_STATE_PATH,
+                    _JEV_MODEL,
+                    _JEV_MIN_CONFIDENCE,
+                ],
+            ),
+            Operation(
+                "score",
+                "Position on an ordered rubric, counted from 0. Can fall between levels.",
+                [
+                    _JEV_INSTRUCTIONS,
+                    Arg(
+                        "criteria",
+                        True,
+                        "The levels, lowest first, as a JSON list of 2 to 10.",
+                        placeholder='["Nothing", "One service", "Several services"]',
+                    ),
+                    _JEV_STATE_PATH,
+                    _JEV_MODEL,
+                    _JEV_MIN_CONFIDENCE,
+                ],
+            ),
         ],
     ),
     "stackguardian/infracost": Provider(

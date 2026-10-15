@@ -76,3 +76,39 @@ condition is applied to each.
 `"required_provider": "stackguardian/sg_workflow"` reads a workflow definition, naming the value
 with **`workflow_attribute`**, for rules about the pipeline itself rather than the infrastructure —
 for example that a Terraform workflow requires approval before apply.
+
+## Jev — a judgment instead of a value
+
+`"required_provider": "stackguardian/jev"` asks the Jev model one question about the document, for
+a rule with no attribute to read.
+
+- `operation_type`: `noul` (yes/no, returns a probability from 0 to 1), `choice` (returns the
+  chosen option) or `score` (returns a position on a rubric, counted from 0)
+- Names the question with **`instructions`**; `choice` and `score` also require `criteria`
+- Optional `state_path` (same path syntax as `key_path`), `model`, and `min_confidence` for
+  `choice` and `score`
+
+```json
+{
+  "id": "no_public_exposure",
+  "provider_args": {
+    "operation_type": "noul",
+    "state_path": "resource_changes",
+    "instructions": "Does any resource expose a service to the public internet?"
+  },
+  "condition": {"type": "LessThanEqualTo", "value": 0.2}
+}
+```
+
+**It is the only provider that calls a network service.** The selected state is sent to
+`api.typesafe.ai` and `TYPESAFE_API_KEY` must be set; without the key every check fails. Plans
+contain secrets, so set `state_path` rather than sending the whole document. Do not reach for it
+when a value can be read directly: a condition over an attribute is deterministic and a model's
+answer is not.
+
+Unlike the other providers, an argument it does not read **fails the check** instead of being
+ignored, so a mistyped `state_path` cannot send the whole document.
+
+Severities: an answer below `min_confidence` is `1`; a `state_path` that matches nothing, or the
+service being unavailable after retries, is `2`. A rejected request or a missing key has no
+severity and always fails.

@@ -3,7 +3,8 @@
 > Tirith is an Apache-2.0 policy gate for infrastructure-as-code. It reads the plan a
 > pipeline already produces, evaluates it against declarative JSON policies committed in
 > the repository, and returns one verdict with an exit code the pipeline can gate on. It
-> runs locally or in any CI, on your own runner, with no account and no network call.
+> runs locally or in any CI, on your own runner, with no account and, unless a policy opts
+> into one, no network call.
 
 Policies are data, not code: a policy is a JSON file, so it is diffable and reviewable by
 anyone on the team. There is no rule DSL and no embedded language.
@@ -38,11 +39,12 @@ Without `--fail-on-error`, Tirith reports findings but does not fail the job.
 - **`final_result: null` is not a pass.** It means every check was skipped, so the policy
   evaluated nothing, and it exits `1`. A check that could not run is reported as unevaluated
   rather than as success.
-- **Local mode makes no network call.** That is a published governance commitment. Only
-  `tirith platform check` talks to a network, and it is optional.
-- **Five providers ship**, named in `meta.required_provider`: `stackguardian/terraform_plan`,
+- **Local mode makes no network call unless a policy asks for one.** That is a published
+  governance commitment. Only `tirith platform check` and a policy that names the
+  `stackguardian/jev` provider talk to a network, and both are optional.
+- **Six providers ship**, named in `meta.required_provider`: `stackguardian/terraform_plan`,
   `stackguardian/kubernetes`, `stackguardian/infracost`, `stackguardian/json`,
-  `stackguardian/sg_workflow`. There is no CloudFormation provider; a CloudFormation template
+  `stackguardian/sg_workflow`, `stackguardian/jev`. There is no CloudFormation provider; a CloudFormation template
   is read as a JSON document by the `json` provider.
 - **Thirteen condition types ship**: Equals, NotEquals, GreaterThan, GreaterThanEqualTo,
   LessThan, LessThanEqualTo, Contains, NotContains, ContainedIn, NotContainedIn, IsEmpty,
@@ -124,6 +126,7 @@ documentation/static/skill.sh in the repository.
 - [Kubernetes provider](https://stackguardian.github.io/tirith/docs/tirith-providers/kubernetes-provider/): the attribute operation over manifests.
 - [Infracost provider](https://stackguardian.github.io/tirith/docs/tirith-providers/infracost-provider/): cost policies over an Infracost breakdown.
 - [SG Workflow provider](https://stackguardian.github.io/tirith/docs/tirith-providers/sg-workflow-provider/): StackGuardian workflow documents.
+- [Jev provider](https://stackguardian.github.io/tirith/docs/tirith-providers/jev-provider/): noul, choice and score questions put to the Jev model, the one provider that calls a network service.
 
 ## Running it
 

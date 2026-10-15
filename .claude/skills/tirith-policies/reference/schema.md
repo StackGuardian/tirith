@@ -43,6 +43,7 @@ presence, and `!` in `eval_expression` for negation.
 | `stackguardian/infracost` | An Infracost breakdown | `total_monthly_cost`, `total_hourly_cost` |
 | `stackguardian/json` | Any JSON document, including a Terraform state file | `get_value` |
 | `stackguardian/sg_workflow` | A StackGuardian workflow definition | `attribute` |
+| `stackguardian/jev` | Any JSON or YAML document, part of which it sends to `api.typesafe.ai` | `noul`, `choice`, `score` |
 
 ## The argument key differs per provider
 
@@ -55,6 +56,7 @@ rejected** — the evaluator then reads nothing and the check does not measure w
 | `kubernetes` | `attribute_path` | `kubernetes_kind` |
 | `json` | `key_path` | — |
 | `sg_workflow` | `workflow_attribute` | — |
+| `jev` | `instructions` (the question, not a path) | `criteria` for `choice` and `score`; optional `state_path` |
 
 Paths are dot-separated and accept `*` as a wildcard across a list: `spec.containers.*.image`.
 

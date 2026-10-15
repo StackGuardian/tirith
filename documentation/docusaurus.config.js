@@ -106,7 +106,7 @@ const config = {
               'Reads Kubernetes manifests, Infracost breakdowns and any JSON or YAML document',
               'Exit-code contract that separates a policy failure from an engine error',
               'Reports a check that could not run as unevaluated rather than as a pass',
-              'No account and no network call in local mode',
+              'No account, and no network call in local mode unless a policy uses the Jev provider',
             ],
             offers: {
               '@type': 'Offer',

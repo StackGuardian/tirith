@@ -50,7 +50,7 @@ tirith -policy-path .tirith/policies -input-path should-fail.json --fail-on-erro
 Decide these four in order. Guessing any of them is the main source of silently broken policies.
 
 1. **Document.** Terraform or OpenTofu plan, Kubernetes manifest, Infracost breakdown, or arbitrary
-   JSON or YAML. This fixes `meta.required_provider`. Five providers ship; there is **no
+   JSON or YAML. This fixes `meta.required_provider`. Six providers ship; there is **no
    CloudFormation provider**, a template is arbitrary JSON read by `stackguardian/json`.
 2. **Operation.** Each provider exposes a closed set: `reference/schema.md`.
 3. **Key naming the value.** It differs per provider, and a wrong key is *ignored, not rejected*,
@@ -131,7 +131,7 @@ tirith -policy-path policy.json -input-path should-pass.json --fail-on-error; ec
 | `reference/validate.md` | Checking a policy is well-formed with `tirith lint`, `tirith fmt` and the interface |
 | `reference/verdicts.md` | Running a policy, exit codes, and finding the resource behind a failure |
 | `reference/terraform-plan.md` | The plan provider's operations, for OpenTofu and Terraform |
-| `reference/other-providers.md` | Kubernetes, Infracost and arbitrary JSON or YAML |
+| `reference/other-providers.md` | Kubernetes, Infracost, Jev and arbitrary JSON or YAML |
 | `reference/variables.md` | One policy across environments with `-var` |
 | `reference/install.md` | Installing Tirith, and why the install is a git URL |
 | `reference/pipelines.md` | GitHub Actions, GitLab CI, Bitbucket, Jenkins, Azure DevOps, CircleCI |

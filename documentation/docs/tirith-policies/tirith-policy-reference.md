@@ -71,6 +71,7 @@ The registered providers are:
 - `stackguardian/sg_workflow`
 - `stackguardian/json`
 - `stackguardian/kubernetes`
+- `stackguardian/jev`
 
 Each provider defines its own `provider_args`; see the [provider documentation](../tirith-providers/overview.md).
 
