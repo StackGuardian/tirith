@@ -98,6 +98,72 @@ def test_same_policy_reused_with_different_vars():
     assert second["evaluators"][0]["provider_args"]["key_path"] == "second.path"
 
 
+def test_nested_dict_and_list_substitution():
+    """Ensure substitution recurses into nested dicts and lists."""
+    policy = {
+        "meta": {"version": ""},
+        "evaluators": [
+            {
+                "id": "check0",
+                "provider_args": {
+                    "operation_type": "get_value",
+                    "nested_options": {"path": "{{var.my_path}}"},
+                },
+                "condition": {
+                    "type": "Equals",
+                    "value": {
+                        "env": "{{var.env}}",
+                        "allowed_regions": ["us-east-1", "{{var.extra_region}}"],
+                        "deep": [{"key": "{{var.deep_key}}"}],
+                    },
+                },
+            }
+        ],
+        "eval_expression": "check0",
+    }
+
+    var_dict = {
+        "my_path": "config.path",
+        "env": "production",
+        "extra_region": "eu-central-1",
+        "deep_key": "deep_secret",
+    }
+
+    replaced, not_found = get_policy_with_vars_replaced(policy, var_dict)
+
+    assert not_found == []
+    assert replaced["evaluators"][0]["provider_args"]["nested_options"]["path"] == "config.path"
+    assert replaced["evaluators"][0]["condition"]["value"]["env"] == "production"
+    assert replaced["evaluators"][0]["condition"]["value"]["allowed_regions"] == ["us-east-1", "eu-central-1"]
+    assert replaced["evaluators"][0]["condition"]["value"]["deep"][0]["key"] == "deep_secret"
+
+
+def test_nested_missing_variables_reported():
+    """Ensure missing variables inside nested dicts and lists are added to not_found_vars."""
+    policy = {
+        "meta": {"version": ""},
+        "evaluators": [
+            {
+                "id": "check0",
+                "provider_args": {},
+                "condition": {
+                    "type": "Equals",
+                    "value": {
+                        "nested_dict": {"missing_val": "{{var.missing_in_dict}}"},
+                        "nested_list": ["ok", "{{var.missing_in_list}}"],
+                    },
+                },
+            }
+        ],
+        "eval_expression": "check0",
+    }
+
+    replaced, not_found = get_policy_with_vars_replaced(policy, {})
+
+    assert "missing_in_dict" in not_found
+    assert "missing_in_list" in not_found
+
+
 # TODO: Create testcases for:
 # - test inline vars precendece over var files
 # - test undefined vars
