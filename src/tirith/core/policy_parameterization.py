@@ -15,14 +15,42 @@ def _replace_vars_in_dict(dictionary: dict, var_dict: dict, not_found_vars: List
     """
     Replace the variables in the dictionary with the values from the var_dict
 
-    :param dictionary:   The dictionary to replace the variables in
-    :param var_pattern:  The pattern to match the variables
-    :param var_dict:     The dictionary containing the variables
+    :param dictionary:       The dictionary to replace the variables in
+    :param var_dict:         The dictionary containing the variables
+    :param not_found_vars:   The list to store the variables that are not found in
     """
     for key, value in dictionary.items():
-        if not isinstance(value, str):
-            continue
-        _replace_var_in_dict(dictionary, key, var_dict, not_found_vars)
+        if isinstance(value, str):
+            _replace_var_in_dict(dictionary, key, var_dict, not_found_vars)
+        elif isinstance(value, dict):
+            _replace_vars_in_dict(value, var_dict, not_found_vars)
+        elif isinstance(value, list):
+            _replace_vars_in_list(value, var_dict, not_found_vars)
+
+
+def _replace_vars_in_list(target_list: list, var_dict: dict, not_found_vars: List[str]):
+    """
+    Replace the variables in the list items with the values from the var_dict
+
+    :param target_list:      The list to replace the variables in
+    :param var_dict:         The dictionary containing the variables
+    :param not_found_vars:   The list to store the variables that are not found in
+    """
+    for index, item in enumerate(target_list):
+        if isinstance(item, str):
+            match = _VAR_PATTERN.match(item)
+            if not match:
+                continue
+            var_name = match.group(1)
+            var_value = pydash.get(var_dict, var_name, default=_VariableNotFound)
+            if var_value is _VariableNotFound:
+                not_found_vars.append(var_name)
+                continue
+            target_list[index] = var_value
+        elif isinstance(item, dict):
+            _replace_vars_in_dict(item, var_dict, not_found_vars)
+        elif isinstance(item, list):
+            _replace_vars_in_list(item, var_dict, not_found_vars)
 
 
 def _replace_var_in_dict(dictionary: dict, key: str, var_dict: dict, not_found_vars: list):
