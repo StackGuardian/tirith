@@ -8,9 +8,15 @@ def get_value(provider_args: Dict, input_data: Union[Dict, List], outputs: list)
     attribute_path: str = provider_args.get("attribute_path", "")
 
     if target_kind is None:
-        return create_result_dict(value=ProviderError(severity_value=99), err="kubernetes_kind must be provided")
+        outputs.append(
+            create_result_dict(value=ProviderError(severity_value=99), err="kubernetes_kind must be provided")
+        )
+        return outputs
     if attribute_path == "":
-        return create_result_dict(value=ProviderError(severity_value=99), err="attribute_path must be provided")
+        outputs.append(
+            create_result_dict(value=ProviderError(severity_value=99), err="attribute_path must be provided")
+        )
+        return outputs
 
     kubernetes_resources = input_data
     is_kind_found = False
