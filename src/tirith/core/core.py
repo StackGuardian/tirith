@@ -310,7 +310,10 @@ def final_evaluator(eval_string: str, eval_id_values: Dict[str, Optional[bool]])
 
         deleted_var_names: List[str] = []
         final_eval_result = _evaluate_tree(tree, deleted_var_names)
-    except RecursionError:
+    except (RecursionError, MemoryError):
+        # Too much nesting surfaces differently by interpreter: the 3.8 parser reports "parser stack
+        # overflow" as MemoryError, newer ones as RecursionError, and walking a deep tree is a
+        # RecursionError everywhere. The length cap rules out a genuine out-of-memory here.
         raise ValueError("eval_expression is nested too deeply to evaluate.")
 
     if deleted_var_names:

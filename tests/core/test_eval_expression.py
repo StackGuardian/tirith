@@ -241,7 +241,9 @@ def test_deeply_nested_expression_fails_cleanly_rather_than_crashing(no_code_exe
     # Under the length limit but nested far past the interpreter's recursion limit.
     expression = "!" * 5000 + "a"
     assert len(expression) < MAX_EVAL_EXPRESSION_LENGTH
-    with pytest.raises((ValueError, SyntaxError)):
+    # Must be the clean error on every interpreter: the 3.8 parser raises MemoryError for this, 3.9+
+    # RecursionError, and neither may escape.
+    with pytest.raises(ValueError, match="nested too deeply"):
         final_evaluator(expression, dict(a=True))
 
 
