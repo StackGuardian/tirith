@@ -40,7 +40,13 @@ def test_final_evaluator_malicious_eval_should_err():
     actual_result = final_evaluator(
         "!skipped_check && passing_check || [].__class__.__base__", dict(skipped_check=None, passing_check=True)
     )
-    assert actual_result == (False, ["The following symbols are not allowed: __class__, __base__"])
+    assert actual_result == (
+        False,
+        [
+            "Unsupported syntax in eval_expression: Attribute, List. "
+            "Only evaluator ids, '&&', '||', '!' and parentheses are allowed."
+        ],
+    )
 
 
 class MockEvaluator:
