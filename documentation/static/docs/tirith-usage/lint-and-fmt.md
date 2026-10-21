@@ -29,7 +29,7 @@ infrastructure violation:
 - a condition `type` that does not exist, against the closed list of
   [thirteen conditions](../tirith-reference/evaluators.md)
 - a `provider_args` key that belongs to a different provider than the one in
-  `meta.required_provider`
+  `meta.provider`
 - an evaluator that `eval_expression` never names, so it is computed and then discarded
 - `error_tolerance` placed on the evaluator instead of inside `condition`, where it is silently
   ignored and the check still fails
@@ -124,7 +124,7 @@ Keys are ordered:
 | Object | Order |
 |---|---|
 | top level | `$schema`, `meta`, `evaluators`, `eval_expression` |
-| `meta` | `version`, `required_provider`, `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation` |
+| `meta` | `version`, `provider`, `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation` |
 | each evaluator | `id`, `description`, `provider_args`, `condition` |
 | `provider_args` | `operation_type` first, then the provider's own keys in their original order |
 | `condition` | `type`, `value`, `error_tolerance` |

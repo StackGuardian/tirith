@@ -51,7 +51,7 @@ export const READING_STEPS = [
  * claims the whole block, including its closing brace.
  */
 export const REGION_BY_KEY = {
-  required_provider: 'source',
+  provider: 'source',
   provider_args: 'subject',
   condition: 'test',
 };
@@ -92,7 +92,7 @@ export const SPECIMENS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan"
+    "provider": "stackguardian/terraform_plan"
   },
   "evaluators": [
     {
@@ -156,7 +156,7 @@ export const SPECIMENS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/infracost"
+    "provider": "stackguardian/infracost"
   },
   "evaluators": [
     {
@@ -219,7 +219,7 @@ export const SPECIMENS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {
@@ -281,7 +281,7 @@ export const SPECIMENS = [
     policy: `{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {

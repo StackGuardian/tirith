@@ -126,7 +126,7 @@ def test_a_path_that_is_not_a_dash_is_read_from_disk():
 
     document = ui_cli._load(os.path.join(EXAMPLE, "policy.json"), "--policy")
 
-    assert document["meta"]["required_provider"] == "stackguardian/terraform_plan"
+    assert document["meta"]["provider"] == "stackguardian/terraform_plan"
 
 
 @mark.passing

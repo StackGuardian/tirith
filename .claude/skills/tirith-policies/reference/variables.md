@@ -14,7 +14,7 @@ literal string, so the check quietly measures the wrong thing instead of failing
 
 ```json title="policy.json"
 {
-  "meta": {"version": "v1", "required_provider": "stackguardian/infracost"},
+  "meta": {"version": "v1", "provider": "stackguardian/infracost"},
   "evaluators": [{
     "id": "within_budget",
     "provider_args": {"operation_type": "total_monthly_cost", "resource_type": ["*"]},

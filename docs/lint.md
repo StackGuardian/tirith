@@ -12,7 +12,7 @@ registries rather than a copy of them:
 | Finding | Severity | Why it matters |
 | --- | --- | --- |
 | `condition.type` is not one of the thirteen evaluators | error | The engine fails the check with a message, exit 3, and `errors` stays empty; a job sees a violation |
-| `meta.required_provider` missing or unknown | error | The engine looks for a provider named `core`, which does not exist |
+| `meta.provider` missing or unknown | error | The engine looks for a provider named `core`, which does not exist |
 | `provider_args.operation_type` missing or not one the provider has | error | |
 | A required argument of the operation missing | error | |
 | A `provider_args` key the operation does not read | warning | Ignored rather than rejected, so the check reads nothing and passes |
@@ -52,7 +52,7 @@ no path, both commands use `.tirith/policies` if it exists, otherwise the curren
 reorders a list, and the output parses back to an equal document.
 
 - Top level: `meta`, `evaluators`, `eval_expression`. A `$schema` key comes first if present.
-- `meta`: `version`, `required_provider`, `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation`.
+- `meta`: `version`, `provider`, `id`, `name`, `description`, `severity`, `enforcement`, `tags`, `remediation`.
 - Each evaluator: `id`, `description`, `provider_args`, `condition`. `operation_type` leads `provider_args`; `type`, `value`, `error_tolerance` is the order inside `condition`.
 - Keys not in these lists keep their relative order after the listed ones.
 - Whitespace is exactly Python's `json.dumps(indent=2, ensure_ascii=False)` plus one trailing newline, so a policy written by any tool that uses the standard library is already canonical. Non-ASCII stays as written.

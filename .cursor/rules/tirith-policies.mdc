@@ -26,7 +26,7 @@ Five providers, and no CloudFormation provider: a CloudFormation template is arb
 by `stackguardian/json`. There is no `stackguardian/terraform_state` either; read a state file the
 same way, with `key_path`.
 
-**Structure:** `meta` (`version`, `required_provider`, `name`) · `evaluators[]` (each with `id`,
+**Structure:** `meta` (`version`, `provider`, `name`) · `evaluators[]` (each with `id`,
 `provider_args`, `condition`) · `eval_expression`.
 
 **`eval_expression` operators are `&&`, `||`, `!` and parentheses.** Not `and` / `or`: the engine

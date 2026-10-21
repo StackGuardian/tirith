@@ -7,7 +7,7 @@ A policy's top-level `eval_expression` is a boolean expression over the `id`s of
 
 ```json
 {
-  "meta": { "version": "v1", "required_provider": "stackguardian/json" },
+  "meta": { "version": "v1", "provider": "stackguardian/json" },
   "evaluators": [
     { "id": "check_region",  "provider_args": { "...": "..." }, "condition": { "...": "..." } },
     { "id": "check_tags",    "provider_args": { "...": "..." }, "condition": { "...": "..." } },

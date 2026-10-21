@@ -10,7 +10,7 @@ slug: kubernetes-provider/
 ---
 
 ```
-required_provider: stackguardian/kubernetes
+provider: stackguardian/kubernetes
 ```
 
 Extracts attribute values from Kubernetes manifests of a chosen `kind` (Pod, Deployment, Service, ...).
@@ -58,7 +58,7 @@ Verified end-to-end against the test fixtures — every container of every `Pod`
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {

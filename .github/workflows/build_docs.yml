@@ -9,12 +9,14 @@ on:
   pull_request:
     paths:
       - 'documentation/**'
+      - 'tests/docs/**'
       - '.github/workflows/build_docs.yml'
   push:
     branches:
       - main
     paths:
       - 'documentation/**'
+      - 'tests/docs/**'
 
 permissions:
   contents: read
@@ -41,3 +43,7 @@ jobs:
       - name: Build
         working-directory: documentation
         run: npm run build
+
+      - name: Test browser provider metadata
+        working-directory: documentation
+        run: npm run test:provider-metadata

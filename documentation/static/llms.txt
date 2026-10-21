@@ -40,7 +40,7 @@ Without `--fail-on-error`, Tirith reports findings but does not fail the job.
   rather than as success.
 - **Local mode makes no network call.** That is a published governance commitment. Only
   `tirith platform check` talks to a network, and it is optional.
-- **Five providers ship**, named in `meta.required_provider`: `stackguardian/terraform_plan`,
+- **Five providers ship**, named in `meta.provider`: `stackguardian/terraform_plan`,
   `stackguardian/kubernetes`, `stackguardian/infracost`, `stackguardian/json`,
   `stackguardian/sg_workflow`. There is no CloudFormation provider; a CloudFormation template
   is read as a JSON document by the `json` provider.
@@ -118,7 +118,7 @@ documentation/static/skill.sh in the repository.
 
 ## Providers
 
-- [Providers overview](https://stackguardian.github.io/tirith/docs/tirith-providers/providers-overview/): what a provider is and how required_provider selects one.
+- [Providers overview](https://stackguardian.github.io/tirith/docs/tirith-providers/providers-overview/): what a provider is and how provider selects one.
 - [Terraform plan provider](https://stackguardian.github.io/tirith/docs/tirith-providers/terraform-plan-provider/): operations over a plan document, including attribute, action and count.
 - [JSON provider](https://stackguardian.github.io/tirith/docs/tirith-providers/json-provider/): get_value over any JSON or YAML document, including another tool's output.
 - [Kubernetes provider](https://stackguardian.github.io/tirith/docs/tirith-providers/kubernetes-provider/): the attribute operation over manifests.
