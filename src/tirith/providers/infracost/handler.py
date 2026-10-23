@@ -33,10 +33,10 @@ def __get_all_costs(operation_type, input_data):
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
-                logger.debug(f"Total sum of {operation_type} of all resources :  {total_sum}")
-                return total_sum, matched_count
             else:
                 raise KeyError("breakdown/resources not found in one of the project")
+        logger.debug(f"Total sum of {operation_type} of all resources :  {total_sum}")
+        return total_sum, matched_count
     else:
         raise KeyError("projects not found in input_data")
 
@@ -75,10 +75,10 @@ def __get_resources_costs(resource_type, operation_type, input_data):
                     else:
                         pass
                         # raise KeyError(f'{costType} not found in one of the resource')
-                logger.debug(f"Total sum of {operation_type} of specific resources :  {total_sum}")
-                return total_sum, matched_count
             else:
                 raise KeyError("breakdown/resources not found in one of the project")
+        logger.debug(f"Total sum of {operation_type} of specific resources :  {total_sum}")
+        return total_sum, matched_count
     else:
         raise KeyError("projects not found in input_data")
 
