@@ -35,6 +35,9 @@ The value must be one of the exact strings below. If the string does not match a
 | [`stackguardian/json`](json.md) | Extracts values from any JSON or YAML document by key path, with wildcard support. | Any JSON or YAML file |
 | [`stackguardian/kubernetes`](kubernetes.md) | Extracts attribute values from Kubernetes manifests of a given `kind`. | A list of Kubernetes manifests (multi-document YAML, e.g. `helm template` output) |
 | [`stackguardian/sg_workflow`](sg-workflow.md) | Reads attributes of a StackGuardian workflow definition. | StackGuardian workflow JSON |
+| [`stackguardian/jev`](jev.md) | Asks the Jev model a yes/no, multiple-choice or scoring question about the document. | Any JSON or YAML file |
+
+`stackguardian/jev` is the only provider that calls a network service: it sends the part of the document you select to `api.typesafe.ai` and needs `TYPESAFE_API_KEY`. The others read the input document and nothing else.
 
 ## How `provider_args` reaches the provider
 
@@ -85,13 +88,13 @@ When a provider cannot find what an operation asked for, it reports an error ins
    | 2 | The resource was found but the requested attribute / key path was not. |
    | 99 | The `provider_args` themselves are invalid (unsupported operation, missing required parameter). Practically never tolerated. |
 
-2. **Errors without a severity value.** Some errors (an unsupported `operation_type` in the `json` and `kubernetes` providers, and all errors from the `infracost` and `sg_workflow` providers) carry no severity. These always **fail** the check, regardless of `error_tolerance`.
+2. **Errors without a severity value.** Some errors (an unsupported `operation_type` in the `json`, `kubernetes` and `jev` providers, and all errors from the `infracost` and `sg_workflow` providers) carry no severity. These always **fail** the check, regardless of `error_tolerance`.
 
 Each provider page below lists exactly which situation produces which severity. See also [error tolerance](../tirith-policies/tirith-policy-error-tolerance.md).
 
 ## Write one for what you actually run
 
-Five providers ship. That is not a claim about what is worth gating, it is a list of what has been written so far, and the interesting policies are usually about the system nobody wrote a provider for yet.
+Six providers ship. That is not a claim about what is worth gating, it is a list of what has been written so far, and the interesting policies are usually about the system nobody wrote a provider for yet.
 
 A provider is small. It is one function:
 

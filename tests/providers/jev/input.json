@@ -1,0 +1,19 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.0",
+  "resource_changes": [
+    {
+      "address": "aws_security_group.web",
+      "type": "aws_security_group",
+      "change": {
+        "actions": ["update"],
+        "after": {"ingress": [{"from_port": 443, "to_port": 443, "cidr_blocks": ["10.0.0.0/8"]}]}
+      }
+    },
+    {
+      "address": "aws_autoscaling_group.web",
+      "type": "aws_autoscaling_group",
+      "change": {"actions": ["update"], "after": {"max_size": 6, "min_size": 2}}
+    }
+  ]
+}

@@ -5,7 +5,7 @@
 Terraform because it predates the fork, but it reads either tool's plan: both emit the same
 `resource_changes` structure, and nothing in the provider inspects which binary produced it.
 
-**There is no `stackguardian/terraform_state` provider.** The registry holds five providers and
+**There is no `stackguardian/terraform_state` provider.** The registry holds six providers and
 that is not one of them. To write a policy about a state file, read it with
 `stackguardian/json` and `key_path` — a state document is ordinary JSON. (`tirith platform check
 --input-kind terraform_state` is a different thing: it tells the uploader to mask the document as

@@ -21,8 +21,9 @@ infrastructure.
 - `stackguardian/kubernetes` — `attribute`
 - `stackguardian/json` — `get_value`
 - `stackguardian/sg_workflow` — StackGuardian workflow documents
+- `stackguardian/jev` — `noul`, `choice`, `score`; sends the selected state to `api.typesafe.ai`
 
-Five providers, and no CloudFormation provider: a CloudFormation template is arbitrary JSON, read
+Six providers, and no CloudFormation provider: a CloudFormation template is arbitrary JSON, read
 by `stackguardian/json`. There is no `stackguardian/terraform_state` either; read a state file the
 same way, with `key_path`.
 
