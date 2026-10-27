@@ -15,7 +15,7 @@ A Tirith policy is a single JSON document with exactly three top-level keys. It 
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -50,7 +50,7 @@ If `meta`, `evaluators`, or `eval_expression` is missing, the run aborts before 
 
 | Key | Required | Type | Default | Behavior |
 |---|---|---|---|---|
-| `required_provider` | effectively yes | string | `"core"` | Selects the provider used by every evaluator in the policy. See [below](#metarequired_provider). |
+| `provider` | effectively yes | string | `"core"` | Selects the provider used by every evaluator in the policy. See [below](#metaprovider). |
 | `version` | no | string | none | Not interpreted. Always echoed into the result `meta` (as `null` when absent). |
 | `id` | no | any (conventionally string) | none | Not interpreted. Echoed verbatim into the result `meta` only when present. |
 | `name` | no | any (conventionally string) | none | Same as `id`. |
@@ -62,7 +62,7 @@ If `meta`, `evaluators`, or `eval_expression` is missing, the run aborts before 
 
 An empty `meta` object (`"meta": {}`) is accepted; the policy then falls back to the default provider, which fails every check (see next section).
 
-### `meta.required_provider`
+### `meta.provider`
 
 The registered providers are:
 
@@ -74,7 +74,9 @@ The registered providers are:
 
 Each provider defines its own `provider_args`; see the [provider documentation](../tirith-providers/overview.md).
 
-When `required_provider` is absent it defaults to `"core"`, and no provider named `core` is registered. An unregistered provider name — the default included — is **not** a hard error: every evaluator in the policy simply receives no values and fails with the message `Could not find input value`. The final verdict is a failure (exit code `3` under `--fail-on-error`), which can be mistaken for a genuine policy violation. Always set `required_provider` explicitly.
+When both `provider` and its legacy alias `required_provider` are absent, the provider defaults to `"core"`, and no provider named `core` is registered. An unregistered provider name — the default included — is **not** a hard error: every evaluator in the policy simply receives no values and fails with the message `Could not find input value`. The final verdict is a failure (exit code `3` under `--fail-on-error`), which can be mistaken for a genuine policy violation. Always set `provider` explicitly.
+
+For backward compatibility, `meta.required_provider` is still accepted as a legacy alias. If both keys are present, `meta.provider` takes precedence. The result document continues to report the selected provider as `meta.required_provider`, preserving the existing JSON output contract.
 
 ### `meta.enforcement`
 
@@ -103,7 +105,7 @@ Each entry in the `evaluators` array is an object with these keys:
 | Key | Required | Type | Default | Behavior |
 |---|---|---|---|---|
 | `id` | yes | string | — | The name this check is referenced by in `eval_expression`. Missing `id` aborts the run (`ERROR`, exit `1`). |
-| `provider_args` | yes | object | — | Arguments for the provider selected by `meta.required_provider`. Missing `provider_args` aborts the run (`ERROR`, exit `1`). |
+| `provider_args` | yes | object | — | Arguments for the provider selected by `meta.provider`. Missing `provider_args` aborts the run (`ERROR`, exit `1`). |
 | `condition` | yes | object | — | The comparison applied to every value the provider extracts. Missing `condition` aborts the run (`ERROR`, exit `1`). |
 | `description` | no | string | none | Informational. Echoed into the result for this check (as `null` when absent). |
 

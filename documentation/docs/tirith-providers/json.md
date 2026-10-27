@@ -10,7 +10,7 @@ slug: json-provider/
 ---
 
 ```
-required_provider: stackguardian/json
+provider: stackguardian/json
 ```
 
 Extracts values from any JSON or YAML document by key path. Use this provider when no specialized provider exists for your input format.
@@ -58,7 +58,7 @@ Verified end-to-end against the test fixtures:
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -119,7 +119,7 @@ The provider also works on YAML — this policy checks an Ansible playbook (a YA
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {

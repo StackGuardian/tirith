@@ -82,7 +82,7 @@ found nothing — checked precisely nothing, and reporting that as green is exac
 exists to prevent. It is not a violation either, so it is `1` rather than `3`.
 
 **One limit worth stating plainly:** a *misconfigured* policy — an unsupported `condition.type`,
-an unknown `required_provider` — comes back from the engine as an ordinary failed check with no
+an unknown `provider` — comes back from the engine as an ordinary failed check with no
 error attached, so it is indistinguishable from a real violation and exits `3`. It fails closed,
 which is the safe direction, but it will point at your infrastructure when the fault is in the
 policy.

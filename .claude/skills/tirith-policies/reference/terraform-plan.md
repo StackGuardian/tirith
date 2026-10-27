@@ -1,6 +1,6 @@
 # The plan provider — OpenTofu and Terraform
 
-`"required_provider": "stackguardian/terraform_plan"` reads the output of
+`"provider": "stackguardian/terraform_plan"` reads the output of
 `tofu show -json tfplan` or `terraform show -json tfplan`. The provider is named for
 Terraform because it predates the fork, but it reads either tool's plan: both emit the same
 `resource_changes` structure, and nothing in the provider inspects which binary produced it.

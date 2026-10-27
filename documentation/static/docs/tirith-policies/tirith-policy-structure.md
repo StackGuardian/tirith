@@ -13,7 +13,7 @@ Tirith policies are written in JSON format, following a structured approach that
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {

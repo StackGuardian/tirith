@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json",
+    "provider": "stackguardian/json",
     "id": "404c3081-a854-4457-ae30-26a93ef643f9",
     "name": "Secure transfer to storage accounts should be enabled (ARM template)",
     "description": "The json provider reads the whole ARM template. The guard passes a template with no storage account; otherwise every storage account's supportsHttpsTrafficOnly must be true and an absent property fails, as Azure's `notEquals true` does.",

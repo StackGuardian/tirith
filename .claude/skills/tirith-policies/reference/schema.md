@@ -16,7 +16,7 @@ python -c "from tirith.core.evaluators import EVALUATORS_DICT; print(sorted(EVAL
 | Key | Required | Notes |
 | --- | --- | --- |
 | `meta.version` | yes | `"v1"` |
-| `meta.required_provider` | yes | One of the providers below |
+| `meta.provider` | yes | One of the providers below |
 | `meta.name` / `description` / `severity` / `tags` | no | Passed through to the result document |
 | `evaluators[]` | yes | Each needs `id`, `provider_args`, `condition` |
 | `eval_expression` | yes | Combines evaluator ids with `&&`, `\|\|`, `!`, parentheses |
@@ -36,7 +36,7 @@ presence, and `!` in `eval_expression` for negation.
 
 ## Providers and operations
 
-| `required_provider` | Reads | `operation_type` |
+| `provider` | Reads | `operation_type` |
 | --- | --- | --- |
 | `stackguardian/terraform_plan` | `terraform show -json` output | `action`, `attribute`, `count`, `direct_dependencies`, `direct_references`, `provider_config`, `terraform_version` |
 | `stackguardian/kubernetes` | Kubernetes manifests (YAML or JSON) | `attribute` |

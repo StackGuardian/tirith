@@ -4,7 +4,7 @@ Source: https://stackguardian.github.io/tirith/docs/tirith-providers/json-provid
 Summary: Reference for the stackguardian/json provider - the get_value operation, key path syntax, return shapes, and error behavior.
 
 ```
-required_provider: stackguardian/json
+provider: stackguardian/json
 ```
 
 Extracts values from any JSON or YAML document by key path. Use this provider when no specialized provider exists for your input format.
@@ -52,7 +52,7 @@ Verified end-to-end against the test fixtures:
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {
@@ -113,7 +113,7 @@ The provider also works on YAML — this policy checks an Ansible playbook (a YA
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {

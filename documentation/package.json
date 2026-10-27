@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "test:provider-metadata": "node --test ../tests/docs/test_provider_metadata.mjs",
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",

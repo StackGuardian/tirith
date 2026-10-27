@@ -358,7 +358,7 @@ Policy (`policy.json`), using the `stackguardian/json` provider:
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/json"
+    "provider": "stackguardian/json"
   },
   "evaluators": [
     {

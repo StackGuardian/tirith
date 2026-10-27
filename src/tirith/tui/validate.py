@@ -92,13 +92,24 @@ def _check_meta(policy: Dict, findings: List[Finding]) -> str:
     if "version" not in meta:
         findings.append(_warning("meta.version", 'Not set. Convention is "v1".'))
 
+    # `provider` is the canonical spelling. The legacy `required_provider` alias remains
+    # accepted for existing policies, but it is consulted only when `provider` is absent.
+    if "provider" in meta:
+        provider_key = "provider"
+    elif "required_provider" in meta:
+        provider_key = "required_provider"
+    else:
+        provider_key = "provider"
+
+    provider_name = meta.get(provider_key)
+    provider_where = f"meta.{provider_key}"
+
     # core defaults this to "core", which is not in PROVIDERS_DICT -- so every check then fails
     # with "Provider 'core' is not found". Naming it explicitly is effectively required.
-    provider_name = meta.get("required_provider")
     if not provider_name:
         findings.append(
             _error(
-                "meta.required_provider",
+                provider_where,
                 "Not set. Without it the engine looks for a provider named 'core', which does not exist.",
             )
         )
@@ -107,11 +118,11 @@ def _check_meta(policy: Dict, findings: List[Finding]) -> str:
     # parses to, and a list or an object is unhashable -- `x not in PROVIDERS_DICT` raises
     # TypeError rather than returning False, which escaped this module and killed the app.
     if not isinstance(provider_name, str):
-        findings.append(_error("meta.required_provider", f"Must be a string, not {type(provider_name).__name__}."))
+        findings.append(_error(provider_where, f"Must be a string, not {type(provider_name).__name__}."))
         return ""
     if provider_name not in PROVIDERS_DICT:
         known = ", ".join(sorted(PROVIDERS_DICT))
-        findings.append(_error("meta.required_provider", f"Unknown provider '{provider_name}'. Known: {known}."))
+        findings.append(_error(provider_where, f"Unknown provider '{provider_name}'. Known: {known}."))
         return ""
     return provider_name
 
@@ -256,7 +267,7 @@ def _check_condition(evaluator: Dict, where: str, findings: List[Finding]) -> No
         findings.append(_error(f"{where}.condition.type", "Missing. Name the evaluator to apply."))
         evaluator_name = None
     elif not isinstance(evaluator_name, str):
-        # Same unhashable-key hazard as meta.required_provider above: a list or object here
+        # Same unhashable-key hazard as meta.provider above: a list or object here
         # made the EVALUATORS_DICT membership test raise instead of returning False.
         findings.append(_error(f"{where}.condition.type", f"Must be a string, not {type(evaluator_name).__name__}."))
         evaluator_name = None

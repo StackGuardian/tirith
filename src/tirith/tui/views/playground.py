@@ -340,7 +340,7 @@ class PlaygroundView(Vertical):
             self.query_one("#playground-output", Static).update("")
             return
 
-        provider = policy.get("meta", {}).get("required_provider", "")
+        provider = policy.get("meta", {}).get("provider", policy.get("meta", {}).get("required_provider", ""))
         self._label_expected_input(provider)
         findings = findings + validate.check_input_document(input_document, provider)
 

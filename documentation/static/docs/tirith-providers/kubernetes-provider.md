@@ -4,7 +4,7 @@ Source: https://stackguardian.github.io/tirith/docs/tirith-providers/kubernetes-
 Summary: Reference for the stackguardian/kubernetes provider - the attribute operation, parameters, return shapes, and error behavior.
 
 ```
-required_provider: stackguardian/kubernetes
+provider: stackguardian/kubernetes
 ```
 
 Extracts attribute values from Kubernetes manifests of a chosen `kind` (Pod, Deployment, Service, ...).
@@ -52,7 +52,7 @@ Verified end-to-end against the test fixtures — every container of every `Pod`
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/kubernetes"
+    "provider": "stackguardian/kubernetes"
   },
   "evaluators": [
     {

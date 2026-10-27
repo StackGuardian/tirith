@@ -28,13 +28,13 @@ SCRAMBLED = {
             "condition": {"type": "LessThan", "value": 50},
         },
     ],
-    "meta": {"name": "n", "required_provider": "stackguardian/terraform_plan", "version": "v1", "custom": True},
+    "meta": {"name": "n", "provider": "stackguardian/terraform_plan", "version": "v1", "custom": True},
 }
 
 CANONICAL_TEXT = """{
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "name": "n",
     "custom": true
   },
@@ -89,7 +89,7 @@ def test_canonical_orders_keys_and_keeps_unknown_ones_after_known():
     out = canonical(SCRAMBLED)
 
     assert list(out) == ["meta", "evaluators", "eval_expression"]
-    assert list(out["meta"]) == ["version", "required_provider", "name", "custom"]
+    assert list(out["meta"]) == ["version", "provider", "name", "custom"]
     assert list(out["evaluators"][0]) == ["id", "description", "provider_args", "condition"]
     assert list(out["evaluators"][0]["provider_args"])[0] == "operation_type"
     assert list(out["evaluators"][0]["condition"]) == ["type", "value", "error_tolerance"]

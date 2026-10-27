@@ -34,7 +34,7 @@ Here is the `policy.json` file:
 {
     "meta": {
         "version": "v1",
-        "required_provider": "stackguardian/json"
+        "provider": "stackguardian/json"
     },
     "evaluators": [
         {

@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "v1",
-    "required_provider": "stackguardian/terraform_plan",
+    "provider": "stackguardian/terraform_plan",
     "id": "404c3081-a854-4457-ae30-26a93ef643f9",
     "name": "Secure transfer to storage accounts should be enabled",
     "description": "supportsHttpsTrafficOnly is true on every storage account. azurerm 4.x names it https_traffic_only_enabled, 3.x enable_https_traffic_only; one evaluator per name, OR-ed, each skipping when its name is absent.",

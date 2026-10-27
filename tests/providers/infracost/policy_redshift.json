@@ -1,6 +1,6 @@
 {
     "meta": {
-        "required_provider": "stackguardian/infracost",
+        "provider": "stackguardian/infracost",
         "version": "v1"
     },
     "evaluators": [

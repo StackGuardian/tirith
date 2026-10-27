@@ -371,7 +371,7 @@ def start_policy_evaluation_from_dict(policy_dict: Dict, input_dict: Dict, var_d
     eval_objects = policy_dict.get("evaluators")
 
     final_evaluation_policy_string = policy_dict.get("eval_expression")
-    provider_module = policy_meta.get("required_provider", "core")
+    provider_module = policy_meta.get("provider", policy_meta.get("required_provider", "core"))
     # TODO: Write functionality for dynamically importing evaluators from other modules.
     eval_results = []
     eval_results_obj = {}

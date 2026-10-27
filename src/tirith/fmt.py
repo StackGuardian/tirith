@@ -27,6 +27,7 @@ PROG = "tirith fmt"
 TOP_ORDER = ("$schema", "meta", "evaluators", "eval_expression")
 META_ORDER = (
     "version",
+    "provider",
     "required_provider",
     "id",
     "name",
