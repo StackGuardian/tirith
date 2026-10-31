@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [Unreleased]
+
+### Security
+- `eval_expression` is no longer executed as Python. It is parsed and interpreted by an allow-list
+  evaluator that accepts only evaluator ids, `&&`, `||`, `!` and parentheses. The previous guard
+  inspected only the outermost code object's names, so names inside a nested scope such as a
+  `lambda` were never checked; a policy file could therefore reach interpreter internals. Policies
+  that use anything else in `eval_expression` are now rejected with
+  `Unsupported syntax in eval_expression: ...` and `final_result: false`. Expressions over 10,000
+  characters or nested too deeply abort the run with exit code 1.
+
 ## [1.2.1] - 2026-09-08
 
 ### Added
