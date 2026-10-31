@@ -51,6 +51,5 @@ def sort_collections(inputs):
         else:
             return inputs
     except Exception as e:
-        # TODO: LOG
         logger.exception(e)
         return inputs
