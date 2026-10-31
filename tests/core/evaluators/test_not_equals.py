@@ -47,4 +47,3 @@ def test_evaluate_failing(evaluator_input, evaluator_data):
 )
 def test_evaluate_edge_cases(evaluator_input, evaluator_data, passed, message):
     assert evaluator.evaluate(evaluator_input, evaluator_data) == {"passed": passed, "message": message}
-
