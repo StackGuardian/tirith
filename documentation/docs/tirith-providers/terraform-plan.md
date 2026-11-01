@@ -33,6 +33,7 @@ Most operations read the `resource_changes` array of the plan. If the plan conta
 |---|---|
 | `attribute` | Get an attribute's planned value for every instance of a resource type |
 | `action` | Get the plan actions (`create`, `update`, `delete`, ...) for a resource type |
+| `provider_name` | Get the provider that manages each instance of a resource type |
 | `count` | Count the changed instances of a resource type |
 | `direct_dependencies` | Get the resource types listed in a resource's `depends_on` |
 | `direct_references` | Get or check references between resources |
@@ -128,6 +129,46 @@ Example (adapted from a test fixture; fails when a virtual network would be dele
     }
   ],
   "eval_expression": "!vnet_is_deleted"
+}
+```
+
+---
+
+## `provider_name`
+
+Returns the provider that manages every instance of a resource type, read from `provider_name` in the plan, for example `registry.terraform.io/hashicorp/aws`. Every resource change carries it, including resources that use a provider with no `provider` block.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `terraform_resource_type` | yes | Resource type to match, or `*` for every type. |
+| `exclude_resource_types` | no (default `[]`) | List of resource types to skip. Only applied when `terraform_resource_type` is `*`. |
+
+**Returns:** one string per matching resource instance.
+
+**On a miss:** no resource of the requested type — severity 1.
+
+Example (fails when an AWS, Google Cloud or Azure resource uses a provider outside the `hashicorp` namespace, such as `registry.terraform.io/acme/aws`; other providers such as `random` pass):
+
+```json
+{
+  "meta": {
+    "version": "v1",
+    "required_provider": "stackguardian/terraform_plan"
+  },
+  "evaluators": [
+    {
+      "id": "official_cloud_providers",
+      "provider_args": {
+        "operation_type": "provider_name",
+        "terraform_resource_type": "*"
+      },
+      "condition": {
+        "type": "RegexMatch",
+        "value": "^(registry\\.(terraform\\.io|opentofu\\.org)/hashicorp/(aws|google|google-beta|azurerm|azuread)|(?!.*/(aws|google|google-beta|azurerm|azuread)$).*)$"
+      }
+    }
+  ],
+  "eval_expression": "official_cloud_providers"
 }
 ```
 
