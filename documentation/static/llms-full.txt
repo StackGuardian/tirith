@@ -2049,7 +2049,7 @@ tirith -policy-path policy.json -input-path infracost.json
 
 The provider reads `projects[].breakdown.resources[]` and understands both the older per-resource keys (`totalMonthlyCost` / `totalHourlyCost`) and the newer ones (`monthlyCost` / `hourlyCost`). Resources whose cost field is missing or `null` contribute nothing to the sum.
 
-Note: only the **first** project in the `projects` array is summed.
+Every project in the `projects` array is summed.
 
 ## Operation types
 
