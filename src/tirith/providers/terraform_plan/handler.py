@@ -266,6 +266,32 @@ def provide(provider_inputs, input_data):
                 }
             )
         return outputs
+    # - Get the provider that manages each instance of a resource
+    # - resource_changes.*.provider_name
+    elif input_type == "provider_name":
+        resource_type = provider_inputs["terraform_resource_type"]
+        is_resource_type_found = False
+        for resource_change in resource_changes:
+            if resource_type == "*" and resource_change["type"] in exclude_resource_types:
+                continue
+            if resource_type in (resource_change["type"], "*"):
+                is_resource_type_found = True
+                outputs.append(
+                    {
+                        "value": resource_change.get("provider_name"),
+                        "meta": resource_change,
+                        "err": None,
+                        "context": _resource_context(input_type, resource_change, attribute="provider_name"),
+                    }
+                )
+        if not is_resource_type_found:
+            outputs.append(
+                {
+                    "value": ProviderError(severity_value=1),
+                    "err": f"resource_type: '{resource_type}' is not found",
+                }
+            )
+        return outputs
     # CASE 3
     # - Get count of a particular resource
     # - resource_changes.*.index
